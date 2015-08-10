@@ -1,0 +1,4 @@
+= vert.x-stomp
+
+A vert.x implementation of the STOMP specification. It provides a STOMP server and client.
+
