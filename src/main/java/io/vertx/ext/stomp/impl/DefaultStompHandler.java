@@ -71,9 +71,6 @@ public class DefaultStompHandler implements StompServerHandler {
   }
 
   public synchronized void onClose(StompServerConnection connection) {
-    if (closeHandler != null) {
-      closeHandler.handle(connection);
-    }
     // Default behavior.
     if (pinger != 0) {
       vertx.cancelTimer(pinger);
@@ -85,6 +82,10 @@ public class DefaultStompHandler implements StompServerHandler {
     }
     unsubscribeConnection(connection);
     unregisterTransactionsFromConnection(connection);
+
+    if (closeHandler != null) {
+      closeHandler.handle(connection);
+    }
   }
 
   @Override
