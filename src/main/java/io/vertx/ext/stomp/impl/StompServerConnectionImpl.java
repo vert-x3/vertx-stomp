@@ -7,6 +7,7 @@ import io.vertx.ext.stomp.StompServer;
 import io.vertx.ext.stomp.StompServerConnection;
 import io.vertx.ext.stomp.StompServerHandler;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -18,6 +19,8 @@ public class StompServerConnectionImpl implements StompServerConnection {
   private final String sessionId;
 
   public StompServerConnectionImpl(NetSocket socket, StompServer server) {
+    Objects.requireNonNull(socket);
+    Objects.requireNonNull(server);
     this.socket = socket;
     this.server = server;
     this.sessionId = UUID.randomUUID().toString();

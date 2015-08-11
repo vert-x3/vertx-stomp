@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
  * <p/>
  * By default {@code ACK/NACK} are managed as a dead messages. Not acknowledges messages are dropped from the list
  * and a warning is printed in the log.
+ *
+ * This class is thread safe.
  */
 public class DefaultStompHandler implements StompServerHandler {
 
@@ -51,22 +53,24 @@ public class DefaultStompHandler implements StompServerHandler {
 
   private AuthenticationHandler authenticatedHandler;
 
-  private Map<String, List<Subscription>> subscriptions = new HashMap<>();
-  private List<Transaction> transactions = new ArrayList<>();
+  private Handler<StompServerConnection> pingHandler = StompServerConnection::ping;
+
   private AcknowledgmentHandler onAckHandler = (subscription, messageIds) -> log.info("Acknowledge messages - " + messageIds);
   private AcknowledgmentHandler onNackHandler = (subscription, messageIds) ->
       log.warn("Messages not acknowledge - " + messageIds);
 
-  private long lastClientActivity;
-  private long pinger;
-  private long ponger;
-  private Handler<StompServerConnection> pingHandler = StompServerConnection::ping;
+  private final Map<String, List<Subscription>> subscriptions = new HashMap<>();
+  private final List<Transaction> transactions = new ArrayList<>();
+
+  private volatile long lastClientActivity;
+  private volatile long pinger;
+  private volatile long ponger;
 
   public DefaultStompHandler(Vertx vertx) {
     this.vertx = vertx;
   }
 
-  public void onClose(StompServerConnection connection) {
+  public synchronized void onClose(StompServerConnection connection) {
     if (closeHandler != null) {
       closeHandler.handle(connection);
     }
@@ -84,73 +88,73 @@ public class DefaultStompHandler implements StompServerHandler {
   }
 
   @Override
-  public StompServerHandler connectHandler(ServerFrameHandler handler) {
+  public synchronized StompServerHandler connectHandler(ServerFrameHandler handler) {
     this.connectHandler = handler;
     return this;
   }
 
   @Override
-  public StompServerHandler stompHandler(ServerFrameHandler handler) {
+  public synchronized StompServerHandler stompHandler(ServerFrameHandler handler) {
     this.stompHandler = handler;
     return this;
   }
 
   @Override
-  public StompServerHandler subscribeHandler(ServerFrameHandler handler) {
+  public synchronized StompServerHandler subscribeHandler(ServerFrameHandler handler) {
     this.subscribeHandler = handler;
     return this;
   }
 
   @Override
-  public StompServerHandler unsubscribeHandler(ServerFrameHandler handler) {
+  public synchronized StompServerHandler unsubscribeHandler(ServerFrameHandler handler) {
     this.unsubscribeHandler = handler;
     return this;
   }
 
   @Override
-  public StompServerHandler sendHandler(ServerFrameHandler handler) {
+  public synchronized StompServerHandler sendHandler(ServerFrameHandler handler) {
     this.sendHandler = handler;
     return this;
   }
 
   @Override
-  public StompServerHandler closeHandler(Handler<StompServerConnection> handler) {
+  public synchronized StompServerHandler closeHandler(Handler<StompServerConnection> handler) {
     this.closeHandler = handler;
     return this;
   }
 
   @Override
-  public StompServerHandler commitHandler(ServerFrameHandler handler) {
+  public synchronized StompServerHandler commitHandler(ServerFrameHandler handler) {
     this.commitHandler = handler;
     return this;
   }
 
   @Override
-  public StompServerHandler abortHandler(ServerFrameHandler handler) {
+  public synchronized StompServerHandler abortHandler(ServerFrameHandler handler) {
     this.abortHandler = handler;
     return this;
   }
 
   @Override
-  public StompServerHandler beginHandler(ServerFrameHandler handler) {
+  public synchronized StompServerHandler beginHandler(ServerFrameHandler handler) {
     this.beginHandler = handler;
     return this;
   }
 
   @Override
-  public StompServerHandler disconnectHandler(ServerFrameHandler handler) {
+  public synchronized StompServerHandler disconnectHandler(ServerFrameHandler handler) {
     this.disconnectHandler = handler;
     return this;
   }
 
   @Override
-  public StompServerHandler ackHandler(ServerFrameHandler handler) {
+  public synchronized StompServerHandler ackHandler(ServerFrameHandler handler) {
     this.ackHandler = handler;
     return this;
   }
 
   @Override
-  public StompServerHandler nackHandler(ServerFrameHandler handler) {
+  public synchronized StompServerHandler nackHandler(ServerFrameHandler handler) {
     this.nackHandler = handler;
     return this;
   }
@@ -199,56 +203,95 @@ public class DefaultStompHandler implements StompServerHandler {
   }
 
   private void handleAck(Frame frame, StompServerConnection connection) {
-    if (ackHandler != null) {
-      ackHandler.onFrame(frame, connection);
+    ServerFrameHandler handler;
+    synchronized (this) {
+      handler = ackHandler;
+    }
+    if (handler != null) {
+      handler.onFrame(frame, connection);
     }
   }
 
   private void handleNack(Frame frame, StompServerConnection connection) {
-    if (nackHandler != null) {
-      nackHandler.onFrame(frame, connection);
+    ServerFrameHandler handler;
+    synchronized (this) {
+      handler = nackHandler;
+    }
+    if (handler != null) {
+      handler.onFrame(frame, connection);
     }
   }
 
   private void handleBegin(Frame frame, StompServerConnection connection) {
-    if (beginHandler != null) {
-      beginHandler.onFrame(frame, connection);
+    ServerFrameHandler handler;
+    synchronized (this) {
+      handler = beginHandler;
+    }
+    if (handler != null) {
+      handler.onFrame(frame, connection);
     }
   }
 
   private void handleAbort(Frame frame, StompServerConnection connection) {
-    if (abortHandler != null) {
-      abortHandler.onFrame(frame, connection);
+    ServerFrameHandler handler;
+    synchronized (this) {
+      handler = abortHandler;
+    }
+    if (handler != null) {
+      handler.onFrame(frame, connection);
     }
   }
 
   private void handleCommit(Frame frame, StompServerConnection connection) {
-    if (commitHandler != null) {
-      commitHandler.onFrame(frame, connection);
+    ServerFrameHandler handler;
+    synchronized (this) {
+      handler = commitHandler;
+    }
+    if (handler != null) {
+      handler.onFrame(frame, connection);
     }
   }
 
   private void handleSubscribe(Frame frame, StompServerConnection connection) {
-    if (subscribeHandler != null) {
-      subscribeHandler.onFrame(frame, connection);
+    ServerFrameHandler handler;
+    synchronized (this) {
+      handler = subscribeHandler;
+    }
+    if (handler != null) {
+      handler.onFrame(frame, connection);
     }
   }
 
   private void handleUnsubscribe(Frame frame, StompServerConnection connection) {
-    if (unsubscribeHandler != null) {
-      unsubscribeHandler.onFrame(frame, connection);
+    ServerFrameHandler handler;
+    synchronized (this) {
+      handler = unsubscribeHandler;
+    }
+    if (handler != null) {
+      handler.onFrame(frame, connection);
     }
   }
 
   private void handleSend(Frame frame, StompServerConnection connection) {
-    if (sendHandler != null) {
-      sendHandler.onFrame(frame, connection);
+    ServerFrameHandler handler;
+    synchronized (this) {
+      handler = sendHandler;
+    }
+
+    if (handler != null) {
+      handler.onFrame(frame, connection);
     }
   }
 
   private void handleConnect(Frame frame, StompServerConnection connection) {
-    if (connectHandler != null) {
-      connectHandler.onFrame(frame, connection);
+
+    ServerFrameHandler handler;
+    synchronized (this) {
+      handler = connectHandler;
+    }
+
+    if (handler != null) {
+      handler.onFrame(frame, connection);
     }
     // Compute heartbeat, and register pinger and ponger
     long ping = Frame.Heartbeat.computePingPeriod(
@@ -273,22 +316,30 @@ public class DefaultStompHandler implements StompServerHandler {
   }
 
   private void handleDisconnect(Frame frame, StompServerConnection connection) {
-    if (disconnectHandler != null) {
-      disconnectHandler.onFrame(frame, connection);
+    ServerFrameHandler handler;
+    synchronized (this) {
+      handler = disconnectHandler;
+    }
+    if (handler != null) {
+      handler.onFrame(frame, connection);
     }
   }
 
   private void handleStomp(Frame frame, StompServerConnection connection) {
-    if (stompHandler == null) {
+    ServerFrameHandler handler;
+    synchronized (this) {
+      handler = stompHandler;
+    }
+    if (handler == null) {
       // Per spec, STOMP frame must be handled as CONNECT
       handleConnect(frame, connection);
       return;
     }
-    stompHandler.onFrame(frame, connection);
+    handler.onFrame(frame, connection);
   }
 
   @Override
-  public StompServerHandler authenticationHandler(AuthenticationHandler handler) {
+  public synchronized StompServerHandler authenticationHandler(AuthenticationHandler handler) {
     this.authenticatedHandler = handler;
     return this;
   }
@@ -297,31 +348,38 @@ public class DefaultStompHandler implements StompServerHandler {
   public StompServerHandler onAuthenticationRequest(StompServer server,
                                                     String login, String passcode,
                                                     Handler<AsyncResult<Boolean>> handler) {
+    final AuthenticationHandler auth;
+    synchronized (this) {
+      // Stack contention.
+      auth = authenticatedHandler;
+    }
+
     if (!server.getOptions().isSecured()) {
-      if (authenticatedHandler != null) {
+      if (auth != null) {
         log.warn("Authentication handler set while the server is not secured");
       }
       vertx.runOnContext(v -> handler.handle(Future.succeededFuture(true)));
       return this;
     }
 
-    if (server.getOptions().isSecured() && authenticatedHandler == null) {
+    if (server.getOptions().isSecured() && auth == null) {
       log.error("Cannot authenticate connection - no authentication handler");
       vertx.runOnContext(v -> handler.handle(Future.succeededFuture(false)));
+      return this;
     }
 
     vertx.runOnContext(v ->
-        authenticatedHandler.authenticate(login, passcode, handler));
+        auth.authenticate(login, passcode, handler));
     return this;
   }
 
   @Override
-  public List<String> getDestinations() {
+  public synchronized List<String> getDestinations() {
     return new ArrayList<>(subscriptions.keySet());
   }
 
   @Override
-  public boolean subscribe(Subscription subscription) {
+  public synchronized boolean subscribe(Subscription subscription) {
     if (isIdAlreadyUsedByConnection(subscription)) {
       return false;
     }
@@ -329,6 +387,13 @@ public class DefaultStompHandler implements StompServerHandler {
     return true;
   }
 
+  /**
+   * Checks whether the subscription id is already used by the connection. This method must be called when holding
+   * the monitor lock.
+   *
+   * @param subscription the subscription
+   * @return if the id is already used
+   */
   private boolean isIdAlreadyUsedByConnection(Subscription subscription) {
     final Optional<Subscription> first
         = getSubscriptions(subscription.connection()).stream().filter(s -> s.id().equals(subscription.id())).findFirst();
@@ -337,12 +402,12 @@ public class DefaultStompHandler implements StompServerHandler {
 
   @Override
   public boolean unsubscribe(StompServerConnection connection, String id) {
+    // No need for synchronization, the removeSubscription is synchronized.
     return removeSubscription(id, connection);
   }
 
   @Override
-  public StompServerHandler unsubscribeConnection(StompServerConnection connection) {
-    //TODO Check against concurrent modification exception.
+  public synchronized StompServerHandler unsubscribeConnection(StompServerConnection connection) {
     getSubscriptions(connection).stream().forEach(
         s -> removeSubscription(s.id(), s.connection())
     );
@@ -350,7 +415,7 @@ public class DefaultStompHandler implements StompServerHandler {
   }
 
   @Override
-  public List<Subscription> getSubscriptions(String destination) {
+  public synchronized List<Subscription> getSubscriptions(String destination) {
     List<Subscription> list = subscriptions.get(destination);
     if (list == null) {
       return Collections.emptyList();
@@ -359,7 +424,7 @@ public class DefaultStompHandler implements StompServerHandler {
   }
 
   @Override
-  public boolean registerTransaction(Transaction transaction) {
+  public synchronized  boolean registerTransaction(Transaction transaction) {
     if (getTransaction(transaction.connection(), transaction.id()) != null) {
       return false;
     }
@@ -368,18 +433,18 @@ public class DefaultStompHandler implements StompServerHandler {
   }
 
   @Override
-  public Transaction getTransaction(StompServerConnection connection, String id) {
+  public synchronized Transaction getTransaction(StompServerConnection connection, String id) {
     return transactions.stream().filter(transaction -> transaction.connection().equals(connection) && transaction.id()
         .equals(id)).findFirst().orElse(null);
   }
 
   @Override
-  public boolean unregisterTransaction(Transaction transaction) {
+  public synchronized boolean unregisterTransaction(Transaction transaction) {
     return transaction != null && transactions.remove(transaction);
   }
 
   @Override
-  public StompServerHandler unregisterTransactionsFromConnection(StompServerConnection connection) {
+  public synchronized StompServerHandler unregisterTransactionsFromConnection(StompServerConnection connection) {
     transactions.stream()
         .filter(transaction -> transaction.connection().equals(connection))
         .sorted() // Avoid using baking up collection. TODO Test we dont have concurrent modification exception.
@@ -388,40 +453,48 @@ public class DefaultStompHandler implements StompServerHandler {
   }
 
   @Override
-  public List<Transaction> getTransactions() {
+  public synchronized List<Transaction> getTransactions() {
     return transactions;
   }
 
   @Override
-  public Subscription getSubscription(StompServerConnection connection, String ackId) {
+  public synchronized Subscription getSubscription(StompServerConnection connection, String ackId) {
     return subscriptions.values().stream().flatMap(List::stream).filter(subscription ->
         subscription.connection().equals(connection) && subscription.contains(ackId)).findFirst().orElse(null);
   }
 
   @Override
   public StompServerHandler onAck(Subscription subscription, List<Frame> messages) {
-    if (onAckHandler != null) {
-      onAckHandler.handle(subscription, messages);
+    AcknowledgmentHandler handler;
+    synchronized (this) {
+      handler = onAckHandler;
+    }
+    if (handler != null) {
+      handler.handle(subscription, messages);
     }
     return this;
   }
 
   @Override
   public StompServerHandler onNack(Subscription subscription, List<Frame> messages) {
-    if (onNackHandler != null) {
-      onNackHandler.handle(subscription, messages);
+    AcknowledgmentHandler handler;
+    synchronized (this) {
+      handler = onNackHandler;
+    }
+    if (handler != null) {
+      handler.handle(subscription, messages);
     }
     return this;
   }
 
   @Override
-  public StompServerHandler onAckHandler(AcknowledgmentHandler handler) {
+  public synchronized StompServerHandler onAckHandler(AcknowledgmentHandler handler) {
     this.onAckHandler = handler;
     return this;
   }
 
   @Override
-  public StompServerHandler onNackHandler(AcknowledgmentHandler handler) {
+  public synchronized StompServerHandler onNackHandler(AcknowledgmentHandler handler) {
     this.onNackHandler = handler;
     return this;
   }
@@ -437,13 +510,13 @@ public class DefaultStompHandler implements StompServerHandler {
    * @return the current {@link StompServerHandler}
    */
   @Override
-  public StompServerHandler pingHandler(Handler<StompServerConnection> handler) {
+  public synchronized StompServerHandler pingHandler(Handler<StompServerConnection> handler) {
     this.pingHandler = handler;
     return this;
   }
 
 
-  private void addSubscription(String destination, Subscription subscription) {
+  private synchronized void addSubscription(String destination, Subscription subscription) {
     List<Subscription> list = subscriptions.get(destination);
     if (list == null) {
       list = new ArrayList<>();
@@ -452,7 +525,7 @@ public class DefaultStompHandler implements StompServerHandler {
     list.add(subscription);
   }
 
-  private boolean removeSubscription(String id, StompServerConnection connection) {
+  private synchronized boolean removeSubscription(String id, StompServerConnection connection) {
     boolean r = false;
     Subscription subscription = getSubscription(id, connection);
     if (subscription != null) {
@@ -467,7 +540,7 @@ public class DefaultStompHandler implements StompServerHandler {
     return r;
   }
 
-  private Subscription getSubscription(String id, StompServerConnection connection) {
+  private synchronized Subscription getSubscription(String id, StompServerConnection connection) {
     for (List<Subscription> list : subscriptions.values()) {
       for (Subscription s : list) {
         if (s.connection().equals(connection) && s.id().equals(id)) {
@@ -478,7 +551,7 @@ public class DefaultStompHandler implements StompServerHandler {
     return null;
   }
 
-  private List<Subscription> getSubscriptions(StompServerConnection connection) {
+  private synchronized List<Subscription> getSubscriptions(StompServerConnection connection) {
     List<Subscription> result = new ArrayList<>();
     for (List<Subscription> list : subscriptions.values()) {
       result.addAll(list.stream()

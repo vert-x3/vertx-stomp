@@ -5,6 +5,7 @@ import io.vertx.ext.stomp.utils.Headers;
 
 /**
  * STAMP compliant actions executed when receiving a {@code ABORT} frame.
+ * This handler is thread safe.
  */
 public class DefaultAbortHandler implements ServerFrameHandler {
   @Override

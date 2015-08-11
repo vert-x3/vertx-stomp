@@ -11,6 +11,8 @@ import java.util.Objects;
 /**
  * Utility methods to build common {@link Frame}s. It defines a non-STOMP frame ({@code PING}) that is used for
  * heartbeats. When such frame is written on the wire it is just the {@code 0} byte.
+ *
+ * This class is thread-safe.
  */
 public class Frames {
 

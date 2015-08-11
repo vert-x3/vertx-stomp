@@ -26,15 +26,16 @@ public class StompClientConnectionImpl implements StompClientConnection, FrameHa
 
   private volatile long lastServerActivity;
 
-  private Map<String, Handler<Void>> pendingReceipts = new HashMap<>();
+  private final Map<String, Handler<Void>> pendingReceipts = new HashMap<>();
 
   private String version;
   private String sessionId;
   private String server;
 
-  private List<Subscription> subscriptions = new CopyOnWriteArrayList<>();
-  private long pinger;
-  private long ponger;
+  private final List<Subscription> subscriptions = new CopyOnWriteArrayList<>();
+
+  private volatile long pinger;
+  private volatile long ponger;
 
   private Handler<StompClientConnection> pingHandler = connection -> connection.send(Frames.ping());
   private Handler<StompClientConnection> closeHandler;
@@ -80,7 +81,7 @@ public class StompClientConnectionImpl implements StompClientConnection, FrameHa
   }
 
   @Override
-  public void close() {
+  public synchronized void close() {
 
     if (closeHandler != null) {
       closeHandler.handle(this);
@@ -136,7 +137,7 @@ public class StompClientConnectionImpl implements StompClientConnection, FrameHa
   }
 
   @Override
-  public StompClientConnection send(Frame frame, Handler<Frame> receiptHandler) {
+  public synchronized StompClientConnection send(Frame frame, Handler<Frame> receiptHandler) {
     if (receiptHandler != null) {
       String receiptId = UUID.randomUUID().toString();
       frame.addHeader(Frame.RECEIPT, receiptId);
@@ -152,7 +153,9 @@ public class StompClientConnectionImpl implements StompClientConnection, FrameHa
   }
 
   @Override
-  public StompClientConnection send(String destination, Map<String, String> headers, Buffer body, Handler<Frame> receiptHandler) {
+  public StompClientConnection send(String destination, Map<String, String> headers, Buffer body,
+                                                 Handler<Frame> receiptHandler) {
+    // No need for synchronization, no field access, except client (final)
     if (headers == null) {
       headers = new Headers();
     }
@@ -190,7 +193,8 @@ public class StompClientConnectionImpl implements StompClientConnection, FrameHa
   }
 
   @Override
-  public String subscribe(String destination, Map<String, String> headers, FrameHandler handler, Handler<Frame> receiptHandler) {
+  public synchronized String subscribe(String destination, Map<String, String> headers, FrameHandler handler, Handler<Frame>
+      receiptHandler) {
     Objects.requireNonNull(destination);
     Objects.requireNonNull(handler);
 
@@ -240,7 +244,8 @@ public class StompClientConnectionImpl implements StompClientConnection, FrameHa
   }
 
   @Override
-  public StompClientConnection unsubscribe(String destination, Map<String, String> headers, Handler<Frame> receiptHandler) {
+  public synchronized StompClientConnection unsubscribe(String destination, Map<String, String> headers, Handler<Frame>
+      receiptHandler) {
     Objects.requireNonNull(destination);
     if (headers == null) {
       headers = Headers.create();
@@ -262,19 +267,19 @@ public class StompClientConnectionImpl implements StompClientConnection, FrameHa
   }
 
   @Override
-  public StompClientConnection errorHandler(FrameHandler handler) {
+  public synchronized StompClientConnection errorHandler(FrameHandler handler) {
     this.errorHandler = handler;
     return this;
   }
 
   @Override
-  public StompClientConnection closeHandler(Handler<StompClientConnection> handler) {
+  public synchronized StompClientConnection closeHandler(Handler<StompClientConnection> handler) {
     this.closeHandler = handler;
     return this;
   }
 
   @Override
-  public StompClientConnection pingHandler(Handler<StompClientConnection> handler) {
+  public synchronized StompClientConnection pingHandler(Handler<StompClientConnection> handler) {
     this.pingHandler = handler;
     return this;
   }
@@ -415,7 +420,7 @@ public class StompClientConnectionImpl implements StompClientConnection, FrameHa
   @Override
   public StompClientConnection ack(Frame frame, String txId, Handler<Frame> receiptHandler) {
     final String id = frame.getAck();
-    Objects.requireNonNull(id);
+    Objects.requireNonNull(id, "A ACK frame must contain the ACK id");
     Objects.requireNonNull(txId);
 
     send(new Frame(Frame.Command.ACK, Headers.create(Frame.ID, id, Frame.TRANSACTION, txId), null), receiptHandler);
@@ -431,7 +436,7 @@ public class StompClientConnectionImpl implements StompClientConnection, FrameHa
   @Override
   public StompClientConnection nack(Frame frame, String txId, Handler<Frame> receiptHandler) {
     final String id = frame.getAck();
-    Objects.requireNonNull(id);
+    Objects.requireNonNull(id, "A NACK frame must contain the ACK id");
     Objects.requireNonNull(txId);
 
     Frame toSend = new Frame(Frame.Command.NACK, Headers.create(Frame.ID, id, Frame.TRANSACTION, txId), null);
@@ -464,7 +469,7 @@ public class StompClientConnectionImpl implements StompClientConnection, FrameHa
     }
   }
 
-  private void handleReceipt(Frame frame) {
+  private synchronized void handleReceipt(Frame frame) {
     String receipt = frame.getHeader(Frame.RECEIPT_ID);
     if (receipt != null) {
       Handler<Void> receiptHandler = pendingReceipts.remove(receipt);

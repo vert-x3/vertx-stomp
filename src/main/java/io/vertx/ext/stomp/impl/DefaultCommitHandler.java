@@ -10,6 +10,8 @@ import java.util.UUID;
  * STAMP compliant actions executed when receiving a {@code COMMIT} frame. All frames that are part of the
  * transactions are processed ({@code ACK/NACK} and {@code SEND} frames). If the {@code COMMIT} frame defines a {@code
  * receipt}, the {@code RECEIPT} frame is sent once all frames have been replayed.
+ *
+ * This handler is thread safe.
  */
 public class DefaultCommitHandler implements ServerFrameHandler {
   @Override

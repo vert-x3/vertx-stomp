@@ -32,19 +32,19 @@ public class TransactionImpl implements Transaction {
   }
 
   @Override
-  public Transaction addFrameToTransaction(Frame frame) {
-    this.frames.add(frame);
+  public synchronized Transaction addFrameToTransaction(Frame frame) {
+    frames.add(frame);
     return this;
   }
 
   @Override
-  public Transaction clear() {
-    this.frames.clear();
+  public synchronized Transaction clear() {
+    frames.clear();
     return this;
   }
 
   @Override
-  public List<Frame> getFrames() {
-    return frames;
+  public synchronized List<Frame> getFrames() {
+    return new ArrayList<>(frames);
   }
 }

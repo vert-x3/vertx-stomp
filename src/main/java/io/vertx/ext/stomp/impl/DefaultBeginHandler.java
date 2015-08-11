@@ -5,6 +5,8 @@ import io.vertx.ext.stomp.utils.Headers;
 
 /**
  * STAMP compliant actions executed when receiving a {@code BEGIN} frame.
+ *
+ * This handler is thread safe.
  */
 public class DefaultBeginHandler implements ServerFrameHandler {
   @Override
@@ -23,6 +25,7 @@ public class DefaultBeginHandler implements ServerFrameHandler {
           Headers.create(Frame.TRANSACTION, txId),
           "A transaction using the same id is still active.");
       connection.write(error).close();
+      return;
     }
 
     Frames.handleReceipt(frame, connection);

@@ -20,6 +20,8 @@ import java.util.UUID;
  * If the {@code SEND} frame requires an acknowledgment, the {@code message-id} is added to the list of messages
  * waiting for acknowledgment. If the corresponding {@code ACK} frame does not arrives before
  * {@link StompServerOptions#getAckTimeout()} ms, the message is considered as non-acknowledged.
+ *
+ * This handler is thread safe.
  */
 public class DefaultSendHandler implements ServerFrameHandler {
 

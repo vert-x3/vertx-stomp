@@ -11,6 +11,8 @@ import java.util.List;
  * {@link StompServerHandler#onNack(Subscription, List)} calls.
  * <p/>
  * If the {@code NACK} frame specifies a transaction id, the acknowledgment is delayed until the transaction commit.
+ *
+ * This handler is thread safe.
  */
 public class DefaultNackHandler implements ServerFrameHandler {
   @Override

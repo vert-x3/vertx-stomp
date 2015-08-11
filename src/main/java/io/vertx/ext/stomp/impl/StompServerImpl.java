@@ -38,7 +38,7 @@ public class StompServerImpl implements StompServer {
   }
 
   @Override
-  public StompServer handler(StompServerHandler handler) {
+  public synchronized StompServer handler(StompServerHandler handler) {
     Objects.requireNonNull(handler);
     this.handler = handler;
     return this;
@@ -71,13 +71,18 @@ public class StompServerImpl implements StompServer {
 
   @Override
   public synchronized StompServer listen(int port, String host, Handler<AsyncResult<StompServer>> handler) {
-    Objects.requireNonNull(this.handler, "Cannot open STOMP server - no StompServerConnectionHandler attached to the " +
+    StompServerHandler stomp;
+    synchronized (this) {
+      stomp = this.handler;
+    }
+
+    Objects.requireNonNull(stomp, "Cannot open STOMP server - no StompServerConnectionHandler attached to the " +
         "server.");
     server
         .connectHandler(socket -> {
           StompServerConnection connection = new StompServerConnectionImpl(socket, this);
           FrameParser parser = new FrameParser(options);
-          socket.endHandler(v -> this.handler.onClose(connection));
+          socket.endHandler(v -> stomp.onClose(connection));
           parser
               .errorHandler((exception) -> {
                     connection.write(
@@ -85,7 +90,7 @@ public class StompServerImpl implements StompServer {
                     connection.close();
                   }
               )
-              .handler(frame -> this.handler.onFrame(frame, connection));
+              .handler(frame -> stomp.onFrame(frame, connection));
           socket.handler(parser::handle);
         })
         .listen(port, host, ar -> {
@@ -96,8 +101,8 @@ public class StompServerImpl implements StompServer {
               log.error(ar.cause());
             }
           } else {
-            log.info("STOMP server listening on " + ar.result().actualPort());
             listening = true;
+            log.info("STOMP server listening on " + ar.result().actualPort());
             if (handler != null) {
               vertx.runOnContext(v -> handler.handle(Future.succeededFuture(this)));
             }
@@ -132,13 +137,13 @@ public class StompServerImpl implements StompServer {
   }
 
   @Override
-  public StompServerHandler stompHandler() {
+  public synchronized StompServerHandler stompHandler() {
     return handler;
   }
 
 
   @Override
-  public synchronized void close(Handler<AsyncResult<Void>> done) {
+  public void close(Handler<AsyncResult<Void>> done) {
     if (!listening) {
       if (done != null) {
         vertx.getOrCreateContext().runOnContext((v) -> done.handle(Future.succeededFuture()));

@@ -7,6 +7,8 @@ import io.vertx.ext.stomp.utils.Headers;
  * STAMP compliant actions executed when receiving a {@code ACK} frame. It removes the acknowledges messages from the
  * list of messages waiting for acknowledgment. If the {@code ACK} frame specifies a transaction id, the
  * acknowledgment is delayed until the transaction commit.
+ *
+ * This handler is thread safe.
  */
 public class DefaultAckHandler implements ServerFrameHandler {
 

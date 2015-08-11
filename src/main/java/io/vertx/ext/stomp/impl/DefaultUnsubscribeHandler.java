@@ -9,6 +9,8 @@ import io.vertx.ext.stomp.utils.Headers;
 /**
  * STAMP compliant actions executed when receiving a {@code UNSUBSCRIBE} frame. The associated
  * {@link io.vertx.ext.stomp.Subscription} is unregistered.
+ *
+ * This handler is thread safe.
  */
 public class DefaultUnsubscribeHandler implements ServerFrameHandler {
   @Override
@@ -31,6 +33,7 @@ public class DefaultUnsubscribeHandler implements ServerFrameHandler {
           Headers.create(frame.getHeaders()),
           "No subscription associated with the given 'id'"));
       connection.close();
+      return;
     }
 
     Frames.handleReceipt(frame, connection);

@@ -108,12 +108,14 @@ public class StompClientImplTest {
   public void testClientHeartbeatWhenNoServerActivity(TestContext context) {
     AtomicReference<StompClientConnection> reference = new AtomicReference<>();
     server.close();
+    AsyncLock<StompServer> lock = new AsyncLock<>();
     server = StompServer.create(vertx,
         new StompServerOptions().setHeartbeat(new JsonObject().put("x", 10).put("y", 10)))
         // Disable ping frame:
         .handler(StompServerHandler.create(vertx).pingHandler(v -> {
         }))
-        .listen(context.asyncAssertSuccess());
+        .listen(lock.handler());
+    lock.waitForSuccess();
 
     StompClient client = Stomp.createStompClient(vertx, new StompClientOptions().setHeartbeat(new JsonObject().put
         ("x", 10).put("y", 10)));
@@ -128,12 +130,15 @@ public class StompClientImplTest {
   @Test
   public void testClientHeartbeatWithServerActivity(TestContext context) throws InterruptedException {
     AtomicReference<StompClientConnection> reference = new AtomicReference<>();
-
-    server.close();
+    AsyncLock lock = new AsyncLock<>();
+    server.close(lock.handler());
+    lock.waitForSuccess();
+    lock = new AsyncLock();
     server = StompServer.create(vertx,
         new StompServerOptions().setHeartbeat(new JsonObject().put("x", 10).put("y", 10)))
         .handler(StompServerHandler.create(vertx))
-        .listen(context.asyncAssertSuccess());
+        .listen(lock.handler());
+    lock.waitForSuccess();
 
     StompClient client = Stomp.createStompClient(vertx, new StompClientOptions().setHeartbeat(new JsonObject().put
         ("x", 10).put("y", 10)));
@@ -147,10 +152,12 @@ public class StompClientImplTest {
   public void testServerHeartbeatWhenNoClientActivity(TestContext context) {
     AtomicReference<StompClientConnection> reference = new AtomicReference<>();
     server.close();
+    AsyncLock<StompServer> lock = new AsyncLock<>();
     server = StompServer.create(vertx,
         new StompServerOptions().setHeartbeat(new JsonObject().put("x", 10).put("y", 10)))
         .handler(StompServerHandler.create(vertx))
-        .listen(context.asyncAssertSuccess());
+        .listen(lock.handler());
+    lock.waitForSuccess();
 
     StompClient client = Stomp.createStompClient(vertx, new StompClientOptions().setHeartbeat(new JsonObject().put
         ("x", 10).put("y", 10)));

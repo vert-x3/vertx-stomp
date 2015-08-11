@@ -20,6 +20,8 @@ import java.util.List;
  * <p/>
  * This handler manages the STOMP version negotiation and authentication (if enabled). Once all the checks have been
  * passed, the {@code CONNECTED} frame is sent to the client.
+ *
+ * This handler is thread safe.
  */
 public class DefaultConnectHandler implements ServerFrameHandler {
   @Override

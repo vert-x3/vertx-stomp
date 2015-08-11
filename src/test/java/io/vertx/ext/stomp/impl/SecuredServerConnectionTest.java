@@ -26,6 +26,7 @@ public class SecuredServerConnectionTest {
   @Before
   public void setUp(TestContext context) {
     vertx = Vertx.vertx();
+    AsyncLock<StompServer> lock = new AsyncLock<>();
     server = Stomp.createStompServer(vertx, new StompServerOptions().setSecured(true))
         .handler(StompServerHandler.create(vertx)
             .authenticationHandler((login, passcode, resultHandler) -> {
@@ -35,13 +36,19 @@ public class SecuredServerConnectionTest {
                 resultHandler.handle(Future.succeededFuture(false));
               }
             }))
-        .listen(context.asyncAssertSuccess());
+        .listen(lock.handler());
+    lock.waitForSuccess();
   }
 
   @After
   public void tearDown(TestContext context) {
-    server.close(context.asyncAssertSuccess());
-    vertx.close(context.asyncAssertSuccess());
+    AsyncLock<Void> lock = new AsyncLock<>();
+    server.close(lock.handler());
+    lock.waitForSuccess();
+
+    lock = new AsyncLock<>();
+    vertx.close(lock.handler());
+    lock.waitForSuccess();
   }
 
   @Test

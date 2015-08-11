@@ -2,6 +2,7 @@ package io.vertx.ext.stomp.impl;
 
 /**
  * Class responsible for the encoding and decoding of the STOMP frame headers.
+ * This class is thread-safe.
  */
 public class HeaderCodec {
 

@@ -31,17 +31,25 @@ public class TransactionsTest {
   @Before
   public void setUp(TestContext context) {
     vertx = Vertx.vertx();
+    AsyncLock<StompServer> lock = new AsyncLock<>();
+    vertx = Vertx.vertx();
     server = Stomp.createStompServer(vertx)
         .handler(StompServerHandler.create(vertx))
-        .listen(context.asyncAssertSuccess());
+        .listen(lock.handler());
+    lock.waitForSuccess();
   }
 
   @After
   public void tearDown(TestContext context) {
     clients.forEach(StompClient::close);
     clients.clear();
-    server.close(context.asyncAssertSuccess());
-    vertx.close(context.asyncAssertSuccess());
+    AsyncLock<Void> lock = new AsyncLock<>();
+    server.close(lock.handler());
+    lock.waitForSuccess();
+
+    lock = new AsyncLock<>();
+    vertx.close(lock.handler());
+    lock.waitForSuccess();
   }
 
 

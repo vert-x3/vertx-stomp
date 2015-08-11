@@ -50,13 +50,13 @@ public class FrameParser implements Handler<Buffer> {
     this(new StompServerOptions());
   }
 
-  public FrameParser handler(FrameHandler handler) {
+  public synchronized FrameParser handler(FrameHandler handler) {
     Objects.requireNonNull(handler);
     this.handler = handler;
     return this;
   }
 
-  public FrameParser errorHandler(Handler<FrameException> handler) {
+  public synchronized FrameParser errorHandler(Handler<FrameException> handler) {
     this.errorHandler = handler;
     return this;
   }
@@ -172,7 +172,7 @@ public class FrameParser implements Handler<Buffer> {
    * @param event the event to handle
    */
   @Override
-  public void handle(Buffer event) {
+  public synchronized void handle(Buffer event) {
     if (current == State.BODY) {
       bodyLength += event.length();
       if (!hasExceededBodySize()) {
@@ -187,6 +187,12 @@ public class FrameParser implements Handler<Buffer> {
     return bodyLength <= options.getMaxBodyLength();
   }
 
+  /**
+   * Invokes the error handler or throw an exception if no error handler.
+   * Must be called when holding the monitor lock.
+   *
+   * @param error the error
+   */
   private void reportOrThrow(String error) {
     FrameException exception = new FrameException(error);
     if (errorHandler != null) {

@@ -16,6 +16,8 @@ import java.util.regex.Pattern;
  * Represents a STOMP frame. STOMP frames are structured as follows. It starts by a {@code command}, followed by a
  * set of headers. Then the frame may have a body and is finished by a {@code 0} byte. This class represents this
  * structure and provide access to the different parts.
+ *
+ * This class is <strong>NOT</strong> thread-safe.
  */
 @DataObject(generateConverter = true)
 public class Frame {
@@ -89,10 +91,17 @@ public class Frame {
    * Represents the heartbeat configuration. Heartbeat determine when a party involved in the exchange (either the
    * client or the server) can detect the inactivity of the other party and close the connection. Configuration is
    * made in the {@code heartbeat} header.
+   *
+   * This class is thread-safe.
    */
   public static class Heartbeat {
-    int x;
-    int y;
+    final int x;
+    final int y;
+
+    public Heartbeat(int x, int y) {
+      this.x = x;
+      this.y = y;
+    }
 
     /**
      * Creates an instance of {@link io.vertx.ext.stomp.Frame.Heartbeat} from the {@code heartbeat header} of a frame
@@ -102,17 +111,12 @@ public class Frame {
      * @return the heartbeat configuration
      */
     public static Heartbeat parse(String header) {
-      Heartbeat beat = new Heartbeat();
       if (header == null) {
-        beat.x = 0;
-        beat.y = 0;
+        return new Heartbeat(0,0);
       } else {
         String[] token = header.split(FrameParser.COMMA);
-        beat.x = Integer.parseInt(token[0]);
-        beat.y = Integer.parseInt(token[1]);
+        return new Heartbeat(Integer.parseInt(token[0]), Integer.parseInt(token[1]));
       }
-
-      return beat;
     }
 
     /**
@@ -124,10 +128,9 @@ public class Frame {
      * @return the heartbeat configuration
      */
     public static Heartbeat create(JsonObject json) {
-      Heartbeat beat = new Heartbeat();
-      beat.x = json.getInteger("x", 0);
-      beat.y = json.getInteger("y", 0);
-      return beat;
+      return new Heartbeat(
+        json.getInteger("x", 0),
+        json.getInteger("y", 0));
     }
 
     /**
@@ -178,7 +181,7 @@ public class Frame {
 
   private Command command;
 
-  private Map<String, String> headers;
+  private final Map<String, String> headers;
 
   private Buffer body;
 
@@ -199,7 +202,7 @@ public class Frame {
   public Frame(Frame other) {
     this();
     this.command = other.command;
-    this.headers = new HashMap<>(headers);
+    this.headers.putAll(headers);
     if (other.body != null) {
       this.body = other.body.copy();
     }
@@ -272,9 +275,10 @@ public class Frame {
    */
   public Frame setHeaders(Map<String, String> headers) {
     if (headers == null) {
-      this.headers = new HashMap<>();
+      this.headers.clear();
     } else {
-      this.headers = headers;
+      this.headers.clear();
+      this.headers.putAll(headers);
     }
     return this;
   }

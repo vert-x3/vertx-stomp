@@ -70,7 +70,7 @@ public class SubscriptionImpl implements Subscription {
     return destination;
   }
 
-  private List<Frame> find(String messageId) {
+  private synchronized List<Frame> find(String messageId) {
     List<Frame> result = new ArrayList<>();
     for (Frame frame : queue) {
       if (messageId.equals(frame.getHeader(Frame.MESSAGE_ID))) {
@@ -88,7 +88,6 @@ public class SubscriptionImpl implements Subscription {
 
   @Override
   public boolean ack(String messageId) {
-
     if (ack == Ack.AUTO) {
       return false;
     }

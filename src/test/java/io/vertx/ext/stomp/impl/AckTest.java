@@ -34,21 +34,30 @@ public class AckTest {
 
 
   @Before
-  public void setUp(TestContext context) {
+  public void setUp(TestContext context) throws InterruptedException {
+    AsyncLock<StompServer> lock = new AsyncLock<>();
+
     vertx = Vertx.vertx();
     server = Stomp.createStompServer(vertx)
         .handler(StompServerHandler.create(vertx)
             .onAckHandler((s, l) -> acked.addAll(l))
             .onNackHandler((s, l) -> nacked.addAll(l)))
-        .listen(context.asyncAssertSuccess());
+        .listen(lock.handler());
+
+    lock.waitForSuccess();
   }
 
   @After
   public void tearDown(TestContext context) {
     clients.forEach(StompClient::close);
     clients.clear();
-    server.close(context.asyncAssertSuccess());
-    vertx.close(context.asyncAssertSuccess());
+    AsyncLock<Void> lock = new AsyncLock<>();
+    server.close(lock.handler());
+    lock.waitForSuccess();
+
+    lock = new AsyncLock<>();
+    vertx.close(lock.handler());
+    lock.waitForSuccess();
   }
 
 
@@ -72,11 +81,18 @@ public class AckTest {
   @Test
   public void testSimpleNack() {
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+      if (ar.failed()) {
+        System.err.println("========> FAILURE <========");
+        ar.cause().printStackTrace();
+        return;
+      }
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", Headers.create(Frame.ACK, "client"), connection::nack);
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestinations().contains("/queue"));
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() ->
+            server.stompHandler().getDestinations().contains("/queue")
+    );
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();

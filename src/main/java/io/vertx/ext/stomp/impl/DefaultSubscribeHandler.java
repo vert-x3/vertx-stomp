@@ -6,6 +6,8 @@ import io.vertx.ext.stomp.utils.Headers;
 /**
  * STAMP compliant actions executed when receiving a {@code SUBSCRIBE} frame. It builds a {@link Subscription}
  * instance and registers it.
+ *
+ * This handler is thread safe.
  */
 public class DefaultSubscribeHandler implements ServerFrameHandler {
   @Override
@@ -33,6 +35,7 @@ public class DefaultSubscribeHandler implements ServerFrameHandler {
           Headers.create(frame.getHeaders()), "'id'" +
               " already used by this connection."));
       connection.close();
+      return;
     }
 
     Frames.handleReceipt(frame, connection);
