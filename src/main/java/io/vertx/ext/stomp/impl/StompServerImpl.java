@@ -82,6 +82,10 @@ public class StompServerImpl implements StompServer {
         .connectHandler(socket -> {
           StompServerConnection connection = new StompServerConnectionImpl(socket, this);
           FrameParser parser = new FrameParser(options);
+          socket.exceptionHandler((exception) -> {
+            log.error("The STOMP server caught a TCP socket error - closing connection", exception);
+            connection.close();
+          });
           socket.endHandler(v -> stomp.onClose(connection));
           parser
               .errorHandler((exception) -> {
