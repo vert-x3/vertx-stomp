@@ -17,9 +17,9 @@ public class HeaderCodec {
 
   public static String encode(String header, boolean connectOrConnectedFrame) {
     StringBuilder builder = new StringBuilder();
-    final char[] chars = header.toCharArray();
 
-    for (char value : chars) {
+    for (int i = 0; i < header.length(); i++) {
+      char value = header.charAt(i);
       switch (value) {
         case FrameParser.ESCAPE:
           // Always encoded.
@@ -55,13 +55,12 @@ public class HeaderCodec {
 
   public static String decode(String header, boolean connectOrConnectedFrame) {
     StringBuilder builder = new StringBuilder();
-    final char[] chars = header.toCharArray();
 
     int i = 0;
-    while (i < chars.length) {
-      char value = chars[i];
-      if (value == 92 && i + 1 < chars.length) {
-        char next = chars[i + 1];
+    while (i < header.length()) {
+      char value = header.charAt(i);
+      if (value == 92 && i + 1 < header.length()) {
+        char next = header.charAt(i + 1);
         switch (next) {
           case 114:
             if (connectOrConnectedFrame) {
