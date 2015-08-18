@@ -130,8 +130,8 @@
  *
  * Messages requiring acknowledgment are placed in a queue. If the acknowledgment does not happen in time (the
  * _acknowledgement timeout_), the message is considered as non-acknowledged. By default, the STOMP server does
- * nothing (except writing a log message) when a message is not acknowledged. You can customize this using
- * {@link io.vertx.ext.stomp.AcknowledgmentHandler}:
+ * nothing (except writing a log message) when a message is not acknowledged. You can customize this using a specific
+ * handler:
  *
  * [source,$lang]
  * ----

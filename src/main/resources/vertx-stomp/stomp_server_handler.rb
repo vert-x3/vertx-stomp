@@ -1,10 +1,10 @@
 require 'vertx-stomp/server_frame_handler'
 require 'vertx-stomp/authentication_handler'
 require 'vertx-stomp/transaction'
+require 'vertx-stomp/acknowledgement'
 require 'vertx-stomp/subscription'
 require 'vertx/vertx'
 require 'vertx-stomp/stomp_server'
-require 'vertx-stomp/acknowledgment_handler'
 require 'vertx-stomp/stomp_server_connection'
 require 'vertx/util/utils.rb'
 # Generated from io.vertx.ext.stomp.StompServerHandler
@@ -319,24 +319,24 @@ module VertxStomp
       raise ArgumentError, "Invalid arguments when calling on_nack(subscription,messages)"
     end
     #  Configures the action to execute when messages are acknowledged.
-    # @param [::VertxStomp::AcknowledgmentHandler] handler the handler
+    # @yield the handler
     # @return [self]
-    def on_ack_handler(handler=nil)
-      if handler.class.method_defined?(:j_del) && !block_given?
-        @j_del.java_method(:onAckHandler, [Java::IoVertxExtStomp::AcknowledgmentHandler.java_class]).call(handler.j_del)
+    def on_ack_handler
+      if block_given?
+        @j_del.java_method(:onAckHandler, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(::Vertx::Util::Utils.safe_create(event,::VertxStomp::Acknowledgement)) }))
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling on_ack_handler(handler)"
+      raise ArgumentError, "Invalid arguments when calling on_ack_handler()"
     end
     #  Configures the action to execute when messages are <strong>not</strong> acknowledged.
-    # @param [::VertxStomp::AcknowledgmentHandler] handler the handler
+    # @yield the handler
     # @return [self]
-    def on_nack_handler(handler=nil)
-      if handler.class.method_defined?(:j_del) && !block_given?
-        @j_del.java_method(:onNackHandler, [Java::IoVertxExtStomp::AcknowledgmentHandler.java_class]).call(handler.j_del)
+    def on_nack_handler
+      if block_given?
+        @j_del.java_method(:onNackHandler, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(::Vertx::Util::Utils.safe_create(event,::VertxStomp::Acknowledgement)) }))
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling on_nack_handler(handler)"
+      raise ArgumentError, "Invalid arguments when calling on_nack_handler()"
     end
     #  Allows customizing the action to do when the server needs to send a `PING` to the client. By default it send a
     #  frame containing <code>EOL</code> (specification). However, you can customize this and send another frame. However,

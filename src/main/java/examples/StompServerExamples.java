@@ -71,11 +71,11 @@ public class StompServerExamples {
   public void example8(Vertx vertx) {
     StompServer server = Stomp.createStompServer(vertx)
         .handler(StompServerHandler.create(vertx)
-            .onAckHandler((subscription, frames) -> {
+            .onAckHandler(acknowledgement -> {
               // Action to execute when the frames (one in `client-individual` mode, several
               // in `client` mode are acknowledged.
             })
-            .onNackHandler((subscription, frames) -> {
+            .onNackHandler(acknowledgement -> {
               // Action to execute when the frames (1 in `client-individual` mode, several in
               // `client` mode are not acknowledged.
             }))

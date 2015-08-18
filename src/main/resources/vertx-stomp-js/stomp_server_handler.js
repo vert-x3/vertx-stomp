@@ -19,10 +19,10 @@ var utils = require('vertx-js/util/utils');
 var ServerFrameHandler = require('vertx-stomp-js/server_frame_handler');
 var AuthenticationHandler = require('vertx-stomp-js/authentication_handler');
 var Transaction = require('vertx-stomp-js/transaction');
+var Acknowledgement = require('vertx-stomp-js/acknowledgement');
 var Subscription = require('vertx-stomp-js/subscription');
 var Vertx = require('vertx-js/vertx');
 var StompServer = require('vertx-stomp-js/stomp_server');
-var AcknowledgmentHandler = require('vertx-stomp-js/acknowledgment_handler');
 var StompServerConnection = require('vertx-stomp-js/stomp_server_connection');
 
 var io = Packages.io;
@@ -481,13 +481,15 @@ var StompServerHandler = function(j_val) {
    Configures the action to execute when messages are acknowledged.
 
    @public
-   @param handler {AcknowledgmentHandler} the handler 
+   @param handler {function} the handler 
    @return {StompServerHandler} the current {@link StompServerHandler}
    */
   this.onAckHandler = function(handler) {
     var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
-      j_stompServerHandler["onAckHandler(io.vertx.ext.stomp.AcknowledgmentHandler)"](handler._jdel);
+    if (__args.length === 1 && typeof __args[0] === 'function') {
+      j_stompServerHandler["onAckHandler(io.vertx.core.Handler)"](function(jVal) {
+      handler(utils.convReturnVertxGen(jVal, Acknowledgement));
+    });
       return that;
     } else utils.invalidArgs();
   };
@@ -496,13 +498,15 @@ var StompServerHandler = function(j_val) {
    Configures the action to execute when messages are <strong>not</strong> acknowledged.
 
    @public
-   @param handler {AcknowledgmentHandler} the handler 
+   @param handler {function} the handler 
    @return {StompServerHandler} the current {@link StompServerHandler}
    */
   this.onNackHandler = function(handler) {
     var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
-      j_stompServerHandler["onNackHandler(io.vertx.ext.stomp.AcknowledgmentHandler)"](handler._jdel);
+    if (__args.length === 1 && typeof __args[0] === 'function') {
+      j_stompServerHandler["onNackHandler(io.vertx.core.Handler)"](function(jVal) {
+      handler(utils.convReturnVertxGen(jVal, Acknowledgement));
+    });
       return that;
     } else utils.invalidArgs();
   };

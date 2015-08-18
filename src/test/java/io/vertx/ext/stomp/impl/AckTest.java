@@ -40,8 +40,8 @@ public class AckTest {
     vertx = Vertx.vertx();
     server = Stomp.createStompServer(vertx)
         .handler(StompServerHandler.create(vertx)
-            .onAckHandler((s, l) -> acked.addAll(l))
-            .onNackHandler((s, l) -> nacked.addAll(l)))
+            .onAckHandler(acknowledgement -> acked.addAll(acknowledgement.frames()))
+            .onNackHandler(acknowledgement -> nacked.addAll(acknowledgement.frames())))
         .listen(lock.handler());
 
     lock.waitForSuccess();

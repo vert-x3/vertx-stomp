@@ -55,9 +55,10 @@ public class DefaultStompHandler implements StompServerHandler {
 
   private Handler<StompServerConnection> pingHandler = StompServerConnection::ping;
 
-  private AcknowledgmentHandler onAckHandler = (subscription, messageIds) -> log.info("Acknowledge messages - " + messageIds);
-  private AcknowledgmentHandler onNackHandler = (subscription, messageIds) ->
-      log.warn("Messages not acknowledge - " + messageIds);
+  private Handler<Acknowledgement> onAckHandler = (acknowledgement) -> log.info("Acknowledge messages - " +
+      acknowledgement.frames());
+  private Handler<Acknowledgement> onNackHandler = (acknowledgement) ->
+      log.warn("Messages not acknowledge - " + acknowledgement.frames());
 
   private final Map<String, List<Subscription>> subscriptions = new HashMap<>();
   private final List<Transaction> transactions = new ArrayList<>();
@@ -466,36 +467,36 @@ public class DefaultStompHandler implements StompServerHandler {
 
   @Override
   public StompServerHandler onAck(Subscription subscription, List<Frame> messages) {
-    AcknowledgmentHandler handler;
+    Handler<Acknowledgement> handler;
     synchronized (this) {
       handler = onAckHandler;
     }
     if (handler != null) {
-      handler.handle(subscription, messages);
+      handler.handle(new AcknowledgementImpl(subscription, messages));
     }
     return this;
   }
 
   @Override
   public StompServerHandler onNack(Subscription subscription, List<Frame> messages) {
-    AcknowledgmentHandler handler;
+    Handler<Acknowledgement> handler;
     synchronized (this) {
       handler = onNackHandler;
     }
     if (handler != null) {
-      handler.handle(subscription, messages);
+      handler.handle(new AcknowledgementImpl(subscription, messages));
     }
     return this;
   }
 
   @Override
-  public synchronized StompServerHandler onAckHandler(AcknowledgmentHandler handler) {
+  public synchronized StompServerHandler onAckHandler(Handler<Acknowledgement> handler) {
     this.onAckHandler = handler;
     return this;
   }
 
   @Override
-  public synchronized StompServerHandler onNackHandler(AcknowledgmentHandler handler) {
+  public synchronized StompServerHandler onNackHandler(Handler<Acknowledgement> handler) {
     this.onNackHandler = handler;
     return this;
   }

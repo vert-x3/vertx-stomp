@@ -263,7 +263,7 @@ public interface StompServerHandler extends ServerFrameHandler {
 
   /**
    * Method called by single message (client-individual policy) or a set of message (client policy) are acknowledged.
-   * Implementations must call the handler configured using {@link #onAckHandler(AcknowledgmentHandler)}.
+   * Implementations must call the handler configured using {@link #onAckHandler(Handler)}.
    *
    * @param subscription the subscription
    * @param messages     the acknowledge messages
@@ -276,7 +276,7 @@ public interface StompServerHandler extends ServerFrameHandler {
    * Method called by single message (client-individual policy) or a set of message (client policy) are
    * <storng>not</storng> acknowledged. Not acknowledgment can result from a {@code NACK} frame or from a timeout (no
    * {@code ACK} frame received in a given time. Implementations must call the handler configured using
-   * {@link #onNackHandler(AcknowledgmentHandler)}.
+   * {@link #onNackHandler(Handler)}.
    *
    * @param subscription the subscription
    * @param messages     the acknowledge messages
@@ -293,7 +293,7 @@ public interface StompServerHandler extends ServerFrameHandler {
    * @see #onAck(Subscription, List)
    */
   @Fluent
-  StompServerHandler onAckHandler(AcknowledgmentHandler handler);
+  StompServerHandler onAckHandler(Handler<Acknowledgement> handler);
 
   /**
    * Configures the action to execute when messages are <strong>not</strong> acknowledged.
@@ -303,7 +303,7 @@ public interface StompServerHandler extends ServerFrameHandler {
    * @see #onNack(Subscription, List)
    */
   @Fluent
-  StompServerHandler onNackHandler(AcknowledgmentHandler handler);
+  StompServerHandler onNackHandler(Handler<Acknowledgement> handler);
 
 
   /**

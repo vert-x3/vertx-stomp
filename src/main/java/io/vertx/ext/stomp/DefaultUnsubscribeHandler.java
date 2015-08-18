@@ -1,4 +1,4 @@
-package io.vertx.ext.stomp.impl;
+package io.vertx.ext.stomp;
 
 import io.vertx.ext.stomp.Frame;
 import io.vertx.ext.stomp.Frames;

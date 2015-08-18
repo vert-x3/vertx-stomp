@@ -39,8 +39,8 @@ public class LoadTest {
     server = Stomp.createStompServer(vertx, new StompServerOptions().setHeartbeat(
         new JsonObject().put("x", 0).put("y", 0)))
         .handler(StompServerHandler.create(vertx)
-            .onAckHandler((s, l) -> acked.addAll(l))
-            .onNackHandler((s, l) -> nacked.addAll(l)))
+            .onAckHandler(acknowledgement -> acked.addAll(acknowledgement.frames()))
+            .onNackHandler(acknowledgement -> nacked.addAll(acknowledgement.frames())))
         .listen(context.asyncAssertSuccess());
   }
 

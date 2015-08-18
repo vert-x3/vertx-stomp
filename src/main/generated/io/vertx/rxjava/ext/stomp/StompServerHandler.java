@@ -374,8 +374,12 @@ public class StompServerHandler extends ServerFrameHandler {
    * @param handler the handler
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
-  public StompServerHandler onAckHandler(AcknowledgmentHandler handler) { 
-    this.delegate.onAckHandler((io.vertx.ext.stomp.AcknowledgmentHandler) handler.getDelegate());
+  public StompServerHandler onAckHandler(Handler<Acknowledgement> handler) { 
+    this.delegate.onAckHandler(new Handler<io.vertx.ext.stomp.Acknowledgement>() {
+      public void handle(io.vertx.ext.stomp.Acknowledgement event) {
+        handler.handle(new Acknowledgement(event));
+      }
+    });
     return this;
   }
 
@@ -384,8 +388,12 @@ public class StompServerHandler extends ServerFrameHandler {
    * @param handler the handler
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
-  public StompServerHandler onNackHandler(AcknowledgmentHandler handler) { 
-    this.delegate.onNackHandler((io.vertx.ext.stomp.AcknowledgmentHandler) handler.getDelegate());
+  public StompServerHandler onNackHandler(Handler<Acknowledgement> handler) { 
+    this.delegate.onNackHandler(new Handler<io.vertx.ext.stomp.Acknowledgement>() {
+      public void handle(io.vertx.ext.stomp.Acknowledgement event) {
+        handler.handle(new Acknowledgement(event));
+      }
+    });
     return this;
   }
 

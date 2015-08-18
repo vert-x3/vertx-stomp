@@ -1,10 +1,10 @@
-package io.vertx.ext.stomp.impl;
+package io.vertx.ext.stomp;
 
 import io.vertx.ext.stomp.*;
 import io.vertx.ext.stomp.utils.Headers;
 
 /**
- * STAMP compliant actions executed when receiving a {@code SUBSCRIBE} frame. It builds a {@link Subscription}
+ * STOMP compliant actions executed when receiving a {@code SUBSCRIBE} frame. It builds a {@link Subscription}
  * instance and registers it.
  *
  * This handler is thread safe.

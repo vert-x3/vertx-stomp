@@ -1,4 +1,4 @@
-package io.vertx.ext.stomp.impl;
+package io.vertx.ext.stomp;
 
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
@@ -7,6 +7,7 @@ import io.vertx.ext.stomp.Frame;
 import io.vertx.ext.stomp.Frames;
 import io.vertx.ext.stomp.ServerFrameHandler;
 import io.vertx.ext.stomp.StompServerConnection;
+import io.vertx.ext.stomp.impl.FrameParser;
 import io.vertx.ext.stomp.utils.Headers;
 import io.vertx.ext.stomp.utils.Server;
 

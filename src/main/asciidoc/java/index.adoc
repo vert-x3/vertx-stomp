@@ -166,18 +166,18 @@ and it not hierarchic.
 
 Messages requiring acknowledgment are placed in a queue. If the acknowledgment does not happen in time (the
 _acknowledgement timeout_), the message is considered as non-acknowledged. By default, the STOMP server does
-nothing (except writing a log message) when a message is not acknowledged. You can customize this using
-`link:../../apidocs/io/vertx/ext/stomp/AcknowledgmentHandler.html[AcknowledgmentHandler]`:
+nothing (except writing a log message) when a message is not acknowledged. You can customize this using a specific
+handler:
 
 [source,java]
 ----
 StompServer server = Stomp.createStompServer(vertx)
     .handler(StompServerHandler.create(vertx)
-        .onAckHandler((subscription, frames) -> {
+        .onAckHandler(acknowledgement -> {
           // Action to execute when the frames (one in `client-individual` mode, several
           // in `client` mode are acknowledged.
         })
-        .onNackHandler((subscription, frames) -> {
+        .onNackHandler(acknowledgement -> {
           // Action to execute when the frames (1 in `client-individual` mode, several in
           // `client` mode are not acknowledged.
         }))
