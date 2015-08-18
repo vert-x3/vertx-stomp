@@ -70,7 +70,7 @@ public class StompClientImpl implements StompClient {
     client = net.connect(port, host, ar -> {
       if (ar.failed()) {
         if (resultHandler != null) {
-          vertx.runOnContext(v -> resultHandler.handle(Future.failedFuture(ar.cause())));
+          resultHandler.handle(Future.failedFuture(ar.cause()));
         } else {
           log.error(ar.cause());
         }
