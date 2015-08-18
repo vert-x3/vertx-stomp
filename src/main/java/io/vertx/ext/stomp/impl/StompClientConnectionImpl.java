@@ -285,22 +285,22 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection begin(String id, Handler<Frame> receiptHandler) {
-    return begin(id, new Headers(), receiptHandler);
+  public StompClientConnection beginTX(String id, Handler<Frame> receiptHandler) {
+    return beginTX(id, new Headers(), receiptHandler);
   }
 
   @Override
-  public StompClientConnection begin(String id) {
-    return begin(id, new Headers());
+  public StompClientConnection beginTX(String id) {
+    return beginTX(id, new Headers());
   }
 
   @Override
-  public StompClientConnection begin(String id, Map<String, String> headers) {
-    return begin(id, headers, null);
+  public StompClientConnection beginTX(String id, Map<String, String> headers) {
+    return beginTX(id, headers, null);
   }
 
   @Override
-  public StompClientConnection begin(String id, Map<String, String> headers, Handler<Frame> receiptHandler) {
+  public StompClientConnection beginTX(String id, Map<String, String> headers, Handler<Frame> receiptHandler) {
     Objects.requireNonNull(id);
     Objects.requireNonNull(headers);
 

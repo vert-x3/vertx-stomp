@@ -490,7 +490,7 @@ client = VertxStomp::Stomp.create_stomp_client(vertx).connect() { |ar_err,ar|
     connection = ar
     headers = Hash.new()
     headers["transaction"] = "my-transaction"
-    connection.begin("my-transaction")
+    connection.begin_tx("my-transaction")
     connection.send("/queue", headers, Vertx::Buffer.buffer("Hello"))
     connection.send("/queue", headers, Vertx::Buffer.buffer("World"))
     connection.send("/queue", headers, Vertx::Buffer.buffer("!!!"))

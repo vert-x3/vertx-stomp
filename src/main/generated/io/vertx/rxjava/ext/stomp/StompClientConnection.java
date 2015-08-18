@@ -311,8 +311,8 @@ public class StompClientConnection {
    * @param receiptHandler the handler invoked when the <code>RECEIPT</code> frame associated with the transaction begin has been processed by the server. The handler receives the sent frame (<code>BEGIN</code>).
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
-  public StompClientConnection begin(String id, Handler<Frame> receiptHandler) { 
-    this.delegate.begin(id, receiptHandler);
+  public StompClientConnection beginTX(String id, Handler<Frame> receiptHandler) { 
+    this.delegate.beginTX(id, receiptHandler);
     return this;
   }
 
@@ -321,8 +321,8 @@ public class StompClientConnection {
    * @param id the transaction id, must not be <code>null</code>
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
-  public StompClientConnection begin(String id) { 
-    this.delegate.begin(id);
+  public StompClientConnection beginTX(String id) { 
+    this.delegate.beginTX(id);
     return this;
   }
 
@@ -332,8 +332,8 @@ public class StompClientConnection {
    * @param headers additional headers to send to the server. The <code>transaction</code> header is replaced by the value passed in the @{code id} parameter
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
-  public StompClientConnection begin(String id, Map<String,String> headers) { 
-    this.delegate.begin(id, headers);
+  public StompClientConnection beginTX(String id, Map<String,String> headers) { 
+    this.delegate.beginTX(id, headers);
     return this;
   }
 
@@ -344,8 +344,8 @@ public class StompClientConnection {
    * @param receiptHandler the handler invoked when the <code>RECEIPT</code> frame associated with the transaction begin has been processed by the server. The handler receives the sent frame (<code>BEGIN</code>).
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
-  public StompClientConnection begin(String id, Map<String,String> headers, Handler<Frame> receiptHandler) { 
-    this.delegate.begin(id, headers, receiptHandler);
+  public StompClientConnection beginTX(String id, Map<String,String> headers, Handler<Frame> receiptHandler) { 
+    this.delegate.beginTX(id, headers, receiptHandler);
     return this;
   }
 

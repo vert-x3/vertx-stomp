@@ -193,21 +193,21 @@ module VertxStomp
     # @param [Hash{String => String}] headers additional headers to send to the server. The <code>transaction</code> header is replaced by the value passed in the @{code id} parameter
     # @yield the handler invoked when the <code>RECEIPT</code> frame associated with the transaction begin has been processed by the server. The handler receives the sent frame (<code>BEGIN</code>).
     # @return [self]
-    def begin(id=nil,headers=nil)
+    def begin_tx(id=nil,headers=nil)
       if id.class == String && !block_given? && headers == nil
-        @j_del.java_method(:begin, [Java::java.lang.String.java_class]).call(id)
+        @j_del.java_method(:beginTX, [Java::java.lang.String.java_class]).call(id)
         return self
       elsif id.class == String && block_given? && headers == nil
-        @j_del.java_method(:begin, [Java::java.lang.String.java_class,Java::IoVertxCore::Handler.java_class]).call(id,(Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
+        @j_del.java_method(:beginTX, [Java::java.lang.String.java_class,Java::IoVertxCore::Handler.java_class]).call(id,(Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
         return self
       elsif id.class == String && headers.class == Hash && !block_given?
-        @j_del.java_method(:begin, [Java::java.lang.String.java_class,Java::JavaUtil::Map.java_class]).call(id,Hash[headers.map { |k,v| [k,v] }])
+        @j_del.java_method(:beginTX, [Java::java.lang.String.java_class,Java::JavaUtil::Map.java_class]).call(id,Hash[headers.map { |k,v| [k,v] }])
         return self
       elsif id.class == String && headers.class == Hash && block_given?
-        @j_del.java_method(:begin, [Java::java.lang.String.java_class,Java::JavaUtil::Map.java_class,Java::IoVertxCore::Handler.java_class]).call(id,Hash[headers.map { |k,v| [k,v] }],(Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
+        @j_del.java_method(:beginTX, [Java::java.lang.String.java_class,Java::JavaUtil::Map.java_class,Java::IoVertxCore::Handler.java_class]).call(id,Hash[headers.map { |k,v| [k,v] }],(Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling begin(id,headers)"
+      raise ArgumentError, "Invalid arguments when calling begin_tx(id,headers)"
     end
     #  Commits a transaction.
     # @param [String] id the transaction id, must not be <code>null</code>

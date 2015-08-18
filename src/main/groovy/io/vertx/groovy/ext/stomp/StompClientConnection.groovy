@@ -311,7 +311,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
   public StompClientConnection begin(String id, Handler<Map<String, Object>> receiptHandler) {
-    this.delegate.begin(id, new Handler<Frame>() {
+    this.delegate.beginTX(id, new Handler<Frame>() {
       public void handle(Frame event) {
         receiptHandler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }
@@ -324,7 +324,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
   public StompClientConnection begin(String id) {
-    this.delegate.begin(id);
+    this.delegate.beginTX(id);
     return this;
   }
   /**
@@ -334,7 +334,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
   public StompClientConnection begin(String id, Map<String,String> headers) {
-    this.delegate.begin(id, headers);
+    this.delegate.beginTX(id, headers);
     return this;
   }
   /**
@@ -345,7 +345,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
   public StompClientConnection begin(String id, Map<String,String> headers, Handler<Map<String, Object>> receiptHandler) {
-    this.delegate.begin(id, headers, new Handler<Frame>() {
+    this.delegate.beginTX(id, headers, new Handler<Frame>() {
       public void handle(Frame event) {
         receiptHandler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }

@@ -158,7 +158,7 @@ public class ReceiptTest {
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(errors::add);
-      connection.begin("my-tx", receipts::add);
+      connection.beginTX("my-tx", receipts::add);
       connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
           .setBody(Buffer.buffer("Hello")), receipts::add);
       connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx").setBody(
@@ -188,7 +188,7 @@ public class ReceiptTest {
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(errors::add);
-      connection.begin("my-tx", receipts::add);
+      connection.beginTX("my-tx", receipts::add);
       connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
           .setBody(Buffer.buffer("Hello")), receipts::add);
       connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx").setBody(

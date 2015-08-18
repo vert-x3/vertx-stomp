@@ -261,21 +261,21 @@ var StompClientConnection = function(j_val) {
    @param receiptHandler {function} the handler invoked when the <code>RECEIPT</code> frame associated with the transaction begin has been processed by the server. The handler receives the sent frame (<code>BEGIN</code>). 
    @return {StompClientConnection} the current {@link StompClientConnection}
    */
-  this.begin = function() {
+  this.beginTX = function() {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'string') {
-      j_stompClientConnection["begin(java.lang.String)"](__args[0]);
+      j_stompClientConnection["beginTX(java.lang.String)"](__args[0]);
       return that;
     }  else if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'function') {
-      j_stompClientConnection["begin(java.lang.String,io.vertx.core.Handler)"](__args[0], function(jVal) {
+      j_stompClientConnection["beginTX(java.lang.String,io.vertx.core.Handler)"](__args[0], function(jVal) {
       __args[1](utils.convReturnDataObject(jVal));
     });
       return that;
     }  else if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'object') {
-      j_stompClientConnection["begin(java.lang.String,java.util.Map)"](__args[0], __args[1]);
+      j_stompClientConnection["beginTX(java.lang.String,java.util.Map)"](__args[0], __args[1]);
       return that;
     }  else if (__args.length === 3 && typeof __args[0] === 'string' && typeof __args[1] === 'object' && typeof __args[2] === 'function') {
-      j_stompClientConnection["begin(java.lang.String,java.util.Map,io.vertx.core.Handler)"](__args[0], __args[1], function(jVal) {
+      j_stompClientConnection["beginTX(java.lang.String,java.util.Map,io.vertx.core.Handler)"](__args[0], __args[1], function(jVal) {
       __args[2](utils.convReturnDataObject(jVal));
     });
       return that;

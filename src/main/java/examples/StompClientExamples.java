@@ -169,7 +169,7 @@ public class StompClientExamples {
             StompClientConnection connection = ar.result();
             Map<String, String> headers = new HashMap<>();
             headers.put("transaction", "my-transaction");
-            connection.begin("my-transaction");
+            connection.beginTX("my-transaction");
             connection.send("/queue", headers, Buffer.buffer("Hello"));
             connection.send("/queue", headers, Buffer.buffer("World"));
             connection.send("/queue", headers, Buffer.buffer("!!!"));

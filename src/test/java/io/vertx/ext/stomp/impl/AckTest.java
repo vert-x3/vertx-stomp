@@ -240,7 +240,7 @@ public class AckTest {
       connection.subscribe("/queue", Headers.create(Frame.ACK, "client"),
           frame -> {
             if (frames.isEmpty()) {
-              connection.begin("my-tx");
+              connection.beginTX("my-tx");
             }
             frames.add(frame);
             connection.ack(frame, "my-tx");
@@ -283,7 +283,7 @@ public class AckTest {
       connection.subscribe("/queue", Headers.create(Frame.ACK, "client"),
           frame -> {
             if (frames.isEmpty()) {
-              connection.begin("my-tx");
+              connection.beginTX("my-tx");
             }
             frames.add(frame);
             connection.nack(frame, "my-tx");
@@ -327,7 +327,7 @@ public class AckTest {
       connection.subscribe("/queue", Headers.create(Frame.ACK, "client"),
           frame -> {
             if (frames.isEmpty()) {
-              connection.begin("my-tx");
+              connection.beginTX("my-tx");
             }
             frames.add(frame);
             connection.ack(frame, "my-tx");

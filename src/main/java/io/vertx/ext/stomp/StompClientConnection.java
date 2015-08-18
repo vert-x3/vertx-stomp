@@ -258,7 +258,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
-  StompClientConnection begin(String id, Handler<Frame> receiptHandler);
+  StompClientConnection beginTX(String id, Handler<Frame> receiptHandler);
 
   /**
    * Begins a transaction.
@@ -267,7 +267,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
-  StompClientConnection begin(String id);
+  StompClientConnection beginTX(String id);
 
   /**
    * Begins a transaction.
@@ -278,7 +278,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
-  StompClientConnection begin(String id, Map<String, String> headers);
+  StompClientConnection beginTX(String id, Map<String, String> headers);
 
   /**
    * Begins a transaction.
@@ -292,7 +292,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
-  StompClientConnection begin(String id, Map<String, String> headers, Handler<Frame> receiptHandler);
+  StompClientConnection beginTX(String id, Map<String, String> headers, Handler<Frame> receiptHandler);
 
   /**
    * Commits a transaction.
