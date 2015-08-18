@@ -94,7 +94,7 @@ public class StompServerImpl implements StompServer {
                     connection.close();
                   }
               )
-              .handler(frame -> stomp.onFrame(frame, connection));
+              .handler(frame -> stomp.handle(new ServerFrameImpl(frame, connection)));
           socket.handler(parser::handle);
         })
         .listen(port, host, ar -> {

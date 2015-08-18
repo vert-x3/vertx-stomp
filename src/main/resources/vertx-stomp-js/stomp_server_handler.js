@@ -16,13 +16,13 @@
 
 /** @module vertx-stomp-js/stomp_server_handler */
 var utils = require('vertx-js/util/utils');
-var ServerFrameHandler = require('vertx-stomp-js/server_frame_handler');
 var AuthenticationHandler = require('vertx-stomp-js/authentication_handler');
 var Transaction = require('vertx-stomp-js/transaction');
 var Acknowledgement = require('vertx-stomp-js/acknowledgement');
 var Subscription = require('vertx-stomp-js/subscription');
 var Vertx = require('vertx-js/vertx');
 var StompServer = require('vertx-stomp-js/stomp_server');
+var ServerFrame = require('vertx-stomp-js/server_frame');
 var StompServerConnection = require('vertx-stomp-js/stomp_server_connection');
 
 var io = Packages.io;
@@ -42,19 +42,32 @@ var StompServerHandler = function(j_val) {
 
   var j_stompServerHandler = j_val;
   var that = this;
-  ServerFrameHandler.call(this, j_val);
+
+  /**
+
+   @public
+   @param arg0 {ServerFrame} 
+   */
+  this.handle = function(arg0) {
+    var __args = arguments;
+    if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
+      j_stompServerHandler["handle(io.vertx.ext.stomp.ServerFrame)"](arg0._jdel);
+    } else utils.invalidArgs();
+  };
 
   /**
    Configures the action to execute when a <code>CONNECT</code> frame is received.
 
    @public
-   @param handler {ServerFrameHandler} the handler 
+   @param handler {function} the handler 
    @return {StompServerHandler} the current {@link StompServerHandler}
    */
   this.connectHandler = function(handler) {
     var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
-      j_stompServerHandler["connectHandler(io.vertx.ext.stomp.ServerFrameHandler)"](handler._jdel);
+    if (__args.length === 1 && typeof __args[0] === 'function') {
+      j_stompServerHandler["connectHandler(io.vertx.core.Handler)"](function(jVal) {
+      handler(utils.convReturnVertxGen(jVal, ServerFrame));
+    });
       return that;
     } else utils.invalidArgs();
   };
@@ -63,13 +76,15 @@ var StompServerHandler = function(j_val) {
    Configures the action to execute when a <code>STOMP</code> frame is received.
 
    @public
-   @param handler {ServerFrameHandler} the handler 
+   @param handler {function} the handler 
    @return {StompServerHandler} the current {@link StompServerHandler}
    */
   this.stompHandler = function(handler) {
     var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
-      j_stompServerHandler["stompHandler(io.vertx.ext.stomp.ServerFrameHandler)"](handler._jdel);
+    if (__args.length === 1 && typeof __args[0] === 'function') {
+      j_stompServerHandler["stompHandler(io.vertx.core.Handler)"](function(jVal) {
+      handler(utils.convReturnVertxGen(jVal, ServerFrame));
+    });
       return that;
     } else utils.invalidArgs();
   };
@@ -78,13 +93,15 @@ var StompServerHandler = function(j_val) {
    Configures the action to execute when a <code>SUBSCRIBE</code> frame is received.
 
    @public
-   @param handler {ServerFrameHandler} the handler 
+   @param handler {function} the handler 
    @return {StompServerHandler} the current {@link StompServerHandler}
    */
   this.subscribeHandler = function(handler) {
     var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
-      j_stompServerHandler["subscribeHandler(io.vertx.ext.stomp.ServerFrameHandler)"](handler._jdel);
+    if (__args.length === 1 && typeof __args[0] === 'function') {
+      j_stompServerHandler["subscribeHandler(io.vertx.core.Handler)"](function(jVal) {
+      handler(utils.convReturnVertxGen(jVal, ServerFrame));
+    });
       return that;
     } else utils.invalidArgs();
   };
@@ -93,13 +110,15 @@ var StompServerHandler = function(j_val) {
    Configures the action to execute when a <code>UNSUBSCRIBE</code> frame is received.
 
    @public
-   @param handler {ServerFrameHandler} the handler 
+   @param handler {function} the handler 
    @return {StompServerHandler} the current {@link StompServerHandler}
    */
   this.unsubscribeHandler = function(handler) {
     var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
-      j_stompServerHandler["unsubscribeHandler(io.vertx.ext.stomp.ServerFrameHandler)"](handler._jdel);
+    if (__args.length === 1 && typeof __args[0] === 'function') {
+      j_stompServerHandler["unsubscribeHandler(io.vertx.core.Handler)"](function(jVal) {
+      handler(utils.convReturnVertxGen(jVal, ServerFrame));
+    });
       return that;
     } else utils.invalidArgs();
   };
@@ -108,13 +127,15 @@ var StompServerHandler = function(j_val) {
    Configures the action to execute when a <code>SEND</code> frame is received.
 
    @public
-   @param handler {ServerFrameHandler} the handler 
+   @param handler {function} the handler 
    @return {StompServerHandler} the current {@link StompServerHandler}
    */
   this.sendHandler = function(handler) {
     var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
-      j_stompServerHandler["sendHandler(io.vertx.ext.stomp.ServerFrameHandler)"](handler._jdel);
+    if (__args.length === 1 && typeof __args[0] === 'function') {
+      j_stompServerHandler["sendHandler(io.vertx.core.Handler)"](function(jVal) {
+      handler(utils.convReturnVertxGen(jVal, ServerFrame));
+    });
       return that;
     } else utils.invalidArgs();
   };
@@ -154,13 +175,15 @@ var StompServerHandler = function(j_val) {
    Configures the action to execute when a <code>COMMIT</code> frame is received.
 
    @public
-   @param handler {ServerFrameHandler} the handler 
+   @param handler {function} the handler 
    @return {StompServerHandler} the current {@link StompServerHandler}
    */
   this.commitHandler = function(handler) {
     var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
-      j_stompServerHandler["commitHandler(io.vertx.ext.stomp.ServerFrameHandler)"](handler._jdel);
+    if (__args.length === 1 && typeof __args[0] === 'function') {
+      j_stompServerHandler["commitHandler(io.vertx.core.Handler)"](function(jVal) {
+      handler(utils.convReturnVertxGen(jVal, ServerFrame));
+    });
       return that;
     } else utils.invalidArgs();
   };
@@ -169,13 +192,15 @@ var StompServerHandler = function(j_val) {
    Configures the action to execute when a <code>ABORT</code> frame is received.
 
    @public
-   @param handler {ServerFrameHandler} the handler 
+   @param handler {function} the handler 
    @return {StompServerHandler} the current {@link StompServerHandler}
    */
   this.abortHandler = function(handler) {
     var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
-      j_stompServerHandler["abortHandler(io.vertx.ext.stomp.ServerFrameHandler)"](handler._jdel);
+    if (__args.length === 1 && typeof __args[0] === 'function') {
+      j_stompServerHandler["abortHandler(io.vertx.core.Handler)"](function(jVal) {
+      handler(utils.convReturnVertxGen(jVal, ServerFrame));
+    });
       return that;
     } else utils.invalidArgs();
   };
@@ -184,13 +209,15 @@ var StompServerHandler = function(j_val) {
    Configures the action to execute when a <code>BEGIN</code> frame is received.
 
    @public
-   @param handler {ServerFrameHandler} the handler 
+   @param handler {function} the handler 
    @return {StompServerHandler} the current {@link StompServerHandler}
    */
   this.beginHandler = function(handler) {
     var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
-      j_stompServerHandler["beginHandler(io.vertx.ext.stomp.ServerFrameHandler)"](handler._jdel);
+    if (__args.length === 1 && typeof __args[0] === 'function') {
+      j_stompServerHandler["beginHandler(io.vertx.core.Handler)"](function(jVal) {
+      handler(utils.convReturnVertxGen(jVal, ServerFrame));
+    });
       return that;
     } else utils.invalidArgs();
   };
@@ -199,13 +226,15 @@ var StompServerHandler = function(j_val) {
    Configures the action to execute when a <code>DISCONNECT</code> frame is received.
 
    @public
-   @param handler {ServerFrameHandler} the handler 
+   @param handler {function} the handler 
    @return {StompServerHandler} the current {@link StompServerHandler}
    */
   this.disconnectHandler = function(handler) {
     var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
-      j_stompServerHandler["disconnectHandler(io.vertx.ext.stomp.ServerFrameHandler)"](handler._jdel);
+    if (__args.length === 1 && typeof __args[0] === 'function') {
+      j_stompServerHandler["disconnectHandler(io.vertx.core.Handler)"](function(jVal) {
+      handler(utils.convReturnVertxGen(jVal, ServerFrame));
+    });
       return that;
     } else utils.invalidArgs();
   };
@@ -214,13 +243,15 @@ var StompServerHandler = function(j_val) {
    Configures the action to execute when a <code>ACK</code> frame is received.
 
    @public
-   @param handler {ServerFrameHandler} the handler 
+   @param handler {function} the handler 
    @return {StompServerHandler} the current {@link StompServerHandler}
    */
   this.ackHandler = function(handler) {
     var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
-      j_stompServerHandler["ackHandler(io.vertx.ext.stomp.ServerFrameHandler)"](handler._jdel);
+    if (__args.length === 1 && typeof __args[0] === 'function') {
+      j_stompServerHandler["ackHandler(io.vertx.core.Handler)"](function(jVal) {
+      handler(utils.convReturnVertxGen(jVal, ServerFrame));
+    });
       return that;
     } else utils.invalidArgs();
   };
@@ -229,13 +260,15 @@ var StompServerHandler = function(j_val) {
    Configures the action to execute when a <code>NACK</code> frame is received.
 
    @public
-   @param handler {ServerFrameHandler} the handler 
+   @param handler {function} the handler 
    @return {StompServerHandler} the current {@link StompServerHandler}
    */
   this.nackHandler = function(handler) {
     var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
-      j_stompServerHandler["nackHandler(io.vertx.ext.stomp.ServerFrameHandler)"](handler._jdel);
+    if (__args.length === 1 && typeof __args[0] === 'function') {
+      j_stompServerHandler["nackHandler(io.vertx.core.Handler)"](function(jVal) {
+      handler(utils.convReturnVertxGen(jVal, ServerFrame));
+    });
       return that;
     } else utils.invalidArgs();
   };

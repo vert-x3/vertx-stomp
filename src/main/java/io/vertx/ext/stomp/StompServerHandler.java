@@ -16,7 +16,7 @@ import java.util.List;
  * specification. In this default implementation, not acknowledge frames are dropped.
  */
 @VertxGen
-public interface StompServerHandler extends ServerFrameHandler {
+public interface StompServerHandler extends Handler<ServerFrame> {
 
   /**
    * Creates an instance of {@link StompServerHandler} using the default (compliant) implementation.
@@ -35,7 +35,7 @@ public interface StompServerHandler extends ServerFrameHandler {
    * @return the current {@link StompServerHandler}
    */
   @Fluent
-  StompServerHandler connectHandler(ServerFrameHandler handler);
+  StompServerHandler connectHandler(Handler<ServerFrame> handler);
 
   /**
    * Configures the action to execute when a {@code STOMP} frame is received.
@@ -44,7 +44,7 @@ public interface StompServerHandler extends ServerFrameHandler {
    * @return the current {@link StompServerHandler}
    */
   @Fluent
-  StompServerHandler stompHandler(ServerFrameHandler handler);
+  StompServerHandler stompHandler(Handler<ServerFrame> handler);
 
   /**
    * Configures the action to execute when a {@code SUBSCRIBE} frame is received.
@@ -53,7 +53,7 @@ public interface StompServerHandler extends ServerFrameHandler {
    * @return the current {@link StompServerHandler}
    */
   @Fluent
-  StompServerHandler subscribeHandler(ServerFrameHandler handler);
+  StompServerHandler subscribeHandler(Handler<ServerFrame> handler);
 
   /**
    * Configures the action to execute when a {@code UNSUBSCRIBE} frame is received.
@@ -62,7 +62,7 @@ public interface StompServerHandler extends ServerFrameHandler {
    * @return the current {@link StompServerHandler}
    */
   @Fluent
-  StompServerHandler unsubscribeHandler(ServerFrameHandler handler);
+  StompServerHandler unsubscribeHandler(Handler<ServerFrame> handler);
 
   /**
    * Configures the action to execute when a {@code SEND} frame is received.
@@ -71,7 +71,7 @@ public interface StompServerHandler extends ServerFrameHandler {
    * @return the current {@link StompServerHandler}
    */
   @Fluent
-  StompServerHandler sendHandler(ServerFrameHandler handler);
+  StompServerHandler sendHandler(Handler<ServerFrame> handler);
 
   /**
    * Configures the action to execute when a connection with the client is closed.
@@ -97,7 +97,7 @@ public interface StompServerHandler extends ServerFrameHandler {
    * @return the current {@link StompServerHandler}
    */
   @Fluent
-  StompServerHandler commitHandler(ServerFrameHandler handler);
+  StompServerHandler commitHandler(Handler<ServerFrame> handler);
 
   /**
    * Configures the action to execute when a {@code ABORT} frame is received.
@@ -106,7 +106,7 @@ public interface StompServerHandler extends ServerFrameHandler {
    * @return the current {@link StompServerHandler}
    */
   @Fluent
-  StompServerHandler abortHandler(ServerFrameHandler handler);
+  StompServerHandler abortHandler(Handler<ServerFrame> handler);
 
   /**
    * Configures the action to execute when a {@code BEGIN} frame is received.
@@ -115,7 +115,7 @@ public interface StompServerHandler extends ServerFrameHandler {
    * @return the current {@link StompServerHandler}
    */
   @Fluent
-  StompServerHandler beginHandler(ServerFrameHandler handler);
+  StompServerHandler beginHandler(Handler<ServerFrame> handler);
 
   /**
    * Configures the action to execute when a {@code DISCONNECT} frame is received.
@@ -124,7 +124,7 @@ public interface StompServerHandler extends ServerFrameHandler {
    * @return the current {@link StompServerHandler}
    */
   @Fluent
-  StompServerHandler disconnectHandler(ServerFrameHandler handler);
+  StompServerHandler disconnectHandler(Handler<ServerFrame> handler);
 
   /**
    * Configures the action to execute when a {@code ACK} frame is received.
@@ -133,7 +133,7 @@ public interface StompServerHandler extends ServerFrameHandler {
    * @return the current {@link StompServerHandler}
    */
   @Fluent
-  StompServerHandler ackHandler(ServerFrameHandler handler);
+  StompServerHandler ackHandler(Handler<ServerFrame> handler);
 
   /**
    * Configures the action to execute when a {@code NACK} frame is received.
@@ -142,7 +142,7 @@ public interface StompServerHandler extends ServerFrameHandler {
    * @return the current {@link StompServerHandler}
    */
   @Fluent
-  StompServerHandler nackHandler(ServerFrameHandler handler);
+  StompServerHandler nackHandler(Handler<ServerFrame> handler);
 
   /**
    * Called when the client connects to a server requiring authentication. It should invokes the handler configured

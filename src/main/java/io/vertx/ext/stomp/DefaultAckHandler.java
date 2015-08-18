@@ -1,19 +1,21 @@
 package io.vertx.ext.stomp;
 
-import io.vertx.ext.stomp.*;
+import io.vertx.core.Handler;
 import io.vertx.ext.stomp.utils.Headers;
 
 /**
- * STAMP compliant actions executed when receiving a {@code ACK} frame. It removes the acknowledges messages from the
+ * STOMP compliant actions executed when receiving a {@code ACK} frame. It removes the acknowledges messages from the
  * list of messages waiting for acknowledgment. If the {@code ACK} frame specifies a transaction id, the
  * acknowledgment is delayed until the transaction commit.
  *
  * This handler is thread safe.
  */
-public class DefaultAckHandler implements ServerFrameHandler {
+public class DefaultAckHandler implements Handler<ServerFrame> {
 
   @Override
-  public void onFrame(Frame frame, StompServerConnection connection) {
+  public void handle(ServerFrame serverFrame) {
+    Frame frame = serverFrame.frame();
+    StompServerConnection connection = serverFrame.connection();
     String id = frame.getId();
     if (id == null) {
       connection.write(Frames.createErrorFrame(

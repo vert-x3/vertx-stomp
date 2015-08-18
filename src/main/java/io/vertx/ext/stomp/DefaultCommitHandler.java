@@ -1,20 +1,24 @@
 package io.vertx.ext.stomp;
 
+import io.vertx.core.Handler;
 import io.vertx.ext.stomp.utils.Headers;
 
 import java.util.List;
 import java.util.UUID;
 
 /**
- * STAMP compliant actions executed when receiving a {@code COMMIT} frame. All frames that are part of the
+ * STOMP compliant actions executed when receiving a {@code COMMIT} frame. All frames that are part of the
  * transactions are processed ({@code ACK/NACK} and {@code SEND} frames). If the {@code COMMIT} frame defines a {@code
  * receipt}, the {@code RECEIPT} frame is sent once all frames have been replayed.
  *
  * This handler is thread safe.
  */
-public class DefaultCommitHandler implements ServerFrameHandler {
+public class DefaultCommitHandler implements Handler<ServerFrame> {
+
   @Override
-  public void onFrame(Frame frame, StompServerConnection connection) {
+  public void handle(ServerFrame serverFrame) {
+    Frame frame = serverFrame.frame();
+    StompServerConnection connection = serverFrame.connection();
     String txId = frame.getHeader(Frame.TRANSACTION);
     if (txId == null) {
       Frame error = Frames.createErrorFrame("Missing transaction id", Headers.create(), "COMMIT frames " +

@@ -1,16 +1,19 @@
 package io.vertx.ext.stomp;
 
-import io.vertx.ext.stomp.*;
+import io.vertx.core.Handler;
 import io.vertx.ext.stomp.utils.Headers;
 
 /**
- * STAMP compliant actions executed when receiving a {@code BEGIN} frame.
- *
+ * STOMP compliant actions executed when receiving a {@code BEGIN} frame.
+ * <p/>
  * This handler is thread safe.
  */
-public class DefaultBeginHandler implements ServerFrameHandler {
+public class DefaultBeginHandler implements Handler<ServerFrame> {
+
   @Override
-  public void onFrame(Frame frame, StompServerConnection connection) {
+  public void handle(ServerFrame serverFrame) {
+    Frame frame = serverFrame.frame();
+    StompServerConnection connection = serverFrame.connection();
     String txId = frame.getHeader(Frame.TRANSACTION);
     if (txId == null) {
       Frame error = Frames.createErrorFrame("Missing transaction id", Headers.create(), "BEGIN frames " +

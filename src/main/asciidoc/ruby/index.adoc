@@ -212,11 +212,11 @@ require 'vertx-stomp/stomp_server_handler'
 require 'vertx-stomp/stomp'
 server = VertxStomp::Stomp.create_stomp_server(vertx).handler(VertxStomp::StompServerHandler.create(vertx).close_handler() { |connection|
   # client connection closed
-}.begin_handler(lambda { |frame,connection|
+}.begin_handler() { |frame|
   # transaction starts
-}).commit_handler(lambda { |frame,connection|
+}.commit_handler() { |frame|
   # transaction committed
-})).listen()
+}).listen()
 
 ----
 

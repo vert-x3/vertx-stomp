@@ -1,5 +1,6 @@
 package io.vertx.ext.stomp;
 
+import io.vertx.core.Handler;
 import io.vertx.ext.stomp.*;
 import io.vertx.ext.stomp.utils.Headers;
 
@@ -9,9 +10,11 @@ import io.vertx.ext.stomp.utils.Headers;
  *
  * This handler is thread safe.
  */
-public class DefaultSubscribeHandler implements ServerFrameHandler {
+public class DefaultSubscribeHandler implements Handler<ServerFrame> {
   @Override
-  public void onFrame(Frame frame, StompServerConnection connection) {
+  public void handle(ServerFrame serverFrame) {
+    Frame frame = serverFrame.frame();
+    StompServerConnection connection = serverFrame.connection();
     String id = frame.getHeader(Frame.ID);
     String destination = frame.getHeader(Frame.DESTINATION);
     String ack = frame.getHeader(Frame.ACK);

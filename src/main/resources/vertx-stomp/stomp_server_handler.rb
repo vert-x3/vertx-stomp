@@ -1,10 +1,10 @@
-require 'vertx-stomp/server_frame_handler'
 require 'vertx-stomp/authentication_handler'
 require 'vertx-stomp/transaction'
 require 'vertx-stomp/acknowledgement'
 require 'vertx-stomp/subscription'
 require 'vertx/vertx'
 require 'vertx-stomp/stomp_server'
+require 'vertx-stomp/server_frame'
 require 'vertx-stomp/stomp_server_connection'
 require 'vertx/util/utils.rb'
 # Generated from io.vertx.ext.stomp.StompServerHandler
@@ -13,17 +13,24 @@ module VertxStomp
   #  let customize the behavior when specific STOMP frames arrives or when a connection is closed. This class has been
   #  designed to let you customize the server behavior. The default implementation is compliant with the STOMP
   #  specification. In this default implementation, not acknowledge frames are dropped.
-  class StompServerHandler < ::VertxStomp::ServerFrameHandler
+  class StompServerHandler
     # @private
     # @param j_del [::VertxStomp::StompServerHandler] the java delegate
     def initialize(j_del)
-      super(j_del)
       @j_del = j_del
     end
     # @private
     # @return [::VertxStomp::StompServerHandler] the underlying java delegate
     def j_del
       @j_del
+    end
+    # @param [::VertxStomp::ServerFrame] arg0 
+    # @return [void]
+    def handle(arg0=nil)
+      if arg0.class.method_defined?(:j_del) && !block_given?
+        return @j_del.java_method(:handle, [Java::IoVertxExtStomp::ServerFrame.java_class]).call(arg0.j_del)
+      end
+      raise ArgumentError, "Invalid arguments when calling handle(arg0)"
     end
     #  Creates an instance of {::VertxStomp::StompServerHandler} using the default (compliant) implementation.
     # @param [::Vertx::Vertx] vertx the vert.x instance to use
@@ -35,54 +42,54 @@ module VertxStomp
       raise ArgumentError, "Invalid arguments when calling create(vertx)"
     end
     #  Configures the action to execute when a <code>CONNECT</code> frame is received.
-    # @param [::VertxStomp::ServerFrameHandler] handler the handler
+    # @yield the handler
     # @return [self]
-    def connect_handler(handler=nil)
-      if handler.class.method_defined?(:j_del) && !block_given?
-        @j_del.java_method(:connectHandler, [Java::IoVertxExtStomp::ServerFrameHandler.java_class]).call(handler.j_del)
+    def connect_handler
+      if block_given?
+        @j_del.java_method(:connectHandler, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(::Vertx::Util::Utils.safe_create(event,::VertxStomp::ServerFrame)) }))
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling connect_handler(handler)"
+      raise ArgumentError, "Invalid arguments when calling connect_handler()"
     end
     #  Configures the action to execute when a <code>STOMP</code> frame is received.
-    # @param [::VertxStomp::ServerFrameHandler] handler the handler
+    # @yield the handler
     # @return [self]
-    def stomp_handler(handler=nil)
-      if handler.class.method_defined?(:j_del) && !block_given?
-        @j_del.java_method(:stompHandler, [Java::IoVertxExtStomp::ServerFrameHandler.java_class]).call(handler.j_del)
+    def stomp_handler
+      if block_given?
+        @j_del.java_method(:stompHandler, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(::Vertx::Util::Utils.safe_create(event,::VertxStomp::ServerFrame)) }))
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling stomp_handler(handler)"
+      raise ArgumentError, "Invalid arguments when calling stomp_handler()"
     end
     #  Configures the action to execute when a <code>SUBSCRIBE</code> frame is received.
-    # @param [::VertxStomp::ServerFrameHandler] handler the handler
+    # @yield the handler
     # @return [self]
-    def subscribe_handler(handler=nil)
-      if handler.class.method_defined?(:j_del) && !block_given?
-        @j_del.java_method(:subscribeHandler, [Java::IoVertxExtStomp::ServerFrameHandler.java_class]).call(handler.j_del)
+    def subscribe_handler
+      if block_given?
+        @j_del.java_method(:subscribeHandler, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(::Vertx::Util::Utils.safe_create(event,::VertxStomp::ServerFrame)) }))
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling subscribe_handler(handler)"
+      raise ArgumentError, "Invalid arguments when calling subscribe_handler()"
     end
     #  Configures the action to execute when a <code>UNSUBSCRIBE</code> frame is received.
-    # @param [::VertxStomp::ServerFrameHandler] handler the handler
+    # @yield the handler
     # @return [self]
-    def unsubscribe_handler(handler=nil)
-      if handler.class.method_defined?(:j_del) && !block_given?
-        @j_del.java_method(:unsubscribeHandler, [Java::IoVertxExtStomp::ServerFrameHandler.java_class]).call(handler.j_del)
+    def unsubscribe_handler
+      if block_given?
+        @j_del.java_method(:unsubscribeHandler, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(::Vertx::Util::Utils.safe_create(event,::VertxStomp::ServerFrame)) }))
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling unsubscribe_handler(handler)"
+      raise ArgumentError, "Invalid arguments when calling unsubscribe_handler()"
     end
     #  Configures the action to execute when a <code>SEND</code> frame is received.
-    # @param [::VertxStomp::ServerFrameHandler] handler the handler
+    # @yield the handler
     # @return [self]
-    def send_handler(handler=nil)
-      if handler.class.method_defined?(:j_del) && !block_given?
-        @j_del.java_method(:sendHandler, [Java::IoVertxExtStomp::ServerFrameHandler.java_class]).call(handler.j_del)
+    def send_handler
+      if block_given?
+        @j_del.java_method(:sendHandler, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(::Vertx::Util::Utils.safe_create(event,::VertxStomp::ServerFrame)) }))
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling send_handler(handler)"
+      raise ArgumentError, "Invalid arguments when calling send_handler()"
     end
     #  Configures the action to execute when a connection with the client is closed.
     # @yield the handler
@@ -105,64 +112,64 @@ module VertxStomp
       raise ArgumentError, "Invalid arguments when calling on_close(connection)"
     end
     #  Configures the action to execute when a <code>COMMIT</code> frame is received.
-    # @param [::VertxStomp::ServerFrameHandler] handler the handler
+    # @yield the handler
     # @return [self]
-    def commit_handler(handler=nil)
-      if handler.class.method_defined?(:j_del) && !block_given?
-        @j_del.java_method(:commitHandler, [Java::IoVertxExtStomp::ServerFrameHandler.java_class]).call(handler.j_del)
+    def commit_handler
+      if block_given?
+        @j_del.java_method(:commitHandler, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(::Vertx::Util::Utils.safe_create(event,::VertxStomp::ServerFrame)) }))
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling commit_handler(handler)"
+      raise ArgumentError, "Invalid arguments when calling commit_handler()"
     end
     #  Configures the action to execute when a <code>ABORT</code> frame is received.
-    # @param [::VertxStomp::ServerFrameHandler] handler the handler
+    # @yield the handler
     # @return [self]
-    def abort_handler(handler=nil)
-      if handler.class.method_defined?(:j_del) && !block_given?
-        @j_del.java_method(:abortHandler, [Java::IoVertxExtStomp::ServerFrameHandler.java_class]).call(handler.j_del)
+    def abort_handler
+      if block_given?
+        @j_del.java_method(:abortHandler, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(::Vertx::Util::Utils.safe_create(event,::VertxStomp::ServerFrame)) }))
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling abort_handler(handler)"
+      raise ArgumentError, "Invalid arguments when calling abort_handler()"
     end
     #  Configures the action to execute when a <code>BEGIN</code> frame is received.
-    # @param [::VertxStomp::ServerFrameHandler] handler the handler
+    # @yield the handler
     # @return [self]
-    def begin_handler(handler=nil)
-      if handler.class.method_defined?(:j_del) && !block_given?
-        @j_del.java_method(:beginHandler, [Java::IoVertxExtStomp::ServerFrameHandler.java_class]).call(handler.j_del)
+    def begin_handler
+      if block_given?
+        @j_del.java_method(:beginHandler, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(::Vertx::Util::Utils.safe_create(event,::VertxStomp::ServerFrame)) }))
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling begin_handler(handler)"
+      raise ArgumentError, "Invalid arguments when calling begin_handler()"
     end
     #  Configures the action to execute when a <code>DISCONNECT</code> frame is received.
-    # @param [::VertxStomp::ServerFrameHandler] handler the handler
+    # @yield the handler
     # @return [self]
-    def disconnect_handler(handler=nil)
-      if handler.class.method_defined?(:j_del) && !block_given?
-        @j_del.java_method(:disconnectHandler, [Java::IoVertxExtStomp::ServerFrameHandler.java_class]).call(handler.j_del)
+    def disconnect_handler
+      if block_given?
+        @j_del.java_method(:disconnectHandler, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(::Vertx::Util::Utils.safe_create(event,::VertxStomp::ServerFrame)) }))
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling disconnect_handler(handler)"
+      raise ArgumentError, "Invalid arguments when calling disconnect_handler()"
     end
     #  Configures the action to execute when a <code>ACK</code> frame is received.
-    # @param [::VertxStomp::ServerFrameHandler] handler the handler
+    # @yield the handler
     # @return [self]
-    def ack_handler(handler=nil)
-      if handler.class.method_defined?(:j_del) && !block_given?
-        @j_del.java_method(:ackHandler, [Java::IoVertxExtStomp::ServerFrameHandler.java_class]).call(handler.j_del)
+    def ack_handler
+      if block_given?
+        @j_del.java_method(:ackHandler, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(::Vertx::Util::Utils.safe_create(event,::VertxStomp::ServerFrame)) }))
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling ack_handler(handler)"
+      raise ArgumentError, "Invalid arguments when calling ack_handler()"
     end
     #  Configures the action to execute when a <code>NACK</code> frame is received.
-    # @param [::VertxStomp::ServerFrameHandler] handler the handler
+    # @yield the handler
     # @return [self]
-    def nack_handler(handler=nil)
-      if handler.class.method_defined?(:j_del) && !block_given?
-        @j_del.java_method(:nackHandler, [Java::IoVertxExtStomp::ServerFrameHandler.java_class]).call(handler.j_del)
+    def nack_handler
+      if block_given?
+        @j_del.java_method(:nackHandler, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(::Vertx::Util::Utils.safe_create(event,::VertxStomp::ServerFrame)) }))
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling nack_handler(handler)"
+      raise ArgumentError, "Invalid arguments when calling nack_handler()"
     end
     #  Called when the client connects to a server requiring authentication. It should invokes the handler configured
     #  using {::VertxStomp::StompServerHandler#authentication_handler}.

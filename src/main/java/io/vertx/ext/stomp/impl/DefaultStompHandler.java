@@ -25,28 +25,29 @@ public class DefaultStompHandler implements StompServerHandler {
   private static final Logger log = LoggerFactory.getLogger(DefaultStompHandler.class);
   private final Vertx vertx;
 
-  private ServerFrameHandler connectHandler = new DefaultConnectHandler();
+  private Handler<ServerFrame> connectHandler = new DefaultConnectHandler();
 
-  private ServerFrameHandler stompHandler;
+  private Handler<ServerFrame> stompHandler;
 
-  private ServerFrameHandler sendHandler = new DefaultSendHandler();
+  private Handler<ServerFrame> sendHandler = new DefaultSendHandler();
 
-  private ServerFrameHandler subscribeHandler = new DefaultSubscribeHandler();
+  private Handler<ServerFrame> subscribeHandler = new DefaultSubscribeHandler();
 
-  private ServerFrameHandler unsubscribeHandler = new DefaultUnsubscribeHandler();
+  private Handler<ServerFrame> unsubscribeHandler = new DefaultUnsubscribeHandler();
 
   private Handler<StompServerConnection> closeHandler;
 
-  private ServerFrameHandler commitHandler = new DefaultCommitHandler();
-  private ServerFrameHandler abortHandler = new DefaultAbortHandler();
-  private ServerFrameHandler beginHandler = new DefaultBeginHandler();
+  private Handler<ServerFrame> commitHandler = new DefaultCommitHandler();
+  private Handler<ServerFrame> abortHandler = new DefaultAbortHandler();
+  private Handler<ServerFrame> beginHandler = new DefaultBeginHandler();
 
-  private ServerFrameHandler ackHandler = new DefaultAckHandler();
+  private Handler<ServerFrame> ackHandler = new DefaultAckHandler();
 
-  private ServerFrameHandler nackHandler = new DefaultNackHandler();
+  private Handler<ServerFrame> nackHandler = new DefaultNackHandler();
 
-  private ServerFrameHandler disconnectHandler = ((frame, connection) -> {
-    Frames.handleReceipt(frame, connection);
+  private Handler<ServerFrame> disconnectHandler = ((sf) -> {
+    StompServerConnection connection = sf.connection();
+    Frames.handleReceipt(sf.frame(), connection);
     connection.close();
     onClose(connection);
   });
@@ -90,31 +91,31 @@ public class DefaultStompHandler implements StompServerHandler {
   }
 
   @Override
-  public synchronized StompServerHandler connectHandler(ServerFrameHandler handler) {
+  public synchronized StompServerHandler connectHandler(Handler<ServerFrame> handler) {
     this.connectHandler = handler;
     return this;
   }
 
   @Override
-  public synchronized StompServerHandler stompHandler(ServerFrameHandler handler) {
+  public synchronized StompServerHandler stompHandler(Handler<ServerFrame> handler) {
     this.stompHandler = handler;
     return this;
   }
 
   @Override
-  public synchronized StompServerHandler subscribeHandler(ServerFrameHandler handler) {
+  public synchronized StompServerHandler subscribeHandler(Handler<ServerFrame> handler) {
     this.subscribeHandler = handler;
     return this;
   }
 
   @Override
-  public synchronized StompServerHandler unsubscribeHandler(ServerFrameHandler handler) {
+  public synchronized StompServerHandler unsubscribeHandler(Handler<ServerFrame> handler) {
     this.unsubscribeHandler = handler;
     return this;
   }
 
   @Override
-  public synchronized StompServerHandler sendHandler(ServerFrameHandler handler) {
+  public synchronized StompServerHandler sendHandler(Handler<ServerFrame> handler) {
     this.sendHandler = handler;
     return this;
   }
@@ -126,43 +127,46 @@ public class DefaultStompHandler implements StompServerHandler {
   }
 
   @Override
-  public synchronized StompServerHandler commitHandler(ServerFrameHandler handler) {
+  public synchronized StompServerHandler commitHandler(Handler<ServerFrame> handler) {
     this.commitHandler = handler;
     return this;
   }
 
   @Override
-  public synchronized StompServerHandler abortHandler(ServerFrameHandler handler) {
+  public synchronized StompServerHandler abortHandler(Handler<ServerFrame> handler) {
     this.abortHandler = handler;
     return this;
   }
 
   @Override
-  public synchronized StompServerHandler beginHandler(ServerFrameHandler handler) {
+  public synchronized StompServerHandler beginHandler(Handler<ServerFrame> handler) {
     this.beginHandler = handler;
     return this;
   }
 
   @Override
-  public synchronized StompServerHandler disconnectHandler(ServerFrameHandler handler) {
+  public synchronized StompServerHandler disconnectHandler(Handler<ServerFrame> handler) {
     this.disconnectHandler = handler;
     return this;
   }
 
   @Override
-  public synchronized StompServerHandler ackHandler(ServerFrameHandler handler) {
+  public synchronized StompServerHandler ackHandler(Handler<ServerFrame> handler) {
     this.ackHandler = handler;
     return this;
   }
 
   @Override
-  public synchronized StompServerHandler nackHandler(ServerFrameHandler handler) {
+  public synchronized StompServerHandler nackHandler(Handler<ServerFrame> handler) {
     this.nackHandler = handler;
     return this;
   }
 
   @Override
-  public void onFrame(Frame frame, StompServerConnection connection) {
+  public void handle(ServerFrame serverFrame) {
+    Frame frame = serverFrame.frame();
+    StompServerConnection connection = serverFrame.connection();
+
     lastClientActivity = System.currentTimeMillis();
     switch (frame.getCommand()) {
       case CONNECT:
@@ -205,95 +209,95 @@ public class DefaultStompHandler implements StompServerHandler {
   }
 
   private void handleAck(Frame frame, StompServerConnection connection) {
-    ServerFrameHandler handler;
+    Handler<ServerFrame> handler;
     synchronized (this) {
       handler = ackHandler;
     }
     if (handler != null) {
-      handler.onFrame(frame, connection);
+      handler.handle(new ServerFrameImpl(frame, connection));
     }
   }
 
   private void handleNack(Frame frame, StompServerConnection connection) {
-    ServerFrameHandler handler;
+    Handler<ServerFrame> handler;
     synchronized (this) {
       handler = nackHandler;
     }
     if (handler != null) {
-      handler.onFrame(frame, connection);
+      handler.handle(new ServerFrameImpl(frame, connection));
     }
   }
 
   private void handleBegin(Frame frame, StompServerConnection connection) {
-    ServerFrameHandler handler;
+    Handler<ServerFrame> handler;
     synchronized (this) {
       handler = beginHandler;
     }
     if (handler != null) {
-      handler.onFrame(frame, connection);
+      handler.handle(new ServerFrameImpl(frame, connection));
     }
   }
 
   private void handleAbort(Frame frame, StompServerConnection connection) {
-    ServerFrameHandler handler;
+    Handler<ServerFrame> handler;
     synchronized (this) {
       handler = abortHandler;
     }
     if (handler != null) {
-      handler.onFrame(frame, connection);
+      handler.handle(new ServerFrameImpl(frame, connection));
     }
   }
 
   private void handleCommit(Frame frame, StompServerConnection connection) {
-    ServerFrameHandler handler;
+    Handler<ServerFrame> handler;
     synchronized (this) {
       handler = commitHandler;
     }
     if (handler != null) {
-      handler.onFrame(frame, connection);
+      handler.handle(new ServerFrameImpl(frame, connection));
     }
   }
 
   private void handleSubscribe(Frame frame, StompServerConnection connection) {
-    ServerFrameHandler handler;
+    Handler<ServerFrame> handler;
     synchronized (this) {
       handler = subscribeHandler;
     }
     if (handler != null) {
-      handler.onFrame(frame, connection);
+      handler.handle(new ServerFrameImpl(frame, connection));
     }
   }
 
   private void handleUnsubscribe(Frame frame, StompServerConnection connection) {
-    ServerFrameHandler handler;
+    Handler<ServerFrame> handler;
     synchronized (this) {
       handler = unsubscribeHandler;
     }
     if (handler != null) {
-      handler.onFrame(frame, connection);
+      handler.handle(new ServerFrameImpl(frame, connection));
     }
   }
 
   private void handleSend(Frame frame, StompServerConnection connection) {
-    ServerFrameHandler handler;
+    Handler<ServerFrame> handler;
     synchronized (this) {
       handler = sendHandler;
     }
 
     if (handler != null) {
-      handler.onFrame(frame, connection);
+      handler.handle(new ServerFrameImpl(frame, connection));
     }
   }
 
   private void handleConnect(Frame frame, StompServerConnection connection) {
 
-    ServerFrameHandler handler;
+    Handler<ServerFrame> handler;
     synchronized (this) {
       handler = connectHandler;
     }
 
     if (handler != null) {
-      handler.onFrame(frame, connection);
+      handler.handle(new ServerFrameImpl(frame, connection));
     }
     // Compute heartbeat, and register pinger and ponger
     long ping = Frame.Heartbeat.computePingPeriod(
@@ -318,17 +322,17 @@ public class DefaultStompHandler implements StompServerHandler {
   }
 
   private void handleDisconnect(Frame frame, StompServerConnection connection) {
-    ServerFrameHandler handler;
+    Handler<ServerFrame> handler;
     synchronized (this) {
       handler = disconnectHandler;
     }
     if (handler != null) {
-      handler.onFrame(frame, connection);
+      handler.handle(new ServerFrameImpl(frame, connection));
     }
   }
 
   private void handleStomp(Frame frame, StompServerConnection connection) {
-    ServerFrameHandler handler;
+    Handler<ServerFrame> handler;
     synchronized (this) {
       handler = stompHandler;
     }
@@ -337,7 +341,7 @@ public class DefaultStompHandler implements StompServerHandler {
       handleConnect(frame, connection);
       return;
     }
-    handler.onFrame(frame, connection);
+    handler.handle(new ServerFrameImpl(frame, connection));
   }
 
   @Override

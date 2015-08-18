@@ -3,10 +3,6 @@ package io.vertx.ext.stomp;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
-import io.vertx.ext.stomp.Frame;
-import io.vertx.ext.stomp.Frames;
-import io.vertx.ext.stomp.ServerFrameHandler;
-import io.vertx.ext.stomp.StompServerConnection;
 import io.vertx.ext.stomp.impl.FrameParser;
 import io.vertx.ext.stomp.utils.Headers;
 import io.vertx.ext.stomp.utils.Server;
@@ -16,50 +12,50 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * STAMP compliant actions executed when receiving a {@code CONNECT} frame. It may also be called when receiving a
+ * STOMP compliant actions executed when receiving a {@code CONNECT} frame. It may also be called when receiving a
  * {@code STOMP} frame depending on the {@link io.vertx.ext.stomp.StompServerHandler} configuration.
  * <p/>
  * This handler manages the STOMP version negotiation and authentication (if enabled). Once all the checks have been
  * passed, the {@code CONNECTED} frame is sent to the client.
- *
+ * <p/>
  * This handler is thread safe.
  */
-public class DefaultConnectHandler implements ServerFrameHandler {
+public class DefaultConnectHandler implements Handler<ServerFrame> {
   @Override
-  public void onFrame(Frame frame, StompServerConnection connection) {
+  public void handle(ServerFrame sf) {
     // Server negotiation
     List<String> accepted = new ArrayList<>();
-    String accept = frame.getHeader(Frame.ACCEPT_VERSION);
+    String accept = sf.frame().getHeader(Frame.ACCEPT_VERSION);
     if (accept == null) {
       accepted.add("1.0");
     } else {
       accepted.addAll(Arrays.asList(accept.split(FrameParser.COMMA)));
     }
 
-    String version = negotiate(accepted, connection);
+    String version = negotiate(accepted, sf.connection());
     if (version == null) {
       // Spec says: if the server and the client do not share any common protocol versions, then the server MUST
       // respond with an error.
-      connection.write(Frames.createErrorFrame(
+      sf.connection().write(Frames.createErrorFrame(
               "Incompatible versions",
               Headers.create(
-                  Frame.VERSION, getSupportedVersionsHeaderLine(connection),
+                  Frame.VERSION, getSupportedVersionsHeaderLine(sf.connection()),
                   Frame.CONTENT_TYPE, "text/plain"),
               "Client protocol requirement does not mach versions supported by the server. " +
-                  "Supported protocol versions are " + getSupportedVersionsHeaderLine(connection))
+                  "Supported protocol versions are " + getSupportedVersionsHeaderLine(sf.connection()))
       );
-      connection.close();
+      sf.connection().close();
       return;
     }
 
     // Login / Passcode
-    authenticate(frame, connection, ar -> {
+    authenticate(sf.frame(), sf.connection(), ar -> {
       // Spec says: The server will respond back with the highest version of the protocol -> version
-      connection.write(new Frame(Frame.Command.CONNECTED, Headers.create(
+      sf.connection().write(new Frame(Frame.Command.CONNECTED, Headers.create(
           Frame.VERSION, version,
           Frame.SERVER, Server.SERVER_NAME,
-          Frame.SESSION, connection.session(),
-          Frame.HEARTBEAT, Frame.Heartbeat.create(connection.server().getOptions().getHeartbeat()).toString()), null));
+          Frame.SESSION, sf.connection().session(),
+          Frame.HEARTBEAT, Frame.Heartbeat.create(sf.connection().server().getOptions().getHeartbeat()).toString()), null));
     });
   }
 

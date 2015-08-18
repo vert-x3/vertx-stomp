@@ -1,5 +1,6 @@
 package io.vertx.ext.stomp;
 
+import io.vertx.core.Handler;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.stomp.utils.Headers;
@@ -8,11 +9,11 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * STAMP compliant actions executed when receiving a {@code SEND} frame.
+ * STOMP compliant actions executed when receiving a {@code SEND} sf.frame().
  * <p/>
  * If the {@code SEND} frame specifies a transaction, the message delivery is postponed until the transaction commit.
  * <p/>
- * The handler computes the {@code MESSAGE} frame from the {@code SEND} frame. It computes a {@code message-id} and
+ * The handler computes the {@code MESSAGE} frame from the {@code SEND} sf.frame(). It computes a {@code message-id} and
  * {@code ack} id if needed. If requested the {@code RECEIPT} frame is sent once the {@code MESSAGE} frame has been
  * sent to all matching subscriptions.
  * <p/>
@@ -22,65 +23,65 @@ import java.util.UUID;
  *
  * This handler is thread safe.
  */
-public class DefaultSendHandler implements ServerFrameHandler {
+public class DefaultSendHandler implements Handler<ServerFrame> {
 
   private static final Logger log = LoggerFactory.getLogger(DefaultSendHandler.class);
 
 
   @Override
-  public void onFrame(Frame frame, StompServerConnection connection) {
-    String destination = frame.getHeader(Frame.DESTINATION);
+  public void handle(ServerFrame sf) {
+    String destination = sf.frame().getHeader(Frame.DESTINATION);
     if (destination == null) {
-      connection.write(Frames.createErrorFrame(
+      sf.connection().write(Frames.createErrorFrame(
           "Destination header missing",
-          Headers.create(frame.getHeaders()), "Invalid send frame - the " +
+          Headers.create(sf.frame().getHeaders()), "Invalid send frame - the " +
               "'destination' must be set"));
-      connection.close();
+      sf.connection().close();
       return;
     }
 
     // Handle transaction
-    String txId = frame.getHeader(Frame.TRANSACTION);
+    String txId = sf.frame().getHeader(Frame.TRANSACTION);
     if (txId != null) {
-      Transaction transaction = connection.handler().getTransaction(connection, txId);
+      Transaction transaction = sf.connection().handler().getTransaction(sf.connection(), txId);
       if (transaction == null) {
         // No transaction.
         Frame errorFrame = Frames.createErrorFrame(
             "No transaction",
             Headers.create(Frame.DESTINATION, destination, Frame.TRANSACTION, txId),
             "Message delivery failed - unknown transaction id");
-        connection.write(errorFrame);
-        connection.close();
+        sf.connection().write(errorFrame);
+        sf.connection().close();
         return;
       } else {
-        transaction.addFrameToTransaction(frame);
-        Frames.handleReceipt(frame, connection);
+        transaction.addFrameToTransaction(sf.frame());
+        Frames.handleReceipt(sf.frame(), sf.connection());
         // No delivery in transactions.
         return;
       }
     }
 
 
-    List<Subscription> subscriptions = connection.handler().getSubscriptions(destination);
-    if (subscriptions.isEmpty() && connection.server().getOptions().isSendErrorOnNoSubscriptions()) {
+    List<Subscription> subscriptions = sf.connection().handler().getSubscriptions(destination);
+    if (subscriptions.isEmpty() && sf.connection().server().getOptions().isSendErrorOnNoSubscriptions()) {
       Frame errorFrame = Frames.createErrorFrame(
           "No subscriptions",
           Headers.create(Frame.DESTINATION, destination),
           "Message delivery failed - no subscriptions on this destination");
-      connection.write(errorFrame);
-      connection.close();
+      sf.connection().write(errorFrame);
+      sf.connection().close();
       return;
     }
 
     subscriptions.stream().forEach(subscription -> {
           String messageId = UUID.randomUUID().toString();
-          Frame message = sendToMessage(frame, subscription, messageId);
-          enqueue(connection, subscription, message);
+          Frame message = sendToMessage(sf.frame(), subscription, messageId);
+          enqueue(sf.connection(), subscription, message);
           subscription.connection().write(message.toBuffer());
         }
     );
 
-    Frames.handleReceipt(frame, connection);
+    Frames.handleReceipt(sf.frame(), sf.connection());
   }
 
   private void enqueue(StompServerConnection connection, Subscription subscription, Frame frame) {

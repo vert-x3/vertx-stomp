@@ -50,7 +50,8 @@ public class StompServerImplTest {
     StompServer server = Stomp.createStompServer(vertx);
     server.handler(StompServerHandler.create(vertx)
             .connectHandler(
-                (frame, connection) -> {
+                sf -> {
+                  Frame frame = sf.frame();
                   context.assertTrue(frame.getCommand() == Frame.Command.CONNECT);
                   context.assertTrue(frame.getHeader("login").equals("system"));
                   server.close(ar2 -> {
@@ -71,7 +72,8 @@ public class StompServerImplTest {
     StompServer server = Stomp.createStompServer(vertx);
     server.handler(
         StompServerHandler.create(vertx).connectHandler(
-            (frame, connection) -> {
+            sf -> {
+              Frame frame = sf.frame();
               context.assertTrue(frame.getCommand() == Frame.Command.CONNECT);
               context.assertTrue(frame.getHeader("login").equals("system"));
               server.close(ar2 -> {

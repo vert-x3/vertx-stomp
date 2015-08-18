@@ -212,9 +212,9 @@ var StompServerHandler = require("vertx-stomp-js/stomp_server_handler");
 var Stomp = require("vertx-stomp-js/stomp");
 var server = Stomp.createStompServer(vertx).handler(StompServerHandler.create(vertx).closeHandler(function (connection) {
   // client connection closed
-}).beginHandler(function (frame, connection) {
+}).beginHandler(function (frame) {
   // transaction starts
-}).commitHandler(function (frame, connection) {
+}).commitHandler(function (frame) {
   // transaction committed
 })).listen();
 

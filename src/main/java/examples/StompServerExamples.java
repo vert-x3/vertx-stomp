@@ -88,10 +88,10 @@ public class StompServerExamples {
                 .closeHandler(connection -> {
                   // client connection closed
                 })
-                .beginHandler((frame, connection) -> {
+                .beginHandler(frame -> {
                   // transaction starts
                 })
-                .commitHandler((frame, connection) -> {
+                .commitHandler(frame -> {
                       // transaction committed
                     }
                 )

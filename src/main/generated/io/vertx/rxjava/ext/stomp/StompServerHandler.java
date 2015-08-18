@@ -35,12 +35,11 @@ import io.vertx.core.Handler;
  * NOTE: This class has been automatically generated from the {@link io.vertx.ext.stomp.StompServerHandler original} non RX-ified interface using Vert.x codegen.
  */
 
-public class StompServerHandler extends ServerFrameHandler {
+public class StompServerHandler implements Handler<ServerFrame> {
 
   final io.vertx.ext.stomp.StompServerHandler delegate;
 
   public StompServerHandler(io.vertx.ext.stomp.StompServerHandler delegate) {
-    super(delegate);
     this.delegate = delegate;
   }
 
@@ -48,10 +47,14 @@ public class StompServerHandler extends ServerFrameHandler {
     return delegate;
   }
 
+  public void handle(ServerFrame arg0) { 
+    this.delegate.handle((io.vertx.ext.stomp.ServerFrame) arg0.getDelegate());
+  }
+
   /**
-   * Creates an instance of {@link io.vertx.rxjava.ext.stomp.StompServerHandler} using the default (compliant) implementation.
+   * Creates an instance of {@link io.vertx.ext.stomp.StompServerHandler} using the default (compliant) implementation.
    * @param vertx the vert.x instance to use
-   * @return the created {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
+   * @return the created {@link io.vertx.ext.stomp.StompServerHandler}
    */
   public static StompServerHandler create(Vertx vertx) { 
     StompServerHandler ret= StompServerHandler.newInstance(io.vertx.ext.stomp.StompServerHandler.create((io.vertx.core.Vertx) vertx.getDelegate()));
@@ -63,8 +66,12 @@ public class StompServerHandler extends ServerFrameHandler {
    * @param handler the handler
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
-  public StompServerHandler connectHandler(ServerFrameHandler handler) { 
-    this.delegate.connectHandler((io.vertx.ext.stomp.ServerFrameHandler) handler.getDelegate());
+  public StompServerHandler connectHandler(Handler<ServerFrame> handler) { 
+    this.delegate.connectHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+      public void handle(io.vertx.ext.stomp.ServerFrame event) {
+        handler.handle(new ServerFrame(event));
+      }
+    });
     return this;
   }
 
@@ -73,8 +80,12 @@ public class StompServerHandler extends ServerFrameHandler {
    * @param handler the handler
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
-  public StompServerHandler stompHandler(ServerFrameHandler handler) { 
-    this.delegate.stompHandler((io.vertx.ext.stomp.ServerFrameHandler) handler.getDelegate());
+  public StompServerHandler stompHandler(Handler<ServerFrame> handler) { 
+    this.delegate.stompHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+      public void handle(io.vertx.ext.stomp.ServerFrame event) {
+        handler.handle(new ServerFrame(event));
+      }
+    });
     return this;
   }
 
@@ -83,8 +94,12 @@ public class StompServerHandler extends ServerFrameHandler {
    * @param handler the handler
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
-  public StompServerHandler subscribeHandler(ServerFrameHandler handler) { 
-    this.delegate.subscribeHandler((io.vertx.ext.stomp.ServerFrameHandler) handler.getDelegate());
+  public StompServerHandler subscribeHandler(Handler<ServerFrame> handler) { 
+    this.delegate.subscribeHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+      public void handle(io.vertx.ext.stomp.ServerFrame event) {
+        handler.handle(new ServerFrame(event));
+      }
+    });
     return this;
   }
 
@@ -93,8 +108,12 @@ public class StompServerHandler extends ServerFrameHandler {
    * @param handler the handler
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
-  public StompServerHandler unsubscribeHandler(ServerFrameHandler handler) { 
-    this.delegate.unsubscribeHandler((io.vertx.ext.stomp.ServerFrameHandler) handler.getDelegate());
+  public StompServerHandler unsubscribeHandler(Handler<ServerFrame> handler) { 
+    this.delegate.unsubscribeHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+      public void handle(io.vertx.ext.stomp.ServerFrame event) {
+        handler.handle(new ServerFrame(event));
+      }
+    });
     return this;
   }
 
@@ -103,8 +122,12 @@ public class StompServerHandler extends ServerFrameHandler {
    * @param handler the handler
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
-  public StompServerHandler sendHandler(ServerFrameHandler handler) { 
-    this.delegate.sendHandler((io.vertx.ext.stomp.ServerFrameHandler) handler.getDelegate());
+  public StompServerHandler sendHandler(Handler<ServerFrame> handler) { 
+    this.delegate.sendHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+      public void handle(io.vertx.ext.stomp.ServerFrame event) {
+        handler.handle(new ServerFrame(event));
+      }
+    });
     return this;
   }
 
@@ -136,8 +159,12 @@ public class StompServerHandler extends ServerFrameHandler {
    * @param handler the handler
    * @return the current {@link io.vertx.ext.stomp.StompServerHandler}
    */
-  public StompServerHandler commitHandler(ServerFrameHandler handler) { 
-    this.delegate.commitHandler((io.vertx.ext.stomp.ServerFrameHandler) handler.getDelegate());
+  public StompServerHandler commitHandler(Handler<ServerFrame> handler) { 
+    this.delegate.commitHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+      public void handle(io.vertx.ext.stomp.ServerFrame event) {
+        handler.handle(new ServerFrame(event));
+      }
+    });
     return this;
   }
 
@@ -146,8 +173,12 @@ public class StompServerHandler extends ServerFrameHandler {
    * @param handler the handler
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
-  public StompServerHandler abortHandler(ServerFrameHandler handler) { 
-    this.delegate.abortHandler((io.vertx.ext.stomp.ServerFrameHandler) handler.getDelegate());
+  public StompServerHandler abortHandler(Handler<ServerFrame> handler) { 
+    this.delegate.abortHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+      public void handle(io.vertx.ext.stomp.ServerFrame event) {
+        handler.handle(new ServerFrame(event));
+      }
+    });
     return this;
   }
 
@@ -156,8 +187,12 @@ public class StompServerHandler extends ServerFrameHandler {
    * @param handler the handler
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
-  public StompServerHandler beginHandler(ServerFrameHandler handler) { 
-    this.delegate.beginHandler((io.vertx.ext.stomp.ServerFrameHandler) handler.getDelegate());
+  public StompServerHandler beginHandler(Handler<ServerFrame> handler) { 
+    this.delegate.beginHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+      public void handle(io.vertx.ext.stomp.ServerFrame event) {
+        handler.handle(new ServerFrame(event));
+      }
+    });
     return this;
   }
 
@@ -166,8 +201,12 @@ public class StompServerHandler extends ServerFrameHandler {
    * @param handler the handler
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
-  public StompServerHandler disconnectHandler(ServerFrameHandler handler) { 
-    this.delegate.disconnectHandler((io.vertx.ext.stomp.ServerFrameHandler) handler.getDelegate());
+  public StompServerHandler disconnectHandler(Handler<ServerFrame> handler) { 
+    this.delegate.disconnectHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+      public void handle(io.vertx.ext.stomp.ServerFrame event) {
+        handler.handle(new ServerFrame(event));
+      }
+    });
     return this;
   }
 
@@ -176,8 +215,12 @@ public class StompServerHandler extends ServerFrameHandler {
    * @param handler the handler
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
-  public StompServerHandler ackHandler(ServerFrameHandler handler) { 
-    this.delegate.ackHandler((io.vertx.ext.stomp.ServerFrameHandler) handler.getDelegate());
+  public StompServerHandler ackHandler(Handler<ServerFrame> handler) { 
+    this.delegate.ackHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+      public void handle(io.vertx.ext.stomp.ServerFrame event) {
+        handler.handle(new ServerFrame(event));
+      }
+    });
     return this;
   }
 
@@ -186,8 +229,12 @@ public class StompServerHandler extends ServerFrameHandler {
    * @param handler the handler
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
-  public StompServerHandler nackHandler(ServerFrameHandler handler) { 
-    this.delegate.nackHandler((io.vertx.ext.stomp.ServerFrameHandler) handler.getDelegate());
+  public StompServerHandler nackHandler(Handler<ServerFrame> handler) { 
+    this.delegate.nackHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+      public void handle(io.vertx.ext.stomp.ServerFrame event) {
+        handler.handle(new ServerFrame(event));
+      }
+    });
     return this;
   }
 

@@ -1,20 +1,19 @@
 package io.vertx.ext.stomp;
 
-import io.vertx.ext.stomp.Frame;
-import io.vertx.ext.stomp.Frames;
-import io.vertx.ext.stomp.ServerFrameHandler;
-import io.vertx.ext.stomp.StompServerConnection;
+import io.vertx.core.Handler;
 import io.vertx.ext.stomp.utils.Headers;
 
 /**
  * STAMP compliant actions executed when receiving a {@code UNSUBSCRIBE} frame. The associated
  * {@link io.vertx.ext.stomp.Subscription} is unregistered.
- *
+ * <p/>
  * This handler is thread safe.
  */
-public class DefaultUnsubscribeHandler implements ServerFrameHandler {
+public class DefaultUnsubscribeHandler implements Handler<ServerFrame> {
   @Override
-  public void onFrame(Frame frame, StompServerConnection connection) {
+  public void handle(ServerFrame serverFrame) {
+    Frame frame = serverFrame.frame();
+    StompServerConnection connection = serverFrame.connection();
     final String id = frame.getHeader(Frame.ID);
 
     if (id == null) {
