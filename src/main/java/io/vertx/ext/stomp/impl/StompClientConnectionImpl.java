@@ -383,18 +383,8 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection ack(Frame frame) {
-    return ack(frame.getAck(), null);
-  }
-
-  @Override
-  public StompClientConnection ack(Frame frame, Handler<Frame> receiptHandler) {
-    return ack(frame.getAck(), receiptHandler);
-  }
-
-  @Override
   public StompClientConnection ack(String id) {
-    return ack(id, null);
+    return ack(id, (Handler<Frame>) null);
   }
 
   @Override
@@ -405,18 +395,8 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection nack(Frame frame) {
-    return nack(frame.getAck());
-  }
-
-  @Override
-  public StompClientConnection nack(Frame frame, Handler<Frame> receiptHandler) {
-    return nack(frame.getAck(), receiptHandler);
-  }
-
-  @Override
   public StompClientConnection nack(String id) {
-    return nack(id, null);
+    return nack(id, (Handler<Frame>) null);
   }
 
   @Override
@@ -427,13 +407,12 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection ack(Frame frame, String txId) {
-    return ack(frame, txId, null);
+  public StompClientConnection ack(String id, String txId) {
+    return ack(id, txId, null);
   }
 
   @Override
-  public StompClientConnection ack(Frame frame, String txId, Handler<Frame> receiptHandler) {
-    final String id = frame.getAck();
+  public StompClientConnection ack(String id, String txId, Handler<Frame> receiptHandler) {
     Objects.requireNonNull(id, "A ACK frame must contain the ACK id");
     Objects.requireNonNull(txId);
 
@@ -443,13 +422,12 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection nack(Frame frame, String txId) {
-    return nack(frame, txId, null);
+  public StompClientConnection nack(String id, String txId) {
+    return nack(id, txId, null);
   }
 
   @Override
-  public StompClientConnection nack(Frame frame, String txId, Handler<Frame> receiptHandler) {
-    final String id = frame.getAck();
+  public StompClientConnection nack(String id, String txId, Handler<Frame> receiptHandler) {
     Objects.requireNonNull(id, "A NACK frame must contain the ACK id");
     Objects.requireNonNull(txId);
 

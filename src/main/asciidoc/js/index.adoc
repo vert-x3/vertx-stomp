@@ -465,9 +465,9 @@ var client = Stomp.createStompClient(vertx).connect(function (ar, ar_err) {
   if (ar_err == null) {
     var connection = ar;
     connection.subscribe("/queue", function (frame) {
-      connection.ack(frame);
+      connection.ack(frame.ack);
       // OR
-      connection.nack(frame);
+      connection.nack(frame.ack);
     });
   } else {
     console.log("Failed to connect to the STOMP server: " + ar_err.toString());

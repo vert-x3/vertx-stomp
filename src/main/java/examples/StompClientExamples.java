@@ -152,9 +152,9 @@ public class StompClientExamples {
           if (ar.succeeded()) {
             StompClientConnection connection = ar.result();
             connection.subscribe("/queue", frame -> {
-              connection.ack(frame);
+              connection.ack(frame.getAck());
               // OR
-              connection.nack(frame);
+              connection.nack(frame.getAck());
             });
           } else {
             System.out.println("Failed to connect to the STOMP server: " + ar.cause().toString());

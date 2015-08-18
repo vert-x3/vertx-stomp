@@ -274,87 +274,47 @@ module VertxStomp
     end
     #  Sends an acknowledgement for the given frame. It means that the frame has been handled and processed by the
     #  client. The sent acknowledgement is part of the transaction identified by the given id.
-    # @overload ack(frame)
-    #   @param [Hash] frame the frame
-    # @overload ack(id)
-    #   @param [String] id the message id of the message to acknowledge
-    # @overload ack(frame,receiptHandler)
-    #   @param [Hash] frame the frame
-    #   @yield the handler invoked when the <code>RECEIPT</code> frame associated with the acknowledgment has been processed by the server. The handler receives the sent frame (<code>ACK</code>).
-    # @overload ack(id,receiptHandler)
-    #   @param [String] id the message id of the message to acknowledge
-    #   @yield the handler invoked when the <code>RECEIPT</code> frame associated with the acknowledgment has been processed by the server. The handler receives the sent frame (<code>ACK</code>).
-    # @overload ack(frame,txId)
-    #   @param [Hash] frame the frame
-    #   @param [String] txId the transaction id
-    # @overload ack(frame,txId,receiptHandler)
-    #   @param [Hash] frame the frame
-    #   @param [String] txId the transaction id
-    #   @yield the handler invoked when the <code>RECEIPT</code> frame associated with the acknowledgment has been processed by the server. The handler receives the sent frame (<code>ACK</code>).
+    # @param [String] id the message id of the message to acknowledge
+    # @param [String] txId the transaction id
+    # @yield the handler invoked when the <code>RECEIPT</code> frame associated with the acknowledgment has been processed by the server. The handler receives the sent frame (<code>ACK</code>).
     # @return [self]
-    def ack(param_1=nil,param_2=nil)
-      if param_1.class == Hash && !block_given? && param_2 == nil
-        @j_del.java_method(:ack, [Java::IoVertxExtStomp::Frame.java_class]).call(Java::IoVertxExtStomp::Frame.new(::Vertx::Util::Utils.to_json_object(param_1)))
+    def ack(id=nil,txId=nil)
+      if id.class == String && !block_given? && txId == nil
+        @j_del.java_method(:ack, [Java::java.lang.String.java_class]).call(id)
         return self
-      elsif param_1.class == String && !block_given? && param_2 == nil
-        @j_del.java_method(:ack, [Java::java.lang.String.java_class]).call(param_1)
+      elsif id.class == String && block_given? && txId == nil
+        @j_del.java_method(:ack, [Java::java.lang.String.java_class,Java::IoVertxCore::Handler.java_class]).call(id,(Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
         return self
-      elsif param_1.class == Hash && block_given? && param_2 == nil
-        @j_del.java_method(:ack, [Java::IoVertxExtStomp::Frame.java_class,Java::IoVertxCore::Handler.java_class]).call(Java::IoVertxExtStomp::Frame.new(::Vertx::Util::Utils.to_json_object(param_1)),(Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
+      elsif id.class == String && txId.class == String && !block_given?
+        @j_del.java_method(:ack, [Java::java.lang.String.java_class,Java::java.lang.String.java_class]).call(id,txId)
         return self
-      elsif param_1.class == String && block_given? && param_2 == nil
-        @j_del.java_method(:ack, [Java::java.lang.String.java_class,Java::IoVertxCore::Handler.java_class]).call(param_1,(Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
-        return self
-      elsif param_1.class == Hash && param_2.class == String && !block_given?
-        @j_del.java_method(:ack, [Java::IoVertxExtStomp::Frame.java_class,Java::java.lang.String.java_class]).call(Java::IoVertxExtStomp::Frame.new(::Vertx::Util::Utils.to_json_object(param_1)),param_2)
-        return self
-      elsif param_1.class == Hash && param_2.class == String && block_given?
-        @j_del.java_method(:ack, [Java::IoVertxExtStomp::Frame.java_class,Java::java.lang.String.java_class,Java::IoVertxCore::Handler.java_class]).call(Java::IoVertxExtStomp::Frame.new(::Vertx::Util::Utils.to_json_object(param_1)),param_2,(Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
+      elsif id.class == String && txId.class == String && block_given?
+        @j_del.java_method(:ack, [Java::java.lang.String.java_class,Java::java.lang.String.java_class,Java::IoVertxCore::Handler.java_class]).call(id,txId,(Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling ack(param_1,param_2)"
+      raise ArgumentError, "Invalid arguments when calling ack(id,txId)"
     end
     #  Sends a non-acknowledgement for the given frame. It means that the frame has not been handled by the client.
     #  The sent non-acknowledgement is part of the transaction identified by the given id.
-    # @overload nack(frame)
-    #   @param [Hash] frame the frame
-    # @overload nack(id)
-    #   @param [String] id the message id of the message to acknowledge
-    # @overload nack(frame,receiptHandler)
-    #   @param [Hash] frame the frame
-    #   @yield the handler invoked when the <code>RECEIPT</code> frame associated with the non-acknowledgment has been processed by the server. The handler receives the sent frame (<code>NACK</code>).
-    # @overload nack(id,receiptHandler)
-    #   @param [String] id the message id of the message to acknowledge
-    #   @yield the handler invoked when the <code>RECEIPT</code> frame associated with the non-acknowledgment has been processed by the server. The handler receives the sent frame (<code>NACK</code>).
-    # @overload nack(frame,txId)
-    #   @param [Hash] frame the frame
-    #   @param [String] txId the transaction id
-    # @overload nack(frame,txId,receiptHandler)
-    #   @param [Hash] frame the frame
-    #   @param [String] txId the transaction id
-    #   @yield the handler invoked when the <code>RECEIPT</code> frame associated with the non-acknowledgment has been processed by the server. The handler receives the sent frame (<code>NACK</code>).
+    # @param [String] id the message id of the message to acknowledge
+    # @param [String] txId the transaction id
+    # @yield the handler invoked when the <code>RECEIPT</code> frame associated with the non-acknowledgment has been processed by the server. The handler receives the sent frame (<code>NACK</code>).
     # @return [self]
-    def nack(param_1=nil,param_2=nil)
-      if param_1.class == Hash && !block_given? && param_2 == nil
-        @j_del.java_method(:nack, [Java::IoVertxExtStomp::Frame.java_class]).call(Java::IoVertxExtStomp::Frame.new(::Vertx::Util::Utils.to_json_object(param_1)))
+    def nack(id=nil,txId=nil)
+      if id.class == String && !block_given? && txId == nil
+        @j_del.java_method(:nack, [Java::java.lang.String.java_class]).call(id)
         return self
-      elsif param_1.class == String && !block_given? && param_2 == nil
-        @j_del.java_method(:nack, [Java::java.lang.String.java_class]).call(param_1)
+      elsif id.class == String && block_given? && txId == nil
+        @j_del.java_method(:nack, [Java::java.lang.String.java_class,Java::IoVertxCore::Handler.java_class]).call(id,(Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
         return self
-      elsif param_1.class == Hash && block_given? && param_2 == nil
-        @j_del.java_method(:nack, [Java::IoVertxExtStomp::Frame.java_class,Java::IoVertxCore::Handler.java_class]).call(Java::IoVertxExtStomp::Frame.new(::Vertx::Util::Utils.to_json_object(param_1)),(Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
+      elsif id.class == String && txId.class == String && !block_given?
+        @j_del.java_method(:nack, [Java::java.lang.String.java_class,Java::java.lang.String.java_class]).call(id,txId)
         return self
-      elsif param_1.class == String && block_given? && param_2 == nil
-        @j_del.java_method(:nack, [Java::java.lang.String.java_class,Java::IoVertxCore::Handler.java_class]).call(param_1,(Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
-        return self
-      elsif param_1.class == Hash && param_2.class == String && !block_given?
-        @j_del.java_method(:nack, [Java::IoVertxExtStomp::Frame.java_class,Java::java.lang.String.java_class]).call(Java::IoVertxExtStomp::Frame.new(::Vertx::Util::Utils.to_json_object(param_1)),param_2)
-        return self
-      elsif param_1.class == Hash && param_2.class == String && block_given?
-        @j_del.java_method(:nack, [Java::IoVertxExtStomp::Frame.java_class,Java::java.lang.String.java_class,Java::IoVertxCore::Handler.java_class]).call(Java::IoVertxExtStomp::Frame.new(::Vertx::Util::Utils.to_json_object(param_1)),param_2,(Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
+      elsif id.class == String && txId.class == String && block_given?
+        @j_del.java_method(:nack, [Java::java.lang.String.java_class,Java::java.lang.String.java_class,Java::IoVertxCore::Handler.java_class]).call(id,txId,(Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling nack(param_1,param_2)"
+      raise ArgumentError, "Invalid arguments when calling nack(id,txId)"
     end
   end
 end

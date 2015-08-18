@@ -65,7 +65,7 @@ public class AckTest {
   public void testSimpleAck() {
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
-      connection.subscribe("/queue", Headers.create(Frame.ACK, "client"), connection::ack);
+      connection.subscribe("/queue", Headers.create(Frame.ACK, "client"), frame -> connection.ack(frame.getAck()));
     }));
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestinations().contains("/queue"));
@@ -81,13 +81,8 @@ public class AckTest {
   @Test
   public void testSimpleNack() {
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
-      if (ar.failed()) {
-        System.err.println("========> FAILURE <========");
-        ar.cause().printStackTrace();
-        return;
-      }
       final StompClientConnection connection = ar.result();
-      connection.subscribe("/queue", Headers.create(Frame.ACK, "client"), connection::nack);
+      connection.subscribe("/queue", Headers.create(Frame.ACK, "client"), frame -> connection.nack(frame.getAck()));
     }));
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() ->
@@ -243,7 +238,7 @@ public class AckTest {
               connection.beginTX("my-tx");
             }
             frames.add(frame);
-            connection.ack(frame, "my-tx");
+            connection.ack(frame.getAck(), "my-tx");
             if (frames.size() == 3) {
               connection.commit("my-tx");
             }
@@ -286,7 +281,7 @@ public class AckTest {
               connection.beginTX("my-tx");
             }
             frames.add(frame);
-            connection.nack(frame, "my-tx");
+            connection.nack(frame.getAck(), "my-tx");
             if (frames.size() == 3) {
               connection.commit("my-tx");
             }
@@ -330,7 +325,7 @@ public class AckTest {
               connection.beginTX("my-tx");
             }
             frames.add(frame);
-            connection.ack(frame, "my-tx");
+            connection.ack(frame.getAck(), "my-tx");
             if (frames.size() == 3) {
               connection.abort("my-tx");
             }
@@ -389,8 +384,7 @@ public class AckTest {
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(frame -> async.complete());
-      connection.ack(new Frame(Frame.Command.SEND,
-              Headers.create("ack", "id"), null),
+      connection.ack("id",
           "unknown", frame -> context.fail("unexpected receipt"));
     }));
 
@@ -398,8 +392,7 @@ public class AckTest {
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(frame -> async2.complete());
-      connection.ack(new Frame(Frame.Command.SEND,
-              Headers.create("ack", "id"), null),
+      connection.ack("id",
           "unknown", frame -> context.fail("unexpected receipt"));
     }));
   }

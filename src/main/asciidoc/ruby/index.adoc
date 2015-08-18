@@ -465,9 +465,9 @@ client = VertxStomp::Stomp.create_stomp_client(vertx).connect() { |ar_err,ar|
   if (ar_err == nil)
     connection = ar
     connection.subscribe("/queue") { |frame|
-      connection.ack(frame)
+      connection.ack(frame['ack'])
       # OR
-      connection.nack(frame)
+      connection.nack(frame['ack'])
     }
   else
     puts "Failed to connect to the STOMP server: #{ar_err.to_string()}"

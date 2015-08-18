@@ -377,34 +377,26 @@ var StompClientConnection = function(j_val) {
    client. The sent acknowledgement is part of the transaction identified by the given id.
 
    @public
-   @param frame {Object} the frame 
+   @param id {string} the message id of the message to acknowledge 
    @param txId {string} the transaction id 
    @param receiptHandler {function} the handler invoked when the <code>RECEIPT</code> frame associated with the acknowledgment has been processed by the server. The handler receives the sent frame (<code>ACK</code>). 
    @return {StompClientConnection} the current {@link StompClientConnection}
    */
   this.ack = function() {
     var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'object') {
-      j_stompClientConnection["ack(io.vertx.ext.stomp.Frame)"](__args[0] != null ? new Frame(new JsonObject(JSON.stringify(__args[0]))) : null);
-      return that;
-    }  else if (__args.length === 1 && typeof __args[0] === 'string') {
+    if (__args.length === 1 && typeof __args[0] === 'string') {
       j_stompClientConnection["ack(java.lang.String)"](__args[0]);
-      return that;
-    }  else if (__args.length === 2 && typeof __args[0] === 'object' && typeof __args[1] === 'function') {
-      j_stompClientConnection["ack(io.vertx.ext.stomp.Frame,io.vertx.core.Handler)"](__args[0] != null ? new Frame(new JsonObject(JSON.stringify(__args[0]))) : null, function(jVal) {
-      __args[1](utils.convReturnDataObject(jVal));
-    });
       return that;
     }  else if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'function') {
       j_stompClientConnection["ack(java.lang.String,io.vertx.core.Handler)"](__args[0], function(jVal) {
       __args[1](utils.convReturnDataObject(jVal));
     });
       return that;
-    }  else if (__args.length === 2 && typeof __args[0] === 'object' && typeof __args[1] === 'string') {
-      j_stompClientConnection["ack(io.vertx.ext.stomp.Frame,java.lang.String)"](__args[0] != null ? new Frame(new JsonObject(JSON.stringify(__args[0]))) : null, __args[1]);
+    }  else if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'string') {
+      j_stompClientConnection["ack(java.lang.String,java.lang.String)"](__args[0], __args[1]);
       return that;
-    }  else if (__args.length === 3 && typeof __args[0] === 'object' && typeof __args[1] === 'string' && typeof __args[2] === 'function') {
-      j_stompClientConnection["ack(io.vertx.ext.stomp.Frame,java.lang.String,io.vertx.core.Handler)"](__args[0] != null ? new Frame(new JsonObject(JSON.stringify(__args[0]))) : null, __args[1], function(jVal) {
+    }  else if (__args.length === 3 && typeof __args[0] === 'string' && typeof __args[1] === 'string' && typeof __args[2] === 'function') {
+      j_stompClientConnection["ack(java.lang.String,java.lang.String,io.vertx.core.Handler)"](__args[0], __args[1], function(jVal) {
       __args[2](utils.convReturnDataObject(jVal));
     });
       return that;
@@ -416,34 +408,26 @@ var StompClientConnection = function(j_val) {
    The sent non-acknowledgement is part of the transaction identified by the given id.
 
    @public
-   @param frame {Object} the frame 
+   @param id {string} the message id of the message to acknowledge 
    @param txId {string} the transaction id 
    @param receiptHandler {function} the handler invoked when the <code>RECEIPT</code> frame associated with the non-acknowledgment has been processed by the server. The handler receives the sent frame (<code>NACK</code>). 
    @return {StompClientConnection} the current {@link StompClientConnection}
    */
   this.nack = function() {
     var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'object') {
-      j_stompClientConnection["nack(io.vertx.ext.stomp.Frame)"](__args[0] != null ? new Frame(new JsonObject(JSON.stringify(__args[0]))) : null);
-      return that;
-    }  else if (__args.length === 1 && typeof __args[0] === 'string') {
+    if (__args.length === 1 && typeof __args[0] === 'string') {
       j_stompClientConnection["nack(java.lang.String)"](__args[0]);
-      return that;
-    }  else if (__args.length === 2 && typeof __args[0] === 'object' && typeof __args[1] === 'function') {
-      j_stompClientConnection["nack(io.vertx.ext.stomp.Frame,io.vertx.core.Handler)"](__args[0] != null ? new Frame(new JsonObject(JSON.stringify(__args[0]))) : null, function(jVal) {
-      __args[1](utils.convReturnDataObject(jVal));
-    });
       return that;
     }  else if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'function') {
       j_stompClientConnection["nack(java.lang.String,io.vertx.core.Handler)"](__args[0], function(jVal) {
       __args[1](utils.convReturnDataObject(jVal));
     });
       return that;
-    }  else if (__args.length === 2 && typeof __args[0] === 'object' && typeof __args[1] === 'string') {
-      j_stompClientConnection["nack(io.vertx.ext.stomp.Frame,java.lang.String)"](__args[0] != null ? new Frame(new JsonObject(JSON.stringify(__args[0]))) : null, __args[1]);
+    }  else if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'string') {
+      j_stompClientConnection["nack(java.lang.String,java.lang.String)"](__args[0], __args[1]);
       return that;
-    }  else if (__args.length === 3 && typeof __args[0] === 'object' && typeof __args[1] === 'string' && typeof __args[2] === 'function') {
-      j_stompClientConnection["nack(io.vertx.ext.stomp.Frame,java.lang.String,io.vertx.core.Handler)"](__args[0] != null ? new Frame(new JsonObject(JSON.stringify(__args[0]))) : null, __args[1], function(jVal) {
+    }  else if (__args.length === 3 && typeof __args[0] === 'string' && typeof __args[1] === 'string' && typeof __args[2] === 'function') {
+      j_stompClientConnection["nack(java.lang.String,java.lang.String,io.vertx.core.Handler)"](__args[0], __args[1], function(jVal) {
       __args[2](utils.convReturnDataObject(jVal));
     });
       return that;

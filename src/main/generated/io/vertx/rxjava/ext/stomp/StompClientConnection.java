@@ -482,27 +482,6 @@ public class StompClientConnection {
   }
 
   /**
-   * Sends an acknowledgement for the given frame. It means that the frame has been handled and processed by the client.
-   * @param frame the frame
-   * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
-   */
-  public StompClientConnection ack(Frame frame) { 
-    this.delegate.ack(frame);
-    return this;
-  }
-
-  /**
-   * Sends an acknowledgement for the given frame. It means that the frame has been handled and processed by the client.
-   * @param frame the frame
-   * @param receiptHandler the handler invoked when the <code>RECEIPT</code> frame associated with the acknowledgment has been processed by the server. The handler receives the sent frame (<code>ACK</code>).
-   * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
-   */
-  public StompClientConnection ack(Frame frame, Handler<Frame> receiptHandler) { 
-    this.delegate.ack(frame, receiptHandler);
-    return this;
-  }
-
-  /**
    * Sends an acknowledgement for a specific message. It means that the message has been handled and processed by the
    * client. The <code>id</code> parameter is the message id received in the frame.
    * @param id the message id of the message to acknowledge
@@ -522,27 +501,6 @@ public class StompClientConnection {
    */
   public StompClientConnection ack(String id, Handler<Frame> receiptHandler) { 
     this.delegate.ack(id, receiptHandler);
-    return this;
-  }
-
-  /**
-   * Sends a non-acknowledgement for the given frame. It means that the frame has not been handled by the client.
-   * @param frame the frame
-   * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
-   */
-  public StompClientConnection nack(Frame frame) { 
-    this.delegate.nack(frame);
-    return this;
-  }
-
-  /**
-   * Sends a non-acknowledgement for the given frame. It means that the frame has not been handled by the client.
-   * @param frame the frame
-   * @param receiptHandler the handler invoked when the <code>RECEIPT</code> frame associated with the non-acknowledgment has been processed by the server. The handler receives the sent frame (<code>NACK</code>).
-   * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
-   */
-  public StompClientConnection nack(Frame frame, Handler<Frame> receiptHandler) { 
-    this.delegate.nack(frame, receiptHandler);
     return this;
   }
 
@@ -572,50 +530,50 @@ public class StompClientConnection {
   /**
    * Sends an acknowledgement for the given frame. It means that the frame has been handled and processed by the
    * client. The sent acknowledgement is part of the transaction identified by the given id.
-   * @param frame the frame
+   * @param id the message id of the message to acknowledge
    * @param txId the transaction id
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
-  public StompClientConnection ack(Frame frame, String txId) { 
-    this.delegate.ack(frame, txId);
+  public StompClientConnection ack(String id, String txId) { 
+    this.delegate.ack(id, txId);
     return this;
   }
 
   /**
    * Sends an acknowledgement for the given frame. It means that the frame has been handled and processed by the
    * client. The sent acknowledgement is part of the transaction identified by the given id.
-   * @param frame the frame
+   * @param id the message id of the message to acknowledge
    * @param txId the transaction id
    * @param receiptHandler the handler invoked when the <code>RECEIPT</code> frame associated with the acknowledgment has been processed by the server. The handler receives the sent frame (<code>ACK</code>).
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
-  public StompClientConnection ack(Frame frame, String txId, Handler<Frame> receiptHandler) { 
-    this.delegate.ack(frame, txId, receiptHandler);
+  public StompClientConnection ack(String id, String txId, Handler<Frame> receiptHandler) { 
+    this.delegate.ack(id, txId, receiptHandler);
     return this;
   }
 
   /**
    * Sends a non-acknowledgement for the given frame. It means that the frame has not been handled by the client.
    * The sent non-acknowledgement is part of the transaction identified by the given id.
-   * @param frame the frame
+   * @param id the message id of the message to acknowledge
    * @param txId the transaction id
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
-  public StompClientConnection nack(Frame frame, String txId) { 
-    this.delegate.nack(frame, txId);
+  public StompClientConnection nack(String id, String txId) { 
+    this.delegate.nack(id, txId);
     return this;
   }
 
   /**
    * Sends a non-acknowledgement for the given frame. It means that the frame has not been handled by the client.
    * The sent non-acknowledgement is part of the transaction identified by the given id.
-   * @param frame the frame
+   * @param id the message id of the message to acknowledge
    * @param txId the transaction id
    * @param receiptHandler the handler invoked when the <code>RECEIPT</code> frame associated with the non-acknowledgment has been processed by the server. The handler receives the sent frame (<code>NACK</code>).
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
-  public StompClientConnection nack(Frame frame, String txId, Handler<Frame> receiptHandler) { 
-    this.delegate.nack(frame, txId, receiptHandler);
+  public StompClientConnection nack(String id, String txId, Handler<Frame> receiptHandler) { 
+    this.delegate.nack(id, txId, receiptHandler);
     return this;
   }
 

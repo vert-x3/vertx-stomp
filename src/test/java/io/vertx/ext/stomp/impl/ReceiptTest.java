@@ -112,7 +112,9 @@ public class ReceiptTest {
     List<Frame> receipts = new ArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
-      connection.subscribe("/queue", Headers.create(Frame.ACK, "client"), connection::ack, receipts::add);
+      connection.subscribe("/queue", Headers.create(Frame.ACK, "client"),
+          frame -> connection.ack(frame.getAck()),
+          receipts::add);
     }));
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestinations().contains("/queue"));
@@ -130,7 +132,9 @@ public class ReceiptTest {
     List<Frame> receipts = new ArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
-      connection.subscribe("/queue", Headers.create(Frame.ACK, "client"), connection::nack, receipts::add);
+      connection.subscribe("/queue", Headers.create(Frame.ACK, "client"),
+          frame -> connection.nack(frame.getAck()),
+          receipts::add);
     }));
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestinations().contains("/queue"));

@@ -421,7 +421,7 @@ public interface StompClientConnection {
    * Disconnects the client. Unlike the {@link #close()} method, this method send the {@code DISCONNECT} frame to the
    * server. This method lets you customize the {@code DISCONNECT} frame.
    *
-   * @param frame the {@code DISCONNECT} frame.
+   * @param frame          the {@code DISCONNECT} frame.
    * @param receiptHandler the handler invoked when the {@code RECEIPT} frame associated with the
    *                       disconnection has been processed by the server. The handler receives the sent
    *                       frame ({@code DISCONNECT}).
@@ -429,28 +429,6 @@ public interface StompClientConnection {
    */
   @Fluent
   StompClientConnection disconnect(Frame frame, Handler<Frame> receiptHandler);
-
-
-  /**
-   * Sends an acknowledgement for the given frame. It means that the frame has been handled and processed by the client.
-   *
-   * @param frame the frame
-   * @return the current {@link StompClientConnection}
-   */
-  @Fluent
-  StompClientConnection ack(Frame frame);
-
-  /**
-   * Sends an acknowledgement for the given frame. It means that the frame has been handled and processed by the client.
-   *
-   * @param frame          the frame
-   * @param receiptHandler the handler invoked when the {@code RECEIPT} frame associated with the
-   *                       acknowledgment has been processed by the server. The handler receives the sent
-   *                       frame ({@code ACK}).
-   * @return the current {@link StompClientConnection}
-   */
-  @Fluent
-  StompClientConnection ack(Frame frame, Handler<Frame> receiptHandler);
 
   /**
    * Sends an acknowledgement for a specific message. It means that the message has been handled and processed by the
@@ -474,27 +452,6 @@ public interface StompClientConnection {
    */
   @Fluent
   StompClientConnection ack(String id, Handler<Frame> receiptHandler);
-
-  /**
-   * Sends a non-acknowledgement for the given frame. It means that the frame has not been handled by the client.
-   *
-   * @param frame the frame
-   * @return the current {@link StompClientConnection}
-   */
-  @Fluent
-  StompClientConnection nack(Frame frame);
-
-  /**
-   * Sends a non-acknowledgement for the given frame. It means that the frame has not been handled by the client.
-   *
-   * @param frame          the frame
-   * @param receiptHandler the handler invoked when the {@code RECEIPT} frame associated with the
-   *                       non-acknowledgment has been processed by the server. The handler receives the sent
-   *                       frame ({@code NACK}).
-   * @return the current {@link StompClientConnection}
-   */
-  @Fluent
-  StompClientConnection nack(Frame frame, Handler<Frame> receiptHandler);
 
   /**
    * Sends a non-acknowledgement for the given message. It means that the message has not been handled by the client.
@@ -523,18 +480,18 @@ public interface StompClientConnection {
    * Sends an acknowledgement for the given frame. It means that the frame has been handled and processed by the
    * client. The sent acknowledgement is part of the transaction identified by the given id.
    *
-   * @param frame the frame
-   * @param txId  the transaction id
+   * @param id   the message id of the message to acknowledge
+   * @param txId the transaction id
    * @return the current {@link StompClientConnection}
    */
   @Fluent
-  StompClientConnection ack(Frame frame, String txId);
+  StompClientConnection ack(String id, String txId);
 
   /**
    * Sends an acknowledgement for the given frame. It means that the frame has been handled and processed by the
    * client. The sent acknowledgement is part of the transaction identified by the given id.
    *
-   * @param frame          the frame
+   * @param id             the message id of the message to acknowledge
    * @param txId           the transaction id
    * @param receiptHandler the handler invoked when the {@code RECEIPT} frame associated with the
    *                       acknowledgment has been processed by the server. The handler receives the sent
@@ -542,24 +499,24 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
-  StompClientConnection ack(Frame frame, String txId, Handler<Frame> receiptHandler);
+  StompClientConnection ack(String id, String txId, Handler<Frame> receiptHandler);
 
   /**
    * Sends a non-acknowledgement for the given frame. It means that the frame has not been handled by the client.
    * The sent non-acknowledgement is part of the transaction identified by the given id.
    *
-   * @param frame the frame
-   * @param txId  the transaction id
+   * @param id   the message id of the message to acknowledge
+   * @param txId the transaction id
    * @return the current {@link StompClientConnection}
    */
   @Fluent
-  StompClientConnection nack(Frame frame, String txId);
+  StompClientConnection nack(String id, String txId);
 
   /**
    * Sends a non-acknowledgement for the given frame. It means that the frame has not been handled by the client.
    * The sent non-acknowledgement is part of the transaction identified by the given id.
    *
-   * @param frame          the frame
+   * @param id             the message id of the message to acknowledge
    * @param txId           the transaction id
    * @param receiptHandler the handler invoked when the {@code RECEIPT} frame associated with the
    *                       non-acknowledgment has been processed by the server. The handler receives the sent
@@ -567,5 +524,5 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
-  StompClientConnection nack(Frame frame, String txId, Handler<Frame> receiptHandler);
+  StompClientConnection nack(String id, String txId, Handler<Frame> receiptHandler);
 }
