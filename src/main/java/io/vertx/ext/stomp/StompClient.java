@@ -10,6 +10,8 @@ import io.vertx.ext.stomp.impl.StompClientImpl;
 
 /**
  * Defines a STOMP client.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 @VertxGen
 public interface StompClient {

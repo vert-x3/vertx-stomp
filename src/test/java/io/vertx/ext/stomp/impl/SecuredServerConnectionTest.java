@@ -19,6 +19,8 @@ import org.junit.runner.RunWith;
 
 /**
  * Tests STOMP server with security.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 @RunWith(io.vertx.ext.unit.junit.VertxUnitRunner.class)
 public class SecuredServerConnectionTest {

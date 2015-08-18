@@ -8,6 +8,8 @@ import io.vertx.ext.stomp.utils.Headers;
  * {@link io.vertx.ext.stomp.Subscription} is unregistered.
  * <p/>
  * This handler is thread safe.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class DefaultUnsubscribeHandler implements Handler<ServerFrame> {
   @Override

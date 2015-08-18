@@ -9,6 +9,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * An utility class to wait for success.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class AsyncLock<T> {
 

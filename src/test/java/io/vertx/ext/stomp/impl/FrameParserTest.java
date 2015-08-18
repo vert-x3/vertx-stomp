@@ -15,6 +15,8 @@ import static org.assertj.core.api.Fail.fail;
 
 /**
  * Check the behavior of the {@link FrameParser}.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class FrameParserTest {
 

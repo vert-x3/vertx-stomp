@@ -8,7 +8,10 @@ import io.vertx.ext.stomp.impl.FrameParser;
 import io.vertx.ext.stomp.impl.HeaderCodec;
 import io.vertx.ext.stomp.utils.Headers;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,8 +19,10 @@ import java.util.regex.Pattern;
  * Represents a STOMP frame. STOMP frames are structured as follows. It starts by a {@code command}, followed by a
  * set of headers. Then the frame may have a body and is finished by a {@code 0} byte. This class represents this
  * structure and provide access to the different parts.
- *
+ * <p/>
  * This class is <strong>NOT</strong> thread-safe.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 @DataObject(generateConverter = true)
 public class Frame {
@@ -91,7 +96,7 @@ public class Frame {
    * Represents the heartbeat configuration. Heartbeat determine when a party involved in the exchange (either the
    * client or the server) can detect the inactivity of the other party and close the connection. Configuration is
    * made in the {@code heartbeat} header.
-   *
+   * <p/>
    * This class is thread-safe.
    */
   public static class Heartbeat {
@@ -112,7 +117,7 @@ public class Frame {
      */
     public static Heartbeat parse(String header) {
       if (header == null) {
-        return new Heartbeat(0,0);
+        return new Heartbeat(0, 0);
       } else {
         String[] token = header.split(FrameParser.COMMA);
         return new Heartbeat(Integer.parseInt(token[0]), Integer.parseInt(token[1]));
@@ -129,8 +134,8 @@ public class Frame {
      */
     public static Heartbeat create(JsonObject json) {
       return new Heartbeat(
-        json.getInteger("x", 0),
-        json.getInteger("y", 0));
+          json.getInteger("x", 0),
+          json.getInteger("y", 0));
     }
 
     /**

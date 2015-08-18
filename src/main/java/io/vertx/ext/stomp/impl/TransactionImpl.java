@@ -9,6 +9,8 @@ import java.util.List;
 
 /**
  * {@link Transaction} implementation.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class TransactionImpl implements Transaction {
   private final List<Frame> frames;

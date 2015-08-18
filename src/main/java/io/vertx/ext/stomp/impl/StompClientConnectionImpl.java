@@ -20,6 +20,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Represents a client connection to a STOMP server.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class StompClientConnectionImpl implements StompClientConnection, Handler<Frame> {
   private static final Logger log = LoggerFactory.getLogger(StompClientConnectionImpl.class);

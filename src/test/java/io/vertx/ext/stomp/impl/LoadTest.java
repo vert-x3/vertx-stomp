@@ -20,6 +20,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A couple of load tests that needs to be launched manually.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 @RunWith(VertxUnitRunner.class)
 @Ignore("Manual launch only")

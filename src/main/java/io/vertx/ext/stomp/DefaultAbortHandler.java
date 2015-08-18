@@ -1,12 +1,13 @@
 package io.vertx.ext.stomp;
 
 import io.vertx.core.Handler;
-import io.vertx.ext.stomp.*;
 import io.vertx.ext.stomp.utils.Headers;
 
 /**
  * STOMP compliant actions executed when receiving a {@code ABORT} frame.
  * This handler is thread safe.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class DefaultAbortHandler implements Handler<ServerFrame> {
   @Override

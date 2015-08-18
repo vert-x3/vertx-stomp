@@ -14,6 +14,8 @@ import java.util.UUID;
  * receipt}, the {@code RECEIPT} frame is sent once all frames have been replayed.
  * <p/>
  * This handler is thread safe.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class DefaultCommitHandler implements Handler<ServerFrame> {
 

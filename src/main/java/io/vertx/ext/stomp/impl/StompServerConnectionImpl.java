@@ -12,6 +12,8 @@ import java.util.UUID;
 
 /**
  * default implementation of the {@link StompServerConnection}.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class StompServerConnectionImpl implements StompServerConnection {
   private final StompServer server;

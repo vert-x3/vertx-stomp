@@ -7,6 +7,8 @@ import io.vertx.ext.stomp.StompClientOptions;
 
 /**
  * A verticle subscribing to a STOMP destination.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class StompConsumer extends AbstractVerticle {
 

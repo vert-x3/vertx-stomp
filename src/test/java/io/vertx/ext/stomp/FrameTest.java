@@ -9,6 +9,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Check the behavior of {@link Frame}.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class FrameTest {
 

@@ -15,6 +15,8 @@ import java.util.List;
  * let customize the behavior when specific STOMP frames arrives or when a connection is closed. This class has been
  * designed to let you customize the server behavior. The default implementation is compliant with the STOMP
  * specification. In this default implementation, not acknowledge frames are dropped.
+ *
+ *  @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 @VertxGen
 public interface StompServerHandler extends Handler<ServerFrame> {

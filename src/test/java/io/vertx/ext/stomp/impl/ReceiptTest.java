@@ -21,6 +21,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test the {@code RECEIPT} frame.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 @RunWith(VertxUnitRunner.class)
 public class ReceiptTest {

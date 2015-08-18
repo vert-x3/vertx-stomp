@@ -9,6 +9,8 @@ import java.util.List;
 
 /**
  * Implementation of {@link Subscription}.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class SubscriptionImpl implements Subscription {
   private final StompServerConnection connection;

@@ -6,6 +6,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Checks the behavior of the {@link HeaderCodec}.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class HeaderCodecTest {
 

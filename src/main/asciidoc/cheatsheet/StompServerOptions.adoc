@@ -13,12 +13,6 @@
 |[[acceptBacklog]]`acceptBacklog`
 |`Number (int)`
 |-
-|[[ackTimeout]]`ackTimeout`
-|`Number (long)`
-|+++
-Sets the <code>ACK</code> timeout. Be careful when setting this value as a too low value by considered messages as
- not received even if they are currently processed by the client.+++
-
 |[[clientAuthRequired]]`clientAuthRequired`
 |`Boolean`
 |-

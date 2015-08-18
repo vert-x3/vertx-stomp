@@ -7,6 +7,8 @@ import java.util.Map;
 /**
  * An implementation  of {@link HashMap} to store STOMP frame headers. This implementations offer fluent methods to
  * ease the construction of the headers.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class Headers extends HashMap<String, String> {
 

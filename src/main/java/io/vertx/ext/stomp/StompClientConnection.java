@@ -10,6 +10,8 @@ import java.util.Map;
 /**
  * Once a connection to the STOMP server has been made, client receives a {@link StompClientConnection}, that let
  * send and receive STOMP frames.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 @VertxGen
 public interface StompClientConnection {

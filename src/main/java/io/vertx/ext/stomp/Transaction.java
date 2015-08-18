@@ -8,6 +8,8 @@ import java.util.List;
 
 /**
  * Represents a transaction in the STOMP server.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 @VertxGen
 public interface Transaction {

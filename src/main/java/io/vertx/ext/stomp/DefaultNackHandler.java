@@ -1,7 +1,6 @@
 package io.vertx.ext.stomp;
 
 import io.vertx.core.Handler;
-import io.vertx.ext.stomp.*;
 import io.vertx.ext.stomp.utils.Headers;
 
 import java.util.List;
@@ -12,8 +11,10 @@ import java.util.List;
  * {@link StompServerHandler#onNack(Subscription, List)} calls.
  * <p/>
  * If the {@code NACK} frame specifies a transaction id, the acknowledgment is delayed until the transaction commit.
- *
+ * <p/>
  * This handler is thread safe.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class DefaultNackHandler implements Handler<ServerFrame> {
   @Override

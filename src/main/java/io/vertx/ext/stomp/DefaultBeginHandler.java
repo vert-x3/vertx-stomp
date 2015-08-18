@@ -7,6 +7,8 @@ import io.vertx.ext.stomp.utils.Headers;
  * STOMP compliant actions executed when receiving a {@code BEGIN} frame.
  * <p/>
  * This handler is thread safe.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class DefaultBeginHandler implements Handler<ServerFrame> {
 

@@ -20,6 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test the STOMP transactions.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 @RunWith(VertxUnitRunner.class)
 public class TransactionsTest {

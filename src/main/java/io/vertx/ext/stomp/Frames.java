@@ -15,6 +15,8 @@ import java.util.Objects;
  * heartbeats. When such frame is written on the wire it is just the {@code 0} byte.
  * <p/>
  * This class is thread-safe.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 @VertxGen
 public interface Frames {

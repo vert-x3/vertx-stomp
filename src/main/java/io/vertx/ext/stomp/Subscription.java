@@ -5,6 +5,8 @@ import io.vertx.ext.stomp.impl.SubscriptionImpl;
 
 /**
  * Represents a subscription in the STOMP server.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 @VertxGen
 public interface Subscription {

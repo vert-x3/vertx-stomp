@@ -3,13 +3,18 @@ package io.vertx.ext.stomp.impl;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.parsetools.RecordParser;
-import io.vertx.ext.stomp.*;
+import io.vertx.ext.stomp.Frame;
+import io.vertx.ext.stomp.Frames;
+import io.vertx.ext.stomp.Stomp;
+import io.vertx.ext.stomp.StompServerOptions;
 
 import java.util.HashMap;
 import java.util.Objects;
 
 /**
  * A STOMP frame parser compliant with the specification (including header decoding).
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class FrameParser implements Handler<Buffer> {
 

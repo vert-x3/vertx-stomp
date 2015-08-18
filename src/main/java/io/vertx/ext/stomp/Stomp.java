@@ -7,6 +7,7 @@ import io.vertx.core.net.NetServer;
 /**
  * Interface used to create STOMP server and clients.
  *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  * @see StompClient
  * @see StompServer
  */

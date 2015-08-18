@@ -9,6 +9,8 @@ import static org.assertj.core.api.StrictAssertions.entry;
 
 /**
  * Checks the behavior of {@link Headers}.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class HeadersTest {
 

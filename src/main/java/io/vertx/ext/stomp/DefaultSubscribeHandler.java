@@ -1,14 +1,15 @@
 package io.vertx.ext.stomp;
 
 import io.vertx.core.Handler;
-import io.vertx.ext.stomp.*;
 import io.vertx.ext.stomp.utils.Headers;
 
 /**
  * STOMP compliant actions executed when receiving a {@code SUBSCRIBE} frame. It builds a {@link Subscription}
  * instance and registers it.
- *
+ * <p/>
  * This handler is thread safe.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class DefaultSubscribeHandler implements Handler<ServerFrame> {
   @Override

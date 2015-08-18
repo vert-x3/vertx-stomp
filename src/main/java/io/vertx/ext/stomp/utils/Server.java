@@ -7,6 +7,8 @@ import java.util.Scanner;
 /**
  * Class responsible for the computation of the server id. From the STOMP specification, this id must be constructed as
  * follows: name/version comments.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class Server {
 

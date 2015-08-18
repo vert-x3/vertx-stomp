@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
  * and a warning is printed in the log.
  * <p/>
  * This class is thread safe.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class DefaultStompHandler implements StompServerHandler {
 

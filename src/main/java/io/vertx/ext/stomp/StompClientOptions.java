@@ -11,6 +11,8 @@ import java.util.List;
 /**
  * Options used to configure a STOMP client. As a STOMP client wraps a Net client, you can also configure the
  * underlying NET client.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 @DataObject(generateConverter = true)
 public class StompClientOptions extends NetClientOptions implements StompOptions {

@@ -7,6 +7,8 @@ import java.util.List;
 
 /**
  * Defines a couples of constants shared by client and server options.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public interface StompOptions {
 

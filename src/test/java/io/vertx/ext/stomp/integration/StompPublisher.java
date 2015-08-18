@@ -8,6 +8,8 @@ import io.vertx.ext.stomp.StompClientOptions;
 
 /**
  * A verticle sending messages to a STOMP destination.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class StompPublisher extends AbstractVerticle {
 

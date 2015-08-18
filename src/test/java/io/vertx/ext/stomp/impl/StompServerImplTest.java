@@ -13,6 +13,8 @@ import org.junit.runner.RunWith;
 
 /**
  * test the {@link StompServerImpl}.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 @RunWith(VertxUnitRunner.class)
 public class StompServerImplTest {

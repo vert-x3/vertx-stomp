@@ -9,6 +9,9 @@ import io.vertx.ext.stomp.StompServer;
 import io.vertx.ext.stomp.StompServerHandler;
 import io.vertx.ext.stomp.StompServerOptions;
 
+/**
+ *  @author <a href="http://escoffier.me">Clement Escoffier</a>
+ */
 public class StompServerExamples {
 
   public void example1(Vertx vertx) {

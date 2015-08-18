@@ -15,7 +15,9 @@ import io.vertx.ext.stomp.StompClientOptions;
 import io.vertx.ext.stomp.utils.Headers;
 
 /**
- * DEfault implementation of {@link StompClient}.
+ * Default implementation of {@link StompClient}.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class StompClientImpl implements StompClient {
 

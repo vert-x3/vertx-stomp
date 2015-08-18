@@ -19,6 +19,8 @@ import java.util.List;
  * passed, the {@code CONNECTED} frame is sent to the client.
  * <p/>
  * This handler is thread safe.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class DefaultConnectHandler implements Handler<ServerFrame> {
   @Override

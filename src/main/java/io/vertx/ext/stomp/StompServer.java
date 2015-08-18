@@ -11,6 +11,8 @@ import io.vertx.ext.stomp.impl.StompServerImpl;
 /**
  * Defines a STOMP server. STOMP servers delegates to a {@link StompServerHandler} that let customize the behavior of
  * the server. By default, it uses a handler compliant with the STOMP specification, but let you change anything.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 @VertxGen
 public interface StompServer {

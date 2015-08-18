@@ -9,6 +9,8 @@ import io.vertx.ext.stomp.utils.Headers;
  * acknowledgment is delayed until the transaction commit.
  * <p/>
  * This handler is thread safe.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class DefaultAckHandler implements Handler<ServerFrame> {
 

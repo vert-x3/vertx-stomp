@@ -24,6 +24,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Test STOMP server / client connection protocol.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 @RunWith(io.vertx.ext.unit.junit.VertxUnitRunner.class)
 public class ServerConnectionTest {

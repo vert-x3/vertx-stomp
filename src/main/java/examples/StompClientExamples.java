@@ -11,6 +11,9 @@ import io.vertx.ext.stomp.StompClientOptions;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ *  @author <a href="http://escoffier.me">Clement Escoffier</a>
+ */
 public class StompClientExamples {
 
   public void example1(Vertx vertx) {

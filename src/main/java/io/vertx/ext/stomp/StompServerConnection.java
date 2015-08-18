@@ -7,6 +7,8 @@ import io.vertx.core.buffer.Buffer;
 /**
  * Class representing a connection between a STOMP client a the server. It keeps a references on the client socket,
  * so let write to this socket.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 @VertxGen
 public interface StompServerConnection {

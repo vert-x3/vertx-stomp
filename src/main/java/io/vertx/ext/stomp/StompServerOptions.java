@@ -9,6 +9,8 @@ import java.util.List;
 
 /**
  * STOMP Server options. You can also configure the Net Server used by the STOMP server from these options.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 @DataObject(generateConverter = true)
 public class StompServerOptions extends NetServerOptions implements StompOptions {

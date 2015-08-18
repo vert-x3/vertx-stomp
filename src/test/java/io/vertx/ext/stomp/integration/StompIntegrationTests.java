@@ -7,6 +7,8 @@ import io.vertx.core.json.JsonObject;
 /**
  * Runs one of the support STOMP Broker, from 'src/test/resources/integration', configure the test, and check
  * messages are published and received.
+ *
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class StompIntegrationTests {
 

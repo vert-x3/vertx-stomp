@@ -6,9 +6,6 @@ import io.vertx.core.json.JsonArray;
 public class StompServerOptionsConverter {
 
   public static void fromJson(JsonObject json, StompServerOptions obj) {
-    if (json.getValue("ackTimeout") instanceof Number) {
-      obj.setAckTimeout(((Number)json.getValue("ackTimeout")).longValue());
-    }
     if (json.getValue("heartbeat") instanceof JsonObject) {
       obj.setHeartbeat(((JsonObject)json.getValue("heartbeat")).copy());
     }
@@ -50,7 +47,6 @@ public class StompServerOptionsConverter {
   }
 
   public static void toJson(StompServerOptions obj, JsonObject json) {
-    json.put("ackTimeout", obj.getAckTimeout());
     if (obj.getHeartbeat() != null) {
       json.put("heartbeat", obj.getHeartbeat());
     }
