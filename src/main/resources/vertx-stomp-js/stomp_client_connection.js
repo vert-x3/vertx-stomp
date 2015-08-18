@@ -17,7 +17,6 @@
 /** @module vertx-stomp-js/stomp_client_connection */
 var utils = require('vertx-js/util/utils');
 var Buffer = require('vertx-js/buffer');
-var FrameHandler = require('vertx-stomp-js/frame_handler');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
@@ -141,22 +140,30 @@ var StompClientConnection = function(j_val) {
    @public
    @param destination {string} the destination, must not be <code>null</code> 
    @param headers {Array.<string>} the headers to configure the subscription. It may contain the <code>ack</code> header to configure the acknowledgment policy. If the given set of headers contains the <code>id</code> header, this value is used as subscription id. 
-   @param handler {FrameHandler} the handler invoked when a message is received on the given destination. Must not be <code>null</code>. 
+   @param handler {function} the handler invoked when a message is received on the given destination. Must not be <code>null</code>. 
    @param receiptHandler {function} the handler invoked when the <code>RECEIPT</code> frame associated with the subscription has been received. The handler receives the sent frame (<code>SUBSCRIBE</code>). 
    @return {string} the subscription id, which can either be the destination or the id set in the headers.
    */
   this.subscribe = function() {
     var __args = arguments;
-    if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'object' && __args[1]._jdel) {
-      return j_stompClientConnection["subscribe(java.lang.String,io.vertx.ext.stomp.FrameHandler)"](__args[0], __args[1]._jdel);
-    }  else if (__args.length === 3 && typeof __args[0] === 'string' && typeof __args[1] === 'object' && __args[1]._jdel && typeof __args[2] === 'function') {
-      return j_stompClientConnection["subscribe(java.lang.String,io.vertx.ext.stomp.FrameHandler,io.vertx.core.Handler)"](__args[0], __args[1]._jdel, function(jVal) {
+    if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'function') {
+      return j_stompClientConnection["subscribe(java.lang.String,io.vertx.core.Handler)"](__args[0], function(jVal) {
+      __args[1](utils.convReturnDataObject(jVal));
+    });
+    }  else if (__args.length === 3 && typeof __args[0] === 'string' && typeof __args[1] === 'function' && typeof __args[2] === 'function') {
+      return j_stompClientConnection["subscribe(java.lang.String,io.vertx.core.Handler,io.vertx.core.Handler)"](__args[0], function(jVal) {
+      __args[1](utils.convReturnDataObject(jVal));
+    }, function(jVal) {
       __args[2](utils.convReturnDataObject(jVal));
     });
-    }  else if (__args.length === 3 && typeof __args[0] === 'string' && typeof __args[1] === 'object' && typeof __args[2] === 'object' && __args[2]._jdel) {
-      return j_stompClientConnection["subscribe(java.lang.String,java.util.Map,io.vertx.ext.stomp.FrameHandler)"](__args[0], __args[1], __args[2]._jdel);
-    }  else if (__args.length === 4 && typeof __args[0] === 'string' && typeof __args[1] === 'object' && typeof __args[2] === 'object' && __args[2]._jdel && typeof __args[3] === 'function') {
-      return j_stompClientConnection["subscribe(java.lang.String,java.util.Map,io.vertx.ext.stomp.FrameHandler,io.vertx.core.Handler)"](__args[0], __args[1], __args[2]._jdel, function(jVal) {
+    }  else if (__args.length === 3 && typeof __args[0] === 'string' && typeof __args[1] === 'object' && typeof __args[2] === 'function') {
+      return j_stompClientConnection["subscribe(java.lang.String,java.util.Map,io.vertx.core.Handler)"](__args[0], __args[1], function(jVal) {
+      __args[2](utils.convReturnDataObject(jVal));
+    });
+    }  else if (__args.length === 4 && typeof __args[0] === 'string' && typeof __args[1] === 'object' && typeof __args[2] === 'function' && typeof __args[3] === 'function') {
+      return j_stompClientConnection["subscribe(java.lang.String,java.util.Map,io.vertx.core.Handler,io.vertx.core.Handler)"](__args[0], __args[1], function(jVal) {
+      __args[2](utils.convReturnDataObject(jVal));
+    }, function(jVal) {
       __args[3](utils.convReturnDataObject(jVal));
     });
     } else utils.invalidArgs();
@@ -197,13 +204,15 @@ var StompClientConnection = function(j_val) {
    Sets a handler notified when an <code>ERROR</code> frame is received by the client. The handler receives the <code>ERROR</code> frame and a reference on the {@link StompClientConnection}.
 
    @public
-   @param handler {FrameHandler} the handler 
+   @param handler {function} the handler 
    @return {StompClientConnection} the current {@link StompClientConnection}
    */
   this.errorHandler = function(handler) {
     var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
-      j_stompClientConnection["errorHandler(io.vertx.ext.stomp.FrameHandler)"](handler._jdel);
+    if (__args.length === 1 && typeof __args[0] === 'function') {
+      j_stompClientConnection["errorHandler(io.vertx.core.Handler)"](function(jVal) {
+      handler(utils.convReturnDataObject(jVal));
+    });
       return that;
     } else utils.invalidArgs();
   };

@@ -17,7 +17,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * Represents a client connection to a STOMP server.
  */
-public class StompClientConnectionImpl implements StompClientConnection, FrameHandler {
+public class StompClientConnectionImpl implements StompClientConnection, Handler<Frame> {
   private static final Logger log = LoggerFactory.getLogger(StompClientConnectionImpl.class);
 
   private final StompClient client;
@@ -43,9 +43,9 @@ public class StompClientConnectionImpl implements StompClientConnection, FrameHa
   private class Subscription {
     final String destination;
     final String id;
-    final FrameHandler handler;
+    final Handler<Frame> handler;
 
-    private Subscription(String destination, String id, FrameHandler handler) {
+    private Subscription(String destination, String id, Handler<Frame> handler) {
       this.destination = destination;
       this.id = id;
       this.handler = handler;
@@ -53,7 +53,7 @@ public class StompClientConnectionImpl implements StompClientConnection, FrameHa
   }
 
 
-  private FrameHandler errorHandler;
+  private Handler<Frame> errorHandler;
 
   public StompClientConnectionImpl(NetSocket socket, StompClient client, Handler<AsyncResult<StompClientConnection>> resultHandler) {
     this.socket = socket;
@@ -178,22 +178,22 @@ public class StompClientConnectionImpl implements StompClientConnection, FrameHa
   }
 
   @Override
-  public String subscribe(String destination, FrameHandler handler) {
-    return subscribe(destination, null, handler);
+  public String subscribe(String destination, Handler<Frame> handler) {
+    return subscribe(destination, (Map<String, String>) null, handler);
   }
 
   @Override
-  public String subscribe(String destination, FrameHandler handler, Handler<Frame> receiptHandler) {
+  public String subscribe(String destination, Handler<Frame> handler, Handler<Frame> receiptHandler) {
     return subscribe(destination, null, handler, receiptHandler);
   }
 
   @Override
-  public String subscribe(String destination, Map<String, String> headers, FrameHandler handler) {
+  public String subscribe(String destination, Map<String, String> headers, Handler<Frame> handler) {
     return subscribe(destination, headers, handler, null);
   }
 
   @Override
-  public synchronized String subscribe(String destination, Map<String, String> headers, FrameHandler handler, Handler<Frame>
+  public synchronized String subscribe(String destination, Map<String, String> headers, Handler<Frame> handler, Handler<Frame>
       receiptHandler) {
     Objects.requireNonNull(destination);
     Objects.requireNonNull(handler);
@@ -267,7 +267,7 @@ public class StompClientConnectionImpl implements StompClientConnection, FrameHa
   }
 
   @Override
-  public synchronized StompClientConnection errorHandler(FrameHandler handler) {
+  public synchronized StompClientConnection errorHandler(Handler<Frame> handler) {
     this.errorHandler = handler;
     return this;
   }
@@ -445,7 +445,7 @@ public class StompClientConnectionImpl implements StompClientConnection, FrameHa
   }
 
   @Override
-  public void onFrame(Frame frame) {
+  public void handle(Frame frame) {
     switch (frame.getCommand()) {
       case CONNECTED:
         handleConnected(frame);
@@ -456,11 +456,11 @@ public class StompClientConnectionImpl implements StompClientConnection, FrameHa
       case MESSAGE:
         String destination = frame.getHeader(Frame.DESTINATION);
         subscriptions.stream()
-            .filter(s -> s.destination.equals(destination)).forEach(s -> s.handler.onFrame(frame));
+            .filter(s -> s.destination.equals(destination)).forEach(s -> s.handler.handle(frame));
         break;
       case ERROR:
         if (errorHandler != null) {
-          errorHandler.onFrame(frame);
+          errorHandler.handle(frame);
         }
         break;
       case PING:

@@ -1,5 +1,4 @@
 require 'vertx/buffer'
-require 'vertx-stomp/frame_handler'
 require 'vertx/util/utils.rb'
 # Generated from io.vertx.ext.stomp.StompClientConnection
 module VertxStomp
@@ -109,30 +108,30 @@ module VertxStomp
     #  Subscribes to the given destination.
     # @overload subscribe(destination,handler)
     #   @param [String] destination the destination, must not be <code>null</code>
-    #   @param [::VertxStomp::FrameHandler] handler the handler invoked when a message is received on the given destination. Must not be <code>null</code>.
+    #   @yield the handler invoked when a message is received on the given destination. Must not be <code>null</code>.
     # @overload subscribe(destination,handler,receiptHandler)
     #   @param [String] destination the destination, must not be <code>null</code>
-    #   @param [::VertxStomp::FrameHandler] handler the handler invoked when a message is received on the given destination. Must not be <code>null</code>.
+    #   @param [Proc] handler the handler invoked when a message is received on the given destination. Must not be <code>null</code>.
     #   @yield the handler invoked when the <code>RECEIPT</code> frame associated with the subscription has been received. The handler receives the sent frame (<code>SUBSCRIBE</code>).
     # @overload subscribe(destination,headers,handler)
     #   @param [String] destination the destination, must not be <code>null</code>.
     #   @param [Hash{String => String}] headers the headers to configure the subscription. It may contain the <code>ack</code> header to configure the acknowledgment policy. If the given set of headers contains the <code>id</code> header, this value is used as subscription id.
-    #   @param [::VertxStomp::FrameHandler] handler the handler invoked when a message is received on the given destination. Must not be <code>null</code>.
+    #   @yield the handler invoked when a message is received on the given destination. Must not be <code>null</code>.
     # @overload subscribe(destination,headers,handler,receiptHandler)
     #   @param [String] destination the destination, must not be <code>null</code>
     #   @param [Hash{String => String}] headers the headers to configure the subscription. It may contain the <code>ack</code> header to configure the acknowledgment policy. If the given set of headers contains the <code>id</code> header, this value is used as subscription id.
-    #   @param [::VertxStomp::FrameHandler] handler the handler invoked when a message is received on the given destination. Must not be <code>null</code>.
+    #   @param [Proc] handler the handler invoked when a message is received on the given destination. Must not be <code>null</code>.
     #   @yield the handler invoked when the <code>RECEIPT</code> frame associated with the subscription has been received. The handler receives the sent frame (<code>SUBSCRIBE</code>).
     # @return [String] the subscription id, which can either be the destination or the id set in the headers.
     def subscribe(param_1=nil,param_2=nil,param_3=nil)
-      if param_1.class == String && param_2.class.method_defined?(:j_del) && !block_given? && param_3 == nil
-        return @j_del.java_method(:subscribe, [Java::java.lang.String.java_class,Java::IoVertxExtStomp::FrameHandler.java_class]).call(param_1,param_2.j_del)
-      elsif param_1.class == String && param_2.class.method_defined?(:j_del) && block_given? && param_3 == nil
-        return @j_del.java_method(:subscribe, [Java::java.lang.String.java_class,Java::IoVertxExtStomp::FrameHandler.java_class,Java::IoVertxCore::Handler.java_class]).call(param_1,param_2.j_del,(Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
-      elsif param_1.class == String && param_2.class == Hash && param_3.class.method_defined?(:j_del) && !block_given?
-        return @j_del.java_method(:subscribe, [Java::java.lang.String.java_class,Java::JavaUtil::Map.java_class,Java::IoVertxExtStomp::FrameHandler.java_class]).call(param_1,Hash[param_2.map { |k,v| [k,v] }],param_3.j_del)
-      elsif param_1.class == String && param_2.class == Hash && param_3.class.method_defined?(:j_del) && block_given?
-        return @j_del.java_method(:subscribe, [Java::java.lang.String.java_class,Java::JavaUtil::Map.java_class,Java::IoVertxExtStomp::FrameHandler.java_class,Java::IoVertxCore::Handler.java_class]).call(param_1,Hash[param_2.map { |k,v| [k,v] }],param_3.j_del,(Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
+      if param_1.class == String && block_given? && param_2 == nil && param_3 == nil
+        return @j_del.java_method(:subscribe, [Java::java.lang.String.java_class,Java::IoVertxCore::Handler.java_class]).call(param_1,(Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
+      elsif param_1.class == String && param_2.class == Proc && block_given? && param_3 == nil
+        return @j_del.java_method(:subscribe, [Java::java.lang.String.java_class,Java::IoVertxCore::Handler.java_class,Java::IoVertxCore::Handler.java_class]).call(param_1,(Proc.new { |event| param_2.call(event != nil ? JSON.parse(event.toJson.encode) : nil) }),(Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
+      elsif param_1.class == String && param_2.class == Hash && block_given? && param_3 == nil
+        return @j_del.java_method(:subscribe, [Java::java.lang.String.java_class,Java::JavaUtil::Map.java_class,Java::IoVertxCore::Handler.java_class]).call(param_1,Hash[param_2.map { |k,v| [k,v] }],(Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
+      elsif param_1.class == String && param_2.class == Hash && param_3.class == Proc && block_given?
+        return @j_del.java_method(:subscribe, [Java::java.lang.String.java_class,Java::JavaUtil::Map.java_class,Java::IoVertxCore::Handler.java_class,Java::IoVertxCore::Handler.java_class]).call(param_1,Hash[param_2.map { |k,v| [k,v] }],(Proc.new { |event| param_3.call(event != nil ? JSON.parse(event.toJson.encode) : nil) }),(Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
       end
       raise ArgumentError, "Invalid arguments when calling subscribe(param_1,param_2,param_3)"
     end
@@ -159,14 +158,14 @@ module VertxStomp
       raise ArgumentError, "Invalid arguments when calling unsubscribe(destination,headers)"
     end
     #  Sets a handler notified when an <code>ERROR</code> frame is received by the client. The handler receives the <code>ERROR</code> frame and a reference on the {::VertxStomp::StompClientConnection}.
-    # @param [::VertxStomp::FrameHandler] handler the handler
+    # @yield the handler
     # @return [self]
-    def error_handler(handler=nil)
-      if handler.class.method_defined?(:j_del) && !block_given?
-        @j_del.java_method(:errorHandler, [Java::IoVertxExtStomp::FrameHandler.java_class]).call(handler.j_del)
+    def error_handler
+      if block_given?
+        @j_del.java_method(:errorHandler, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling error_handler(handler)"
+      raise ArgumentError, "Invalid arguments when calling error_handler()"
     end
     #  Sets a handler notified when the STOMP connection is closed.
     # @yield the handler

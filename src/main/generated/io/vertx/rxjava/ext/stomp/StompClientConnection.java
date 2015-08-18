@@ -176,8 +176,8 @@ public class StompClientConnection {
    * @param handler the handler invoked when a message is received on the given destination. Must not be <code>null</code>.
    * @return the subscription id.
    */
-  public String subscribe(String destination, FrameHandler handler) { 
-    String ret = this.delegate.subscribe(destination, (io.vertx.ext.stomp.FrameHandler) handler.getDelegate());
+  public String subscribe(String destination, Handler<Frame> handler) { 
+    String ret = this.delegate.subscribe(destination, handler);
     return ret;
   }
 
@@ -188,8 +188,8 @@ public class StompClientConnection {
    * @param receiptHandler the handler invoked when the <code>RECEIPT</code> frame associated with the subscription has been received. The handler receives the sent frame (<code>SUBSCRIBE</code>).
    * @return the subscription id.
    */
-  public String subscribe(String destination, FrameHandler handler, Handler<Frame> receiptHandler) { 
-    String ret = this.delegate.subscribe(destination, (io.vertx.ext.stomp.FrameHandler) handler.getDelegate(), receiptHandler);
+  public String subscribe(String destination, Handler<Frame> handler, Handler<Frame> receiptHandler) { 
+    String ret = this.delegate.subscribe(destination, handler, receiptHandler);
     return ret;
   }
 
@@ -200,8 +200,8 @@ public class StompClientConnection {
    * @param handler the handler invoked when a message is received on the given destination. Must not be <code>null</code>.
    * @return the subscription id, which can either be the destination or the id set in the headers.
    */
-  public String subscribe(String destination, Map<String,String> headers, FrameHandler handler) { 
-    String ret = this.delegate.subscribe(destination, headers, (io.vertx.ext.stomp.FrameHandler) handler.getDelegate());
+  public String subscribe(String destination, Map<String,String> headers, Handler<Frame> handler) { 
+    String ret = this.delegate.subscribe(destination, headers, handler);
     return ret;
   }
 
@@ -213,8 +213,8 @@ public class StompClientConnection {
    * @param receiptHandler the handler invoked when the <code>RECEIPT</code> frame associated with the subscription has been received. The handler receives the sent frame (<code>SUBSCRIBE</code>).
    * @return the subscription id, which can either be the destination or the id set in the headers.
    */
-  public String subscribe(String destination, Map<String,String> headers, FrameHandler handler, Handler<Frame> receiptHandler) { 
-    String ret = this.delegate.subscribe(destination, headers, (io.vertx.ext.stomp.FrameHandler) handler.getDelegate(), receiptHandler);
+  public String subscribe(String destination, Map<String,String> headers, Handler<Frame> handler, Handler<Frame> receiptHandler) { 
+    String ret = this.delegate.subscribe(destination, headers, handler, receiptHandler);
     return ret;
   }
 
@@ -271,8 +271,8 @@ public class StompClientConnection {
    * @param handler the handler
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
-  public StompClientConnection errorHandler(FrameHandler handler) { 
-    this.delegate.errorHandler((io.vertx.ext.stomp.FrameHandler) handler.getDelegate());
+  public StompClientConnection errorHandler(Handler<Frame> handler) { 
+    this.delegate.errorHandler(handler);
     return this;
   }
 

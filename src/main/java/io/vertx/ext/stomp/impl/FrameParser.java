@@ -27,7 +27,7 @@ public class FrameParser implements Handler<Buffer> {
 
   private Frame.Command command;
   private HashMap<String, String> headers = new HashMap<>();
-  private FrameHandler handler;
+  private Handler<Frame> handler;
   private int bodyLength = 0;
 
   private Handler<FrameException> errorHandler;
@@ -50,7 +50,7 @@ public class FrameParser implements Handler<Buffer> {
     this(new StompServerOptions());
   }
 
-  public synchronized FrameParser handler(FrameHandler handler) {
+  public synchronized FrameParser handler(Handler<Frame> handler) {
     Objects.requireNonNull(handler);
     this.handler = handler;
     return this;
@@ -67,7 +67,7 @@ public class FrameParser implements Handler<Buffer> {
         if (isEmpty(buffer)) {
           // ping frame.
           reset();
-          handler.onFrame(Frames.ping());
+          handler.handle(Frames.ping());
           break;
         }
 
@@ -124,7 +124,7 @@ public class FrameParser implements Handler<Buffer> {
         try {
           Frame frame = new Frame(command, headers, buffer);
           reset();
-          handler.onFrame(frame);
+          handler.handle(frame);
         } catch (FrameException e) {
           reportOrThrow("Malformed frame received");
         }

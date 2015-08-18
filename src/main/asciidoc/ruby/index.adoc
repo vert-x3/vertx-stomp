@@ -343,9 +343,9 @@ client = VertxStomp::Stomp.create_stomp_client(vertx, {
 }).connect() { |ar_err,ar|
   if (ar_err == nil)
     connection = ar
-    connection.error_handler(lambda { |frame|
+    connection.error_handler() { |frame|
       puts "ERROR frame received : #{frame}"
-    })
+    }
   else
     puts "Failed to connect to the STOMP server: #{ar_err.to_string()}"
   end
@@ -368,9 +368,9 @@ require 'vertx-stomp/stomp'
 client = VertxStomp::Stomp.create_stomp_client(vertx).connect(netClient) { |ar_err,ar|
   if (ar_err == nil)
     connection = ar
-    connection.error_handler(lambda { |frame|
+    connection.error_handler() { |frame|
       puts "ERROR frame received : #{frame}"
-    })
+    }
   else
     puts "Failed to connect to the STOMP server: #{ar_err.to_string()}"
   end
@@ -397,9 +397,9 @@ require 'vertx-stomp/stomp'
 client = VertxStomp::Stomp.create_stomp_client(vertx).connect() { |ar_err,ar|
   if (ar_err == nil)
     connection = ar
-    connection.subscribe("/queue", lambda { |frame|
+    connection.subscribe("/queue") { |frame|
       puts "Just received a frame from /queue : #{frame}"
-    })
+    }
   else
     puts "Failed to connect to the STOMP server: #{ar_err.to_string()}"
   end
@@ -415,9 +415,9 @@ require 'vertx-stomp/stomp'
 client = VertxStomp::Stomp.create_stomp_client(vertx).connect() { |ar_err,ar|
   if (ar_err == nil)
     connection = ar
-    connection.subscribe("/queue", lambda { |frame|
+    connection.subscribe("/queue") { |frame|
       puts "Just received a frame from /queue : #{frame}"
-    })
+    }
 
     # ....
 
@@ -464,11 +464,11 @@ require 'vertx-stomp/stomp'
 client = VertxStomp::Stomp.create_stomp_client(vertx).connect() { |ar_err,ar|
   if (ar_err == nil)
     connection = ar
-    connection.subscribe("/queue", lambda { |frame|
+    connection.subscribe("/queue") { |frame|
       connection.ack(frame)
       # OR
       connection.nack(frame)
-    })
+    }
   else
     puts "Failed to connect to the STOMP server: #{ar_err.to_string()}"
   end
