@@ -54,7 +54,17 @@ public class DefaultSendHandler implements Handler<ServerFrame> {
         sf.connection().close();
         return;
       } else {
-        transaction.addFrameToTransaction(sf.frame());
+        if (!transaction.addFrameToTransaction(sf.frame())) {
+          // Frame not added to transaction
+          Frame errorFrame = Frames.createErrorFrame("Frame not added to transaction",
+              Headers.create(Frame.DESTINATION, destination, Frame.TRANSACTION, txId),
+              "Message delivery failed - the frame cannot be added to the transaction - the number of allowed thread " +
+                  "may have been reached");
+          sf.connection().handler().unregisterTransactionsFromConnection(sf.connection());
+          sf.connection().write(errorFrame);
+          sf.connection().close();
+          return;
+        }
         Frames.handleReceipt(sf.frame(), sf.connection());
         // No delivery in transactions.
         return;

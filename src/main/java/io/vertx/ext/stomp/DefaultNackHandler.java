@@ -18,44 +18,55 @@ import java.util.List;
 public class DefaultNackHandler implements Handler<ServerFrame> {
   @Override
   public void handle(ServerFrame sf) {
+    StompServerConnection connection = sf.connection();
     String id = sf.frame().getId();
     if (id == null) {
-      sf.connection().write(Frames.createErrorFrame(
+      connection.write(Frames.createErrorFrame(
           "Id header missing",
           Headers.create(sf.frame().getHeaders()), "Invalid NACK frame - the " +
               "'id' must be set"));
-      sf.connection().close();
+      connection.close();
       return;
     }
 
     // Handle transaction
     String txId = sf.frame().getHeader(Frame.TRANSACTION);
     if (txId != null) {
-      Transaction transaction = sf.connection().handler().getTransaction(sf.connection(), txId);
+      Transaction transaction = connection.handler().getTransaction(connection, txId);
       if (transaction == null) {
         // No transaction.
         Frame errorFrame = Frames.createErrorFrame(
             "No transaction",
             Headers.create(Frame.ID, id, Frame.TRANSACTION, txId),
             "Message delivery failed - unknown transaction id in NACK message");
-        sf.connection().write(errorFrame);
-        sf.connection().close();
+        connection.write(errorFrame);
+        connection.close();
         return;
       } else {
-        transaction.addFrameToTransaction(sf.frame());
-        Frames.handleReceipt(sf.frame(), sf.connection());
+        if (!transaction.addFrameToTransaction(sf.frame())) {
+          // Frame not added to transaction
+          Frame errorFrame = Frames.createErrorFrame("Frame not added to transaction",
+              Headers.create(Frame.ID, id, Frame.TRANSACTION, txId),
+              "Message delivery failed - the frame cannot be added to the transaction - the number of allowed thread " +
+                  "may have been reached");
+          connection.handler().unregisterTransactionsFromConnection(connection);
+          connection.write(errorFrame);
+          connection.close();
+          return;
+        }
+        Frames.handleReceipt(sf.frame(), connection);
         // Nothing else in transactions.
         return;
       }
     }
 
-    Subscription subscription = sf.connection().handler().getSubscription(sf.connection(), id);
+    Subscription subscription = connection.handler().getSubscription(connection, id);
     // Not found ignore, it may be too late...
     if (subscription != null) {
       subscription.nack(id);
     }
 
-    Frames.handleReceipt(sf.frame(), sf.connection());
+    Frames.handleReceipt(sf.frame(), connection);
   }
 
 

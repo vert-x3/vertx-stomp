@@ -308,7 +308,7 @@ public class TransactionsTest {
   }
 
   @Test
-  public void testCommitWitAbortId() {
+  public void testAbortWithBadTransactionId() {
     List<Frame> frames = new ArrayList<>();
     List<Frame> errors = new ArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
@@ -336,5 +336,37 @@ public class TransactionsTest {
     // On error, all transactions are closed
     assertThat(server.stompHandler().getTransactions()).hasSize(0);
     assertThat(errors.get(0).toString()).containsIgnoringCase("Unknown transaction");
+  }
+
+  @Test
+  public void testNumberOfFramesInTransaction() {
+    server.options().setMaxFrameInTransaction(2);
+
+    List<Frame> frames = new ArrayList<>();
+    List<Frame> errors = new ArrayList<>();
+    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+      final StompClientConnection connection = ar.result();
+      connection.subscribe("/queue", (frames::add));
+    }));
+
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestinations().contains("/queue"));
+
+    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+      final StompClientConnection connection = ar.result();
+      connection.errorHandler(errors::add);
+      connection.beginTX("my-tx");
+      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
+          .setBody(Buffer.buffer("Hello")));
+      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx").setBody(
+          Buffer.buffer("World")));
+      // Next will be dropped:
+      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
+          .setBody(Buffer.buffer("!!!")));
+      connection.commit("my-tx");
+    }));
+
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getTransactions().isEmpty());
+    assertThat(frames).isEmpty();
+    assertThat(errors).hasSize(1);
   }
 }

@@ -7,7 +7,7 @@ import io.vertx.ext.stomp.utils.Headers;
  * STOMP compliant actions executed when receiving a {@code ACK} frame. It removes the acknowledges messages from the
  * list of messages waiting for acknowledgment. If the {@code ACK} frame specifies a transaction id, the
  * acknowledgment is delayed until the transaction commit.
- *
+ * <p/>
  * This handler is thread safe.
  */
 public class DefaultAckHandler implements Handler<ServerFrame> {
@@ -40,7 +40,17 @@ public class DefaultAckHandler implements Handler<ServerFrame> {
         connection.close();
         return;
       } else {
-        transaction.addFrameToTransaction(frame);
+        if (!transaction.addFrameToTransaction(frame)) {
+          // Frame not added to transaction
+          Frame errorFrame = Frames.createErrorFrame("Frame not added to transaction",
+              Headers.create(Frame.ID, id, Frame.TRANSACTION, txId),
+              "Message delivery failed - the frame cannot be added to the transaction - the number of allowed thread " +
+                  "may have been reached");
+          connection.handler().unregisterTransactionsFromConnection(connection);
+          connection.write(errorFrame);
+          connection.close();
+          return;
+        }
         Frames.handleReceipt(frame, connection);
         // Nothing else in transactions.
         return;

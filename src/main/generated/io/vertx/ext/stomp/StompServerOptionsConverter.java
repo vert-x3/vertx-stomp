@@ -15,6 +15,9 @@ public class StompServerOptionsConverter {
     if (json.getValue("maxBodyLength") instanceof Number) {
       obj.setMaxBodyLength(((Number)json.getValue("maxBodyLength")).intValue());
     }
+    if (json.getValue("maxFrameInTransaction") instanceof Number) {
+      obj.setMaxFrameInTransaction(((Number)json.getValue("maxFrameInTransaction")).intValue());
+    }
     if (json.getValue("maxHeaderLength") instanceof Number) {
       obj.setMaxHeaderLength(((Number)json.getValue("maxHeaderLength")).intValue());
     }
@@ -46,6 +49,7 @@ public class StompServerOptionsConverter {
       json.put("heartbeat", obj.getHeartbeat());
     }
     json.put("maxBodyLength", obj.getMaxBodyLength());
+    json.put("maxFrameInTransaction", obj.getMaxFrameInTransaction());
     json.put("maxHeaderLength", obj.getMaxHeaderLength());
     json.put("maxHeaders", obj.getMaxHeaders());
     json.put("secured", obj.isSecured());

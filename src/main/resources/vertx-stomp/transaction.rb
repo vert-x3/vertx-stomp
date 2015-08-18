@@ -42,13 +42,12 @@ module VertxStomp
     end
     #  Adds a frame to the transaction. By default, only <code>SEND, ACK and NACK</code> frames can be in transactions.
     # @param [Hash] frame the frame to add
-    # @return [self]
-    def add_frame_to_transaction(frame=nil)
+    # @return [true,false] <code>true</code> if the frame was added, <code>false</code> otherwise. Main failure reason is the number of frames stored in the transaction that have exceed the number of allowed frames in transaction.
+    def add_frame_to_transaction?(frame=nil)
       if frame.class == Hash && !block_given?
-        @j_del.java_method(:addFrameToTransaction, [Java::IoVertxExtStomp::Frame.java_class]).call(Java::IoVertxExtStomp::Frame.new(::Vertx::Util::Utils.to_json_object(frame)))
-        return self
+        return @j_del.java_method(:addFrameToTransaction, [Java::IoVertxExtStomp::Frame.java_class]).call(Java::IoVertxExtStomp::Frame.new(::Vertx::Util::Utils.to_json_object(frame)))
       end
-      raise ArgumentError, "Invalid arguments when calling add_frame_to_transaction(frame)"
+      raise ArgumentError, "Invalid arguments when calling add_frame_to_transaction?(frame)"
     end
     #  Clears the list of frames added to the transaction.
     # @return [self]

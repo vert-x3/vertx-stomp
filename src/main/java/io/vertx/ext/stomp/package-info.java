@@ -100,8 +100,9 @@
  * * the maximum number of headers accepted in a STOMP frame - defaults to 1000
  * * the max length of a header line in a STOMP frame - defaults to 10240
  * * the STOMP heartbeat time - default to `1000, 1000`
- * * the _acknowledgement timeout_ (time before a message is considered not-acknowledged) - default to 10 seconds
+ * * the _acknowledgement timeout_ (time before a message is considered not-acknowledged) - defaults to 10 seconds
  * * the supported STOMP protocol versions (1.0, 1.1 and 1.2 by default)
+ * * the maximum number of frame allowed in a transaction (defaults to 1000)
  *
  * The STOMP heartbeat is configured using a JSON object as follows:
  *

@@ -50,6 +50,13 @@ Sets the heartbeat configuration.+++
 |+++
 Sets the max body length accepted by the server. 10 Mb by default.+++
 
+|[[maxFrameInTransaction]]`maxFrameInTransaction`
+|`Number (int)`
+|+++
+Sets the maximum number of frame that can be added in a transaction. If the number of frame added to a
+ transaction exceeds this threshold, the client receives an <code>ERROR</code> frame and is disconnected. The default
+ is 1000.+++
+
 |[[maxHeaderLength]]`maxHeaderLength`
 |`Number (int)`
 |+++
@@ -84,7 +91,7 @@ Sets the maximum number of headers. 1000 by default.+++
 |[[secured]]`secured`
 |`Boolean`
 |+++
-Enables or disables the server security feature. It requires an  handler.+++
+Enables or disables the server security feature. It requires an link handler.+++
 
 |[[sendBufferSize]]`sendBufferSize`
 |`Number (int)`

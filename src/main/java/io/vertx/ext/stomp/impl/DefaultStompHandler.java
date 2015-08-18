@@ -7,10 +7,14 @@ import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
+import io.vertx.core.shareddata.LocalMap;
 import io.vertx.ext.auth.AuthProvider;
 import io.vertx.ext.stomp.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -63,7 +67,7 @@ public class DefaultStompHandler implements StompServerHandler {
   private Handler<Acknowledgement> onNackHandler = (acknowledgement) ->
       log.warn("Messages not acknowledge - " + acknowledgement.frames());
 
-  private final Map<String, List<Subscription>> subscriptions = new HashMap<>();
+  private final LocalMap<String, Subscriptions> subscriptions;
   private final List<Transaction> transactions = new ArrayList<>();
 
   private volatile long lastClientActivity;
@@ -72,6 +76,7 @@ public class DefaultStompHandler implements StompServerHandler {
 
   public DefaultStompHandler(Vertx vertx) {
     this.vertx = vertx;
+    this.subscriptions = vertx.sharedData().getLocalMap("stomp.subscriptions");
   }
 
   public synchronized void onClose(StompServerConnection connection) {
@@ -461,7 +466,7 @@ public class DefaultStompHandler implements StompServerHandler {
   public synchronized StompServerHandler unregisterTransactionsFromConnection(StompServerConnection connection) {
     transactions.stream()
         .filter(transaction -> transaction.connection().equals(connection))
-        .sorted() // Avoid using baking up collection. TODO Test we dont have concurrent modification exception.
+        .sorted() // Avoid using baking up collection.
         .forEach(transactions::remove);
     return this;
   }
@@ -531,9 +536,9 @@ public class DefaultStompHandler implements StompServerHandler {
 
 
   private synchronized void addSubscription(String destination, Subscription subscription) {
-    List<Subscription> list = subscriptions.get(destination);
+    Subscriptions list = subscriptions.get(destination);
     if (list == null) {
-      list = new ArrayList<>();
+      list = new Subscriptions();
       subscriptions.put(destination, list);
     }
     list.add(subscription);

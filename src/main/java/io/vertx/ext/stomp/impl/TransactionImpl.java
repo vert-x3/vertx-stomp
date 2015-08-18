@@ -32,9 +32,8 @@ public class TransactionImpl implements Transaction {
   }
 
   @Override
-  public synchronized Transaction addFrameToTransaction(Frame frame) {
-    frames.add(frame);
-    return this;
+  public synchronized boolean addFrameToTransaction(Frame frame) {
+    return frames.size() < connection.server().options().getMaxFrameInTransaction() && frames.add(frame);
   }
 
   @Override

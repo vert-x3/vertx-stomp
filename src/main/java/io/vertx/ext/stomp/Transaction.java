@@ -37,10 +37,10 @@ public interface Transaction {
    * Adds a frame to the transaction. By default, only {@code SEND, ACK and NACK} frames can be in transactions.
    *
    * @param frame the frame to add
-   * @return the current {@link Transaction}
+   * @return {@code true} if the frame was added, {@code false} otherwise. Main failure reason is the number of
+   * frames stored in the transaction that have exceed the number of allowed frames in transaction.
    */
-  @Fluent
-  Transaction addFrameToTransaction(Frame frame);
+  boolean addFrameToTransaction(Frame frame);
 
   /**
    * Clears the list of frames added to the transaction.

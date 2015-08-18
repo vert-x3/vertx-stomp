@@ -73,16 +73,16 @@ public class Transaction {
   /**
    * Adds a frame to the transaction. By default, only <code>SEND, ACK and NACK</code> frames can be in transactions.
    * @param frame the frame to add
-   * @return the current {@link io.vertx.ext.stomp.Transaction}
+   * @return <code>true</code> if the frame was added, <code>false</code> otherwise. Main failure reason is the number of frames stored in the transaction that have exceed the number of allowed frames in transaction.
    */
-  public Transaction addFrameToTransaction(Frame frame) { 
-    this.delegate.addFrameToTransaction(frame);
-    return this;
+  public boolean addFrameToTransaction(Frame frame) { 
+    boolean ret = this.delegate.addFrameToTransaction(frame);
+    return ret;
   }
 
   /**
    * Clears the list of frames added to the transaction.
-   * @return the current {@link io.vertx.rxjava.ext.stomp.Transaction}
+   * @return the current {@link io.vertx.ext.stomp.Transaction}
    */
   public Transaction clear() { 
     this.delegate.clear();

@@ -18,9 +18,13 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
 
   public static final int MAX_BODY_LENGTH = 1024 * 1024 * 100;
 
+  public static final int MAX_FRAME_IN_TRANSACTION = 1000;
+
   private int maxHeaderLength = MAX_HEADER_LENGTH;
   private int maxHeaders = MAX_HEADERS;
   private int maxBodyLength = MAX_BODY_LENGTH;
+
+  private int maxFrameInTransaction = MAX_FRAME_IN_TRANSACTION;
 
   /**
    * The set of version of the STOMP specification supported by the server. Must be decreasing.
@@ -57,6 +61,7 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
     this.ackTimeout = other.ackTimeout;
     this.timeFactor = other.timeFactor;
     this.heartbeat = other.heartbeat;
+    this.maxFrameInTransaction = other.maxFrameInTransaction;
   }
 
   /**
@@ -164,7 +169,7 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
 
   /**
    * Checks whether or not the server is secured (meaning it has an authentication mechanism). Security is disabled
-   * by default and requires an {@link AuthenticationHandler} handler.
+   * by default and requires an {@link io.vertx.ext.auth.AuthProvider} handler.
    *
    * @return whether or not the option is enabled.
    */
@@ -173,7 +178,7 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
   }
 
   /**
-   * Enables or disables the server security feature. It requires an {@link AuthenticationHandler} handler.
+   * Enables or disables the server security feature. It requires an {@link io.vertx.ext.auth.AuthProvider} handler.
    *
    * @param secured whether or not the option should be enabled.
    * @return the current {@link StompServerOptions}
@@ -290,6 +295,29 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
    */
   public StompServerOptions setHeartbeat(JsonObject heartbeat) {
     this.heartbeat = heartbeat;
+    return this;
+  }
+
+  /**
+   * Gets the maximum number of frames that can be added to a transaction. If the number of frame added to a
+   * transaction exceeds this threshold, the client receives an {@code ERROR} frame and is disconnected.
+   *
+   * @return the max number of frame in transaction
+   */
+  public int getMaxFrameInTransaction() {
+    return maxFrameInTransaction;
+  }
+
+  /**
+   * Sets the maximum number of frame that can be added in a transaction. If the number of frame added to a
+   * transaction exceeds this threshold, the client receives an {@code ERROR} frame and is disconnected. The default
+   * is 1000.
+   *
+   * @param maxFrameInTransaction the max number of frame
+   * @return the current {@link StompServerOptions}
+   */
+  public StompServerOptions setMaxFrameInTransaction(int maxFrameInTransaction) {
+    this.maxFrameInTransaction = maxFrameInTransaction;
     return this;
   }
 }

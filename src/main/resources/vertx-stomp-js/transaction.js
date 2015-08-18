@@ -66,13 +66,12 @@ var Transaction = function(j_val) {
 
    @public
    @param frame {Object} the frame to add 
-   @return {Transaction} the current {@link Transaction}
+   @return {boolean} <code>true</code> if the frame was added, <code>false</code> otherwise. Main failure reason is the number of frames stored in the transaction that have exceed the number of allowed frames in transaction.
    */
   this.addFrameToTransaction = function(frame) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'object') {
-      j_transaction["addFrameToTransaction(io.vertx.ext.stomp.Frame)"](frame != null ? new Frame(new JsonObject(JSON.stringify(frame))) : null);
-      return that;
+      return j_transaction["addFrameToTransaction(io.vertx.ext.stomp.Frame)"](frame != null ? new Frame(new JsonObject(JSON.stringify(frame))) : null);
     } else utils.invalidArgs();
   };
 
