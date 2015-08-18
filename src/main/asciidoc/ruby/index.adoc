@@ -150,24 +150,16 @@ server = VertxStomp::Stomp.create_stomp_server(vertx, {
 
 ----
 
-Enabling security requires an additional `link:yardoc/VertxStomp/AuthenticationHandler.html[AuthenticationHandler]` handling the
+Enabling security requires an additional `link:../../vertx-auth-common/ruby/yardoc/VertxAuthCommon/AuthProvider.html[AuthProvider]` handling the
 authentication requests:
 
 [source,ruby]
 ----
-require 'vertx/future'
 require 'vertx-stomp/stomp_server_handler'
 require 'vertx-stomp/stomp'
 server = VertxStomp::Stomp.create_stomp_server(vertx, {
   'secured' => true
-}).handler(VertxStomp::StompServerHandler.create(vertx).authentication_handler(lambda { |login,passcode,resultHandler|
-  # Don't reuse this code.
-  if ("admin".==(login) && "admin".==(passcode))
-    resultHandler.handle(Vertx::Future.succeeded_future(true))
-  else
-    resultHandler.handle(Vertx::Future.succeeded_future(false))
-  end
-})).listen()
+}).handler(VertxStomp::StompServerHandler.create(vertx).auth_provider(provider)).listen()
 
 ----
 

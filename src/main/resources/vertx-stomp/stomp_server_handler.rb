@@ -1,4 +1,3 @@
-require 'vertx-stomp/authentication_handler'
 require 'vertx-stomp/transaction'
 require 'vertx-stomp/acknowledgement'
 require 'vertx-stomp/subscription'
@@ -6,6 +5,7 @@ require 'vertx/vertx'
 require 'vertx-stomp/stomp_server'
 require 'vertx-stomp/server_frame'
 require 'vertx-stomp/stomp_server_connection'
+require 'vertx-auth-common/auth_provider'
 require 'vertx/util/utils.rb'
 # Generated from io.vertx.ext.stomp.StompServerHandler
 module VertxStomp
@@ -171,8 +171,8 @@ module VertxStomp
       end
       raise ArgumentError, "Invalid arguments when calling nack_handler()"
     end
-    #  Called when the client connects to a server requiring authentication. It should invokes the handler configured
-    #  using {::VertxStomp::StompServerHandler#authentication_handler}.
+    #  Called when the client connects to a server requiring authentication. It invokes the  configured
+    #  using {::VertxStomp::StompServerHandler#auth_provider}.
     # @param [::VertxStomp::StompServer] server the STOMP server.
     # @param [String] login the login
     # @param [String] passcode the password
@@ -185,15 +185,15 @@ module VertxStomp
       end
       raise ArgumentError, "Invalid arguments when calling on_authentication_request(server,login,passcode)"
     end
-    #  Configures the action to execute when a an authentication request is made.
-    # @param [::VertxStomp::AuthenticationHandler] handler the handler
+    #  Configures the  to be used to authenticate the user.
+    # @param [::VertxAuthCommon::AuthProvider] handler the handler
     # @return [self]
-    def authentication_handler(handler=nil)
+    def auth_provider(handler=nil)
       if handler.class.method_defined?(:j_del) && !block_given?
-        @j_del.java_method(:authenticationHandler, [Java::IoVertxExtStomp::AuthenticationHandler.java_class]).call(handler.j_del)
+        @j_del.java_method(:authProvider, [Java::IoVertxExtAuth::AuthProvider.java_class]).call(handler.j_del)
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling authentication_handler(handler)"
+      raise ArgumentError, "Invalid arguments when calling auth_provider(handler)"
     end
     #  @return the list of destination managed by the STOMP server. Don't forget the STOMP interprets destination as
     #  opaque Strings.

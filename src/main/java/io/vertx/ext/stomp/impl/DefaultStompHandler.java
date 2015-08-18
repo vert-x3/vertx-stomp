@@ -4,8 +4,10 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
+import io.vertx.ext.auth.AuthProvider;
 import io.vertx.ext.stomp.*;
 
 import java.util.*;
@@ -17,7 +19,7 @@ import java.util.stream.Collectors;
  * <p/>
  * By default {@code ACK/NACK} are managed as a dead messages. Not acknowledges messages are dropped from the list
  * and a warning is printed in the log.
- *
+ * <p/>
  * This class is thread safe.
  */
 public class DefaultStompHandler implements StompServerHandler {
@@ -52,7 +54,7 @@ public class DefaultStompHandler implements StompServerHandler {
     onClose(connection);
   });
 
-  private AuthenticationHandler authenticatedHandler;
+  private AuthProvider authProvider;
 
   private Handler<StompServerConnection> pingHandler = StompServerConnection::ping;
 
@@ -345,8 +347,8 @@ public class DefaultStompHandler implements StompServerHandler {
   }
 
   @Override
-  public synchronized StompServerHandler authenticationHandler(AuthenticationHandler handler) {
-    this.authenticatedHandler = handler;
+  public synchronized StompServerHandler authProvider(AuthProvider handler) {
+    this.authProvider = handler;
     return this;
   }
 
@@ -354,10 +356,10 @@ public class DefaultStompHandler implements StompServerHandler {
   public StompServerHandler onAuthenticationRequest(StompServer server,
                                                     String login, String passcode,
                                                     Handler<AsyncResult<Boolean>> handler) {
-    final AuthenticationHandler auth;
+    final AuthProvider auth;
     synchronized (this) {
       // Stack contention.
-      auth = authenticatedHandler;
+      auth = authProvider;
     }
 
     if (!server.options().isSecured()) {
@@ -369,13 +371,19 @@ public class DefaultStompHandler implements StompServerHandler {
     }
 
     if (server.options().isSecured() && auth == null) {
-      log.error("Cannot authenticate connection - no authentication handler");
+      log.error("Cannot authenticate connection - no authentication provider");
       vertx.runOnContext(v -> handler.handle(Future.succeededFuture(false)));
       return this;
     }
 
     vertx.runOnContext(v ->
-        auth.authenticate(login, passcode, handler));
+        auth.authenticate(new JsonObject().put("username", login).put("password", passcode), ar -> {
+          if (ar.succeeded()) {
+            vertx.runOnContext(v2 -> handler.handle(Future.succeededFuture(true)));
+          } else {
+            vertx.runOnContext(v2 -> handler.handle(Future.succeededFuture(false)));
+          }
+        }));
     return this;
   }
 
@@ -430,7 +438,7 @@ public class DefaultStompHandler implements StompServerHandler {
   }
 
   @Override
-  public synchronized  boolean registerTransaction(Transaction transaction) {
+  public synchronized boolean registerTransaction(Transaction transaction) {
     if (getTransaction(transaction.connection(), transaction.id()) != null) {
       return false;
     }

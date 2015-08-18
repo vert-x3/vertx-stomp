@@ -136,21 +136,13 @@ StompServer server = Stomp.createStompServer(vertx, new StompServerOptions().set
     .listen();
 ----
 
-Enabling security requires an additional `link:../../apidocs/io/vertx/ext/stomp/AuthenticationHandler.html[AuthenticationHandler]` handling the
+Enabling security requires an additional `link:../../apidocs/io/vertx/ext/auth/AuthProvider.html[AuthProvider]` handling the
 authentication requests:
 
 [source,java]
 ----
 StompServer server = Stomp.createStompServer(vertx, new StompServerOptions().setSecured(true))
-    .handler(StompServerHandler.create(vertx).authenticationHandler(
-        (login, passcode, resultHandler) -> {
-          // Don't reuse this code.
-          if ("admin".equals(login) && "admin".equals(passcode)) {
-            resultHandler.handle(Future.succeededFuture(true));
-          } else {
-            resultHandler.handle(Future.succeededFuture(false));
-          }
-        }))
+    .handler(StompServerHandler.create(vertx).authProvider(provider))
     .listen();
 ----
 

@@ -1,8 +1,11 @@
 package io.vertx.ext.stomp.impl;
 
-import io.vertx.core.Future;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.NetSocket;
+import io.vertx.ext.auth.AuthProvider;
+import io.vertx.ext.auth.shiro.ShiroAuth;
+import io.vertx.ext.auth.shiro.ShiroAuthRealmType;
 import io.vertx.ext.stomp.Stomp;
 import io.vertx.ext.stomp.StompServer;
 import io.vertx.ext.stomp.StompServerHandler;
@@ -19,23 +22,17 @@ import org.junit.runner.RunWith;
  */
 @RunWith(io.vertx.ext.unit.junit.VertxUnitRunner.class)
 public class SecuredServerConnectionTest {
-  public static final String ADMIN = "admin";
   private Vertx vertx;
   private StompServer server;
 
   @Before
   public void setUp(TestContext context) {
     vertx = Vertx.vertx();
+    JsonObject config = new JsonObject().put("properties_path", "classpath:test-auth.properties");
+    AuthProvider provider = ShiroAuth.create(vertx, ShiroAuthRealmType.PROPERTIES, config);
     AsyncLock<StompServer> lock = new AsyncLock<>();
     server = Stomp.createStompServer(vertx, new StompServerOptions().setSecured(true))
-        .handler(StompServerHandler.create(vertx)
-            .authenticationHandler((login, passcode, resultHandler) -> {
-              if (ADMIN.equals(login) && ADMIN.equals(passcode)) {
-                resultHandler.handle(Future.succeededFuture(true));
-              } else {
-                resultHandler.handle(Future.succeededFuture(false));
-              }
-            }))
+        .handler(StompServerHandler.create(vertx).authProvider(provider))
         .listen(lock.handler());
     lock.waitForSuccess();
   }

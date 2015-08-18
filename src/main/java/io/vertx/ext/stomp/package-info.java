@@ -110,7 +110,7 @@
  * {@link examples.StompServerExamples#example6}
  * ----
  *
- * Enabling security requires an additional {@link io.vertx.ext.stomp.AuthenticationHandler} handling the
+ * Enabling security requires an additional {@link io.vertx.ext.auth.AuthProvider} handling the
  * authentication requests:
  *
  * [source,$lang]

@@ -84,7 +84,7 @@ Sets the maximum number of headers. 1000 by default.+++
 |[[secured]]`secured`
 |`Boolean`
 |+++
-Enables or disables the server security feature. It requires an link handler.+++
+Enables or disables the server security feature. It requires an  handler.+++
 
 |[[sendBufferSize]]`sendBufferSize`
 |`Number (int)`

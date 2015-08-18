@@ -1,9 +1,9 @@
 package examples;
 
-import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.NetServer;
+import io.vertx.ext.auth.AuthProvider;
 import io.vertx.ext.stomp.Stomp;
 import io.vertx.ext.stomp.StompServer;
 import io.vertx.ext.stomp.StompServerHandler;
@@ -54,17 +54,9 @@ public class StompServerExamples {
         .listen();
   }
 
-  public void example7(Vertx vertx) {
+  public void example7(Vertx vertx, AuthProvider provider) {
     StompServer server = Stomp.createStompServer(vertx, new StompServerOptions().setSecured(true))
-        .handler(StompServerHandler.create(vertx).authenticationHandler(
-            (login, passcode, resultHandler) -> {
-              // Don't reuse this code.
-              if ("admin".equals(login) && "admin".equals(passcode)) {
-                resultHandler.handle(Future.succeededFuture(true));
-              } else {
-                resultHandler.handle(Future.succeededFuture(false));
-              }
-            }))
+        .handler(StompServerHandler.create(vertx).authProvider(provider))
         .listen();
   }
 

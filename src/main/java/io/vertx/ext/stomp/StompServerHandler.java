@@ -5,6 +5,7 @@ import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
+import io.vertx.ext.auth.AuthProvider;
 import io.vertx.ext.stomp.impl.DefaultStompHandler;
 
 import java.util.List;
@@ -145,8 +146,8 @@ public interface StompServerHandler extends Handler<ServerFrame> {
   StompServerHandler nackHandler(Handler<ServerFrame> handler);
 
   /**
-   * Called when the client connects to a server requiring authentication. It should invokes the handler configured
-   * using {@link #authenticationHandler(AuthenticationHandler)}.
+   * Called when the client connects to a server requiring authentication. It invokes the {@link AuthProvider} configured
+   * using {@link #authProvider(AuthProvider)}.
    *
    * @param server   the STOMP server.
    * @param login    the login
@@ -159,13 +160,13 @@ public interface StompServerHandler extends Handler<ServerFrame> {
                                              Handler<AsyncResult<Boolean>> handler);
 
   /**
-   * Configures the action to execute when a an authentication request is made.
+   * Configures the {@link AuthProvider} to be used to authenticate the user.
    *
    * @param handler the handler
    * @return the current {@link StompServerHandler}
    */
   @Fluent
-  StompServerHandler authenticationHandler(AuthenticationHandler handler);
+  StompServerHandler authProvider(AuthProvider handler);
 
   /**
    * @return the list of destination managed by the STOMP server. Don't forget the STOMP interprets destination as

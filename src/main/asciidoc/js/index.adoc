@@ -150,24 +150,16 @@ var server = Stomp.createStompServer(vertx, {
 
 ----
 
-Enabling security requires an additional `link:jsdoc/authentication_handler-AuthenticationHandler.html[AuthenticationHandler]` handling the
+Enabling security requires an additional `link:../../vertx-auth-common/js/jsdoc/auth_provider-AuthProvider.html[AuthProvider]` handling the
 authentication requests:
 
 [source,js]
 ----
-var Future = require("vertx-js/future");
 var StompServerHandler = require("vertx-stomp-js/stomp_server_handler");
 var Stomp = require("vertx-stomp-js/stomp");
 var server = Stomp.createStompServer(vertx, {
   "secured" : true
-}).handler(StompServerHandler.create(vertx).authenticationHandler(function (login, passcode, resultHandler) {
-  // Don't reuse this code.
-  if ("admin" == login && "admin" == passcode) {
-    resultHandler.handle(Future.succeededFuture(true));
-  } else {
-    resultHandler.handle(Future.succeededFuture(false));
-  }
-})).listen();
+}).handler(StompServerHandler.create(vertx).authProvider(provider)).listen();
 
 ----
 

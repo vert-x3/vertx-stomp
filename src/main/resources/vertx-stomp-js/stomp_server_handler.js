@@ -16,7 +16,6 @@
 
 /** @module vertx-stomp-js/stomp_server_handler */
 var utils = require('vertx-js/util/utils');
-var AuthenticationHandler = require('vertx-stomp-js/authentication_handler');
 var Transaction = require('vertx-stomp-js/transaction');
 var Acknowledgement = require('vertx-stomp-js/acknowledgement');
 var Subscription = require('vertx-stomp-js/subscription');
@@ -24,6 +23,7 @@ var Vertx = require('vertx-js/vertx');
 var StompServer = require('vertx-stomp-js/stomp_server');
 var ServerFrame = require('vertx-stomp-js/server_frame');
 var StompServerConnection = require('vertx-stomp-js/stomp_server_connection');
+var AuthProvider = require('vertx-auth-common-js/auth_provider');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
@@ -274,8 +274,8 @@ var StompServerHandler = function(j_val) {
   };
 
   /**
-   Called when the client connects to a server requiring authentication. It should invokes the handler configured
-   using {@link StompServerHandler#authenticationHandler}.
+   Called when the client connects to a server requiring authentication. It invokes the  configured
+   using {@link StompServerHandler#authProvider}.
 
    @public
    @param server {StompServer} the STOMP server. 
@@ -299,16 +299,16 @@ var StompServerHandler = function(j_val) {
   };
 
   /**
-   Configures the action to execute when a an authentication request is made.
+   Configures the  to be used to authenticate the user.
 
    @public
-   @param handler {AuthenticationHandler} the handler 
+   @param handler {AuthProvider} the handler 
    @return {StompServerHandler} the current {@link StompServerHandler}
    */
-  this.authenticationHandler = function(handler) {
+  this.authProvider = function(handler) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
-      j_stompServerHandler["authenticationHandler(io.vertx.ext.stomp.AuthenticationHandler)"](handler._jdel);
+      j_stompServerHandler["authProvider(io.vertx.ext.auth.AuthProvider)"](handler._jdel);
       return that;
     } else utils.invalidArgs();
   };

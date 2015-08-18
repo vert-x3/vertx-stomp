@@ -20,6 +20,7 @@ import java.util.Map;
 import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
 import io.vertx.rxjava.core.Vertx;
+import io.vertx.rxjava.ext.auth.AuthProvider;
 import java.util.List;
 import io.vertx.ext.stomp.Frame;
 import io.vertx.core.AsyncResult;
@@ -239,8 +240,8 @@ public class StompServerHandler implements Handler<ServerFrame> {
   }
 
   /**
-   * Called when the client connects to a server requiring authentication. It should invokes the handler configured
-   * using {@link io.vertx.rxjava.ext.stomp.StompServerHandler#authenticationHandler}.
+   * Called when the client connects to a server requiring authentication. It invokes the  configured
+   * using {@link io.vertx.rxjava.ext.stomp.StompServerHandler#authProvider}.
    * @param server the STOMP server.
    * @param login the login
    * @param passcode the password
@@ -253,8 +254,8 @@ public class StompServerHandler implements Handler<ServerFrame> {
   }
 
   /**
-   * Called when the client connects to a server requiring authentication. It should invokes the handler configured
-   * using {@link io.vertx.rxjava.ext.stomp.StompServerHandler#authenticationHandler}.
+   * Called when the client connects to a server requiring authentication. It invokes the  configured
+   * using {@link io.vertx.rxjava.ext.stomp.StompServerHandler#authProvider}.
    * @param server the STOMP server.
    * @param login the login
    * @param passcode the password
@@ -267,12 +268,12 @@ public class StompServerHandler implements Handler<ServerFrame> {
   }
 
   /**
-   * Configures the action to execute when a an authentication request is made.
+   * Configures the  to be used to authenticate the user.
    * @param handler the handler
    * @return the current {@link io.vertx.ext.stomp.StompServerHandler}
    */
-  public StompServerHandler authenticationHandler(AuthenticationHandler handler) { 
-    this.delegate.authenticationHandler((io.vertx.ext.stomp.AuthenticationHandler) handler.getDelegate());
+  public StompServerHandler authProvider(AuthProvider handler) { 
+    this.delegate.authProvider((io.vertx.ext.auth.AuthProvider) handler.getDelegate());
     return this;
   }
 
