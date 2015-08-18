@@ -369,4 +369,38 @@ public class TransactionsTest {
     assertThat(frames).isEmpty();
     assertThat(errors).hasSize(1);
   }
+
+  @Test
+  public void testTransactionChunk() {
+    server.options().setTransactionChunkSize(100);
+    server.options().setMaxFrameInTransaction(10000);
+
+    List<Frame> frames = new ArrayList<>();
+    List<Frame> errors = new ArrayList<>();
+    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+      final StompClientConnection connection = ar.result();
+      connection.subscribe("/queue", (frames::add));
+    }));
+
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestinations().contains("/queue"));
+
+    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+      final StompClientConnection connection = ar.result();
+      connection.errorHandler(errors::add);
+      connection.beginTX("my-tx");
+      for (int i = 0; i < 5000; i++) {
+        connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
+            .setBody(Buffer.buffer("Hello-" + i)));
+      }
+      connection.commit("my-tx");
+    }));
+
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> frames.size() == 5000 && errors.isEmpty());
+    int i = 0;
+    for (Frame frame : frames) {
+      assertThat(frame.getHeader(Frame.TRANSACTION)).isEqualTo("my-tx");
+      assertThat(frame.getBodyAsString()).isEqualTo("Hello-" + i);
+      i++;
+    }
+  }
 }

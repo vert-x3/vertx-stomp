@@ -3,6 +3,8 @@ package io.vertx.ext.stomp;
 import io.vertx.core.Handler;
 import io.vertx.ext.stomp.utils.Headers;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -10,7 +12,7 @@ import java.util.UUID;
  * STOMP compliant actions executed when receiving a {@code COMMIT} frame. All frames that are part of the
  * transactions are processed ({@code ACK/NACK} and {@code SEND} frames). If the {@code COMMIT} frame defines a {@code
  * receipt}, the {@code RECEIPT} frame is sent once all frames have been replayed.
- *
+ * <p/>
  * This handler is thread safe.
  */
 public class DefaultCommitHandler implements Handler<ServerFrame> {
@@ -45,6 +47,18 @@ public class DefaultCommitHandler implements Handler<ServerFrame> {
   }
 
   private void replay(StompServerConnection connection, List<Frame> frames) {
+    // To avoid blocking the event loop for too long, we replay the transaction chunk by chunk.
+    Iterator<Frame> iterator = frames.iterator();
+    while (iterator.hasNext()) {
+      List<Frame> chunk = new ArrayList<>();
+      while (iterator.hasNext() && chunk.size() < connection.server().options().getTransactionChunkSize()) {
+        chunk.add(iterator.next());
+      }
+      connection.server().vertx().runOnContext(v -> replayChunk(connection, chunk));
+    }
+  }
+
+  private void replayChunk(StompServerConnection connection, List<Frame> frames) {
     for (Frame frame : frames) {
       switch (frame.getCommand()) {
         case SEND:

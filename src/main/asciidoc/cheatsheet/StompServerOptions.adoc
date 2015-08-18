@@ -127,6 +127,12 @@ Sets the time factor.+++
 |[[trafficClass]]`trafficClass`
 |`Number (int)`
 |-
+|[[transactionChunkSize]]`transactionChunkSize`
+|`Number (int)`
+|+++
+Sets the chunk size when replaying a transaction. To avoid blocking the event loop for too long, large
+ transactions are split into chunks, replayed one by one. This settings sets the chunk size.+++
+
 |[[trustStoreOptions]]`trustStoreOptions`
 |`link:JksOptions.html[JksOptions]`
 |-

@@ -41,6 +41,9 @@ public class StompServerOptionsConverter {
     if (json.getValue("timeFactor") instanceof Number) {
       obj.setTimeFactor(((Number)json.getValue("timeFactor")).intValue());
     }
+    if (json.getValue("transactionChunkSize") instanceof Number) {
+      obj.setTransactionChunkSize(((Number)json.getValue("transactionChunkSize")).intValue());
+    }
   }
 
   public static void toJson(StompServerOptions obj, JsonObject json) {
@@ -62,5 +65,6 @@ public class StompServerOptionsConverter {
               collect(java.util.stream.Collectors.toList())));
     }
     json.put("timeFactor", obj.getTimeFactor());
+    json.put("transactionChunkSize", obj.getTransactionChunkSize());
   }
 }

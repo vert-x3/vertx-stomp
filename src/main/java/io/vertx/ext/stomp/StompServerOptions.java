@@ -19,6 +19,8 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
   public static final int MAX_BODY_LENGTH = 1024 * 1024 * 100;
 
   public static final int MAX_FRAME_IN_TRANSACTION = 1000;
+  public static final int TRANSACTION_CHUNK_SIZE = 1000;
+
 
   private int maxHeaderLength = MAX_HEADER_LENGTH;
   private int maxHeaders = MAX_HEADERS;
@@ -35,6 +37,7 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
   private long ackTimeout = 10000;
   private int timeFactor = 1;
   private JsonObject heartbeat = DEFAULT_STOMP_HEARTBEAT;
+  private int transactionChunkSize = TRANSACTION_CHUNK_SIZE;
 
   /**
    * Default constructor.
@@ -62,6 +65,7 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
     this.timeFactor = other.timeFactor;
     this.heartbeat = other.heartbeat;
     this.maxFrameInTransaction = other.maxFrameInTransaction;
+    this.transactionChunkSize = other.transactionChunkSize;
   }
 
   /**
@@ -318,6 +322,31 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
    */
   public StompServerOptions setMaxFrameInTransaction(int maxFrameInTransaction) {
     this.maxFrameInTransaction = maxFrameInTransaction;
+    return this;
+  }
+
+  /**
+   * Gets the chunk size when replaying a transaction. To avoid blocking the event loop for too long, large
+   * transactions are split into chunks, replayed one by one. This settings gets the chunk size.
+   *
+   * @return the size of the chunk
+   */
+  public int getTransactionChunkSize() {
+    return transactionChunkSize;
+  }
+
+  /**
+   * Sets the chunk size when replaying a transaction. To avoid blocking the event loop for too long, large
+   * transactions are split into chunks, replayed one by one. This settings sets the chunk size.
+   *
+   * @param transactionChunkSize the size, must be strictly positive
+   * @return the current {@link StompServerOptions}
+   */
+  public StompServerOptions setTransactionChunkSize(int transactionChunkSize) {
+    if (transactionChunkSize <= 0) {
+      throw new IllegalArgumentException("Chunk size must be strictly positive");
+    }
+    this.transactionChunkSize = transactionChunkSize;
     return this;
   }
 }
