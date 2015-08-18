@@ -166,7 +166,7 @@ public class SubscriptionsTest {
 
   @Test
   public void testWhenNoSubscriptions() {
-    server.getOptions().setSendErrorOnNoSubscriptions(true);
+    server.options().setSendErrorOnNoSubscriptions(true);
 
     List<Frame> frames = new ArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
@@ -192,7 +192,7 @@ public class SubscriptionsTest {
 
   @Test
   public void testMultipleSubscriptionsWithIds() {
-    server.getOptions().setSendErrorOnNoSubscriptions(true);
+    server.options().setSendErrorOnNoSubscriptions(true);
 
     Map<String, Frame> frames = new HashMap<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
@@ -231,7 +231,7 @@ public class SubscriptionsTest {
 
   @Test
   public void testUnsubscriptionWithDefaultId() {
-    server.getOptions().setSendErrorOnNoSubscriptions(true);
+    server.options().setSendErrorOnNoSubscriptions(true);
 
     List<Frame> frames = new ArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
@@ -263,7 +263,7 @@ public class SubscriptionsTest {
 
   @Test
   public void testUnsubscriptionWithCustomId() {
-    server.getOptions().setSendErrorOnNoSubscriptions(true);
+    server.options().setSendErrorOnNoSubscriptions(true);
 
     List<Frame> frames = new ArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {

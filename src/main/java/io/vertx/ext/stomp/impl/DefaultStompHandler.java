@@ -302,10 +302,10 @@ public class DefaultStompHandler implements StompServerHandler {
     // Compute heartbeat, and register pinger and ponger
     long ping = Frame.Heartbeat.computePingPeriod(
         Frame.Heartbeat.parse(frame.getHeader(Frame.HEARTBEAT)),
-        Frame.Heartbeat.create(connection.server().getOptions().getHeartbeat()));
+        Frame.Heartbeat.create(connection.server().options().getHeartbeat()));
     long pong = Frame.Heartbeat.computePongPeriod(
         Frame.Heartbeat.parse(frame.getHeader(Frame.HEARTBEAT)),
-        Frame.Heartbeat.create(connection.server().getOptions().getHeartbeat()));
+        Frame.Heartbeat.create(connection.server().options().getHeartbeat()));
     if (ping > 0) {
       pinger = connection.server().vertx().setPeriodic(ping, (l) -> pingHandler.handle(connection));
     }
@@ -360,7 +360,7 @@ public class DefaultStompHandler implements StompServerHandler {
       auth = authenticatedHandler;
     }
 
-    if (!server.getOptions().isSecured()) {
+    if (!server.options().isSecured()) {
       if (auth != null) {
         log.warn("Authentication handler set while the server is not secured");
       }
@@ -368,7 +368,7 @@ public class DefaultStompHandler implements StompServerHandler {
       return this;
     }
 
-    if (server.getOptions().isSecured() && auth == null) {
+    if (server.options().isSecured() && auth == null) {
       log.error("Cannot authenticate connection - no authentication handler");
       vertx.runOnContext(v -> handler.handle(Future.succeededFuture(false)));
       return this;

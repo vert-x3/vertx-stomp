@@ -86,7 +86,7 @@ public interface StompClient {
   /**
    * @return the client's options.
    */
-  StompClientOptions getOptions();
+  StompClientOptions options();
 
   /**
    * @return the vert.x instance used by the client.

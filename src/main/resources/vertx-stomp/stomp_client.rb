@@ -70,11 +70,11 @@ module VertxStomp
     end
     #  @return the client's options.
     # @return [Hash]
-    def get_options
+    def options
       if !block_given?
-        return @j_del.java_method(:getOptions, []).call() != nil ? JSON.parse(@j_del.java_method(:getOptions, []).call().toJson.encode) : nil
+        return @j_del.java_method(:options, []).call() != nil ? JSON.parse(@j_del.java_method(:options, []).call().toJson.encode) : nil
       end
-      raise ArgumentError, "Invalid arguments when calling get_options()"
+      raise ArgumentError, "Invalid arguments when calling options()"
     end
     #  @return the vert.x instance used by the client.
     # @return [::Vertx::Vertx]

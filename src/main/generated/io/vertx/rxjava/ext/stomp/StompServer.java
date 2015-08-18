@@ -267,8 +267,8 @@ public class StompServer {
    * @return the server options
    * @return 
    */
-  public StompServerOptions getOptions() { 
-    StompServerOptions ret = this.delegate.getOptions();
+  public StompServerOptions options() { 
+    StompServerOptions ret = this.delegate.options();
     return ret;
   }
 

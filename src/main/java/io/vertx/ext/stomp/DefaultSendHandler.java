@@ -63,7 +63,7 @@ public class DefaultSendHandler implements Handler<ServerFrame> {
 
 
     List<Subscription> subscriptions = sf.connection().handler().getSubscriptions(destination);
-    if (subscriptions.isEmpty() && sf.connection().server().getOptions().isSendErrorOnNoSubscriptions()) {
+    if (subscriptions.isEmpty() && sf.connection().server().options().isSendErrorOnNoSubscriptions()) {
       Frame errorFrame = Frames.createErrorFrame(
           "No subscriptions",
           Headers.create(Frame.DESTINATION, destination),
@@ -86,8 +86,8 @@ public class DefaultSendHandler implements Handler<ServerFrame> {
 
   private void enqueue(StompServerConnection connection, Subscription subscription, Frame frame) {
     subscription.enqueue(frame);
-    if (connection.server().getOptions().getAckTimeout() != 0) {
-      long time = connection.server().getOptions().getAckTimeout() * connection.server().getOptions().getTimeFactor();
+    if (connection.server().options().getAckTimeout() != 0) {
+      long time = connection.server().options().getAckTimeout() * connection.server().options().getTimeFactor();
       connection.server().vertx().setTimer(time, l -> {
         if (subscription.nack(frame.getHeader(Frame.MESSAGE_ID))) {
           log.warn("Frame not acknowledge in time (" + frame.getHeader(Frame.MESSAGE_ID) + ")");

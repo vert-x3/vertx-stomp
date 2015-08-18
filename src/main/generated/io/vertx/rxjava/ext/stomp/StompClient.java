@@ -208,8 +208,8 @@ public class StompClient {
    * @return the client's options.
    * @return 
    */
-  public StompClientOptions getOptions() { 
-    StompClientOptions ret = this.delegate.getOptions();
+  public StompClientOptions options() { 
+    StompClientOptions ret = this.delegate.options();
     return ret;
   }
 

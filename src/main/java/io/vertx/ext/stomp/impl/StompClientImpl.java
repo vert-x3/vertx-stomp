@@ -55,7 +55,7 @@ public class StompClientImpl implements StompClient {
 
 
   @Override
-  public StompClientOptions getOptions() {
+  public StompClientOptions options() {
     return options;
   }
 

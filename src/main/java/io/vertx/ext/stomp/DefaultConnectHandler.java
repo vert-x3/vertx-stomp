@@ -55,13 +55,13 @@ public class DefaultConnectHandler implements Handler<ServerFrame> {
           Frame.VERSION, version,
           Frame.SERVER, Server.SERVER_NAME,
           Frame.SESSION, sf.connection().session(),
-          Frame.HEARTBEAT, Frame.Heartbeat.create(sf.connection().server().getOptions().getHeartbeat()).toString()), null));
+          Frame.HEARTBEAT, Frame.Heartbeat.create(sf.connection().server().options().getHeartbeat()).toString()), null));
     });
   }
 
   private void authenticate(Frame frame, StompServerConnection connection,
                             Handler<AsyncResult<Void>> remainingActions) {
-    if (connection.server().getOptions().isSecured()) {
+    if (connection.server().options().isSecured()) {
       String login = frame.getHeader(Frame.LOGIN);
       String passcode = frame.getHeader(Frame.PASSCODE);
 
@@ -86,13 +86,13 @@ public class DefaultConnectHandler implements Handler<ServerFrame> {
 
   private String getSupportedVersionsHeaderLine(StompServerConnection connection) {
     StringBuilder builder = new StringBuilder();
-    connection.server().getOptions().getSupportedVersions().stream().forEach(
+    connection.server().options().getSupportedVersions().stream().forEach(
         v -> builder.append(builder.length() == 0 ? v : FrameParser.COMMA + v));
     return builder.toString();
   }
 
   private String negotiate(List<String> accepted, StompServerConnection connection) {
-    List<String> supported = connection.server().getOptions().getSupportedVersions();
+    List<String> supported = connection.server().options().getSupportedVersions();
     for (String v : supported) {
       if (accepted.contains(v)) {
         return v;

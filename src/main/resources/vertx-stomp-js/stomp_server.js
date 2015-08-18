@@ -156,10 +156,10 @@ var StompServer = function(j_val) {
 
    @return {Object}
    */
-  this.getOptions = function() {
+  this.options = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      return utils.convReturnDataObject(j_stompServer["getOptions()"]());
+      return utils.convReturnDataObject(j_stompServer["options()"]());
     } else utils.invalidArgs();
   };
 

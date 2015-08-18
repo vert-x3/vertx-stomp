@@ -214,7 +214,7 @@ public class AckTest {
 
   @Test
   public void testTimeoutNack() {
-    server.getOptions().setAckTimeout(10);
+    server.options().setAckTimeout(10);
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", Headers.create(Frame.ACK, "client"), frame -> {
@@ -320,7 +320,7 @@ public class AckTest {
 
   @Test
   public void testTimeoutNackOnTransactionAbort() {
-    server.getOptions().setAckTimeout(100);
+    server.options().setAckTimeout(100);
     List<Frame> frames = new ArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();

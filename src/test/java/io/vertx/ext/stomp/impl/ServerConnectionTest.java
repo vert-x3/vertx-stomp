@@ -284,7 +284,7 @@ public class ServerConnectionTest {
 
   @Test
   public void testNumberOfHeadersExceeded(TestContext context) {
-    server.getOptions().setMaxHeaders(2);
+    server.options().setMaxHeaders(2);
 
     List<Buffer> frames = new ArrayList<>();
     AtomicReference<NetSocket> reference = new AtomicReference<>();

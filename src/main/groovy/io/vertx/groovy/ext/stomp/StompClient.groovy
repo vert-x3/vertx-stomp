@@ -126,7 +126,7 @@ public class StompClient {
    * @return  (see <a href="../../../../../../../cheatsheet/StompClientOptions.html">StompClientOptions</a>)
    */
   public Map<String, Object> getOptions() {
-    def ret = (Map<String, Object>)InternalHelper.wrapObject(this.delegate.getOptions()?.toJson());
+    def ret = (Map<String, Object>)InternalHelper.wrapObject(this.delegate.options()?.toJson());
     return ret;
   }
   /**

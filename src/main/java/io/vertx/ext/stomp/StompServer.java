@@ -147,7 +147,7 @@ public interface StompServer {
   /**
    * @return the server options
    */
-  StompServerOptions getOptions();
+  StompServerOptions options();
 
   /**
    * @return the instance of vert.x used by the server.

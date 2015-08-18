@@ -4,7 +4,7 @@ import io.vertx.core.Handler;
 import io.vertx.ext.stomp.utils.Headers;
 
 /**
- * STAMP compliant actions executed when receiving a {@code UNSUBSCRIBE} frame. The associated
+ * STOMP compliant actions executed when receiving a {@code UNSUBSCRIBE} frame. The associated
  * {@link io.vertx.ext.stomp.Subscription} is unregistered.
  * <p/>
  * This handler is thread safe.

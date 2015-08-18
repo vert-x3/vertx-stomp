@@ -198,7 +198,7 @@ public class StompServer {
    * @return  (see <a href="../../../../../../../cheatsheet/StompServerOptions.html">StompServerOptions</a>)
    */
   public Map<String, Object> getOptions() {
-    def ret = (Map<String, Object>)InternalHelper.wrapObject(this.delegate.getOptions()?.toJson());
+    def ret = (Map<String, Object>)InternalHelper.wrapObject(this.delegate.options()?.toJson());
     return ret;
   }
   /**

@@ -168,7 +168,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     }
 
     if (body != null
-        && client.getOptions().isAutoComputeContentLength()
+        && client.options().isAutoComputeContentLength()
         && !headers.containsKey(Frame.CONTENT_LENGTH)) {
       headers.put(Frame.CONTENT_LENGTH, Integer.toString(body.length()));
     }
@@ -488,10 +488,10 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     // Compute the heartbeat.
     long ping = Frame.Heartbeat.computePingPeriod(
         Frame.Heartbeat.parse(frame.getHeader(Frame.HEARTBEAT)),
-        Frame.Heartbeat.create(client.getOptions().getHeartbeat()));
+        Frame.Heartbeat.create(client.options().getHeartbeat()));
     long pong = Frame.Heartbeat.computePongPeriod(
         Frame.Heartbeat.parse(frame.getHeader(Frame.HEARTBEAT)),
-        Frame.Heartbeat.create(client.getOptions().getHeartbeat()));
+        Frame.Heartbeat.create(client.options().getHeartbeat()));
 
     if (ping > 0) {
       pinger = client.vertx().setPeriodic(ping, l -> pingHandler.handle(this));

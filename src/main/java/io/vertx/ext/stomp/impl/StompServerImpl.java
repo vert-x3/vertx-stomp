@@ -131,7 +131,7 @@ public class StompServerImpl implements StompServer {
   }
 
   @Override
-  public StompServerOptions getOptions() {
+  public StompServerOptions options() {
     return options;
   }
 
