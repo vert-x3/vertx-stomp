@@ -7,7 +7,10 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.core.net.NetSocket;
-import io.vertx.ext.stomp.*;
+import io.vertx.ext.stomp.Frame;
+import io.vertx.ext.stomp.Frames;
+import io.vertx.ext.stomp.StompClient;
+import io.vertx.ext.stomp.StompClientConnection;
 import io.vertx.ext.stomp.utils.Headers;
 
 import java.util.*;
@@ -154,7 +157,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
 
   @Override
   public StompClientConnection send(String destination, Map<String, String> headers, Buffer body,
-                                                 Handler<Frame> receiptHandler) {
+                                    Handler<Frame> receiptHandler) {
     // No need for synchronization, no field access, except client (final)
     if (headers == null) {
       headers = new Headers();
@@ -353,14 +356,25 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
 
   @Override
   public StompClientConnection disconnect() {
-    return disconnect(null);
+    return disconnect(new Frame().setCommand(Frame.Command.DISCONNECT), null);
+  }
+
+  @Override
+  public StompClientConnection disconnect(Frame frame) {
+    return disconnect(frame, null);
   }
 
   @Override
   public StompClientConnection disconnect(Handler<Frame> receiptHandler) {
-    send(new Frame().setCommand(Frame.Command.DISCONNECT), frame -> {
+    return disconnect(new Frame().setCommand(Frame.Command.DISCONNECT), receiptHandler);
+  }
+
+  @Override
+  public StompClientConnection disconnect(Frame frame, Handler<Frame> receiptHandler) {
+    Objects.requireNonNull(frame);
+    send(frame, f -> {
       if (receiptHandler != null) {
-        receiptHandler.handle(frame);
+        receiptHandler.handle(f);
       }
       // Close once the receipt have been received.
       close();

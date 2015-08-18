@@ -407,6 +407,29 @@ public interface StompClientConnection {
   @Fluent
   StompClientConnection disconnect(Handler<Frame> receiptHandler);
 
+  /**
+   * Disconnects the client. Unlike the {@link #close()} method, this method send the {@code DISCONNECT} frame to the
+   * server. This method lets you customize the {@code DISCONNECT} frame.
+   *
+   * @param frame the {@code DISCONNECT} frame.
+   * @return the current {@link StompClientConnection}
+   */
+  @Fluent
+  StompClientConnection disconnect(Frame frame);
+
+  /**
+   * Disconnects the client. Unlike the {@link #close()} method, this method send the {@code DISCONNECT} frame to the
+   * server. This method lets you customize the {@code DISCONNECT} frame.
+   *
+   * @param frame the {@code DISCONNECT} frame.
+   * @param receiptHandler the handler invoked when the {@code RECEIPT} frame associated with the
+   *                       disconnection has been processed by the server. The handler receives the sent
+   *                       frame ({@code DISCONNECT}).
+   * @return the current {@link StompClientConnection}
+   */
+  @Fluent
+  StompClientConnection disconnect(Frame frame, Handler<Frame> receiptHandler);
+
 
   /**
    * Sends an acknowledgement for the given frame. It means that the frame has been handled and processed by the client.

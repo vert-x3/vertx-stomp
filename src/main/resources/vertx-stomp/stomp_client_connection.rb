@@ -252,18 +252,25 @@ module VertxStomp
       raise ArgumentError, "Invalid arguments when calling abort(id,headers)"
     end
     #  Disconnects the client. Unlike the {::VertxStomp::StompClientConnection#close} method, this method send the <code>DISCONNECT</code> frame to the
-    #  server.
+    #  server. This method lets you customize the <code>DISCONNECT</code> frame.
+    # @param [Hash] frame the <code>DISCONNECT</code> frame.
     # @yield the handler invoked when the <code>RECEIPT</code> frame associated with the disconnection has been processed by the server. The handler receives the sent frame (<code>DISCONNECT</code>).
     # @return [self]
-    def disconnect
-      if !block_given?
+    def disconnect(frame=nil)
+      if !block_given? && frame == nil
         @j_del.java_method(:disconnect, []).call()
         return self
-      elsif block_given?
+      elsif block_given? && frame == nil
         @j_del.java_method(:disconnect, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
         return self
+      elsif frame.class == Hash && !block_given?
+        @j_del.java_method(:disconnect, [Java::IoVertxExtStomp::Frame.java_class]).call(Java::IoVertxExtStomp::Frame.new(::Vertx::Util::Utils.to_json_object(frame)))
+        return self
+      elsif frame.class == Hash && block_given?
+        @j_del.java_method(:disconnect, [Java::IoVertxExtStomp::Frame.java_class,Java::IoVertxCore::Handler.java_class]).call(Java::IoVertxExtStomp::Frame.new(::Vertx::Util::Utils.to_json_object(frame)),(Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
+        return self
       end
-      raise ArgumentError, "Invalid arguments when calling disconnect()"
+      raise ArgumentError, "Invalid arguments when calling disconnect(frame)"
     end
     #  Sends an acknowledgement for the given frame. It means that the frame has been handled and processed by the
     #  client. The sent acknowledgement is part of the transaction identified by the given id.

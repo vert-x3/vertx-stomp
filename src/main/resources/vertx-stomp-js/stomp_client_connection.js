@@ -344,9 +344,10 @@ var StompClientConnection = function(j_val) {
 
   /**
    Disconnects the client. Unlike the {@link StompClientConnection#close} method, this method send the <code>DISCONNECT</code> frame to the
-   server.
+   server. This method lets you customize the <code>DISCONNECT</code> frame.
 
    @public
+   @param frame {Object} the <code>DISCONNECT</code> frame. 
    @param receiptHandler {function} the handler invoked when the <code>RECEIPT</code> frame associated with the disconnection has been processed by the server. The handler receives the sent frame (<code>DISCONNECT</code>). 
    @return {StompClientConnection} the current {@link StompClientConnection}
    */
@@ -358,6 +359,14 @@ var StompClientConnection = function(j_val) {
     }  else if (__args.length === 1 && typeof __args[0] === 'function') {
       j_stompClientConnection["disconnect(io.vertx.core.Handler)"](function(jVal) {
       __args[0](utils.convReturnDataObject(jVal));
+    });
+      return that;
+    }  else if (__args.length === 1 && typeof __args[0] === 'object') {
+      j_stompClientConnection["disconnect(io.vertx.ext.stomp.Frame)"](__args[0] != null ? new Frame(new JsonObject(JSON.stringify(__args[0]))) : null);
+      return that;
+    }  else if (__args.length === 2 && typeof __args[0] === 'object' && typeof __args[1] === 'function') {
+      j_stompClientConnection["disconnect(io.vertx.ext.stomp.Frame,io.vertx.core.Handler)"](__args[0] != null ? new Frame(new JsonObject(JSON.stringify(__args[0]))) : null, function(jVal) {
+      __args[1](utils.convReturnDataObject(jVal));
     });
       return that;
     } else utils.invalidArgs();

@@ -459,6 +459,29 @@ public class StompClientConnection {
   }
 
   /**
+   * Disconnects the client. Unlike the {@link io.vertx.rxjava.ext.stomp.StompClientConnection#close} method, this method send the <code>DISCONNECT</code> frame to the
+   * server. This method lets you customize the <code>DISCONNECT</code> frame.
+   * @param frame the <code>DISCONNECT</code> frame.
+   * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
+   */
+  public StompClientConnection disconnect(Frame frame) { 
+    this.delegate.disconnect(frame);
+    return this;
+  }
+
+  /**
+   * Disconnects the client. Unlike the {@link io.vertx.rxjava.ext.stomp.StompClientConnection#close} method, this method send the <code>DISCONNECT</code> frame to the
+   * server. This method lets you customize the <code>DISCONNECT</code> frame.
+   * @param frame the <code>DISCONNECT</code> frame.
+   * @param receiptHandler the handler invoked when the <code>RECEIPT</code> frame associated with the disconnection has been processed by the server. The handler receives the sent frame (<code>DISCONNECT</code>).
+   * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
+   */
+  public StompClientConnection disconnect(Frame frame, Handler<Frame> receiptHandler) { 
+    this.delegate.disconnect(frame, receiptHandler);
+    return this;
+  }
+
+  /**
    * Sends an acknowledgement for the given frame. It means that the frame has been handled and processed by the client.
    * @param frame the frame
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}

@@ -5,6 +5,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.stomp.*;
+import io.vertx.ext.stomp.utils.Headers;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -101,6 +102,23 @@ public class StompClientImplTest {
         return;
       }
       ar.result().disconnect(frame -> async.complete());
+    });
+  }
+
+  @Test
+  public void testConnectionAndDisconnectWithCustomFrame(TestContext context) {
+    Async async = context.async();
+    StompClient client = Stomp.createStompClient(vertx, new StompClientOptions().setUseStompFrame(true));
+    client.connect(ar -> {
+      if (ar.failed()) {
+        context.fail("Connection failed");
+        return;
+      }
+      ar.result().disconnect(new Frame(Frame.Command.DISCONNECT, Headers.create("message", "bye bye"), null),
+          frame -> {
+            context.assertTrue(frame.getHeader("message").contains("bye bye"));
+            async.complete();
+          });
     });
   }
 
