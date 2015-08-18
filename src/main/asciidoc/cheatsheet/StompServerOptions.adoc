@@ -67,6 +67,12 @@ Sets the max header length.+++
 |+++
 Sets the maximum number of headers. 1000 by default.+++
 
+|[[maxSubscriptionsByClient]]`maxSubscriptionsByClient`
+|`Number (int)`
+|+++
+Sets the maximum of subscriptions a client is allowed to register. If a client exceeds this number, it receives
+ an error and the connection is closed.+++
+
 |[[pemKeyCertOptions]]`pemKeyCertOptions`
 |`link:PemKeyCertOptions.html[PemKeyCertOptions]`
 |-

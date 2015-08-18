@@ -24,6 +24,9 @@ public class StompServerOptionsConverter {
     if (json.getValue("maxHeaders") instanceof Number) {
       obj.setMaxHeaders(((Number)json.getValue("maxHeaders")).intValue());
     }
+    if (json.getValue("maxSubscriptionsByClient") instanceof Number) {
+      obj.setMaxSubscriptionsByClient(((Number)json.getValue("maxSubscriptionsByClient")).intValue());
+    }
     if (json.getValue("secured") instanceof Boolean) {
       obj.setSecured((Boolean)json.getValue("secured"));
     }
@@ -55,6 +58,7 @@ public class StompServerOptionsConverter {
     json.put("maxFrameInTransaction", obj.getMaxFrameInTransaction());
     json.put("maxHeaderLength", obj.getMaxHeaderLength());
     json.put("maxHeaders", obj.getMaxHeaders());
+    json.put("maxSubscriptionsByClient", obj.getMaxSubscriptionsByClient());
     json.put("secured", obj.isSecured());
     json.put("sendErrorOnNoSubscriptions", obj.isSendErrorOnNoSubscriptions());
     if (obj.getSupportedVersions() != null) {

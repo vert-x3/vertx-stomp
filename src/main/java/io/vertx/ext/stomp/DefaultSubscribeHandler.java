@@ -36,7 +36,7 @@ public class DefaultSubscribeHandler implements Handler<ServerFrame> {
       connection.write(Frames.createErrorFrame(
           "Invalid subscription",
           Headers.create(frame.getHeaders()), "'id'" +
-              " already used by this connection."));
+              " already used by this connection, or the client has exceeded the number of allowed subscriptions"));
       connection.close();
       return;
     }

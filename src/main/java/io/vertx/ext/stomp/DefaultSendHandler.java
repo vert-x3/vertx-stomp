@@ -86,24 +86,12 @@ public class DefaultSendHandler implements Handler<ServerFrame> {
     subscriptions.stream().forEach(subscription -> {
           String messageId = UUID.randomUUID().toString();
           Frame message = sendToMessage(sf.frame(), subscription, messageId);
-          enqueue(sf.connection(), subscription, message);
+          subscription.enqueue(message);
           subscription.connection().write(message.toBuffer());
         }
     );
 
     Frames.handleReceipt(sf.frame(), sf.connection());
-  }
-
-  private void enqueue(StompServerConnection connection, Subscription subscription, Frame frame) {
-    subscription.enqueue(frame);
-    if (connection.server().options().getAckTimeout() != 0) {
-      long time = connection.server().options().getAckTimeout() * connection.server().options().getTimeFactor();
-      connection.server().vertx().setTimer(time, l -> {
-        if (subscription.nack(frame.getHeader(Frame.MESSAGE_ID))) {
-          log.warn("Frame not acknowledge in time (" + frame.getHeader(Frame.MESSAGE_ID) + ")");
-        }
-      });
-    }
   }
 
   public static Frame sendToMessage(Frame frame, Subscription subscription, String messageId) {

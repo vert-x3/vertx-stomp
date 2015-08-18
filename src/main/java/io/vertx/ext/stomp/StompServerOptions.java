@@ -20,6 +20,7 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
 
   public static final int MAX_FRAME_IN_TRANSACTION = 1000;
   public static final int TRANSACTION_CHUNK_SIZE = 1000;
+  public static final int MAX_SUBSCRIPTIONS_BY_CLIENT = 1000;
 
 
   private int maxHeaderLength = MAX_HEADER_LENGTH;
@@ -38,6 +39,7 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
   private int timeFactor = 1;
   private JsonObject heartbeat = DEFAULT_STOMP_HEARTBEAT;
   private int transactionChunkSize = TRANSACTION_CHUNK_SIZE;
+  private int maxSubscriptionsByClient = MAX_SUBSCRIPTIONS_BY_CLIENT;
 
   /**
    * Default constructor.
@@ -66,6 +68,7 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
     this.heartbeat = other.heartbeat;
     this.maxFrameInTransaction = other.maxFrameInTransaction;
     this.transactionChunkSize = other.transactionChunkSize;
+    this.maxSubscriptionsByClient = other.maxSubscriptionsByClient;
   }
 
   /**
@@ -215,31 +218,6 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
   }
 
   /**
-   * Gets the {@code ACK} timeout, i.e. the time after which a non acknowledged message is considered not-acknowledge
-   * ({@code NACK}). Defaults to 10 seconds.
-   *
-   * @return the ack timeout is milliseconds.
-   */
-  public long getAckTimeout() {
-    return ackTimeout;
-  }
-
-  /**
-   * Sets the {@code ACK} timeout. Be careful when setting this value as a too low value by considered messages as
-   * not received even if they are currently processed by the client.
-   *
-   * @param ackTimeout the {@code ACK} timeout in milliseconds
-   * @return the current {@link StompServerOptions}
-   */
-  public StompServerOptions setAckTimeout(long ackTimeout) {
-    if (timeFactor <= 0) {
-      throw new IllegalArgumentException("The ack timeout must be strictly positive");
-    }
-    this.ackTimeout = ackTimeout;
-    return this;
-  }
-
-  /**
    * Gets the time factor, i.e. a multiplier applied to time constraints as a window error. 1 by default.
    *
    * @return the time factor.
@@ -347,6 +325,28 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
       throw new IllegalArgumentException("Chunk size must be strictly positive");
     }
     this.transactionChunkSize = transactionChunkSize;
+    return this;
+  }
+
+  /**
+   * Gets the maximum of subscriptions a client is allowed to register. If a client exceeds this number, it receives
+   * an error and the connection is closed.
+   *
+   * @return the max number of subscriptions per client
+   */
+  public int getMaxSubscriptionsByClient() {
+    return maxSubscriptionsByClient;
+  }
+
+  /**
+   * Sets the maximum of subscriptions a client is allowed to register. If a client exceeds this number, it receives
+   * an error and the connection is closed.
+   *
+   * @param maxSubscriptionsByClient the max number of subscriptions
+   * @return the current {@link StompServerOptions}
+   */
+  public StompServerOptions setMaxSubscriptionsByClient(int maxSubscriptionsByClient) {
+    this.maxSubscriptionsByClient = maxSubscriptionsByClient;
     return this;
   }
 }

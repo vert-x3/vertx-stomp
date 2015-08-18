@@ -207,25 +207,6 @@ public class AckTest {
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> nacked.size() == 3);
   }
 
-  @Test
-  public void testTimeoutNack() {
-    server.options().setAckTimeout(10);
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
-      final StompClientConnection connection = ar.result();
-      connection.subscribe("/queue", Headers.create(Frame.ACK, "client"), frame -> {
-      });
-    }));
-
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestinations().contains("/queue"));
-
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
-      final StompClientConnection connection = ar.result();
-      connection.send("/queue", Buffer.buffer("Hello"));
-    }));
-
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> !nacked.isEmpty());
-    assertThat(acked).isEmpty();
-  }
 
   @Test
   public void testAckInTransaction() {
@@ -284,50 +265,6 @@ public class AckTest {
             connection.nack(frame.getAck(), "my-tx");
             if (frames.size() == 3) {
               connection.commit("my-tx");
-            }
-          }
-      );
-    }));
-
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestinations().contains("/queue"));
-
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
-      final StompClientConnection connection = ar.result();
-      connection.send("/queue", Buffer.buffer("Hello"));
-    }));
-
-    assertThat(nacked.isEmpty());
-
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
-      final StompClientConnection connection = ar.result();
-      connection.send("/queue", Buffer.buffer("Hello"));
-    }));
-
-    assertThat(nacked.isEmpty());
-
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
-      final StompClientConnection connection = ar.result();
-      connection.send("/queue", Buffer.buffer("Hello"));
-    }));
-
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> nacked.size() == 3);
-  }
-
-  @Test
-  public void testTimeoutNackOnTransactionAbort() {
-    server.options().setAckTimeout(100);
-    List<Frame> frames = new ArrayList<>();
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
-      final StompClientConnection connection = ar.result();
-      connection.subscribe("/queue", Headers.create(Frame.ACK, "client"),
-          frame -> {
-            if (frames.isEmpty()) {
-              connection.beginTX("my-tx");
-            }
-            frames.add(frame);
-            connection.ack(frame.getAck(), "my-tx");
-            if (frames.size() == 3) {
-              connection.abort("my-tx");
             }
           }
       );
