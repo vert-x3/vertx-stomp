@@ -104,6 +104,7 @@
  * * the maximum number of frame allowed in a transaction (defaults to 1000)
  * * the size of the transaction chunk - defaults to 1000 (see
  * {@link io.vertx.ext.stomp.StompServerOptions#setTransactionChunkSize(int)})
+ * * the maximum number of subscriptions a client can handle - defaults to 1000
  *
  * The STOMP heartbeat is configured using a JSON object as follows:
  *

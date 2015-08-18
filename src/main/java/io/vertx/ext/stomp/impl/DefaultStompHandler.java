@@ -402,8 +402,8 @@ public class DefaultStompHandler implements StompServerHandler {
     if (isIdAlreadyUsedByConnection(subscription)) {
       return false;
     }
-    if (getSubscriptions(subscription.connection()).size() >= subscription.connection().server().options()
-        .getMaxSubscriptionsByClient()) {
+    if (getSubscriptions(subscription.connection()).size() >=
+        subscription.connection().server().options().getMaxSubscriptionsByClient()) {
       return false;
     }
     addSubscription(subscription.destination(), subscription);
