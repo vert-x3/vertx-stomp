@@ -54,6 +54,7 @@ public class StompServerConnectionImpl implements StompServerConnection {
 
   @Override
   public void close() {
+    handler().onClose(this);
     socket.close();
   }
 

@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -226,6 +227,7 @@ public class TransactionsTest {
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestinations().contains("/queue"));
 
+    AtomicBoolean done = new AtomicBoolean();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(errors::add);
@@ -238,9 +240,11 @@ public class TransactionsTest {
           .setBody(Buffer.buffer("!!!")));
 
       connection.close();
+      done.set(true);
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getTransactions().isEmpty());
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getTransactions().isEmpty()
+        && done.get());
     assertThat(frames).isEmpty();
     assertThat(errors).isEmpty();
   }
@@ -260,15 +264,15 @@ public class TransactionsTest {
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(errors::add);
-      connection.beginTX("my-tx");
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
-          .setBody(Buffer.buffer("Hello")));
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx").setBody(
-          Buffer.buffer("World")));
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
-          .setBody(Buffer.buffer("!!!")));
-
-      connection.disconnect();
+      connection.beginTX("my-tx", f -> {
+        connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
+            .setBody(Buffer.buffer("Hello")));
+        connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx").setBody(
+            Buffer.buffer("World")));
+        connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
+            .setBody(Buffer.buffer("!!!")));
+        connection.disconnect();
+      });
     }));
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getTransactions().isEmpty());
