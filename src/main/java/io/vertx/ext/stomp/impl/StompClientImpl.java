@@ -76,7 +76,7 @@ public class StompClientImpl implements StompClient {
         }
       } else {
         // Create the connection, the connection attach a handler on the socket.
-        new StompClientConnectionImpl(ar.result(), this, resultHandler);
+        new StompClientConnectionImpl(vertx, ar.result(), this, resultHandler);
         // Socket connected - send "CONNECT" Frame
         ar.result().write(getConnectFrame(host));
       }
