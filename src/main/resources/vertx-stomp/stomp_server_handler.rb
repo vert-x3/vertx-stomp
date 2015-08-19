@@ -1,4 +1,3 @@
-require 'vertx-stomp/transaction'
 require 'vertx-stomp/acknowledgement'
 require 'vertx-stomp/subscription'
 require 'vertx/vertx'
@@ -241,52 +240,6 @@ module VertxStomp
         return @j_del.java_method(:getSubscriptions, [Java::java.lang.String.java_class]).call(destination).to_a.map { |elt| ::Vertx::Util::Utils.safe_create(elt,::VertxStomp::Subscription) }
       end
       raise ArgumentError, "Invalid arguments when calling get_subscriptions(destination)"
-    end
-    #  Registers a transaction.
-    # @param [::VertxStomp::Transaction] transaction the transaction
-    # @return [true,false] <code>true</code> if the registration succeed, <code>false</code> otherwise. The main reason of failure is the non-uniqueness of the transaction id for a given client / connection
-    def register_transaction?(transaction=nil)
-      if transaction.class.method_defined?(:j_del) && !block_given?
-        return @j_del.java_method(:registerTransaction, [Java::IoVertxExtStomp::Transaction.java_class]).call(transaction.j_del)
-      end
-      raise ArgumentError, "Invalid arguments when calling register_transaction?(transaction)"
-    end
-    #  Gets a transaction.
-    # @param [::VertxStomp::StompServerConnection] connection the connection used by the transaction
-    # @param [String] id the id of the transaction
-    # @return [::VertxStomp::Transaction] the transaction, <code>null</code> if not found
-    def get_transaction(connection=nil,id=nil)
-      if connection.class.method_defined?(:j_del) && id.class == String && !block_given?
-        return ::Vertx::Util::Utils.safe_create(@j_del.java_method(:getTransaction, [Java::IoVertxExtStomp::StompServerConnection.java_class,Java::java.lang.String.java_class]).call(connection.j_del,id),::VertxStomp::Transaction)
-      end
-      raise ArgumentError, "Invalid arguments when calling get_transaction(connection,id)"
-    end
-    #  Unregisters a transaction
-    # @param [::VertxStomp::Transaction] transaction the transaction to unregister
-    # @return [true,false] <code>true</code> if the transaction is unregistered correctly, <code>false</code> otherwise.
-    def unregister_transaction?(transaction=nil)
-      if transaction.class.method_defined?(:j_del) && !block_given?
-        return @j_del.java_method(:unregisterTransaction, [Java::IoVertxExtStomp::Transaction.java_class]).call(transaction.j_del)
-      end
-      raise ArgumentError, "Invalid arguments when calling unregister_transaction?(transaction)"
-    end
-    #  Unregisters all transactions from the given connection / client.
-    # @param [::VertxStomp::StompServerConnection] connection the connection
-    # @return [self]
-    def unregister_transactions_from_connection(connection=nil)
-      if connection.class.method_defined?(:j_del) && !block_given?
-        @j_del.java_method(:unregisterTransactionsFromConnection, [Java::IoVertxExtStomp::StompServerConnection.java_class]).call(connection.j_del)
-        return self
-      end
-      raise ArgumentError, "Invalid arguments when calling unregister_transactions_from_connection(connection)"
-    end
-    #  Gets the list of current transactions.
-    # @return [Array<::VertxStomp::Transaction>] the list of transactions, empty is none.
-    def get_transactions
-      if !block_given?
-        return @j_del.java_method(:getTransactions, []).call().to_a.map { |elt| ::Vertx::Util::Utils.safe_create(elt,::VertxStomp::Transaction) }
-      end
-      raise ArgumentError, "Invalid arguments when calling get_transactions()"
     end
     #  Gets a subscription for the given connection / client and use the given acknowledgment id. Acknowledgement id
     #  is different from the subscription id as it point to a single message.

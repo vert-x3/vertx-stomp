@@ -2,49 +2,65 @@ package io.vertx.ext.stomp.impl;
 
 import io.vertx.ext.stomp.Frame;
 import io.vertx.ext.stomp.StompServerConnection;
-import io.vertx.ext.stomp.Transaction;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * {@link Transaction} implementation.
+ * Represents a STOMP transaction.
  *
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
-public class TransactionImpl implements Transaction {
+public class Transaction {
   private final List<Frame> frames;
   private final String id;
   private final StompServerConnection connection;
 
-  public TransactionImpl(StompServerConnection connection, String id) {
+  public Transaction(StompServerConnection connection, String id) {
     this.connection = connection;
     this.id = id;
     this.frames = new ArrayList<>();
   }
 
-  @Override
+  /**
+   * @return the connection
+   */
   public StompServerConnection connection() {
     return connection;
   }
 
-  @Override
+  /**
+   * @return the transaction id
+   */
   public String id() {
     return id;
   }
 
-  @Override
+  /**
+   * Adds a frame to the transaction. As stated in the STOMP specification, only {@code SEND, ACK and NACK} frames
+   * can be in transactions.
+   *
+   * @param frame the frame to add
+   * @return {@code true} if the frame was added to the transaction, {@code false otherwise}. Main failure reason is the number of
+   * frames stored in the transaction that have exceed the number of allowed frames in transaction.
+   */
   public synchronized boolean addFrameToTransaction(Frame frame) {
     return frames.size() < connection.server().options().getMaxFrameInTransaction() && frames.add(frame);
   }
 
-  @Override
+  /**
+   * Clears the list of frames added to the transaction.
+   *
+   * @return the current {@link Transaction}
+   */
   public synchronized Transaction clear() {
     frames.clear();
     return this;
   }
 
-  @Override
+  /**
+   * @return the ordered list of frames added to the transaction.
+   */
   public synchronized List<Frame> getFrames() {
     return new ArrayList<>(frames);
   }

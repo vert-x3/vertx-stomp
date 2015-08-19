@@ -1,6 +1,7 @@
 package io.vertx.ext.stomp;
 
 import io.vertx.core.Handler;
+import io.vertx.ext.stomp.impl.Transactions;
 import io.vertx.ext.stomp.utils.Headers;
 
 /**
@@ -24,8 +25,7 @@ public class DefaultBeginHandler implements Handler<ServerFrame> {
       return;
     }
 
-    Transaction transaction = Transaction.create(connection, txId);
-    if (!connection.handler().registerTransaction(transaction)) {
+    if (!Transactions.INSTANCE.registerTransaction(connection, txId)) {
       Frame error = Frames.createErrorFrame("Already existing transaction",
           Headers.create(Frame.TRANSACTION, txId),
           "A transaction using the same id is still active.");

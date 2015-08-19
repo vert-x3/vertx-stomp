@@ -330,56 +330,6 @@ public class StompServerHandler implements Handler<ServerFrame> {
   }
 
   /**
-   * Registers a transaction.
-   * @param transaction the transaction
-   * @return <code>true</code> if the registration succeed, <code>false</code> otherwise. The main reason of failure is the non-uniqueness of the transaction id for a given client / connection
-   */
-  public boolean registerTransaction(Transaction transaction) { 
-    boolean ret = this.delegate.registerTransaction((io.vertx.ext.stomp.Transaction) transaction.getDelegate());
-    return ret;
-  }
-
-  /**
-   * Gets a transaction.
-   * @param connection the connection used by the transaction
-   * @param id the id of the transaction
-   * @return the transaction, <code>null</code> if not found
-   */
-  public Transaction getTransaction(StompServerConnection connection, String id) { 
-    Transaction ret= Transaction.newInstance(this.delegate.getTransaction((io.vertx.ext.stomp.StompServerConnection) connection.getDelegate(), id));
-    return ret;
-  }
-
-  /**
-   * Unregisters a transaction
-   * @param transaction the transaction to unregister
-   * @return <code>true</code> if the transaction is unregistered correctly, <code>false</code> otherwise.
-   */
-  public boolean unregisterTransaction(Transaction transaction) { 
-    boolean ret = this.delegate.unregisterTransaction((io.vertx.ext.stomp.Transaction) transaction.getDelegate());
-    return ret;
-  }
-
-  /**
-   * Unregisters all transactions from the given connection / client.
-   * @param connection the connection
-   * @return the current {@link io.vertx.ext.stomp.StompServerHandler}
-   */
-  public StompServerHandler unregisterTransactionsFromConnection(StompServerConnection connection) { 
-    this.delegate.unregisterTransactionsFromConnection((io.vertx.ext.stomp.StompServerConnection) connection.getDelegate());
-    return this;
-  }
-
-  /**
-   * Gets the list of current transactions.
-   * @return the list of transactions, empty is none.
-   */
-  public List<Transaction> getTransactions() { 
-    List<Transaction> ret = this.delegate.getTransactions().stream().map(Transaction::newInstance).collect(java.util.stream.Collectors.toList());
-    return ret;
-  }
-
-  /**
    * Gets a subscription for the given connection / client and use the given acknowledgment id. Acknowledgement id
    * is different from the subscription id as it point to a single message.
    * @param connection the connection

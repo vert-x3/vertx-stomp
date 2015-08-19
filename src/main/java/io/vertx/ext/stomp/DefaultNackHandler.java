@@ -1,6 +1,8 @@
 package io.vertx.ext.stomp;
 
 import io.vertx.core.Handler;
+import io.vertx.ext.stomp.impl.Transaction;
+import io.vertx.ext.stomp.impl.Transactions;
 import io.vertx.ext.stomp.utils.Headers;
 
 import java.util.List;
@@ -33,7 +35,8 @@ public class DefaultNackHandler implements Handler<ServerFrame> {
     // Handle transaction
     String txId = sf.frame().getHeader(Frame.TRANSACTION);
     if (txId != null) {
-      Transaction transaction = connection.handler().getTransaction(connection, txId);
+      Transaction transaction = Transactions.INSTANCE.getTransaction(connection, txId);
+
       if (transaction == null) {
         // No transaction.
         Frame errorFrame = Frames.createErrorFrame(
@@ -50,7 +53,7 @@ public class DefaultNackHandler implements Handler<ServerFrame> {
               Headers.create(Frame.ID, id, Frame.TRANSACTION, txId),
               "Message delivery failed - the frame cannot be added to the transaction - the number of allowed thread " +
                   "may have been reached");
-          connection.handler().unregisterTransactionsFromConnection(connection);
+          Transactions.INSTANCE.unregisterTransactionsFromConnection(connection);
           connection.write(errorFrame);
           connection.close();
           return;

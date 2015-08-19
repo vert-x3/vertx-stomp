@@ -16,7 +16,6 @@
 
 /** @module vertx-stomp-js/stomp_server_handler */
 var utils = require('vertx-js/util/utils');
-var Transaction = require('vertx-stomp-js/transaction');
 var Acknowledgement = require('vertx-stomp-js/acknowledgement');
 var Subscription = require('vertx-stomp-js/subscription');
 var Vertx = require('vertx-js/vertx');
@@ -383,78 +382,6 @@ var StompServerHandler = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'string') {
       return utils.convReturnListSetVertxGen(j_stompServerHandler["getSubscriptions(java.lang.String)"](destination), Subscription);
-    } else utils.invalidArgs();
-  };
-
-  /**
-   Registers a transaction.
-
-   @public
-   @param transaction {Transaction} the transaction 
-   @return {boolean} <code>true</code> if the registration succeed, <code>false</code> otherwise. The main reason of failure is the non-uniqueness of the transaction id for a given client / connection
-   */
-  this.registerTransaction = function(transaction) {
-    var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
-      return j_stompServerHandler["registerTransaction(io.vertx.ext.stomp.Transaction)"](transaction._jdel);
-    } else utils.invalidArgs();
-  };
-
-  /**
-   Gets a transaction.
-
-   @public
-   @param connection {StompServerConnection} the connection used by the transaction 
-   @param id {string} the id of the transaction 
-   @return {Transaction} the transaction, <code>null</code> if not found
-   */
-  this.getTransaction = function(connection, id) {
-    var __args = arguments;
-    if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'string') {
-      return utils.convReturnVertxGen(j_stompServerHandler["getTransaction(io.vertx.ext.stomp.StompServerConnection,java.lang.String)"](connection._jdel, id), Transaction);
-    } else utils.invalidArgs();
-  };
-
-  /**
-   Unregisters a transaction
-
-   @public
-   @param transaction {Transaction} the transaction to unregister 
-   @return {boolean} <code>true</code> if the transaction is unregistered correctly, <code>false</code> otherwise.
-   */
-  this.unregisterTransaction = function(transaction) {
-    var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
-      return j_stompServerHandler["unregisterTransaction(io.vertx.ext.stomp.Transaction)"](transaction._jdel);
-    } else utils.invalidArgs();
-  };
-
-  /**
-   Unregisters all transactions from the given connection / client.
-
-   @public
-   @param connection {StompServerConnection} the connection 
-   @return {StompServerHandler} the current {@link StompServerHandler}
-   */
-  this.unregisterTransactionsFromConnection = function(connection) {
-    var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
-      j_stompServerHandler["unregisterTransactionsFromConnection(io.vertx.ext.stomp.StompServerConnection)"](connection._jdel);
-      return that;
-    } else utils.invalidArgs();
-  };
-
-  /**
-   Gets the list of current transactions.
-
-   @public
-
-   @return {Array.<Transaction>} the list of transactions, empty is none.
-   */
-  this.getTransactions = function() {
-    var __args = arguments;
-    if (__args.length === 0) {
-      return utils.convReturnListSetVertxGen(j_stompServerHandler["getTransactions()"](), Transaction);
     } else utils.invalidArgs();
   };
 

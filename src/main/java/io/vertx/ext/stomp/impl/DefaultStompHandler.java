@@ -70,7 +70,6 @@ public class DefaultStompHandler implements StompServerHandler {
       log.warn("Messages not acknowledge - " + acknowledgement.frames());
 
   private final LocalMap<String, Subscriptions> subscriptions;
-  private final List<Transaction> transactions = new ArrayList<>();
 
   private volatile long lastClientActivity;
   private volatile long pinger;
@@ -92,7 +91,8 @@ public class DefaultStompHandler implements StompServerHandler {
       ponger = 0;
     }
     unsubscribeConnection(connection);
-    unregisterTransactionsFromConnection(connection);
+
+    Transactions.INSTANCE.unregisterTransactionsFromConnection(connection);
 
     if (closeHandler != null) {
       closeHandler.handle(connection);
@@ -448,39 +448,6 @@ public class DefaultStompHandler implements StompServerHandler {
     return list;
   }
 
-  @Override
-  public synchronized boolean registerTransaction(Transaction transaction) {
-    if (getTransaction(transaction.connection(), transaction.id()) != null) {
-      return false;
-    }
-    transactions.add(transaction);
-    return true;
-  }
-
-  @Override
-  public synchronized Transaction getTransaction(StompServerConnection connection, String id) {
-    return transactions.stream().filter(transaction -> transaction.connection().equals(connection) && transaction.id()
-        .equals(id)).findFirst().orElse(null);
-  }
-
-  @Override
-  public synchronized boolean unregisterTransaction(Transaction transaction) {
-    return transaction != null && transactions.remove(transaction);
-  }
-
-  @Override
-  public synchronized StompServerHandler unregisterTransactionsFromConnection(StompServerConnection connection) {
-    transactions.stream()
-        .filter(transaction -> transaction.connection().equals(connection))
-        .sorted() // Avoid using baking up collection.
-        .forEach(transactions::remove);
-    return this;
-  }
-
-  @Override
-  public synchronized List<Transaction> getTransactions() {
-    return transactions;
-  }
 
   @Override
   public synchronized Subscription getSubscription(StompServerConnection connection, String ackId) {

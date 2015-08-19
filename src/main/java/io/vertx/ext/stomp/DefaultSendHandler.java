@@ -3,6 +3,8 @@ package io.vertx.ext.stomp;
 import io.vertx.core.Handler;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
+import io.vertx.ext.stomp.impl.Transaction;
+import io.vertx.ext.stomp.impl.Transactions;
 import io.vertx.ext.stomp.utils.Headers;
 
 import java.util.List;
@@ -26,9 +28,6 @@ import java.util.UUID;
  */
 public class DefaultSendHandler implements Handler<ServerFrame> {
 
-  private static final Logger log = LoggerFactory.getLogger(DefaultSendHandler.class);
-
-
   @Override
   public void handle(ServerFrame sf) {
     String destination = sf.frame().getHeader(Frame.DESTINATION);
@@ -44,7 +43,7 @@ public class DefaultSendHandler implements Handler<ServerFrame> {
     // Handle transaction
     String txId = sf.frame().getHeader(Frame.TRANSACTION);
     if (txId != null) {
-      Transaction transaction = sf.connection().handler().getTransaction(sf.connection(), txId);
+      Transaction transaction = Transactions.INSTANCE.getTransaction(sf.connection(), txId);
       if (transaction == null) {
         // No transaction.
         Frame errorFrame = Frames.createErrorFrame(
@@ -61,7 +60,7 @@ public class DefaultSendHandler implements Handler<ServerFrame> {
               Headers.create(Frame.DESTINATION, destination, Frame.TRANSACTION, txId),
               "Message delivery failed - the frame cannot be added to the transaction - the number of allowed thread " +
                   "may have been reached");
-          sf.connection().handler().unregisterTransactionsFromConnection(sf.connection());
+          Transactions.INSTANCE.unregisterTransactionsFromConnection(sf.connection());
           sf.connection().write(errorFrame);
           sf.connection().close();
           return;

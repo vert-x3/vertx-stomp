@@ -16,7 +16,7 @@ import java.util.List;
  * designed to let you customize the server behavior. The default implementation is compliant with the STOMP
  * specification. In this default implementation, not acknowledge frames are dropped.
  *
- *  @author <a href="http://escoffier.me">Clement Escoffier</a>
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 @VertxGen
 public interface StompServerHandler extends Handler<ServerFrame> {
@@ -211,48 +211,6 @@ public interface StompServerHandler extends Handler<ServerFrame> {
    * @return the list of subscription
    */
   List<Subscription> getSubscriptions(String destination);
-
-  /**
-   * Registers a transaction.
-   *
-   * @param transaction the transaction
-   * @return {@code true} if the registration succeed, {@code false} otherwise. The main reason of failure is the
-   * non-uniqueness of the transaction id for a given client / connection
-   */
-  boolean registerTransaction(Transaction transaction);
-
-  /**
-   * Gets a transaction.
-   *
-   * @param connection the connection used by the transaction
-   * @param id         the id of the transaction
-   * @return the transaction, {@code null} if not found
-   */
-  Transaction getTransaction(StompServerConnection connection, String id);
-
-  /**
-   * Unregisters a transaction
-   *
-   * @param transaction the transaction to unregister
-   * @return {@code true} if the transaction is unregistered correctly, {@code false} otherwise.
-   */
-  boolean unregisterTransaction(Transaction transaction);
-
-  /**
-   * Unregisters all transactions from the given connection / client.
-   *
-   * @param connection the connection
-   * @return the current {@link StompServerHandler}
-   */
-  @Fluent
-  StompServerHandler unregisterTransactionsFromConnection(StompServerConnection connection);
-
-  /**
-   * Gets the list of current transactions.
-   *
-   * @return the list of transactions, empty is none.
-   */
-  List<Transaction> getTransactions();
 
   /**
    * Gets a subscription for the given connection / client and use the given acknowledgment id. Acknowledgement id

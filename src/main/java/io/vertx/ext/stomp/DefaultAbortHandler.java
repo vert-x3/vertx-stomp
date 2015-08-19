@@ -1,6 +1,8 @@
 package io.vertx.ext.stomp;
 
 import io.vertx.core.Handler;
+import io.vertx.ext.stomp.impl.Transaction;
+import io.vertx.ext.stomp.impl.Transactions;
 import io.vertx.ext.stomp.utils.Headers;
 
 /**
@@ -20,17 +22,13 @@ public class DefaultAbortHandler implements Handler<ServerFrame> {
       return;
     }
 
-    Transaction transaction = sf.connection().handler().getTransaction(sf.connection(), txId);
-    if (transaction == null) {
+    if (! Transactions.INSTANCE.unregisterTransaction(sf.connection(), txId)) {
       Frame error = Frames.createErrorFrame("Unknown transaction",
           Headers.create(Frame.TRANSACTION, txId),
           "The transaction id is unknown.");
       sf.connection().write(error).close();
       return;
     }
-
-    transaction.clear();
-    sf.connection().handler().unregisterTransaction(transaction);
 
     Frames.handleReceipt(sf.frame(), sf.connection());
   }
