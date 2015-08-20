@@ -13,6 +13,7 @@ import io.vertx.ext.stomp.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A plug-able implementation of {@link StompServerHandler}. The default behavior is compliant with the STOMP
@@ -175,7 +176,7 @@ public class DefaultStompHandler implements StompServerHandler {
     Frame frame = serverFrame.frame();
     StompServerConnection connection = serverFrame.connection();
 
-    lastClientActivity = System.currentTimeMillis();
+    lastClientActivity = System.nanoTime();
     switch (frame.getCommand()) {
       case CONNECT:
         handleConnect(frame, connection);
@@ -319,9 +320,10 @@ public class DefaultStompHandler implements StompServerHandler {
     }
     if (pong > 0) {
       ponger = connection.server().vertx().setPeriodic(pong, l -> {
-        long delta = System.currentTimeMillis() - lastClientActivity;
-        if (delta > pong * 2) {
-          log.warn("Disconnecting client " + connection + " - no client activity in the last " + delta + " ms");
+        long delta = System.nanoTime() - lastClientActivity;
+        final long deltaInMs = TimeUnit.MILLISECONDS.convert(delta, TimeUnit.NANOSECONDS);
+        if (deltaInMs > pong * 2) {
+          log.warn("Disconnecting client " + connection + " - no client activity in the last " + deltaInMs + " ms");
           connection.close();
           onClose(connection);
           vertx.cancelTimer(ponger);

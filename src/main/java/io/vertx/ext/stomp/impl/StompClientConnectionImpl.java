@@ -16,6 +16,7 @@ import io.vertx.ext.stomp.utils.Headers;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -72,7 +73,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     FrameParser parser = new FrameParser();
     parser.handler(this);
     socket.handler(buffer -> {
-      lastServerActivity = System.currentTimeMillis();
+      lastServerActivity = System.nanoTime();
       parser.handle(buffer);
     })
         .closeHandler(v -> close());
@@ -496,9 +497,10 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     }
     if (pong > 0) {
       ponger = client.vertx().setPeriodic(pong, l -> {
-        long delta = System.currentTimeMillis() - lastServerActivity;
-        if (delta > pong * 2) {
-          log.error("Disconnecting client " + client + " - no server activity detected in the last " + delta + " ms.");
+        long delta = System.nanoTime() - lastServerActivity;
+        final long deltaInMs = TimeUnit.MILLISECONDS.convert(delta, TimeUnit.NANOSECONDS);
+        if (deltaInMs > pong * 2) {
+          log.error("Disconnecting client " + client + " - no server activity detected in the last " + deltaInMs + " ms.");
           client.vertx().cancelTimer(l);
           disconnect();
         }

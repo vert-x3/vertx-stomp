@@ -130,7 +130,7 @@ public class StompClientImplTest {
     server.close();
     AsyncLock<StompServer> lock = new AsyncLock<>();
     server = StompServer.create(vertx,
-        new StompServerOptions().setHeartbeat(new JsonObject().put("x", 10).put("y", 10)))
+        new StompServerOptions().setHeartbeat(new JsonObject().put("x", 100).put("y", 100)))
         // Disable ping frame:
         .handler(StompServerHandler.create(vertx).pingHandler(v -> {
         }))
@@ -138,7 +138,7 @@ public class StompClientImplTest {
     lock.waitForSuccess();
 
     StompClient client = Stomp.createStompClient(vertx, new StompClientOptions().setHeartbeat(new JsonObject().put
-        ("x", 10).put("y", 10)));
+        ("x", 100).put("y", 100)));
     client.connect(ar -> reference.set(ar.result()));
 
     // Wait until inactivity is detected.
@@ -155,13 +155,13 @@ public class StompClientImplTest {
     lock.waitForSuccess();
     lock = new AsyncLock();
     server = StompServer.create(vertx,
-        new StompServerOptions().setHeartbeat(new JsonObject().put("x", 10).put("y", 10)))
+        new StompServerOptions().setHeartbeat(new JsonObject().put("x", 100).put("y", 100)))
         .handler(StompServerHandler.create(vertx))
         .listen(lock.handler());
     lock.waitForSuccess();
 
-    StompClient client = Stomp.createStompClient(vertx, new StompClientOptions().setHeartbeat(new JsonObject().put
-        ("x", 10).put("y", 10)));
+    StompClient client = Stomp.createStompClient(vertx, new StompClientOptions().setHeartbeat(new JsonObject()
+        .put("x", 100).put("y", 100)));
     client.connect(ar -> reference.set(ar.result()));
 
     Thread.sleep(1000);
@@ -174,13 +174,13 @@ public class StompClientImplTest {
     server.close();
     AsyncLock<StompServer> lock = new AsyncLock<>();
     server = StompServer.create(vertx,
-        new StompServerOptions().setHeartbeat(new JsonObject().put("x", 10).put("y", 10)))
+        new StompServerOptions().setHeartbeat(new JsonObject().put("x", 100).put("y", 100)))
         .handler(StompServerHandler.create(vertx))
         .listen(lock.handler());
     lock.waitForSuccess();
 
-    StompClient client = Stomp.createStompClient(vertx, new StompClientOptions().setHeartbeat(new JsonObject().put
-        ("x", 10).put("y", 10)));
+    StompClient client = Stomp.createStompClient(vertx, new StompClientOptions().setHeartbeat(new JsonObject()
+        .put("x", 100).put("y", 100)));
     client.connect(ar -> {
       reference.set(ar.result());
       // Disable ping frame:
@@ -189,7 +189,7 @@ public class StompClientImplTest {
     });
 
     // Wait until inactivity is detected.
-    Awaitility.await().atMost(1000, TimeUnit.MILLISECONDS).until(
+    Awaitility.await().atMost(1, TimeUnit.SECONDS).until(
         () -> reference.get().session() == null
     );
   }
