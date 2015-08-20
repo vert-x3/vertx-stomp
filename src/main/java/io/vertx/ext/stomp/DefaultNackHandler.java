@@ -64,10 +64,11 @@ public class DefaultNackHandler implements Handler<ServerFrame> {
       }
     }
 
-    Subscription subscription = connection.handler().getSubscription(connection, id);
-    // Not found ignore, it may be too late...
-    if (subscription != null) {
-      subscription.nack(id);
+    final List<Destination> destinations = connection.handler().getDestinations();
+    for (Destination destination : destinations) {
+      if (destination.nack(connection, sf.frame())) {
+        break;
+      }
     }
 
     Frames.handleReceipt(sf.frame(), connection);

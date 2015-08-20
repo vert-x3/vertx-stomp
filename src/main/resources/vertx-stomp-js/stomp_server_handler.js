@@ -16,8 +16,8 @@
 
 /** @module vertx-stomp-js/stomp_server_handler */
 var utils = require('vertx-js/util/utils');
+var Destination = require('vertx-stomp-js/destination');
 var Acknowledgement = require('vertx-stomp-js/acknowledgement');
-var Subscription = require('vertx-stomp-js/subscription');
 var Vertx = require('vertx-js/vertx');
 var StompServer = require('vertx-stomp-js/stomp_server');
 var ServerFrame = require('vertx-stomp-js/server_frame');
@@ -318,86 +318,26 @@ var StompServerHandler = function(j_val) {
 
    @public
 
-   @return {Array.<string>}
+   @return {Array.<Destination>}
    */
   this.getDestinations = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      return j_stompServerHandler["getDestinations()"]();
+      return utils.convReturnListSetVertxGen(j_stompServerHandler["getDestinations()"](), Destination);
     } else utils.invalidArgs();
   };
 
   /**
-   Registers the given {@link Subscription}.
-
-   @public
-   @param subscription {Subscription} the subscription 
-   @return {boolean} <code>true</code> if the subscription has been registered correctly, <code>false</code> otherwise. The main reason to fail the registration is the non-uniqueness of the subscription id for a given client.
-   */
-  this.subscribe = function(subscription) {
-    var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
-      return j_stompServerHandler["subscribe(io.vertx.ext.stomp.Subscription)"](subscription._jdel);
-    } else utils.invalidArgs();
-  };
-
-  /**
-   Unregisters the subscription 'id' from the given client.
-
-   @public
-   @param connection {StompServerConnection} the connection (client) 
-   @param id {string} the subscription id 
-   @return {boolean} <code>true</code> if the subscription removal succeed, <code>false</code> otherwise. The main reason to fail this removal is because the associated subscription cannot be found.
-   */
-  this.unsubscribe = function(connection, id) {
-    var __args = arguments;
-    if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'string') {
-      return j_stompServerHandler["unsubscribe(io.vertx.ext.stomp.StompServerConnection,java.lang.String)"](connection._jdel, id);
-    } else utils.invalidArgs();
-  };
-
-  /**
-   Unregisters all subscriptions from a given client / connection.
-
-   @public
-   @param connection {StompServerConnection} the connection (client) 
-   @return {StompServerHandler} the current {@link StompServerHandler}
-   */
-  this.unsubscribeConnection = function(connection) {
-    var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
-      j_stompServerHandler["unsubscribeConnection(io.vertx.ext.stomp.StompServerConnection)"](connection._jdel);
-      return that;
-    } else utils.invalidArgs();
-  };
-
-  /**
-   Gets the current list of subscriptions for the given destination.
+   Gets the destination with the given name.
 
    @public
    @param destination {string} the destination 
-   @return {Array.<Subscription>} the list of subscription
+   @return {Destination} the {@link Destination}, <code>null</code> if not existing.
    */
-  this.getSubscriptions = function(destination) {
+  this.getDestination = function(destination) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'string') {
-      return utils.convReturnListSetVertxGen(j_stompServerHandler["getSubscriptions(java.lang.String)"](destination), Subscription);
-    } else utils.invalidArgs();
-  };
-
-  /**
-   Gets a subscription for the given connection / client and use the given acknowledgment id. Acknowledgement id
-   is different from the subscription id as it point to a single message.
-
-   @public
-   @param connection {StompServerConnection} the connection 
-   @param ackId {string} the ack id 
-   @return {Subscription} the subscription, <code>null</code> if not found
-   */
-  this.getSubscription = function(connection, ackId) {
-    var __args = arguments;
-    if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'string') {
-      return utils.convReturnVertxGen(j_stompServerHandler["getSubscription(io.vertx.ext.stomp.StompServerConnection,java.lang.String)"](connection._jdel, ackId), Subscription);
+      return utils.convReturnVertxGen(j_stompServerHandler["getDestination(java.lang.String)"](destination), Destination);
     } else utils.invalidArgs();
   };
 
@@ -406,14 +346,15 @@ var StompServerHandler = function(j_val) {
    Implementations must call the handler configured using {@link StompServerHandler#onAckHandler}.
 
    @public
-   @param subscription {Subscription} the subscription 
+   @param connection {StompServerConnection} the connection 
+   @param subscribe {Object} the <code>SUBSCRIBE</code> frame 
    @param messages {Array.<Object>} the acknowledge messages 
    @return {StompServerHandler} the current {@link StompServerHandler}
    */
-  this.onAck = function(subscription, messages) {
+  this.onAck = function(connection, subscribe, messages) {
     var __args = arguments;
-    if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'object' && __args[1] instanceof Array) {
-      j_stompServerHandler["onAck(io.vertx.ext.stomp.Subscription,java.util.List)"](subscription._jdel, utils.convParamListDataObject(messages, function(json) { return new Frame(json); }));
+    if (__args.length === 3 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'object' && typeof __args[2] === 'object' && __args[2] instanceof Array) {
+      j_stompServerHandler["onAck(io.vertx.ext.stomp.StompServerConnection,io.vertx.ext.stomp.Frame,java.util.List)"](connection._jdel, subscribe != null ? new Frame(new JsonObject(JSON.stringify(subscribe))) : null, utils.convParamListDataObject(messages, function(json) { return new Frame(json); }));
       return that;
     } else utils.invalidArgs();
   };
@@ -425,14 +366,15 @@ var StompServerHandler = function(j_val) {
    {@link StompServerHandler#onNackHandler}.
 
    @public
-   @param subscription {Subscription} the subscription 
+   @param connection {StompServerConnection} the connection 
+   @param subscribe {Object} the <code>SUBSCRIBE</code> frame 
    @param messages {Array.<Object>} the acknowledge messages 
    @return {StompServerHandler} the current {@link StompServerHandler}
    */
-  this.onNack = function(subscription, messages) {
+  this.onNack = function(connection, subscribe, messages) {
     var __args = arguments;
-    if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'object' && __args[1] instanceof Array) {
-      j_stompServerHandler["onNack(io.vertx.ext.stomp.Subscription,java.util.List)"](subscription._jdel, utils.convParamListDataObject(messages, function(json) { return new Frame(json); }));
+    if (__args.length === 3 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'object' && typeof __args[2] === 'object' && __args[2] instanceof Array) {
+      j_stompServerHandler["onNack(io.vertx.ext.stomp.StompServerConnection,io.vertx.ext.stomp.Frame,java.util.List)"](connection._jdel, subscribe != null ? new Frame(new JsonObject(JSON.stringify(subscribe))) : null, utils.convParamListDataObject(messages, function(json) { return new Frame(json); }));
       return that;
     } else utils.invalidArgs();
   };
@@ -489,6 +431,19 @@ var StompServerHandler = function(j_val) {
       handler(utils.convReturnVertxGen(jVal, StompServerConnection));
     });
       return that;
+    } else utils.invalidArgs();
+  };
+
+  /**
+
+   @public
+   @param destination {string} 
+   @return {Destination}
+   */
+  this.getOrCreateDestination = function(destination) {
+    var __args = arguments;
+    if (__args.length === 1 && typeof __args[0] === 'string') {
+      return utils.convReturnVertxGen(j_stompServerHandler["getOrCreateDestination(java.lang.String)"](destination), Destination);
     } else utils.invalidArgs();
   };
 

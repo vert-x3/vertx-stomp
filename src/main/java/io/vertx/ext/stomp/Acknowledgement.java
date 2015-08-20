@@ -6,8 +6,8 @@ import java.util.List;
 
 /**
  * Structure passed to acknowledgement handler called when a {@code ACK} or {@code NACK} frame is received. The handler
- * receives an instance of {@link Acknowledgement} with the {@link Subscription} and the impacted messages. The list
- * of messages depends on the type of acknowledgment used by the subscription.
+ * receives an instance of {@link Acknowledgement} with the subscription {@link Frame} and the impacted messages. The
+ * list of messages depends on the type of acknowledgment used by the subscription.
  * <p/>
  * Subscriptions using the {@code client} mode receives all messages that were waiting for acknowledgment that were
  * sent before the acknowledged messages. The list also contains the acknowledged message. This is a cumulative
@@ -20,9 +20,9 @@ import java.util.List;
 public interface Acknowledgement {
 
   /**
-   * @return the subscription
+   * @return the subscription frame
    */
-  Subscription subscription();
+  Frame subscription();
 
   /**
    * @return the list of frames that have been acknowledged / not-acknowledged. The content of the list depends on

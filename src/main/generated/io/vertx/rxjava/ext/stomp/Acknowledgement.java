@@ -24,8 +24,8 @@ import io.vertx.ext.stomp.Frame;
 
 /**
  * Structure passed to acknowledgement handler called when a <code>ACK</code> or <code>NACK</code> frame is received. The handler
- * receives an instance of {@link io.vertx.rxjava.ext.stomp.Acknowledgement} with the {@link io.vertx.rxjava.ext.stomp.Subscription} and the impacted messages. The list
- * of messages depends on the type of acknowledgment used by the subscription.
+ * receives an instance of {@link io.vertx.rxjava.ext.stomp.Acknowledgement} with the subscription {@link io.vertx.ext.stomp.Frame} and the impacted messages. The
+ * list of messages depends on the type of acknowledgment used by the subscription.
  * <p/>
  * Subscriptions using the <code>client</code> mode receives all messages that were waiting for acknowledgment that were
  * sent before the acknowledged messages. The list also contains the acknowledged message. This is a cumulative
@@ -49,11 +49,11 @@ public class Acknowledgement {
   }
 
   /**
-   * @return the subscription
+   * @return the subscription frame
    * @return 
    */
-  public Subscription subscription() { 
-    Subscription ret= Subscription.newInstance(this.delegate.subscription());
+  public Frame subscription() { 
+    Frame ret = this.delegate.subscription();
     return ret;
   }
 

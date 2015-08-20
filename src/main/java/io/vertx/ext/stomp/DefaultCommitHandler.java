@@ -63,34 +63,30 @@ public class DefaultCommitHandler implements Handler<ServerFrame> {
   }
 
   private void replayChunk(StompServerConnection connection, List<Frame> frames) {
+    final List<Destination> destinations = connection.handler().getDestinations();
     for (Frame frame : frames) {
       switch (frame.getCommand()) {
         case SEND:
           // We are sure that the destination is set, as the check is made before enqueuing the frame.
           String destination = frame.getHeader(Frame.DESTINATION);
-          List<Subscription> subscriptions = connection.handler().getSubscriptions(destination);
-          subscriptions.stream().forEach(subscription -> {
-                String messageId = UUID.randomUUID().toString();
-                Frame message = DefaultSendHandler.sendToMessage(frame, subscription, messageId);
-                subscription.enqueue(message);
-                subscription.connection().write(message.toBuffer());
-              }
-          );
+          Destination dest = connection.handler().getDestination(destination);
+          // TODO ERROR handling here.
+          if (dest != null) {
+            dest.dispatch(connection, frame);
+          }
           break;
         case ACK:
-          String id = frame.getId();
-          Subscription subscription = connection.handler().getSubscription(connection, id);
-          // Not found ignore, it may be too late...
-          if (subscription != null) {
-            subscription.ack(id);
+          for (Destination d : destinations) {
+            if (d.ack(connection, frame)) {
+              break;
+            }
           }
           break;
         case NACK:
-          id = frame.getId();
-          subscription = connection.handler().getSubscription(connection, id);
-          // Not found ignore, it may be too late...
-          if (subscription != null) {
-            subscription.nack(id);
+          for (Destination d : destinations) {
+            if (d.nack(connection, frame)) {
+              break;
+            }
           }
           break;
       }

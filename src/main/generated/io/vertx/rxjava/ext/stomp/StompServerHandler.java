@@ -282,74 +282,31 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * opaque Strings.
    * @return 
    */
-  public List<String> getDestinations() { 
-    List<String> ret = this.delegate.getDestinations();
-;
+  public List<Destination> getDestinations() { 
+    List<Destination> ret = this.delegate.getDestinations().stream().map(Destination::newInstance).collect(java.util.stream.Collectors.toList());
     return ret;
   }
 
   /**
-   * Registers the given {@link io.vertx.ext.stomp.Subscription}.
-   * @param subscription the subscription
-   * @return <code>true</code> if the subscription has been registered correctly, <code>false</code> otherwise. The main reason to fail the registration is the non-uniqueness of the subscription id for a given client.
-   */
-  public boolean subscribe(Subscription subscription) { 
-    boolean ret = this.delegate.subscribe((io.vertx.ext.stomp.Subscription) subscription.getDelegate());
-    return ret;
-  }
-
-  /**
-   * Unregisters the subscription 'id' from the given client.
-   * @param connection the connection (client)
-   * @param id the subscription id
-   * @return <code>true</code> if the subscription removal succeed, <code>false</code> otherwise. The main reason to fail this removal is because the associated subscription cannot be found.
-   */
-  public boolean unsubscribe(StompServerConnection connection, String id) { 
-    boolean ret = this.delegate.unsubscribe((io.vertx.ext.stomp.StompServerConnection) connection.getDelegate(), id);
-    return ret;
-  }
-
-  /**
-   * Unregisters all subscriptions from a given client / connection.
-   * @param connection the connection (client)
-   * @return the current {@link io.vertx.ext.stomp.StompServerHandler}
-   */
-  public StompServerHandler unsubscribeConnection(StompServerConnection connection) { 
-    this.delegate.unsubscribeConnection((io.vertx.ext.stomp.StompServerConnection) connection.getDelegate());
-    return this;
-  }
-
-  /**
-   * Gets the current list of subscriptions for the given destination.
+   * Gets the destination with the given name.
    * @param destination the destination
-   * @return the list of subscription
+   * @return the {@link io.vertx.ext.stomp.Destination}, <code>null</code> if not existing.
    */
-  public List<Subscription> getSubscriptions(String destination) { 
-    List<Subscription> ret = this.delegate.getSubscriptions(destination).stream().map(Subscription::newInstance).collect(java.util.stream.Collectors.toList());
-    return ret;
-  }
-
-  /**
-   * Gets a subscription for the given connection / client and use the given acknowledgment id. Acknowledgement id
-   * is different from the subscription id as it point to a single message.
-   * @param connection the connection
-   * @param ackId the ack id
-   * @return the subscription, <code>null</code> if not found
-   */
-  public Subscription getSubscription(StompServerConnection connection, String ackId) { 
-    Subscription ret= Subscription.newInstance(this.delegate.getSubscription((io.vertx.ext.stomp.StompServerConnection) connection.getDelegate(), ackId));
+  public Destination getDestination(String destination) { 
+    Destination ret= Destination.newInstance(this.delegate.getDestination(destination));
     return ret;
   }
 
   /**
    * Method called by single message (client-individual policy) or a set of message (client policy) are acknowledged.
    * Implementations must call the handler configured using {@link io.vertx.rxjava.ext.stomp.StompServerHandler#onAckHandler}.
-   * @param subscription the subscription
+   * @param connection the connection
+   * @param subscribe the <code>SUBSCRIBE</code> frame
    * @param messages the acknowledge messages
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
-  public StompServerHandler onAck(Subscription subscription, List<Frame> messages) { 
-    this.delegate.onAck((io.vertx.ext.stomp.Subscription) subscription.getDelegate(), messages);
+  public StompServerHandler onAck(StompServerConnection connection, Frame subscribe, List<Frame> messages) { 
+    this.delegate.onAck((io.vertx.ext.stomp.StompServerConnection) connection.getDelegate(), subscribe, messages);
     return this;
   }
 
@@ -358,12 +315,13 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * <storng>not</storng> acknowledged. Not acknowledgment can result from a <code>NACK</code> frame or from a timeout (no
    * <code>ACK</code> frame received in a given time. Implementations must call the handler configured using
    * {@link io.vertx.rxjava.ext.stomp.StompServerHandler#onNackHandler}.
-   * @param subscription the subscription
+   * @param connection the connection
+   * @param subscribe the <code>SUBSCRIBE</code> frame
    * @param messages the acknowledge messages
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
-  public StompServerHandler onNack(Subscription subscription, List<Frame> messages) { 
-    this.delegate.onNack((io.vertx.ext.stomp.Subscription) subscription.getDelegate(), messages);
+  public StompServerHandler onNack(StompServerConnection connection, Frame subscribe, List<Frame> messages) { 
+    this.delegate.onNack((io.vertx.ext.stomp.StompServerConnection) connection.getDelegate(), subscribe, messages);
     return this;
   }
 
@@ -411,6 +369,11 @@ public class StompServerHandler implements Handler<ServerFrame> {
       }
     });
     return this;
+  }
+
+  public Destination getOrCreateDestination(String destination) { 
+    Destination ret= Destination.newInstance(this.delegate.getOrCreateDestination(destination));
+    return ret;
   }
 
 

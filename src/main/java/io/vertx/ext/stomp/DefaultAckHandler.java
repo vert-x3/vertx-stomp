@@ -5,6 +5,8 @@ import io.vertx.ext.stomp.impl.Transaction;
 import io.vertx.ext.stomp.impl.Transactions;
 import io.vertx.ext.stomp.utils.Headers;
 
+import java.util.List;
+
 /**
  * STOMP compliant actions executed when receiving a {@code ACK} frame. It removes the acknowledges messages from the
  * list of messages waiting for acknowledgment. If the {@code ACK} frame specifies a transaction id, the
@@ -61,10 +63,11 @@ public class DefaultAckHandler implements Handler<ServerFrame> {
       }
     }
 
-    Subscription subscription = connection.handler().getSubscription(connection, id);
-    // Not found ignore, it may be too late...
-    if (subscription != null) {
-      subscription.ack(id);
+    final List<Destination> destinations = connection.handler().getDestinations();
+    for (Destination destination : destinations) {
+      if (destination.ack(connection, frame)) {
+        break;
+      }
     }
 
     Frames.handleReceipt(frame, connection);

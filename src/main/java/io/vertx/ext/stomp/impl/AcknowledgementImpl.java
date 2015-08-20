@@ -3,7 +3,6 @@ package io.vertx.ext.stomp.impl;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.ext.stomp.Acknowledgement;
 import io.vertx.ext.stomp.Frame;
-import io.vertx.ext.stomp.Subscription;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,15 +15,15 @@ import java.util.List;
 @VertxGen
 public class AcknowledgementImpl implements Acknowledgement {
 
-  private final Subscription subscription;
+  private final Frame subscription;
   private final List<Frame> frames;
 
-  public AcknowledgementImpl(Subscription subscription, List<Frame> frames) {
+  public AcknowledgementImpl(Frame subscription, List<Frame> frames) {
     this.subscription = subscription;
     this.frames = new ArrayList<>(frames);
   }
 
-  public Subscription subscription() {
+  public Frame subscription() {
     return subscription;
   }
 

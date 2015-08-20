@@ -174,64 +174,27 @@ public interface StompServerHandler extends Handler<ServerFrame> {
    * @return the list of destination managed by the STOMP server. Don't forget the STOMP interprets destination as
    * opaque Strings.
    */
-  List<String> getDestinations();
+  List<Destination> getDestinations();
 
   /**
-   * Registers the given {@link Subscription}.
-   *
-   * @param subscription the subscription
-   * @return {@code true} if the subscription has been registered correctly, {@code false} otherwise. The main reason
-   * to fail the registration is the non-uniqueness of the subscription id for a given client.
-   */
-  boolean subscribe(Subscription subscription);
-
-  /**
-   * Unregisters the subscription 'id' from the given client.
-   *
-   * @param connection the connection (client)
-   * @param id         the subscription id
-   * @return {@code true} if the subscription removal succeed, {@code false} otherwise. The main reason to fail this
-   * removal is because the associated subscription cannot be found.
-   */
-  boolean unsubscribe(StompServerConnection connection, String id);
-
-  /**
-   * Unregisters all subscriptions from a given client / connection.
-   *
-   * @param connection the connection (client)
-   * @return the current {@link StompServerHandler}
-   */
-  @Fluent
-  StompServerHandler unsubscribeConnection(StompServerConnection connection);
-
-  /**
-   * Gets the current list of subscriptions for the given destination.
+   * Gets the destination with the given name.
    *
    * @param destination the destination
-   * @return the list of subscription
+   * @return the {@link Destination}, {@code null} if not existing.
    */
-  List<Subscription> getSubscriptions(String destination);
-
-  /**
-   * Gets a subscription for the given connection / client and use the given acknowledgment id. Acknowledgement id
-   * is different from the subscription id as it point to a single message.
-   *
-   * @param connection the connection
-   * @param ackId      the ack id
-   * @return the subscription, {@code null} if not found
-   */
-  Subscription getSubscription(StompServerConnection connection, String ackId);
+  Destination getDestination(String destination);
 
   /**
    * Method called by single message (client-individual policy) or a set of message (client policy) are acknowledged.
    * Implementations must call the handler configured using {@link #onAckHandler(Handler)}.
    *
-   * @param subscription the subscription
-   * @param messages     the acknowledge messages
+   * @param connection the connection
+   * @param subscribe  the {@code SUBSCRIBE} frame
+   * @param messages   the acknowledge messages
    * @return the current {@link StompServerHandler}
    */
   @Fluent
-  StompServerHandler onAck(Subscription subscription, List<Frame> messages);
+  StompServerHandler onAck(StompServerConnection connection, Frame subscribe, List<Frame> messages);
 
   /**
    * Method called by single message (client-individual policy) or a set of message (client policy) are
@@ -239,19 +202,20 @@ public interface StompServerHandler extends Handler<ServerFrame> {
    * {@code ACK} frame received in a given time. Implementations must call the handler configured using
    * {@link #onNackHandler(Handler)}.
    *
-   * @param subscription the subscription
-   * @param messages     the acknowledge messages
+   * @param connection  the connection
+   * @param subscribe the {@code SUBSCRIBE} frame
+   * @param messages    the acknowledge messages
    * @return the current {@link StompServerHandler}
    */
   @Fluent
-  StompServerHandler onNack(Subscription subscription, List<Frame> messages);
+  StompServerHandler onNack(StompServerConnection connection, Frame subscribe, List<Frame> messages);
 
   /**
    * Configures the action to execute when messages are acknowledged.
    *
    * @param handler the handler
    * @return the current {@link StompServerHandler}
-   * @see #onAck(Subscription, List)
+   * @see #onAck(StompServerConnection, Frame, List)
    */
   @Fluent
   StompServerHandler onAckHandler(Handler<Acknowledgement> handler);
@@ -261,7 +225,7 @@ public interface StompServerHandler extends Handler<ServerFrame> {
    *
    * @param handler the handler
    * @return the current {@link StompServerHandler}
-   * @see #onNack(Subscription, List)
+   * @see #onNack(StompServerConnection, Frame, List)
    */
   @Fluent
   StompServerHandler onNackHandler(Handler<Acknowledgement> handler);
@@ -279,4 +243,7 @@ public interface StompServerHandler extends Handler<ServerFrame> {
    */
   @Fluent
   StompServerHandler pingHandler(Handler<StompServerConnection> handler);
+
+
+  Destination getOrCreateDestination(String destination);
 }

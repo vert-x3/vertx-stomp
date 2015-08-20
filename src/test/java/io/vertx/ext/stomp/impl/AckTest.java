@@ -70,7 +70,7 @@ public class AckTest {
       connection.subscribe("/queue", Headers.create(Frame.ACK, "client"), frame -> connection.ack(frame.getAck()));
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestinations().contains("/queue"));
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
@@ -88,7 +88,7 @@ public class AckTest {
     }));
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() ->
-            server.stompHandler().getDestinations().contains("/queue")
+            Helper.hasDestination(server.stompHandler().getDestinations(), "/queue")
     );
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
@@ -113,7 +113,7 @@ public class AckTest {
       });
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestinations().contains("/queue"));
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
@@ -139,7 +139,7 @@ public class AckTest {
       });
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestinations().contains("/queue"));
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
@@ -168,7 +168,7 @@ public class AckTest {
       });
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestinations().contains("/queue"));
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
@@ -196,7 +196,7 @@ public class AckTest {
       });
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestinations().contains("/queue"));
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
@@ -229,7 +229,7 @@ public class AckTest {
       );
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestinations().contains("/queue"));
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
@@ -272,7 +272,7 @@ public class AckTest {
       );
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestinations().contains("/queue"));
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();

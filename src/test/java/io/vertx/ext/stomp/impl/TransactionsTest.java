@@ -65,7 +65,7 @@ public class TransactionsTest {
       connection.subscribe("/queue", (frames::add));
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestinations().contains("/queue"));
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
@@ -96,7 +96,7 @@ public class TransactionsTest {
       connection.subscribe("/queue", (frames::add));
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestinations().contains("/queue"));
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
@@ -133,7 +133,7 @@ public class TransactionsTest {
       connection.subscribe("/queue", (frames2::add));
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestinations().contains("/queue"));
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
@@ -167,7 +167,7 @@ public class TransactionsTest {
       connection.subscribe("/queue", (frames::add));
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestinations().contains("/queue"));
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
@@ -194,7 +194,7 @@ public class TransactionsTest {
       connection.subscribe("/queue", (frames::add));
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestinations().contains("/queue"));
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
@@ -227,7 +227,7 @@ public class TransactionsTest {
       connection.subscribe("/queue", (frames::add));
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestinations().contains("/queue"));
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
     AtomicBoolean done = new AtomicBoolean();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
@@ -261,7 +261,7 @@ public class TransactionsTest {
       connection.subscribe("/queue", (frames::add));
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestinations().contains("/queue"));
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
@@ -291,7 +291,7 @@ public class TransactionsTest {
       connection.subscribe("/queue", (frames::add));
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestinations().contains("/queue"));
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
@@ -322,7 +322,7 @@ public class TransactionsTest {
       connection.subscribe("/queue", (frames::add));
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestinations().contains("/queue"));
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
@@ -355,7 +355,7 @@ public class TransactionsTest {
       connection.subscribe("/queue", (frames::add));
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestinations().contains("/queue"));
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
@@ -388,7 +388,7 @@ public class TransactionsTest {
       connection.subscribe("/queue", (frames::add));
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestinations().contains("/queue"));
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();

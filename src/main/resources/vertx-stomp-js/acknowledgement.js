@@ -16,7 +16,6 @@
 
 /** @module vertx-stomp-js/acknowledgement */
 var utils = require('vertx-js/util/utils');
-var Subscription = require('vertx-stomp-js/subscription');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
@@ -33,16 +32,16 @@ var Acknowledgement = function(j_val) {
   var that = this;
 
   /**
-   @return the subscription
+   @return the subscription frame
 
    @public
 
-   @return {Subscription}
+   @return {Object}
    */
   this.subscription = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      return utils.convReturnVertxGen(j_acknowledgement["subscription()"](), Subscription);
+      return utils.convReturnDataObject(j_acknowledgement["subscription()"]());
     } else utils.invalidArgs();
   };
 

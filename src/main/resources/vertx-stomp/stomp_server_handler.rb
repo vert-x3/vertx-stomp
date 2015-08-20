@@ -1,5 +1,5 @@
+require 'vertx-stomp/destination'
 require 'vertx-stomp/acknowledgement'
-require 'vertx-stomp/subscription'
 require 'vertx/vertx'
 require 'vertx-stomp/stomp_server'
 require 'vertx-stomp/server_frame'
@@ -196,87 +196,49 @@ module VertxStomp
     end
     #  @return the list of destination managed by the STOMP server. Don't forget the STOMP interprets destination as
     #  opaque Strings.
-    # @return [Array<String>]
+    # @return [Array<::VertxStomp::Destination>]
     def get_destinations
       if !block_given?
-        return @j_del.java_method(:getDestinations, []).call().to_a.map { |elt| elt }
+        return @j_del.java_method(:getDestinations, []).call().to_a.map { |elt| ::Vertx::Util::Utils.safe_create(elt,::VertxStomp::Destination) }
       end
       raise ArgumentError, "Invalid arguments when calling get_destinations()"
     end
-    #  Registers the given {::VertxStomp::Subscription}.
-    # @param [::VertxStomp::Subscription] subscription the subscription
-    # @return [true,false] <code>true</code> if the subscription has been registered correctly, <code>false</code> otherwise. The main reason to fail the registration is the non-uniqueness of the subscription id for a given client.
-    def subscribe?(subscription=nil)
-      if subscription.class.method_defined?(:j_del) && !block_given?
-        return @j_del.java_method(:subscribe, [Java::IoVertxExtStomp::Subscription.java_class]).call(subscription.j_del)
-      end
-      raise ArgumentError, "Invalid arguments when calling subscribe?(subscription)"
-    end
-    #  Unregisters the subscription 'id' from the given client.
-    # @param [::VertxStomp::StompServerConnection] connection the connection (client)
-    # @param [String] id the subscription id
-    # @return [true,false] <code>true</code> if the subscription removal succeed, <code>false</code> otherwise. The main reason to fail this removal is because the associated subscription cannot be found.
-    def unsubscribe?(connection=nil,id=nil)
-      if connection.class.method_defined?(:j_del) && id.class == String && !block_given?
-        return @j_del.java_method(:unsubscribe, [Java::IoVertxExtStomp::StompServerConnection.java_class,Java::java.lang.String.java_class]).call(connection.j_del,id)
-      end
-      raise ArgumentError, "Invalid arguments when calling unsubscribe?(connection,id)"
-    end
-    #  Unregisters all subscriptions from a given client / connection.
-    # @param [::VertxStomp::StompServerConnection] connection the connection (client)
-    # @return [self]
-    def unsubscribe_connection(connection=nil)
-      if connection.class.method_defined?(:j_del) && !block_given?
-        @j_del.java_method(:unsubscribeConnection, [Java::IoVertxExtStomp::StompServerConnection.java_class]).call(connection.j_del)
-        return self
-      end
-      raise ArgumentError, "Invalid arguments when calling unsubscribe_connection(connection)"
-    end
-    #  Gets the current list of subscriptions for the given destination.
+    #  Gets the destination with the given name.
     # @param [String] destination the destination
-    # @return [Array<::VertxStomp::Subscription>] the list of subscription
-    def get_subscriptions(destination=nil)
+    # @return [::VertxStomp::Destination] the {::VertxStomp::Destination}, <code>null</code> if not existing.
+    def get_destination(destination=nil)
       if destination.class == String && !block_given?
-        return @j_del.java_method(:getSubscriptions, [Java::java.lang.String.java_class]).call(destination).to_a.map { |elt| ::Vertx::Util::Utils.safe_create(elt,::VertxStomp::Subscription) }
+        return ::Vertx::Util::Utils.safe_create(@j_del.java_method(:getDestination, [Java::java.lang.String.java_class]).call(destination),::VertxStomp::Destination)
       end
-      raise ArgumentError, "Invalid arguments when calling get_subscriptions(destination)"
-    end
-    #  Gets a subscription for the given connection / client and use the given acknowledgment id. Acknowledgement id
-    #  is different from the subscription id as it point to a single message.
-    # @param [::VertxStomp::StompServerConnection] connection the connection
-    # @param [String] ackId the ack id
-    # @return [::VertxStomp::Subscription] the subscription, <code>null</code> if not found
-    def get_subscription(connection=nil,ackId=nil)
-      if connection.class.method_defined?(:j_del) && ackId.class == String && !block_given?
-        return ::Vertx::Util::Utils.safe_create(@j_del.java_method(:getSubscription, [Java::IoVertxExtStomp::StompServerConnection.java_class,Java::java.lang.String.java_class]).call(connection.j_del,ackId),::VertxStomp::Subscription)
-      end
-      raise ArgumentError, "Invalid arguments when calling get_subscription(connection,ackId)"
+      raise ArgumentError, "Invalid arguments when calling get_destination(destination)"
     end
     #  Method called by single message (client-individual policy) or a set of message (client policy) are acknowledged.
     #  Implementations must call the handler configured using {::VertxStomp::StompServerHandler#on_ack_handler}.
-    # @param [::VertxStomp::Subscription] subscription the subscription
+    # @param [::VertxStomp::StompServerConnection] connection the connection
+    # @param [Hash] subscribe the <code>SUBSCRIBE</code> frame
     # @param [Array<Hash>] messages the acknowledge messages
     # @return [self]
-    def on_ack(subscription=nil,messages=nil)
-      if subscription.class.method_defined?(:j_del) && messages.class == Array && !block_given?
-        @j_del.java_method(:onAck, [Java::IoVertxExtStomp::Subscription.java_class,Java::JavaUtil::List.java_class]).call(subscription.j_del,messages.map { |element| Java::IoVertxExtStomp::Frame.new(::Vertx::Util::Utils.to_json_object(element)) })
+    def on_ack(connection=nil,subscribe=nil,messages=nil)
+      if connection.class.method_defined?(:j_del) && subscribe.class == Hash && messages.class == Array && !block_given?
+        @j_del.java_method(:onAck, [Java::IoVertxExtStomp::StompServerConnection.java_class,Java::IoVertxExtStomp::Frame.java_class,Java::JavaUtil::List.java_class]).call(connection.j_del,Java::IoVertxExtStomp::Frame.new(::Vertx::Util::Utils.to_json_object(subscribe)),messages.map { |element| Java::IoVertxExtStomp::Frame.new(::Vertx::Util::Utils.to_json_object(element)) })
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling on_ack(subscription,messages)"
+      raise ArgumentError, "Invalid arguments when calling on_ack(connection,subscribe,messages)"
     end
     #  Method called by single message (client-individual policy) or a set of message (client policy) are
     #  <storng>not</storng> acknowledged. Not acknowledgment can result from a <code>NACK</code> frame or from a timeout (no
     #  <code>ACK</code> frame received in a given time. Implementations must call the handler configured using
     #  {::VertxStomp::StompServerHandler#on_nack_handler}.
-    # @param [::VertxStomp::Subscription] subscription the subscription
+    # @param [::VertxStomp::StompServerConnection] connection the connection
+    # @param [Hash] subscribe the <code>SUBSCRIBE</code> frame
     # @param [Array<Hash>] messages the acknowledge messages
     # @return [self]
-    def on_nack(subscription=nil,messages=nil)
-      if subscription.class.method_defined?(:j_del) && messages.class == Array && !block_given?
-        @j_del.java_method(:onNack, [Java::IoVertxExtStomp::Subscription.java_class,Java::JavaUtil::List.java_class]).call(subscription.j_del,messages.map { |element| Java::IoVertxExtStomp::Frame.new(::Vertx::Util::Utils.to_json_object(element)) })
+    def on_nack(connection=nil,subscribe=nil,messages=nil)
+      if connection.class.method_defined?(:j_del) && subscribe.class == Hash && messages.class == Array && !block_given?
+        @j_del.java_method(:onNack, [Java::IoVertxExtStomp::StompServerConnection.java_class,Java::IoVertxExtStomp::Frame.java_class,Java::JavaUtil::List.java_class]).call(connection.j_del,Java::IoVertxExtStomp::Frame.new(::Vertx::Util::Utils.to_json_object(subscribe)),messages.map { |element| Java::IoVertxExtStomp::Frame.new(::Vertx::Util::Utils.to_json_object(element)) })
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling on_nack(subscription,messages)"
+      raise ArgumentError, "Invalid arguments when calling on_nack(connection,subscribe,messages)"
     end
     #  Configures the action to execute when messages are acknowledged.
     # @yield the handler
@@ -311,6 +273,14 @@ module VertxStomp
         return self
       end
       raise ArgumentError, "Invalid arguments when calling ping_handler()"
+    end
+    # @param [String] destination 
+    # @return [::VertxStomp::Destination]
+    def get_or_create_destination(destination=nil)
+      if destination.class == String && !block_given?
+        return ::Vertx::Util::Utils.safe_create(@j_del.java_method(:getOrCreateDestination, [Java::java.lang.String.java_class]).call(destination),::VertxStomp::Destination)
+      end
+      raise ArgumentError, "Invalid arguments when calling get_or_create_destination(destination)"
     end
   end
 end

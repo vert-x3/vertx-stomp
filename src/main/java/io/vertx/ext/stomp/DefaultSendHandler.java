@@ -71,9 +71,8 @@ public class DefaultSendHandler implements Handler<ServerFrame> {
       }
     }
 
-
-    List<Subscription> subscriptions = sf.connection().handler().getSubscriptions(destination);
-    if (subscriptions.isEmpty() && sf.connection().server().options().isSendErrorOnNoSubscriptions()) {
+    final Destination dest = sf.connection().handler().getDestination(destination);
+    if (dest == null && sf.connection().server().options().isSendErrorOnNoSubscriptions()) {
       Frame errorFrame = Frames.createErrorFrame(
           "No subscriptions",
           Headers.create(Frame.DESTINATION, destination),
@@ -82,29 +81,13 @@ public class DefaultSendHandler implements Handler<ServerFrame> {
       sf.connection().close();
       return;
     }
+    //TODO Improve error handling here.
 
-    subscriptions.stream().forEach(subscription -> {
-          String messageId = UUID.randomUUID().toString();
-          Frame message = sendToMessage(sf.frame(), subscription, messageId);
-          subscription.enqueue(message);
-          subscription.connection().write(message.toBuffer());
-        }
-    );
+    if (dest != null) {
+      dest.dispatch(sf.connection(), sf.frame());
+    }
 
     Frames.handleReceipt(sf.frame(), sf.connection());
   }
 
-  public static Frame sendToMessage(Frame frame, Subscription subscription, String messageId) {
-    final Headers headers = Headers.create(frame.getHeaders())
-        // Destination already set in the input headers.
-        .add(Frame.SUBSCRIPTION, subscription.id())
-        .add(Frame.MESSAGE_ID, messageId);
-    if (!subscription.ackMode().equals("auto")) {
-      // We reuse the message Id as ack Id
-      headers.add(Frame.ACK, messageId);
-    }
-    return new Frame(Frame.Command.MESSAGE,
-        headers,
-        frame.getBody());
-  }
 }

@@ -12,10 +12,7 @@ import io.vertx.ext.auth.AuthProvider;
 import io.vertx.ext.stomp.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * A plug-able implementation of {@link StompServerHandler}. The default behavior is compliant with the STOMP
@@ -69,7 +66,7 @@ public class DefaultStompHandler implements StompServerHandler {
   private Handler<Acknowledgement> onNackHandler = (acknowledgement) ->
       log.warn("Messages not acknowledge - " + acknowledgement.frames());
 
-  private final LocalMap<String, Subscriptions> subscriptions;
+  private final LocalMap<String, Destination> destinations;
 
   private volatile long lastClientActivity;
   private volatile long pinger;
@@ -77,7 +74,7 @@ public class DefaultStompHandler implements StompServerHandler {
 
   public DefaultStompHandler(Vertx vertx) {
     this.vertx = vertx;
-    this.subscriptions = vertx.sharedData().getLocalMap("stomp.subscriptions");
+    this.destinations = vertx.sharedData().getLocalMap("stomp.destinations");
   }
 
   public synchronized void onClose(StompServerConnection connection) {
@@ -90,8 +87,8 @@ public class DefaultStompHandler implements StompServerHandler {
       vertx.cancelTimer(ponger);
       ponger = 0;
     }
-    unsubscribeConnection(connection);
 
+    getDestinations().stream().forEach((d) -> d.unsubscribeConnection(connection));
     Transactions.instance().unregisterTransactionsFromConnection(connection);
 
     if (closeHandler != null) {
@@ -325,6 +322,7 @@ public class DefaultStompHandler implements StompServerHandler {
           log.warn("Disconnecting client " + connection + " - no client activity in the last " + delta + " ms");
           connection.close();
           onClose(connection);
+          vertx.cancelTimer(ponger);
         }
       });
     }
@@ -395,68 +393,34 @@ public class DefaultStompHandler implements StompServerHandler {
   }
 
   @Override
-  public synchronized List<String> getDestinations() {
-    return new ArrayList<>(subscriptions.keySet());
-  }
-
-  @Override
-  public synchronized boolean subscribe(Subscription subscription) {
-    if (isIdAlreadyUsedByConnection(subscription)) {
-      return false;
-    }
-    if (getSubscriptions(subscription.connection()).size() >=
-        subscription.connection().server().options().getMaxSubscriptionsByClient()) {
-      return false;
-    }
-    addSubscription(subscription.destination(), subscription);
-    return true;
+  public List<Destination> getDestinations() {
+    return new ArrayList<>(destinations.values());
   }
 
   /**
-   * Checks whether the subscription id is already used by the connection. This method must be called when holding
-   * the monitor lock.
+   * Gets the destination with the given name..
    *
-   * @param subscription the subscription
-   * @return if the id is already used
+   * @param destination the destination
+   * @return the {@link Destination}, {@code null} if not found.
    */
-  private boolean isIdAlreadyUsedByConnection(Subscription subscription) {
-    final Optional<Subscription> first
-        = getSubscriptions(subscription.connection()).stream().filter(s -> s.id().equals(subscription.id())).findFirst();
-    return first.isPresent();
+  public Destination getDestination(String destination) {
+    return destinations.get(destination);
   }
 
-  @Override
-  public boolean unsubscribe(StompServerConnection connection, String id) {
-    // No need for synchronization, the removeSubscription is synchronized.
-    return removeSubscription(id, connection);
-  }
-
-  @Override
-  public synchronized StompServerHandler unsubscribeConnection(StompServerConnection connection) {
-    getSubscriptions(connection).stream().forEach(
-        s -> removeSubscription(s.id(), s.connection())
-    );
-    return this;
-  }
-
-  @Override
-  public synchronized List<Subscription> getSubscriptions(String destination) {
-    List<Subscription> list = subscriptions.get(destination);
-    if (list == null) {
-      return Collections.emptyList();
+  public Destination getOrCreateDestination(String destination) {
+    synchronized (vertx) {
+      Destination d = destinations.get(destination);
+      if (d == null) {
+        // TODO Manage different types of destination.
+        d = Destination.topic(vertx, destination);
+        destinations.put(destination, d);
+      }
+      return d;
     }
-    return list;
-  }
-
-
-  @Override
-  public synchronized Subscription getSubscription(StompServerConnection connection, String ackId) {
-    return subscriptions.values().stream().flatMap(List::stream).filter(subscription ->
-        subscription.connection().equals(connection) && subscription.contains(ackId)).findFirst().orElse(null);
   }
 
   @Override
-  public StompServerHandler onAck(Subscription subscription, List<Frame> messages) {
+  public StompServerHandler onAck(StompServerConnection connection, Frame subscription, List<Frame> messages) {
     Handler<Acknowledgement> handler;
     synchronized (this) {
       handler = onAckHandler;
@@ -468,13 +432,13 @@ public class DefaultStompHandler implements StompServerHandler {
   }
 
   @Override
-  public StompServerHandler onNack(Subscription subscription, List<Frame> messages) {
+  public StompServerHandler onNack(StompServerConnection connection, Frame subscribe, List<Frame> messages) {
     Handler<Acknowledgement> handler;
     synchronized (this) {
       handler = onNackHandler;
     }
     if (handler != null) {
-      handler.handle(new AcknowledgementImpl(subscription, messages));
+      handler.handle(new AcknowledgementImpl(subscribe, messages));
     }
     return this;
   }
@@ -507,48 +471,4 @@ public class DefaultStompHandler implements StompServerHandler {
     return this;
   }
 
-
-  private synchronized void addSubscription(String destination, Subscription subscription) {
-    Subscriptions list = subscriptions.get(destination);
-    if (list == null) {
-      list = new Subscriptions();
-      subscriptions.put(destination, list);
-    }
-    list.add(subscription);
-  }
-
-  private synchronized boolean removeSubscription(String id, StompServerConnection connection) {
-    boolean r = false;
-    Subscription subscription = getSubscription(id, connection);
-    if (subscription != null) {
-      List<Subscription> list = subscriptions.get(subscription.destination());
-      if (list != null) {
-        r = list.remove(subscription);
-        if (list.isEmpty()) {
-          subscriptions.remove(subscription.destination());
-        }
-      }
-    }
-    return r;
-  }
-
-  private synchronized Subscription getSubscription(String id, StompServerConnection connection) {
-    for (List<Subscription> list : subscriptions.values()) {
-      for (Subscription s : list) {
-        if (s.connection().equals(connection) && s.id().equals(id)) {
-          return s;
-        }
-      }
-    }
-    return null;
-  }
-
-  private synchronized List<Subscription> getSubscriptions(StompServerConnection connection) {
-    List<Subscription> result = new ArrayList<>();
-    for (List<Subscription> list : subscriptions.values()) {
-      result.addAll(list.stream()
-          .filter(s -> s.connection().equals(connection)).collect(Collectors.toList()));
-    }
-    return result;
-  }
 }

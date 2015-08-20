@@ -3,9 +3,10 @@ package io.vertx.ext.stomp;
 import io.vertx.core.Handler;
 import io.vertx.ext.stomp.utils.Headers;
 
+import java.util.List;
+
 /**
- * STOMP compliant actions executed when receiving a {@code UNSUBSCRIBE} frame. The associated
- * {@link io.vertx.ext.stomp.Subscription} is unregistered.
+ * STOMP compliant actions executed when receiving a {@code UNSUBSCRIBE} frame.
  * <p/>
  * This handler is thread safe.
  *
@@ -28,7 +29,16 @@ public class DefaultUnsubscribeHandler implements Handler<ServerFrame> {
       return;
     }
 
-    if (!connection.handler().unsubscribe(connection, id)) {
+    List<Destination> destinations = connection.handler().getDestinations();
+    boolean handled = false;
+    for (Destination destination : destinations) {
+      if (destination.unsubscribe(connection, frame)) {
+        handled = true;
+        break;
+      }
+    }
+
+    if (!handled) {
       connection.write(Frames.createErrorFrame(
           "Invalid unsubscribe",
           Headers.create(frame.getHeaders()),

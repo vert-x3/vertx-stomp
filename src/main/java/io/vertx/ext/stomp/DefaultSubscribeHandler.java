@@ -3,9 +3,10 @@ package io.vertx.ext.stomp;
 import io.vertx.core.Handler;
 import io.vertx.ext.stomp.utils.Headers;
 
+import java.util.List;
+
 /**
- * STOMP compliant actions executed when receiving a {@code SUBSCRIBE} frame. It builds a {@link Subscription}
- * instance and registers it.
+ * STOMP compliant actions executed when receiving a {@code SUBSCRIBE} frame.
  * <p/>
  * This handler is thread safe.
  *
@@ -32,16 +33,29 @@ public class DefaultSubscribeHandler implements Handler<ServerFrame> {
       return;
     }
 
-    boolean added = connection.handler().subscribe(Subscription.create(connection, destination, ack, id));
-    if (!added) {
-      connection.write(Frames.createErrorFrame(
-          "Invalid subscription",
-          Headers.create(frame.getHeaders()), "'id'" +
-              " already used by this connection, or the client has exceeded the number of allowed subscriptions"));
-      connection.close();
-      return;
+    // Ensure that the subscription id is unique
+    int count = 0;
+    for (Destination dest : connection.handler().getDestinations()) {
+      List<String> ids = dest.getSubscriptions(connection);
+      count += ids.size();
+      if (ids.contains(id)) {
+        connection.write(Frames.createErrorFrame(
+            "Invalid subscription",
+            Headers.create(frame.getHeaders()), "'id'" +
+                " already used by this connection."));
+        connection.close();
+        return;
+      }
+      if (count + 1 > connection.server().options().getMaxSubscriptionsByClient()) {
+        connection.write(Frames.createErrorFrame(
+            "Invalid subscription",
+            Headers.create(frame.getHeaders()), "Too many subscriptions"));
+        connection.close();
+        return;
+      }
     }
 
+    connection.handler().getOrCreateDestination(destination).subscribe(connection, frame);
     Frames.handleReceipt(frame, connection);
   }
 }
