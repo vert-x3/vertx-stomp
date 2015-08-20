@@ -116,9 +116,4 @@ public class Transactions {
     Transaction transaction = getTransaction(connection, txId);
     return transaction != null && transaction.addFrameToTransaction(frame);
   }
-
-
-  private class ListOfTransactions extends CopyOnWriteArrayList<Transaction> implements List<Transaction>, Shareable {
-    // No content.
-  }
 }
