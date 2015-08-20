@@ -92,7 +92,7 @@ public class DefaultStompHandler implements StompServerHandler {
     }
     unsubscribeConnection(connection);
 
-    Transactions.INSTANCE.unregisterTransactionsFromConnection(connection);
+    Transactions.instance().unregisterTransactionsFromConnection(connection);
 
     if (closeHandler != null) {
       closeHandler.handle(connection);

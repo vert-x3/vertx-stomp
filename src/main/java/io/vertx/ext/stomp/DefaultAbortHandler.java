@@ -22,7 +22,7 @@ public class DefaultAbortHandler implements Handler<ServerFrame> {
       return;
     }
 
-    if (! Transactions.INSTANCE.unregisterTransaction(sf.connection(), txId)) {
+    if (! Transactions.instance().unregisterTransaction(sf.connection(), txId)) {
       Frame error = Frames.createErrorFrame("Unknown transaction",
           Headers.create(Frame.TRANSACTION, txId),
           "The transaction id is unknown.");

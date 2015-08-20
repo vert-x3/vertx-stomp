@@ -43,7 +43,7 @@ public class DefaultSendHandler implements Handler<ServerFrame> {
     // Handle transaction
     String txId = sf.frame().getHeader(Frame.TRANSACTION);
     if (txId != null) {
-      Transaction transaction = Transactions.INSTANCE.getTransaction(sf.connection(), txId);
+      Transaction transaction = Transactions.instance().getTransaction(sf.connection(), txId);
       if (transaction == null) {
         // No transaction.
         Frame errorFrame = Frames.createErrorFrame(
@@ -60,7 +60,7 @@ public class DefaultSendHandler implements Handler<ServerFrame> {
               Headers.create(Frame.DESTINATION, destination, Frame.TRANSACTION, txId),
               "Message delivery failed - the frame cannot be added to the transaction - the number of allowed thread " +
                   "may have been reached");
-          Transactions.INSTANCE.unregisterTransactionsFromConnection(sf.connection());
+          Transactions.instance().unregisterTransactionsFromConnection(sf.connection());
           sf.connection().write(errorFrame);
           sf.connection().close();
           return;

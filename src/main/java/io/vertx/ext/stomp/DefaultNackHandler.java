@@ -35,7 +35,7 @@ public class DefaultNackHandler implements Handler<ServerFrame> {
     // Handle transaction
     String txId = sf.frame().getHeader(Frame.TRANSACTION);
     if (txId != null) {
-      Transaction transaction = Transactions.INSTANCE.getTransaction(connection, txId);
+      Transaction transaction = Transactions.instance().getTransaction(connection, txId);
 
       if (transaction == null) {
         // No transaction.
@@ -53,7 +53,7 @@ public class DefaultNackHandler implements Handler<ServerFrame> {
               Headers.create(Frame.ID, id, Frame.TRANSACTION, txId),
               "Message delivery failed - the frame cannot be added to the transaction - the number of allowed thread " +
                   "may have been reached");
-          Transactions.INSTANCE.unregisterTransactionsFromConnection(connection);
+          Transactions.instance().unregisterTransactionsFromConnection(connection);
           connection.write(errorFrame);
           connection.close();
           return;

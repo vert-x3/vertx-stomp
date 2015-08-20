@@ -34,7 +34,7 @@ public class DefaultCommitHandler implements Handler<ServerFrame> {
       return;
     }
 
-    Transaction transaction = Transactions.INSTANCE.getTransaction(connection, txId);
+    Transaction transaction = Transactions.instance().getTransaction(connection, txId);
     if (transaction == null) {
       Frame error = Frames.createErrorFrame("Unknown transaction",
           Headers.create(Frame.TRANSACTION, txId),
@@ -45,7 +45,7 @@ public class DefaultCommitHandler implements Handler<ServerFrame> {
 
     replay(connection, transaction.getFrames());
     transaction.clear();
-    Transactions.INSTANCE.unregisterTransaction(connection, txId);
+    Transactions.instance().unregisterTransaction(connection, txId);
 
     Frames.handleReceipt(frame, connection);
   }

@@ -25,7 +25,7 @@ public class DefaultBeginHandler implements Handler<ServerFrame> {
       return;
     }
 
-    if (!Transactions.INSTANCE.registerTransaction(connection, txId)) {
+    if (!Transactions.instance().registerTransaction(connection, txId)) {
       Frame error = Frames.createErrorFrame("Already existing transaction",
           Headers.create(Frame.TRANSACTION, txId),
           "A transaction using the same id is still active.");

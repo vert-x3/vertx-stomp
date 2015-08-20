@@ -1,24 +1,32 @@
 package io.vertx.ext.stomp.impl;
 
+import io.vertx.core.shareddata.Shareable;
 import io.vertx.ext.stomp.Frame;
 import io.vertx.ext.stomp.StompServerConnection;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Stores the active transactions of the STOMP server.
+ * Transactions are not shared between server instances, as transactions are 'attached' to a STOMP client (i.e.
+ * connection). So 2 connections cannot use the same transaction object.
  *
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class Transactions {
 
-  public static final Transactions INSTANCE = new Transactions();
+  private final static Transactions INSTANCE = new Transactions();
 
-  private List<Transaction> transactions = new ArrayList<>();
+  private final List<Transaction> transactions = new ArrayList<>();
+
+  public static Transactions instance() {
+    return INSTANCE;
+  }
 
   private Transactions() {
-    // avoid direct instantiation.
+    // Avoid direct instantiation.
   }
 
   /**
@@ -110,4 +118,7 @@ public class Transactions {
   }
 
 
+  private class ListOfTransactions extends CopyOnWriteArrayList<Transaction> implements List<Transaction>, Shareable {
+    // No content.
+  }
 }

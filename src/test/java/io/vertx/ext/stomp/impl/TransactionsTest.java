@@ -245,7 +245,7 @@ public class TransactionsTest {
       done.set(true);
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Transactions.INSTANCE.getTransactionCount() == 0
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Transactions.instance().getTransactionCount() == 0
         && done.get());
     assertThat(frames).isEmpty();
     assertThat(errors).isEmpty();
@@ -277,7 +277,7 @@ public class TransactionsTest {
       });
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Transactions.INSTANCE.getTransactionCount() == 0);
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Transactions.instance().getTransactionCount() == 0);
     assertThat(frames).isEmpty();
     assertThat(errors).isEmpty();
   }
@@ -309,7 +309,7 @@ public class TransactionsTest {
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> errors.size() >= 1);
     assertThat(frames).isEmpty();
     // On error, all transactions are closed
-    assertThat(Transactions.INSTANCE.getTransactionCount()).isEqualTo(0);
+    assertThat(Transactions.instance().getTransactionCount()).isEqualTo(0);
     assertThat(errors.get(0).toString()).containsIgnoringCase("Unknown transaction");
   }
 
@@ -340,7 +340,7 @@ public class TransactionsTest {
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> errors.size() >= 1);
     assertThat(frames).isEmpty();
     // On error, all transactions are closed
-    assertThat(Transactions.INSTANCE.getTransactionCount()).isEqualTo(0);
+    assertThat(Transactions.instance().getTransactionCount()).isEqualTo(0);
     assertThat(errors.get(0).toString()).containsIgnoringCase("Unknown transaction");
   }
 
@@ -371,7 +371,7 @@ public class TransactionsTest {
       connection.commit("my-tx");
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Transactions.INSTANCE.getTransactionCount() == 0);
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Transactions.instance().getTransactionCount() == 0);
     assertThat(frames).isEmpty();
     assertThat(errors).hasSize(1);
   }
