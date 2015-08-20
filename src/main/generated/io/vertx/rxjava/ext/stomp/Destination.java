@@ -52,6 +52,11 @@ public class Destination {
     return ret;
   }
 
+  public static Destination queue(Vertx vertx, String destination) { 
+    Destination ret= Destination.newInstance(io.vertx.ext.stomp.Destination.queue((io.vertx.core.Vertx) vertx.getDelegate(), destination));
+    return ret;
+  }
+
   /**
    * @return the destination address.
    * @return 
@@ -134,6 +139,15 @@ public class Destination {
   public List<String> getSubscriptions(StompServerConnection connection) { 
     List<String> ret = this.delegate.getSubscriptions((io.vertx.ext.stomp.StompServerConnection) connection.getDelegate());
 ;
+    return ret;
+  }
+
+  /**
+   * Gets the number of subscriptions attached to the current {@link io.vertx.ext.stomp.Destination}.
+   * @return the number of subscriptions.
+   */
+  public int numberOfSubscriptions() { 
+    int ret = this.delegate.numberOfSubscriptions();
     return ret;
   }
 

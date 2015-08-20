@@ -202,9 +202,9 @@ public interface StompServerHandler extends Handler<ServerFrame> {
    * {@code ACK} frame received in a given time. Implementations must call the handler configured using
    * {@link #onNackHandler(Handler)}.
    *
-   * @param connection  the connection
-   * @param subscribe the {@code SUBSCRIBE} frame
-   * @param messages    the acknowledge messages
+   * @param connection the connection
+   * @param subscribe  the {@code SUBSCRIBE} frame
+   * @param messages   the acknowledge messages
    * @return the current {@link StompServerHandler}
    */
   @Fluent
@@ -244,6 +244,23 @@ public interface StompServerHandler extends Handler<ServerFrame> {
   @Fluent
   StompServerHandler pingHandler(Handler<StompServerConnection> handler);
 
-
+  /**
+   * Gets a {@link Destination} object if existing, or create a new one. The creation is delegated to the
+   * {@link DestinationFactory}.
+   *
+   * @param destination the destination
+   * @return the {@link Destination} instance, may have been created.
+   */
   Destination getOrCreateDestination(String destination);
+
+  /**
+   * Configures the {@link DestinationFactory} used to create {@link Destination} objects.
+   *
+   * @param factory the factory
+   * @return the current {@link StompServerHandler}.
+   */
+  @Fluent
+  StompServerHandler destinationFactory(DestinationFactory factory);
+
+
 }

@@ -1,4 +1,5 @@
 require 'vertx-stomp/destination'
+require 'vertx-stomp/destination_factory'
 require 'vertx-stomp/acknowledgement'
 require 'vertx/vertx'
 require 'vertx-stomp/stomp_server'
@@ -274,13 +275,25 @@ module VertxStomp
       end
       raise ArgumentError, "Invalid arguments when calling ping_handler()"
     end
-    # @param [String] destination 
-    # @return [::VertxStomp::Destination]
+    #  Gets a {::VertxStomp::Destination} object if existing, or create a new one. The creation is delegated to the
+    #  {::VertxStomp::DestinationFactory}.
+    # @param [String] destination the destination
+    # @return [::VertxStomp::Destination] the {::VertxStomp::Destination} instance, may have been created.
     def get_or_create_destination(destination=nil)
       if destination.class == String && !block_given?
         return ::Vertx::Util::Utils.safe_create(@j_del.java_method(:getOrCreateDestination, [Java::java.lang.String.java_class]).call(destination),::VertxStomp::Destination)
       end
       raise ArgumentError, "Invalid arguments when calling get_or_create_destination(destination)"
+    end
+    #  Configures the {::VertxStomp::DestinationFactory} used to create {::VertxStomp::Destination} objects.
+    # @param [::VertxStomp::DestinationFactory] factory the factory
+    # @return [self]
+    def destination_factory(factory=nil)
+      if factory.class.method_defined?(:j_del) && !block_given?
+        @j_del.java_method(:destinationFactory, [Java::IoVertxExtStomp::DestinationFactory.java_class]).call(factory.j_del)
+        return self
+      end
+      raise ArgumentError, "Invalid arguments when calling destination_factory(factory)"
     end
   end
 end

@@ -17,6 +17,7 @@
 /** @module vertx-stomp-js/stomp_server_handler */
 var utils = require('vertx-js/util/utils');
 var Destination = require('vertx-stomp-js/destination');
+var DestinationFactory = require('vertx-stomp-js/destination_factory');
 var Acknowledgement = require('vertx-stomp-js/acknowledgement');
 var Vertx = require('vertx-js/vertx');
 var StompServer = require('vertx-stomp-js/stomp_server');
@@ -435,15 +436,32 @@ var StompServerHandler = function(j_val) {
   };
 
   /**
+   Gets a {@link Destination} object if existing, or create a new one. The creation is delegated to the
+   {@link DestinationFactory}.
 
    @public
-   @param destination {string} 
-   @return {Destination}
+   @param destination {string} the destination 
+   @return {Destination} the {@link Destination} instance, may have been created.
    */
   this.getOrCreateDestination = function(destination) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'string') {
       return utils.convReturnVertxGen(j_stompServerHandler["getOrCreateDestination(java.lang.String)"](destination), Destination);
+    } else utils.invalidArgs();
+  };
+
+  /**
+   Configures the {@link DestinationFactory} used to create {@link Destination} objects.
+
+   @public
+   @param factory {DestinationFactory} the factory 
+   @return {StompServerHandler} the current {@link StompServerHandler}.
+   */
+  this.destinationFactory = function(factory) {
+    var __args = arguments;
+    if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
+      j_stompServerHandler["destinationFactory(io.vertx.ext.stomp.DestinationFactory)"](factory._jdel);
+      return that;
     } else utils.invalidArgs();
   };
 

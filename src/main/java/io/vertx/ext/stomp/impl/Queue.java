@@ -12,18 +12,20 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * Implementation of {@link io.vertx.ext.stomp.Destination} dispatching messages to all subscribers.
+ * Implementation of {@link Destination} dispatching messages to a single subscriber. It dispatches
+ * the messages using a round-robin strategy.
  *
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
-public class Topic implements Destination {
+public class Queue implements Destination {
 
   private final String destination;
 
   private final List<Subscription> subscriptions = new ArrayList<>();
   private final Vertx vertx;
+  private int lastUsedSubscriptions = -1;
 
-  public Topic(Vertx vertx, String destination) {
+  public Queue(Vertx vertx, String destination) {
     this.destination = destination;
     this.vertx = vertx;
   }
@@ -45,13 +47,24 @@ public class Topic implements Destination {
    */
   @Override
   public synchronized Destination dispatch(StompServerConnection connection, Frame frame) {
-    for (Subscription subscription : subscriptions) {
-      String messageId = UUID.randomUUID().toString();
-      Frame message = transform(frame, subscription, messageId);
-      subscription.enqueue(message);
-      subscription.connection().write(message.toBuffer());
+    if (subscriptions.isEmpty()) {
+      lastUsedSubscriptions = -1;
+      return this;
     }
+    Subscription subscription = getNextSubscription();
+    String messageId = UUID.randomUUID().toString();
+    Frame message = transform(frame, subscription, messageId);
+    subscription.enqueue(message);
+    subscription.connection().write(message.toBuffer());
     return this;
+  }
+
+  private Subscription getNextSubscription() {
+    lastUsedSubscriptions = lastUsedSubscriptions + 1;
+    if (lastUsedSubscriptions >= subscriptions.size()) {
+      lastUsedSubscriptions = 0;
+    }
+    return subscriptions.get(lastUsedSubscriptions);
   }
 
   public static Frame transform(Frame frame, Subscription subscription, String messageId) {
@@ -155,7 +168,15 @@ public class Topic implements Destination {
     String messageId = frame.getId();
     for (Subscription subscription : subscriptions) {
       if (subscription.connection().equals(connection) && subscription.contains(messageId)) {
-        return subscription.nack(messageId);
+        subscription.nack(messageId);
+        // Try using the next subscriber.
+        if (!subscriptions.isEmpty()) {
+          Subscription next = getNextSubscription();
+          Frame message = transform(frame, next, messageId);
+          subscription.enqueue(message);
+          subscription.connection().write(message.toBuffer());
+        }
+        return true;
       }
     }
     return false;

@@ -28,6 +28,15 @@ module VertxStomp
       end
       raise ArgumentError, "Invalid arguments when calling topic(vertx,destination)"
     end
+    # @param [::Vertx::Vertx] vertx 
+    # @param [String] destination 
+    # @return [::VertxStomp::Destination]
+    def self.queue(vertx=nil,destination=nil)
+      if vertx.class.method_defined?(:j_del) && destination.class == String && !block_given?
+        return ::Vertx::Util::Utils.safe_create(Java::IoVertxExtStomp::Destination.java_method(:queue, [Java::IoVertxCore::Vertx.java_class,Java::java.lang.String.java_class]).call(vertx.j_del,destination),::VertxStomp::Destination)
+      end
+      raise ArgumentError, "Invalid arguments when calling queue(vertx,destination)"
+    end
     #  @return the destination address.
     # @return [String]
     def destination
@@ -106,6 +115,14 @@ module VertxStomp
         return @j_del.java_method(:getSubscriptions, [Java::IoVertxExtStomp::StompServerConnection.java_class]).call(connection.j_del).to_a.map { |elt| elt }
       end
       raise ArgumentError, "Invalid arguments when calling get_subscriptions(connection)"
+    end
+    #  Gets the number of subscriptions attached to the current {::VertxStomp::Destination}.
+    # @return [Fixnum] the number of subscriptions.
+    def number_of_subscriptions
+      if !block_given?
+        return @j_del.java_method(:numberOfSubscriptions, []).call()
+      end
+      raise ArgumentError, "Invalid arguments when calling number_of_subscriptions()"
     end
   end
 end

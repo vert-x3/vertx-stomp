@@ -371,9 +371,25 @@ public class StompServerHandler implements Handler<ServerFrame> {
     return this;
   }
 
+  /**
+   * Gets a {@link io.vertx.rxjava.ext.stomp.Destination} object if existing, or create a new one. The creation is delegated to the
+   * {@link io.vertx.rxjava.ext.stomp.DestinationFactory}.
+   * @param destination the destination
+   * @return the {@link io.vertx.rxjava.ext.stomp.Destination} instance, may have been created.
+   */
   public Destination getOrCreateDestination(String destination) { 
     Destination ret= Destination.newInstance(this.delegate.getOrCreateDestination(destination));
     return ret;
+  }
+
+  /**
+   * Configures the {@link io.vertx.rxjava.ext.stomp.DestinationFactory} used to create {@link io.vertx.rxjava.ext.stomp.Destination} objects.
+   * @param factory the factory
+   * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}.
+   */
+  public StompServerHandler destinationFactory(DestinationFactory factory) { 
+    this.delegate.destinationFactory((io.vertx.ext.stomp.DestinationFactory) factory.getDelegate());
+    return this;
   }
 
 

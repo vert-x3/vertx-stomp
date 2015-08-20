@@ -4,6 +4,7 @@ import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.Vertx;
 import io.vertx.core.shareddata.Shareable;
+import io.vertx.ext.stomp.impl.Queue;
 import io.vertx.ext.stomp.impl.Topic;
 
 import java.util.List;
@@ -22,6 +23,10 @@ public interface Destination extends Shareable {
 
   static Destination topic(Vertx vertx, String destination) {
     return new Topic(vertx, destination);
+  }
+
+  static Destination queue(Vertx vertx, String destination) {
+    return new Queue(vertx, destination);
   }
 
   /**
@@ -93,4 +98,10 @@ public interface Destination extends Shareable {
    * @return the list of subscription id, empty if none
    */
   List<String> getSubscriptions(StompServerConnection connection);
+
+  /**
+   * Gets the number of subscriptions attached to the current {@link Destination}.
+   * @return the number of subscriptions.
+   */
+  int numberOfSubscriptions();
 }

@@ -72,6 +72,8 @@ public class DefaultStompHandler implements StompServerHandler {
   private volatile long pinger;
   private volatile long ponger;
 
+  private DestinationFactory factory = Destination::topic;
+
   public DefaultStompHandler(Vertx vertx) {
     this.vertx = vertx;
     this.destinations = vertx.sharedData().getLocalMap("stomp.destinations");
@@ -408,15 +410,25 @@ public class DefaultStompHandler implements StompServerHandler {
   }
 
   public Destination getOrCreateDestination(String destination) {
+    DestinationFactory factory;
+    synchronized (this) {
+      factory = this.factory;
+    }
     synchronized (vertx) {
       Destination d = destinations.get(destination);
       if (d == null) {
-        // TODO Manage different types of destination.
-        d = Destination.topic(vertx, destination);
+        d = factory.create(vertx, destination);
+        //TODO Check for null.
         destinations.put(destination, d);
       }
       return d;
     }
+  }
+
+  @Override
+  public synchronized StompServerHandler destinationFactory(DestinationFactory factory) {
+    this.factory = factory;
+    return this;
   }
 
   @Override

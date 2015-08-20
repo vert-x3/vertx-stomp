@@ -3,6 +3,7 @@ package io.vertx.ext.stomp.verticles;
 import com.jayway.awaitility.Awaitility;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.stomp.impl.AsyncLock;
 import io.vertx.ext.unit.TestContext;
 import org.junit.After;
@@ -41,7 +42,7 @@ public class MultiInstanceSubscriptionTest {
   }
 
   @Test
-  public void testThatSubscriptionsAreShared(TestContext context) {
+  public void testThatTopicSubscriptionsAreShared(TestContext context) {
     vertx.deployVerticle("io.vertx.ext.stomp.verticles.StompServerVerticle", new DeploymentOptions().setInstances(3),
         ar -> {
           if (ar.failed()) {
@@ -62,5 +63,31 @@ public class MultiInstanceSubscriptionTest {
         });
 
     Awaitility.await().atMost(10, TimeUnit.SECONDS).until(() -> ReceiverStompClient.FRAMES.size() == 5 * 3 * 2);
+  }
+
+  @Test
+  public void testThatQueueSubscriptionsAreShared(TestContext context) {
+    vertx.deployVerticle("io.vertx.ext.stomp.verticles.StompServerVerticle", new DeploymentOptions()
+            .setConfig(new JsonObject().put("useQueue", true))
+            .setInstances(3),
+        ar -> {
+          if (ar.failed()) {
+            context.fail(ar.cause());
+          } else {
+            deploymentId = ar.result();
+            // Deploy the clients.
+            vertx.deployVerticle("io.vertx.ext.stomp.verticles.ReceiverStompClient",
+                new DeploymentOptions().setInstances(3), ar2 -> {
+                  if (ar.failed()) {
+                    context.fail(ar.cause());
+                  } else {
+                    vertx.deployVerticle("io.vertx.ext.stomp.verticles.TxSenderStompClient", new DeploymentOptions()
+                        .setInstances(2));
+                  }
+                });
+          }
+        });
+
+    Awaitility.await().atMost(10, TimeUnit.SECONDS).until(() -> ReceiverStompClient.FRAMES.size() == 5 * 2);
   }
 }
