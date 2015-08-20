@@ -501,7 +501,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
         final long deltaInMs = TimeUnit.MILLISECONDS.convert(delta, TimeUnit.NANOSECONDS);
         if (deltaInMs > pong * 2) {
           log.error("Disconnecting client " + client + " - no server activity detected in the last " + deltaInMs + " ms.");
-          client.vertx().cancelTimer(l);
+          client.vertx().cancelTimer(ponger);
           disconnect();
         }
       });

@@ -55,7 +55,17 @@ public class DefaultSubscribeHandler implements Handler<ServerFrame> {
       }
     }
 
-    connection.handler().getOrCreateDestination(destination).subscribe(connection, frame);
+    final Destination dest = connection.handler().getOrCreateDestination(destination);
+    if (dest != null) {
+      dest.subscribe(connection, frame);
+    } else {
+      connection.write(Frames.createErrorFrame(
+          "Invalid subscription",
+          Headers.create(frame.getHeaders()), "The destination has been rejected by the server"));
+      connection.close();
+      return;
+    }
+
     Frames.handleReceipt(frame, connection);
   }
 }

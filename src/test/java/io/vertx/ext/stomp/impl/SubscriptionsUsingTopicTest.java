@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -105,7 +106,7 @@ public class SubscriptionsUsingTopicTest {
 
   @Test
   public void testSubscriptionAndTwoReceptions() {
-    List<Frame> frames = new ArrayList<>();
+    List<Frame> frames = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", (frames::add));
@@ -122,7 +123,9 @@ public class SubscriptionsUsingTopicTest {
       connection.send("/queue", Buffer.buffer("Hello"));
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> frames.size() == 2);
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> {
+      return frames.size() == 2;
+    });
 
     assertThat(frames).hasSize(2);
     assertThat(frames.get(0).getBodyAsString()).isEqualTo("Hello");

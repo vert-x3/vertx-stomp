@@ -420,8 +420,9 @@ public class DefaultStompHandler implements StompServerHandler {
       Destination d = destinations.get(destination);
       if (d == null) {
         d = factory.create(vertx, destination);
-        //TODO Check for null.
-        destinations.put(destination, d);
+        if (d != null) {
+          destinations.put(destination, d);
+        }
       }
       return d;
     }

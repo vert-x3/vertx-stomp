@@ -129,7 +129,7 @@ public class SubscriptionsUsingQueueTest {
     }));
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() ->
-      frames1.size() == 2  && frames2.size() == 2
+            frames1.size() == 2 && frames2.size() == 2
     );
 
     List<Frame> helloList;
@@ -163,6 +163,76 @@ public class SubscriptionsUsingQueueTest {
     assertThat(vertxList.get(1).getHeader(Frame.MESSAGE_ID)).isNotNull().isNotEmpty();
     assertThat(vertxList.get(1).getHeader(Frame.SUBSCRIPTION)).isEqualTo("/queue");
     assertThat(vertxList.get(1).getHeader(Frame.DESTINATION)).isNotNull().isNotEmpty();
+  }
+
+
+  @Test
+  public void testSubscriptionAndTwoReceptionsWithNack() {
+    List<Frame> frames2 = new ArrayList<>();
+    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+      final StompClientConnection connection = ar.result();
+      connection.subscribe("/queue", Headers.create("ack", "client-individual"), frame -> {
+        connection.nack(frame.getAck());
+      });
+    }));
+    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+      final StompClientConnection connection = ar.result();
+      connection.subscribe("/queue", Headers.create("ack", "client-individual"), frames2::add);
+    }));
+
+
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> {
+      final Destination destination = server.stompHandler().getDestination("/queue");
+      return destination != null && destination.numberOfSubscriptions() == 2;
+    });
+
+    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+      final StompClientConnection connection = ar.result();
+      connection.send("/queue", Buffer.buffer("Hello"));
+      connection.send("/queue", Buffer.buffer("vert.x"));
+    }));
+
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() ->
+            frames2.size() == 2
+    );
+
+  }
+
+  @Test
+  public void testSubscriptionAndTwoReceptionsWithNackInClientMode() {
+    List<Frame> frames1 = new ArrayList<>();
+    List<Frame> frames2 = new ArrayList<>();
+    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+      final StompClientConnection connection = ar.result();
+      connection.subscribe("/queue", Headers.create("ack", "client"), frame -> {
+        frames1.add(frame);
+        if (frames1.size() == 2) {
+          connection.nack(frame.getAck());
+        }
+      });
+    }));
+    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+      final StompClientConnection connection = ar.result();
+      connection.subscribe("/queue", Headers.create("ack", "client"), frames2::add);
+    }));
+
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> {
+      final Destination destination = server.stompHandler().getDestination("/queue");
+      return destination != null && destination.numberOfSubscriptions() == 2;
+    });
+
+    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+      final StompClientConnection connection = ar.result();
+      connection.send("/queue", Buffer.buffer("Hello"));
+      connection.send("/queue", Buffer.buffer("vert.x"));
+      connection.send("/queue", Buffer.buffer("Hello"));
+      connection.send("/queue", Buffer.buffer("vert.x"));
+    }));
+
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() ->
+            frames2.size() == 4
+    );
+
   }
 
   @Test

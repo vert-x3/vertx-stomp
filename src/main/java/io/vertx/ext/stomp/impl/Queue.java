@@ -7,6 +7,7 @@ import io.vertx.ext.stomp.StompServerConnection;
 import io.vertx.ext.stomp.utils.Headers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -150,7 +151,7 @@ public class Queue implements Destination {
     String messageId = frame.getId();
     for (Subscription subscription : subscriptions) {
       if (subscription.connection().equals(connection) && subscription.contains(messageId)) {
-        return subscription.ack(messageId);
+        return ! subscription.ack(messageId).isEmpty();
       }
     }
     return false;
@@ -168,13 +169,19 @@ public class Queue implements Destination {
     String messageId = frame.getId();
     for (Subscription subscription : subscriptions) {
       if (subscription.connection().equals(connection) && subscription.contains(messageId)) {
-        subscription.nack(messageId);
+        final List<Frame> frames = subscription.nack(messageId);
         // Try using the next subscriber.
-        if (!subscriptions.isEmpty()) {
+        if (!frames.isEmpty() && subscriptions.size() > 1) {
           Subscription next = getNextSubscription();
-          Frame message = transform(frame, next, messageId);
-          subscription.enqueue(message);
-          subscription.connection().write(message.toBuffer());
+          if (next == subscription) {
+            // If the same subscriber is picked, try the next one.
+            next = getNextSubscription();
+          }
+          for (Frame f : frames) {
+            Frame message = transform(f, next, messageId);
+            next.enqueue(message);
+            next.connection().write(message.toBuffer());
+          }
         }
         return true;
       }

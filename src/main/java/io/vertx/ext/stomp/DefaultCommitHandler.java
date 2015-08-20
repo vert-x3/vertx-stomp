@@ -70,7 +70,6 @@ public class DefaultCommitHandler implements Handler<ServerFrame> {
           // We are sure that the destination is set, as the check is made before enqueuing the frame.
           String destination = frame.getHeader(Frame.DESTINATION);
           Destination dest = connection.handler().getDestination(destination);
-          // TODO ERROR handling here.
           if (dest != null) {
             dest.dispatch(connection, frame);
           }

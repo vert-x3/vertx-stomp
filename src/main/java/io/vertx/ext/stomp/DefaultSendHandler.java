@@ -81,7 +81,6 @@ public class DefaultSendHandler implements Handler<ServerFrame> {
       sf.connection().close();
       return;
     }
-    //TODO Improve error handling here.
 
     if (dest != null) {
       dest.dispatch(sf.connection(), sf.frame());

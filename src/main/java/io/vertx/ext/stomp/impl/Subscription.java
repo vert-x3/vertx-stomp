@@ -4,6 +4,7 @@ import io.vertx.ext.stomp.Frame;
 import io.vertx.ext.stomp.StompServerConnection;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -13,9 +14,6 @@ import java.util.List;
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class Subscription {
-
-  //TODO ensure thread safety
-  //TODO improve performances
 
   private final StompServerConnection connection;
   private final Ack ack;
@@ -39,7 +37,6 @@ public class Subscription {
 
     CLIENT("client"),
 
-    //TODO Not used ???
     CLIENT_INDIVIDUAL("client-individual");
 
     String ack;
@@ -76,64 +73,56 @@ public class Subscription {
     return destination;
   }
 
-  private synchronized List<Frame> find(String messageId) {
-    //TODO Optimize this.
-    List<Frame> result = new ArrayList<>();
-    for (Frame frame : queue) {
-      if (messageId.equals(frame.getHeader(Frame.MESSAGE_ID))) {
-        result.add(frame);
-        return result;
-      } else {
-        if (ack == Ack.CLIENT) {
-          result.add(frame);
+  public List<Frame> ack(String messageId) {
+    if (ack == Ack.AUTO) {
+      return Collections.emptyList();
+    }
+
+    synchronized (this) {
+      // The research / deletion here is a bit tricky.
+      // In client mode we must collect all messages until the acknowledged messages, and when found, remove all
+      // these messages. However, if not found, the collection must not be modified.
+      List<Frame> collected = new ArrayList<>();
+      for (Frame frame : new ArrayList<>(queue)) {
+        if (messageId.equals(frame.getHeader(Frame.MESSAGE_ID))) {
+          collected.add(frame);
+          queue.removeAll(collected);
+          connection.handler().onAck(connection, frame, collected);
+          return collected;
+        } else {
+          if (ack == Ack.CLIENT) {
+            collected.add(frame);
+          }
         }
       }
     }
-    // Not found.
-    return null;
+    return Collections.emptyList();
   }
 
-  public boolean ack(String messageId) {
+  public List<Frame> nack(String messageId) {
     if (ack == Ack.AUTO) {
-      return false;
+      return Collections.emptyList();
     }
 
-    List<Frame> messages;
     synchronized (this) {
-      messages = find(messageId);
-      if (messages != null) {
-        queue.removeAll(messages);
+      // The research / deletion here is a bit tricky.
+      // In client mode we must collect all messages until the acknowledged messages, and when found, remove all
+      // these messages. However, if not found, the collection must not be modified.
+      List<Frame> collected = new ArrayList<>();
+      for (Frame frame : new ArrayList<>(queue)) {
+        if (messageId.equals(frame.getHeader(Frame.MESSAGE_ID))) {
+          collected.add(frame);
+          queue.removeAll(collected);
+          connection.handler().onNack(connection, frame, collected);
+          return collected;
+        } else {
+          if (ack == Ack.CLIENT) {
+            collected.add(frame);
+          }
+        }
       }
     }
-
-    if (messages == null) {
-      return false;
-    } else {
-      connection.handler().onAck(connection, frame, messages);
-      return true;
-    }
-  }
-
-  public boolean nack(String messageId) {
-    if (ack == Ack.AUTO) {
-      return false;
-    }
-
-    List<Frame> messages;
-    synchronized (this) {
-      messages = find(messageId);
-      if (messages != null) {
-        queue.removeAll(messages);
-      }
-    }
-
-
-    if (messages == null) {
-      return false;
-    } else {
-      connection.handler().onNack(connection, frame, messages);
-      return true;
-    }
+    return Collections.emptyList();
   }
 
   public void enqueue(Frame frame) {

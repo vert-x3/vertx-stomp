@@ -137,7 +137,7 @@ public class Topic implements Destination {
     String messageId = frame.getId();
     for (Subscription subscription : subscriptions) {
       if (subscription.connection().equals(connection) && subscription.contains(messageId)) {
-        return subscription.ack(messageId);
+        return ! subscription.ack(messageId).isEmpty();
       }
     }
     return false;
@@ -155,7 +155,7 @@ public class Topic implements Destination {
     String messageId = frame.getId();
     for (Subscription subscription : subscriptions) {
       if (subscription.connection().equals(connection) && subscription.contains(messageId)) {
-        return subscription.nack(messageId);
+        return ! subscription.nack(messageId).isEmpty();
       }
     }
     return false;
