@@ -59,18 +59,6 @@ public class Transactions {
   }
 
   /**
-   * Checks whether the given connection has registered a connection with the given id.
-   *
-   * @param connection the connection used by the transaction
-   * @param id         the id of the transaction
-   * @return {@code true} if the transaction is active, {@code false} otherwise
-   */
-  public synchronized boolean isTransactionActive(StompServerConnection connection, String id) {
-    return getTransaction(connection, id) != null;
-  }
-
-
-  /**
    * Unregisters a transaction
    *
    * @param connection the connection used by the transaction
@@ -103,17 +91,4 @@ public class Transactions {
     return transactions.size();
   }
 
-  /**
-   * Adds the given frame to the transaction.
-   *
-   * @param connection the connection
-   * @param txId       the transaction id
-   * @param frame      the frame to be added
-   * @return {@code true} if the frame was added, {@code false} otherwise. {@code false} may mean that the
-   * transaction does not exits, or the frame cannot be added because the transaction have reached the sie limit.
-   */
-  public synchronized boolean addFrameToTransaction(StompServerConnection connection, String txId, Frame frame) {
-    Transaction transaction = getTransaction(connection, txId);
-    return transaction != null && transaction.addFrameToTransaction(frame);
-  }
 }
