@@ -120,7 +120,7 @@ public class AckTest {
       connection.send("/queue", Buffer.buffer("Hello"));
       connection.send("/queue", Buffer.buffer("World"));
       connection.send("/queue", Buffer.buffer("!!!"));
-
+      connection.send("/queue", Buffer.buffer("not acknowledged"));
     }));
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> acked.size() == 3);
@@ -146,7 +146,7 @@ public class AckTest {
       connection.send("/queue", Buffer.buffer("Hello"));
       connection.send("/queue", Buffer.buffer("World"));
       connection.send("/queue", Buffer.buffer("!!!"));
-
+      connection.send("/queue", Buffer.buffer("not acknowledged"));
     }));
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> nacked.size() == 3);
