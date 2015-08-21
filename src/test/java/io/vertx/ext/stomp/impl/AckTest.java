@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,8 +32,8 @@ public class AckTest {
   private StompServer server;
 
   private List<StompClient> clients = new ArrayList<>();
-  private List<Frame> acked = new ArrayList<>();
-  private List<Frame> nacked = new ArrayList<>();
+  private List<Frame> acked = new CopyOnWriteArrayList<>();
+  private List<Frame> nacked = new CopyOnWriteArrayList<>();
 
 
   @Before
@@ -102,7 +103,7 @@ public class AckTest {
 
   @Test
   public void testCumulativeAck() {
-    List<Frame> frames = new ArrayList<>();
+    List<Frame> frames = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", Headers.create(Frame.ACK, "client"), (frame) -> {
@@ -128,7 +129,7 @@ public class AckTest {
 
   @Test
   public void testCumulativeNack() {
-    List<Frame> frames = new ArrayList<>();
+    List<Frame> frames = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", Headers.create(Frame.ACK, "client"), (frame) -> {
@@ -155,7 +156,7 @@ public class AckTest {
 
   @Test
   public void testIndividualAck() {
-    List<Frame> frames = new ArrayList<>();
+    List<Frame> frames = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", Headers.create(Frame.ACK, "client-individual"), (frame) -> {
@@ -183,7 +184,7 @@ public class AckTest {
 
   @Test
   public void testIndividualNack() {
-    List<Frame> frames = new ArrayList<>();
+    List<Frame> frames = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", Headers.create(Frame.ACK, "client-individual"), (frame) -> {
@@ -212,7 +213,7 @@ public class AckTest {
 
   @Test
   public void testAckInTransaction() {
-    List<Frame> frames = new ArrayList<>();
+    List<Frame> frames = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", Headers.create(Frame.ACK, "client"),
@@ -255,7 +256,7 @@ public class AckTest {
 
   @Test
   public void testNackInTransaction() {
-    List<Frame> frames = new ArrayList<>();
+    List<Frame> frames = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", Headers.create(Frame.ACK, "client"),

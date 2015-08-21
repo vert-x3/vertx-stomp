@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -58,8 +59,8 @@ public class TransactionsTest {
 
   @Test
   public void testBasicTransaction() {
-    List<Frame> frames = new ArrayList<>();
-    List<Frame> errors = new ArrayList<>();
+    List<Frame> frames = new CopyOnWriteArrayList<>();
+    List<Frame> errors = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", (frames::add));
@@ -88,8 +89,8 @@ public class TransactionsTest {
 
   @Test
   public void testAbortedTransaction() throws InterruptedException {
-    List<Frame> frames = new ArrayList<>();
-    List<Frame> errors = new ArrayList<>();
+    List<Frame> frames = new CopyOnWriteArrayList<>();
+    List<Frame> errors = new CopyOnWriteArrayList<>();
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
@@ -120,9 +121,9 @@ public class TransactionsTest {
 
   @Test
   public void testTransactionDeliveringToTwoClients() {
-    List<Frame> frames1 = new ArrayList<>();
-    List<Frame> frames2 = new ArrayList<>();
-    List<Frame> errors = new ArrayList<>();
+    List<Frame> frames1 = new CopyOnWriteArrayList<>();
+    List<Frame> frames2 = new CopyOnWriteArrayList<>();
+    List<Frame> errors = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", (frames1::add));
@@ -160,8 +161,8 @@ public class TransactionsTest {
 
   @Test
   public void testThatYouCannotBeginTwoTransactionsWithTheSameId() {
-    List<Frame> frames = new ArrayList<>();
-    List<Frame> errors = new ArrayList<>();
+    List<Frame> frames = new CopyOnWriteArrayList<>();
+    List<Frame> errors = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", (frames::add));
@@ -187,8 +188,8 @@ public class TransactionsTest {
 
   @Test
   public void testThatTransactionIDCanBeReusedAfterCommit() {
-    List<Frame> frames = new ArrayList<>();
-    List<Frame> errors = new ArrayList<>();
+    List<Frame> frames = new CopyOnWriteArrayList<>();
+    List<Frame> errors = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", (frames::add));
@@ -219,8 +220,8 @@ public class TransactionsTest {
 
   @Test
   public void testAutoAbortOnClose() {
-    List<Frame> frames = new ArrayList<>();
-    List<Frame> errors = new ArrayList<>();
+    List<Frame> frames = new CopyOnWriteArrayList<>();
+    List<Frame> errors = new CopyOnWriteArrayList<>();
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
@@ -253,8 +254,8 @@ public class TransactionsTest {
 
   @Test
   public void testAutoAbortOnDisconnect() {
-    List<Frame> frames = new ArrayList<>();
-    List<Frame> errors = new ArrayList<>();
+    List<Frame> frames = new CopyOnWriteArrayList<>();
+    List<Frame> errors = new CopyOnWriteArrayList<>();
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
@@ -284,8 +285,8 @@ public class TransactionsTest {
 
   @Test
   public void testCommitWithIllegalId() {
-    List<Frame> frames = new ArrayList<>();
-    List<Frame> errors = new ArrayList<>();
+    List<Frame> frames = new CopyOnWriteArrayList<>();
+    List<Frame> errors = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", (frames::add));
@@ -315,8 +316,8 @@ public class TransactionsTest {
 
   @Test
   public void testAbortWithBadTransactionId() {
-    List<Frame> frames = new ArrayList<>();
-    List<Frame> errors = new ArrayList<>();
+    List<Frame> frames = new CopyOnWriteArrayList<>();
+    List<Frame> errors = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", (frames::add));
@@ -348,8 +349,8 @@ public class TransactionsTest {
   public void testNumberOfFramesInTransaction() {
     server.options().setMaxFrameInTransaction(2);
 
-    List<Frame> frames = new ArrayList<>();
-    List<Frame> errors = new ArrayList<>();
+    List<Frame> frames = new CopyOnWriteArrayList<>();
+    List<Frame> errors = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", (frames::add));
@@ -381,8 +382,8 @@ public class TransactionsTest {
     server.options().setTransactionChunkSize(100);
     server.options().setMaxFrameInTransaction(10000);
 
-    List<Frame> frames = new ArrayList<>();
-    List<Frame> errors = new ArrayList<>();
+    List<Frame> frames = new CopyOnWriteArrayList<>();
+    List<Frame> errors = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", (frames::add));

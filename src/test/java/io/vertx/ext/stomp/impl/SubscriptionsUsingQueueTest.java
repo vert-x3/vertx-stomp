@@ -17,7 +17,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -53,7 +56,7 @@ public class SubscriptionsUsingQueueTest {
 
   @Test
   public void testSubscriptionAndReception() {
-    List<Frame> frames = new ArrayList<>();
+    List<Frame> frames = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", (frames::add));
@@ -78,7 +81,7 @@ public class SubscriptionsUsingQueueTest {
 
   @Test
   public void testThatCustomHeadersArePropagated() {
-    List<Frame> frames = new ArrayList<>();
+    List<Frame> frames = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", (frames::add));
@@ -105,8 +108,8 @@ public class SubscriptionsUsingQueueTest {
 
   @Test
   public void testSubscriptionAndTwoReceptions() {
-    List<Frame> frames1 = new ArrayList<>();
-    List<Frame> frames2 = new ArrayList<>();
+    List<Frame> frames1 = new CopyOnWriteArrayList<>();
+    List<Frame> frames2 = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", frames1::add);
@@ -168,7 +171,7 @@ public class SubscriptionsUsingQueueTest {
 
   @Test
   public void testSubscriptionAndTwoReceptionsWithNack() {
-    List<Frame> frames2 = new ArrayList<>();
+    List<Frame> frames2 = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", Headers.create("ack", "client-individual"), frame -> {
@@ -200,8 +203,8 @@ public class SubscriptionsUsingQueueTest {
 
   @Test
   public void testSubscriptionAndTwoReceptionsWithNackInClientMode() {
-    List<Frame> frames1 = new ArrayList<>();
-    List<Frame> frames2 = new ArrayList<>();
+    List<Frame> frames1 = new CopyOnWriteArrayList<>();
+    List<Frame> frames2 = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", Headers.create("ack", "client"), frame -> {
@@ -267,7 +270,7 @@ public class SubscriptionsUsingQueueTest {
   public void testWhenNoSubscriptions() {
     server.options().setSendErrorOnNoSubscriptions(true);
 
-    List<Frame> frames = new ArrayList<>();
+    List<Frame> frames = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue2", (frames::add));
@@ -332,7 +335,7 @@ public class SubscriptionsUsingQueueTest {
   public void testUnsubscriptionWithDefaultId() {
     server.options().setSendErrorOnNoSubscriptions(true);
 
-    List<Frame> frames = new ArrayList<>();
+    List<Frame> frames = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", frame -> {
@@ -364,7 +367,7 @@ public class SubscriptionsUsingQueueTest {
   public void testUnsubscriptionWithCustomId() {
     server.options().setSendErrorOnNoSubscriptions(true);
 
-    List<Frame> frames = new ArrayList<>();
+    List<Frame> frames = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", Headers.create(Frame.ID, "0"), frame -> {
@@ -445,8 +448,15 @@ public class SubscriptionsUsingQueueTest {
   }
 
   @Test
+  public void testMultipleConnectionAndClosing() {
+    for (int i = 0; i < 20; i++) {
+      testClosingConnection();
+    }
+  }
+
+  @Test
   public void testClosingConnection() {
-    List<Frame> frames = new ArrayList<>();
+    List<Frame> frames = new CopyOnWriteArrayList<>();
     StompClient client = Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", (frames::add));
@@ -472,5 +482,47 @@ public class SubscriptionsUsingQueueTest {
     client.close();
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestinations().size() == 0);
+  }
+
+  @Test
+  public void testLeavingSubscriptions() {
+    List<Frame> frames1 = new CopyOnWriteArrayList<>();
+    List<Frame> frames2 = new CopyOnWriteArrayList<>();
+    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+      final StompClientConnection connection = ar.result();
+      connection.subscribe("/queue", frames1::add);
+    }));
+    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+      final StompClientConnection connection = ar.result();
+      connection.subscribe("/queue", frame -> {
+        frames2.add(frame);
+        if (frames2.size() == 2) {
+          connection.unsubscribe("/queue");
+        }
+      });
+    }));
+
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestination("/queue") != null  &&
+        server.stompHandler().getDestination("/queue").numberOfSubscriptions() == 2);
+
+    AtomicReference<StompClientConnection> reference = new AtomicReference<>();
+    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+      final StompClientConnection connection = ar.result();
+      reference.set(connection);
+      connection.send("/queue", Buffer.buffer("1"));
+      connection.send("/queue", Buffer.buffer("2"));
+      connection.send("/queue", Buffer.buffer("3"));
+      connection.send("/queue", Buffer.buffer("4"));
+    }));
+
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestination("/queue") != null  &&
+        server.stompHandler().getDestination("/queue").numberOfSubscriptions() == 1);
+
+    vertx.runOnContext(v -> {
+      reference.get().send("/queue", Buffer.buffer("5"));
+      reference.get().send("/queue", Buffer.buffer("6"));
+    });
+
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> frames1.size() == 4 && frames2.size() == 2);
   }
 }

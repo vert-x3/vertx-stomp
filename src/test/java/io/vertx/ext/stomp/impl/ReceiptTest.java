@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -59,8 +60,8 @@ public class ReceiptTest {
 
   @Test
   public void testReceiptsOnSend() {
-    List<Frame> frames = new ArrayList<>();
-    List<Frame> receipts = new ArrayList<>();
+    List<Frame> frames = new CopyOnWriteArrayList<>();
+    List<Frame> receipts = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", frames::add, receipts::add);
@@ -82,8 +83,8 @@ public class ReceiptTest {
 
   @Test
   public void testReceiptsOnSubscribeAndUnsubscribe() {
-    List<Frame> frames = new ArrayList<>();
-    List<Frame> receipts = new ArrayList<>();
+    List<Frame> frames = new CopyOnWriteArrayList<>();
+    List<Frame> receipts = new CopyOnWriteArrayList<>();
     AtomicReference<StompClientConnection> client = new AtomicReference<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
@@ -111,7 +112,7 @@ public class ReceiptTest {
 
   @Test
   public void testReceiptsWithAck() {
-    List<Frame> receipts = new ArrayList<>();
+    List<Frame> receipts = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", Headers.create(Frame.ACK, "client"),
@@ -131,7 +132,7 @@ public class ReceiptTest {
 
   @Test
   public void testReceiptsWithNack() {
-    List<Frame> receipts = new ArrayList<>();
+    List<Frame> receipts = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", Headers.create(Frame.ACK, "client"),
@@ -151,9 +152,9 @@ public class ReceiptTest {
 
   @Test
   public void testReceiptsInCommittedTransactions() {
-    List<Frame> receipts = new ArrayList<>();
-    List<Frame> frames = new ArrayList<>();
-    List<Frame> errors = new ArrayList<>();
+    List<Frame> receipts = new CopyOnWriteArrayList<>();
+    List<Frame> frames = new CopyOnWriteArrayList<>();
+    List<Frame> errors = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", frames::add, receipts::add);
@@ -180,9 +181,9 @@ public class ReceiptTest {
 
   @Test
   public void testReceiptsInAbortedTransactions() throws InterruptedException {
-    List<Frame> frames = new ArrayList<>();
-    List<Frame> errors = new ArrayList<>();
-    List<Frame> receipts = new ArrayList<>();
+    List<Frame> frames = new CopyOnWriteArrayList<>();
+    List<Frame> errors = new CopyOnWriteArrayList<>();
+    List<Frame> receipts = new CopyOnWriteArrayList<>();
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();

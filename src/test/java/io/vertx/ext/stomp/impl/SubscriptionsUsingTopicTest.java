@@ -54,7 +54,7 @@ public class SubscriptionsUsingTopicTest {
 
   @Test
   public void testSubscriptionAndReception() {
-    List<Frame> frames = new ArrayList<>();
+    List<Frame> frames = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", (frames::add));
@@ -79,7 +79,7 @@ public class SubscriptionsUsingTopicTest {
 
   @Test
   public void testThatCustomHeadersArePropagated() {
-    List<Frame> frames = new ArrayList<>();
+    List<Frame> frames = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", (frames::add));
@@ -173,7 +173,7 @@ public class SubscriptionsUsingTopicTest {
   public void testWhenNoSubscriptions() {
     server.options().setSendErrorOnNoSubscriptions(true);
 
-    List<Frame> frames = new ArrayList<>();
+    List<Frame> frames = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue2", (frames::add));
@@ -238,7 +238,7 @@ public class SubscriptionsUsingTopicTest {
   public void testUnsubscriptionWithDefaultId() {
     server.options().setSendErrorOnNoSubscriptions(true);
 
-    List<Frame> frames = new ArrayList<>();
+    List<Frame> frames = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", frame -> {
@@ -270,7 +270,7 @@ public class SubscriptionsUsingTopicTest {
   public void testUnsubscriptionWithCustomId() {
     server.options().setSendErrorOnNoSubscriptions(true);
 
-    List<Frame> frames = new ArrayList<>();
+    List<Frame> frames = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", Headers.create(Frame.ID, "0"), frame -> {
@@ -352,7 +352,7 @@ public class SubscriptionsUsingTopicTest {
 
   @Test
   public void testClosingConnection() {
-    List<Frame> frames = new ArrayList<>();
+    List<Frame> frames = new CopyOnWriteArrayList<>();
     StompClient client = Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", (frames::add));
