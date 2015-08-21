@@ -4,13 +4,10 @@ import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.NetServer;
 import io.vertx.ext.auth.AuthProvider;
-import io.vertx.ext.stomp.Stomp;
-import io.vertx.ext.stomp.StompServer;
-import io.vertx.ext.stomp.StompServerHandler;
-import io.vertx.ext.stomp.StompServerOptions;
+import io.vertx.ext.stomp.*;
 
 /**
- *  @author <a href="http://escoffier.me">Clement Escoffier</a>
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class StompServerExamples {
 
@@ -19,6 +16,8 @@ public class StompServerExamples {
         .handler(StompServerHandler.create(vertx))
         .listen();
   }
+
+
 
   public void example2(Vertx vertx) {
     StompServer server = Stomp.createStompServer(vertx)
@@ -102,6 +101,34 @@ public class StompServerExamples {
         System.out.println("The STOMP server failed to close : " + ar.cause().getMessage());
       }
     });
+  }
+
+  public void example11(Vertx vertx) {
+    StompServer server = Stomp.createStompServer(vertx)
+        .handler(StompServerHandler.create(vertx)
+            .destinationFactory((v, name) -> {
+              if (name.startsWith("/queue")) {
+                return Destination.queue(vertx, name);
+              } else {
+                return Destination.topic(vertx, name);
+              }
+            }))
+        .listen();
+  }
+
+  public void example12(Vertx vertx) {
+    StompServer server = Stomp.createStompServer(vertx)
+        .handler(StompServerHandler.create(vertx)
+            .destinationFactory((v, name) -> {
+              if (name.startsWith("/forbidden")) {
+                return null;
+              } else if (name.startsWith("/queue")) {
+                return Destination.queue(vertx, name);
+              } else {
+                return Destination.topic(vertx, name);
+              }
+            }))
+        .listen();
   }
 
 }

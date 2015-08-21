@@ -33,7 +33,6 @@
  * compile {maven-groupId}:{maven-artifactId}:{maven-version}
  * ----
  *
- *
  * == STOMP server
  *
  * === Creating a STOMP server
@@ -55,14 +54,16 @@
  * {@link examples.StompServerExamples#example2}
  * ----
  *
- * To be notified when the server is ready, pass a handler as follows:
+ * To be notified when the server is ready, use a handler as follows:
  *
  * [source,$lang]
  * ----
  * {@link examples.StompServerExamples#example3}
  * ----
  *
- * You can also pass the host and port in {@link io.vertx.ext.stomp.StompServerOptions}:
+ * The handler receive a reference on the {@link io.vertx.ext.stomp.StompServer}.
+ *
+ * You can also configure the host and port in {@link io.vertx.ext.stomp.StompServerOptions}:
  *
  * [source,$lang]
  * ----
@@ -121,13 +122,42 @@
  * {@link examples.StompServerExamples#example7}
  * ----
  *
- * If a frame exceeds on of the size limits, the frame is rejected and the client receives an `ERROR` frame. As the
- * specification requires, the client connection is closed immediately after having sent the error.
+ * More information about {@link io.vertx.ext.auth.AuthProvider} is available
+ * http://vertx.io/docs/#authentication_and_authorisation[here].
+ *
+ * If a frame exceeds one of the size limits, the frame is rejected and the client receives an `ERROR` frame. As the
+ * specification requires, the client connection is closed immediately after having sent the error. The same behavior
+ * happens with the other thresholds.
  *
  * === Subscriptions
  *
  * The default STOMP server handles subscription destination as opaque Strings. So it does not promote a structure
- * and it not hierarchic.
+ * and it not hierarchic. By default the STOMP server follow a _topic_ semantic (so messages are dispatched to all
+ * subscribers).
+ *
+ * === Type of destination
+ *
+ * By default, the STOMP server manages _destinations_ as topics. So messages are dispatched to all subscribers. You
+ * can configure the server to use queues, or mix both types:
+ *
+ * [source,$lang]
+ * ----
+ * {@link examples.StompServerExamples#example11}
+ * ----
+ *
+ * In the last example, all destination starting with `/queue` are queues while others are topics. The destination is
+ * created when the first subscription on this destination is received.
+ *
+ * A server can decide to reject the destination creation by returning `null`:
+ *
+ *[source,$lang]
+ * ----
+ * {@link examples.StompServerExamples#example12}
+ * ----
+ *
+ * In this case, the subscriber received an `ERROR` frame.
+ *
+ * Queues dispatches messages using a round-robin strategies.
  *
  * === Acknowledgment
  *
@@ -139,6 +169,9 @@
  * ----
  * {@link examples.StompServerExamples#example8}
  * ----
+ *
+ * In addition to the behavior described previously, queues handle non-acknowledgements by trying to dispatch the
+ * not-acknowledged messages to another subscriber. If there are no available subscriber, the message is dropped.
  *
  * === Customizing the STOMP server
  *
@@ -156,7 +189,7 @@
  *
  * == STOMP client
  *
- * STOMP clients connect to STOMP server and can sends and receive frames.
+ * STOMP clients connect to STOMP server and can send and receive frames.
  *
  * === Creating a STOMP client
  *
@@ -167,7 +200,7 @@
  * {@link examples.StompClientExamples#example1(io.vertx.core.Vertx)}
  * ----
  *
- * the previous snippet creates a STOMP client connecting to "0.0.0.0:61613". Once connected, you get a
+ * The previous snippet creates a STOMP client connecting to "0.0.0.0:61613". Once connected, you get a
  * {@link io.vertx.ext.stomp.StompClientConnection} that let you interact with the server. You can
  * configure the host and port as follows:
  *

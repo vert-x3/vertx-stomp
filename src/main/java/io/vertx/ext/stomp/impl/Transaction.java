@@ -8,6 +8,7 @@ import java.util.List;
 
 /**
  * Represents a STOMP transaction.
+ * This class is thread safe.
  *
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
@@ -59,7 +60,7 @@ public class Transaction {
   }
 
   /**
-   * @return the ordered list of frames added to the transaction.
+   * @return the ordered list of frames added to the transaction. To avoid concurrency issue, a copy is returned.
    */
   public synchronized List<Frame> getFrames() {
     return new ArrayList<>(frames);
