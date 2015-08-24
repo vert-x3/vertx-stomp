@@ -29,7 +29,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
-@RunWith(VertxUnitRunner.class)
 public class SubscriptionsUsingQueueTest {
 
   private Vertx vertx;
@@ -38,24 +37,30 @@ public class SubscriptionsUsingQueueTest {
   private List<StompClient> clients = new ArrayList<>();
 
   @Before
-  public void setUp(TestContext context) {
+  public void setUp() {
+    AsyncLock<StompServer> lock = new AsyncLock<>();
     vertx = Vertx.vertx();
     server = Stomp.createStompServer(vertx)
         .handler(StompServerHandler.create(vertx).destinationFactory(Destination::queue))
-        .listen(context.asyncAssertSuccess());
+        .listen(lock.handler());
+    lock.waitForSuccess();
   }
 
   @After
-  public void tearDown(TestContext context) {
+  public void tearDown() {
+    AsyncLock<Void> lock = new AsyncLock<>();
     clients.forEach(StompClient::close);
     clients.clear();
-    server.close(context.asyncAssertSuccess());
-    vertx.close(context.asyncAssertSuccess());
+    server.close(lock.handler());
+    lock.waitForSuccess();
+    lock = new AsyncLock<>();
+    vertx.close(lock.handler());
+    lock.waitForSuccess();
   }
 
 
   @Test
-  public void testSubscriptionAndReception() {
+  public void testSubscriptionAndReceptionUsingQueue() {
     List<Frame> frames = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
@@ -80,7 +85,7 @@ public class SubscriptionsUsingQueueTest {
   }
 
   @Test
-  public void testThatCustomHeadersArePropagated() {
+  public void testThatCustomHeadersArePropagatedWhenUsingQueue() {
     List<Frame> frames = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
@@ -128,7 +133,6 @@ public class SubscriptionsUsingQueueTest {
       connection.send("/queue", Buffer.buffer("vert.x"));
       connection.send("/queue", Buffer.buffer("Hello"));
       connection.send("/queue", Buffer.buffer("vert.x"));
-
     }));
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() ->
@@ -235,39 +239,10 @@ public class SubscriptionsUsingQueueTest {
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() ->
             frames2.size() == 4
     );
-
   }
 
   @Test
-  public void testSendingWithoutDestination(TestContext context) {
-    Async async = context.async();
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
-      final StompClientConnection connection = ar.result();
-      try {
-        connection.send((String) null, Buffer.buffer("hello"));
-        context.fail("Exception expected");
-      } catch (IllegalArgumentException e) {
-        async.complete();
-      }
-    }));
-  }
-
-  @Test
-  public void testSendingWithHeadersButWithoutDestination(TestContext context) {
-    Async async = context.async();
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
-      final StompClientConnection connection = ar.result();
-      try {
-        connection.send(Headers.create("foo", "bar"), Buffer.buffer("hello"));
-        context.fail("Exception expected");
-      } catch (IllegalArgumentException e) {
-        async.complete();
-      }
-    }));
-  }
-
-  @Test
-  public void testWhenNoSubscriptions() {
+  public void testWhenNoSubscriptionsWhenUsingQueue() {
     server.options().setSendErrorOnNoSubscriptions(true);
 
     List<Frame> frames = new CopyOnWriteArrayList<>();
@@ -293,7 +268,7 @@ public class SubscriptionsUsingQueueTest {
   }
 
   @Test
-  public void testMultipleSubscriptionsWithIds() {
+  public void testMultipleSubscriptionsWithIdsOnQueues() {
     server.options().setSendErrorOnNoSubscriptions(true);
 
     Map<String, Frame> frames = new HashMap<>();
@@ -332,7 +307,7 @@ public class SubscriptionsUsingQueueTest {
   }
 
   @Test
-  public void testUnsubscriptionWithDefaultId() {
+  public void testUnsubscriptionWithDefaultIdUsingQueue() {
     server.options().setSendErrorOnNoSubscriptions(true);
 
     List<Frame> frames = new CopyOnWriteArrayList<>();
@@ -393,58 +368,6 @@ public class SubscriptionsUsingQueueTest {
     }));
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> frames.size() == 2 && frames.get(1).getCommand() == Frame.Command.ERROR);
-  }
-
-  @Test
-  public void testSubscriptionsUsingTheSameDefaultId(TestContext context) {
-    Async async = context.async();
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
-      final StompClientConnection connection = ar.result();
-      connection.subscribe("/queue", frame -> {
-      });
-      try {
-        connection.subscribe("/queue", frame -> {
-        });
-        context.fail("Exception expected");
-      } catch (IllegalArgumentException e) {
-        async.complete();
-      }
-    }));
-  }
-
-  @Test
-  public void testSubscriptionsUsingTheSameCustomId(TestContext context) {
-    Async async = context.async();
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
-      final StompClientConnection connection = ar.result();
-      connection.subscribe("/queue", Headers.create("id", "0"), frame -> {
-      });
-      try {
-        connection.subscribe("/queue2", Headers.create("id", "0"), frame -> {
-        });
-        context.fail("Exception expected");
-      } catch (IllegalArgumentException e) {
-        async.complete();
-      }
-    }));
-  }
-
-
-  @Test
-  public void testSubscriptionsUsingTheSameDestinationButDifferentId(TestContext context) {
-    Async async = context.async();
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
-      final StompClientConnection connection = ar.result();
-      try {
-        connection.subscribe("/queue", Headers.create(Frame.ID, "0"), frame -> {
-        });
-        connection.subscribe("/queue", Headers.create(Frame.ID, "1"), frame -> {
-        });
-        async.complete();
-      } catch (IllegalArgumentException e) {
-        context.fail("Exception unexpected");
-      }
-    }));
   }
 
   @Test

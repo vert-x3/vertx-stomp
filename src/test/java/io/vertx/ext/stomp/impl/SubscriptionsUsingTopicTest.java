@@ -57,14 +57,14 @@ public class SubscriptionsUsingTopicTest {
     List<Frame> frames = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
-      connection.subscribe("/queue", (frames::add));
+      connection.subscribe("/topic", (frames::add));
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/topic"));
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
-      connection.send("/queue", Buffer.buffer("Hello"));
+      connection.send("/topic", Buffer.buffer("Hello"));
     }));
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> !frames.isEmpty());
@@ -73,7 +73,7 @@ public class SubscriptionsUsingTopicTest {
     assertThat(frames.get(0).getBodyAsString()).isEqualTo("Hello");
     assertThat(frames.get(0).getCommand()).isEqualTo(Frame.Command.MESSAGE);
     assertThat(frames.get(0).getHeader(Frame.MESSAGE_ID)).isNotNull().isNotEmpty();
-    assertThat(frames.get(0).getHeader(Frame.SUBSCRIPTION)).isEqualTo("/queue");
+    assertThat(frames.get(0).getHeader(Frame.SUBSCRIPTION)).isEqualTo("/topic");
     assertThat(frames.get(0).getHeader(Frame.DESTINATION)).isNotNull().isNotEmpty();
   }
 
@@ -82,14 +82,14 @@ public class SubscriptionsUsingTopicTest {
     List<Frame> frames = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
-      connection.subscribe("/queue", (frames::add));
+      connection.subscribe("/topic", (frames::add));
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/topic"));
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
-      connection.send("/queue", Headers.create("foo", "bar", "toto", "titi"), Buffer.buffer("Hello"));
+      connection.send("/topic", Headers.create("foo", "bar", "toto", "titi"), Buffer.buffer("Hello"));
     }));
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> !frames.isEmpty());
@@ -98,7 +98,7 @@ public class SubscriptionsUsingTopicTest {
     assertThat(frames.get(0).getBodyAsString()).isEqualTo("Hello");
     assertThat(frames.get(0).getCommand()).isEqualTo(Frame.Command.MESSAGE);
     assertThat(frames.get(0).getHeader(Frame.MESSAGE_ID)).isNotNull().isNotEmpty();
-    assertThat(frames.get(0).getHeader(Frame.SUBSCRIPTION)).isEqualTo("/queue");
+    assertThat(frames.get(0).getHeader(Frame.SUBSCRIPTION)).isEqualTo("/topic");
     assertThat(frames.get(0).getHeader(Frame.DESTINATION)).isNotNull().isNotEmpty();
     assertThat(frames.get(0).getHeader("foo")).isEqualTo("bar");
     assertThat(frames.get(0).getHeader("toto")).isEqualTo("titi");
@@ -109,18 +109,18 @@ public class SubscriptionsUsingTopicTest {
     List<Frame> frames = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
-      connection.subscribe("/queue", (frames::add));
+      connection.subscribe("/topic", (frames::add));
     }));
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
-      connection.subscribe("/queue", (frames::add));
+      connection.subscribe("/topic", (frames::add));
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/topic"));
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
-      connection.send("/queue", Buffer.buffer("Hello"));
+      connection.send("/topic", Buffer.buffer("Hello"));
     }));
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> {
@@ -131,13 +131,13 @@ public class SubscriptionsUsingTopicTest {
     assertThat(frames.get(0).getBodyAsString()).isEqualTo("Hello");
     assertThat(frames.get(0).getCommand()).isEqualTo(Frame.Command.MESSAGE);
     assertThat(frames.get(0).getHeader(Frame.MESSAGE_ID)).isNotNull().isNotEmpty();
-    assertThat(frames.get(0).getHeader(Frame.SUBSCRIPTION)).isEqualTo("/queue");
+    assertThat(frames.get(0).getHeader(Frame.SUBSCRIPTION)).isEqualTo("/topic");
     assertThat(frames.get(0).getHeader(Frame.DESTINATION)).isNotNull().isNotEmpty();
     assertThat(frames.get(0).getHeader(Frame.CONTENT_LENGTH)).isEqualTo("5"); // Content length as string.
     assertThat(frames.get(1).getBodyAsString()).isEqualTo("Hello");
     assertThat(frames.get(1).getCommand()).isEqualTo(Frame.Command.MESSAGE);
     assertThat(frames.get(1).getHeader(Frame.MESSAGE_ID)).isNotNull().isNotEmpty();
-    assertThat(frames.get(1).getHeader(Frame.SUBSCRIPTION)).isEqualTo("/queue");
+    assertThat(frames.get(1).getHeader(Frame.SUBSCRIPTION)).isEqualTo("/topic");
     assertThat(frames.get(1).getHeader(Frame.DESTINATION)).isNotNull().isNotEmpty();
   }
 
@@ -183,7 +183,7 @@ public class SubscriptionsUsingTopicTest {
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
-      connection.send("/queue", Buffer.buffer("Hello"));
+      connection.send("/topic", Buffer.buffer("Hello"));
       connection.errorHandler(frames::add);
     }));
 
@@ -191,7 +191,7 @@ public class SubscriptionsUsingTopicTest {
 
     assertThat(frames).hasSize(1);
     assertThat(frames.get(0).getCommand()).isEqualTo(Frame.Command.ERROR);
-    assertThat(frames.get(0).getHeader(Frame.DESTINATION)).isEqualTo("/queue");
+    assertThat(frames.get(0).getHeader(Frame.DESTINATION)).isEqualTo("/topic");
     assertThat(frames.get(0).getBodyAsString()).contains("no subscriptions");
   }
 
@@ -202,16 +202,16 @@ public class SubscriptionsUsingTopicTest {
     Map<String, Frame> frames = new HashMap<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
-      connection.subscribe("/queue", Headers.create().add(Frame.ID, "0"), f -> frames.put("/queue", f));
+      connection.subscribe("/topic", Headers.create().add(Frame.ID, "0"), f -> frames.put("/topic", f));
       connection.subscribe("/queue2", Headers.create().add(Frame.ID, "1"), f -> frames.put("/queue2", f));
     }));
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue2"));
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/topic"));
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
-      connection.send("/queue", Buffer.buffer("Hello"));
+      connection.send("/topic", Buffer.buffer("Hello"));
       connection.send("/queue2", Buffer.buffer("World"));
       connection.errorHandler(f -> frames.put("error", f));
     }));
@@ -221,9 +221,9 @@ public class SubscriptionsUsingTopicTest {
     assertThat(frames).hasSize(2);
     assertThat(frames).doesNotContainKeys("error");
 
-    Frame frame1 = frames.get("/queue");
+    Frame frame1 = frames.get("/topic");
     assertThat(frame1.getCommand()).isEqualTo(Frame.Command.MESSAGE);
-    assertThat(frame1.getHeader(Frame.DESTINATION)).isEqualTo("/queue");
+    assertThat(frame1.getHeader(Frame.DESTINATION)).isEqualTo("/topic");
     assertThat(frame1.getHeader(Frame.SUBSCRIPTION)).isEqualTo("0");
     assertThat(frame1.getBodyAsString()).isEqualTo("Hello");
 
@@ -241,26 +241,26 @@ public class SubscriptionsUsingTopicTest {
     List<Frame> frames = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
-      connection.subscribe("/queue", frame -> {
+      connection.subscribe("/topic", frame -> {
         frames.add(frame);
-        connection.unsubscribe("/queue");
+        connection.unsubscribe("/topic");
       });
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/topic"));
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(frames::add);
-      connection.send("/queue", Buffer.buffer("Hello"));
+      connection.send("/topic", Buffer.buffer("Hello"));
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> !Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> !Helper.hasDestination(server.stompHandler().getDestinations(), "/topic"));
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(frames::add);
-      connection.send("/queue", Buffer.buffer("Hello"));
+      connection.send("/topic", Buffer.buffer("Hello"));
     }));
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> frames.size() == 2 && frames.get(1).getCommand() == Frame.Command.ERROR);
@@ -273,25 +273,25 @@ public class SubscriptionsUsingTopicTest {
     List<Frame> frames = new CopyOnWriteArrayList<>();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
-      connection.subscribe("/queue", Headers.create(Frame.ID, "0"), frame -> {
+      connection.subscribe("/topic", Headers.create(Frame.ID, "0"), frame -> {
         frames.add(frame);
-        connection.unsubscribe("/queue", Headers.create(Frame.ID, "0"));
+        connection.unsubscribe("/topic", Headers.create(Frame.ID, "0"));
       });
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/topic"));
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
-      connection.send("/queue", Buffer.buffer("Hello"));
+      connection.send("/topic", Buffer.buffer("Hello"));
       connection.errorHandler(frames::add);
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> !Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> !Helper.hasDestination(server.stompHandler().getDestinations(), "/topic"));
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
-      connection.send("/queue", Buffer.buffer("Hello"));
+      connection.send("/topic", Buffer.buffer("Hello"));
       connection.errorHandler(frames::add);
     }));
 
@@ -303,10 +303,10 @@ public class SubscriptionsUsingTopicTest {
     Async async = context.async();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
-      connection.subscribe("/queue", frame -> {
+      connection.subscribe("/topic", frame -> {
       });
       try {
-        connection.subscribe("/queue", frame -> {
+        connection.subscribe("/topic", frame -> {
         });
         context.fail("Exception expected");
       } catch (IllegalArgumentException e) {
@@ -320,7 +320,7 @@ public class SubscriptionsUsingTopicTest {
     Async async = context.async();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
-      connection.subscribe("/queue", Headers.create("id", "0"), frame -> {
+      connection.subscribe("/topic", Headers.create("id", "0"), frame -> {
       });
       try {
         connection.subscribe("/queue2", Headers.create("id", "0"), frame -> {
@@ -339,9 +339,9 @@ public class SubscriptionsUsingTopicTest {
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       try {
-        connection.subscribe("/queue", Headers.create(Frame.ID, "0"), frame -> {
+        connection.subscribe("/topic", Headers.create(Frame.ID, "0"), frame -> {
         });
-        connection.subscribe("/queue", Headers.create(Frame.ID, "1"), frame -> {
+        connection.subscribe("/topic", Headers.create(Frame.ID, "1"), frame -> {
         });
         async.complete();
       } catch (IllegalArgumentException e) {
@@ -355,7 +355,7 @@ public class SubscriptionsUsingTopicTest {
     List<Frame> frames = new CopyOnWriteArrayList<>();
     StompClient client = Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
-      connection.subscribe("/queue", (frames::add));
+      connection.subscribe("/topic", (frames::add));
       connection.subscribe("/queue2", (frames::add));
 
     });
@@ -365,7 +365,7 @@ public class SubscriptionsUsingTopicTest {
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
-      connection.send("/queue", Buffer.buffer("Hello"));
+      connection.send("/topic", Buffer.buffer("Hello"));
     }));
 
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
