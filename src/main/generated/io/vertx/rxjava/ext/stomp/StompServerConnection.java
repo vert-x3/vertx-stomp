@@ -21,6 +21,7 @@ import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
 import io.vertx.rxjava.core.buffer.Buffer;
 import io.vertx.ext.stomp.Frame;
+import io.vertx.core.Handler;
 
 /**
  * Class representing a connection between a STOMP client a the server. It keeps a references on the client socket,
@@ -101,6 +102,18 @@ public class StompServerConnection {
    */
   public void ping() { 
     this.delegate.ping();
+  }
+
+  public void onServerActivity() { 
+    this.delegate.onServerActivity();
+  }
+
+  public void configureHeartbeat(long ping, long pong, Handler<StompServerConnection> pingHandler) { 
+    this.delegate.configureHeartbeat(ping, pong, new Handler<io.vertx.ext.stomp.StompServerConnection>() {
+      public void handle(io.vertx.ext.stomp.StompServerConnection event) {
+        pingHandler.handle(new StompServerConnection(event));
+      }
+    });
   }
 
 

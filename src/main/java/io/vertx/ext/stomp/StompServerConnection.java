@@ -2,6 +2,7 @@ package io.vertx.ext.stomp;
 
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.VertxGen;
+import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 
 /**
@@ -55,4 +56,18 @@ public interface StompServerConnection {
    * Sends a `PING` frame to the client. A `PING` frame is a frame containing only {@code EOL}.
    */
   void ping();
+
+  /**
+   * Notifies the connection about server activity (the server has sent a frame). This method is used to handle the
+   * heartbeat.
+   */
+  void onServerActivity();
+
+  /**
+   * Configures the heartbeat.
+   * @param ping ping time
+   * @param pong pong time
+   * @param pingHandler the ping handler
+   */
+  void configureHeartbeat(long ping, long pong, Handler<StompServerConnection> pingHandler);
 }

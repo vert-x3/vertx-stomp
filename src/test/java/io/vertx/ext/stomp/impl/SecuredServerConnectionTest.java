@@ -12,8 +12,10 @@ import io.vertx.ext.stomp.StompServerHandler;
 import io.vertx.ext.stomp.StompServerOptions;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
+import io.vertx.ext.unit.junit.RunTestOnContext;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -26,6 +28,9 @@ import org.junit.runner.RunWith;
 public class SecuredServerConnectionTest {
   private Vertx vertx;
   private StompServer server;
+
+  @Rule
+  public RunTestOnContext rule = new RunTestOnContext();
 
   @Before
   public void setUp(TestContext context) {

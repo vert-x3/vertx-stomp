@@ -73,5 +73,22 @@ module VertxStomp
       end
       raise ArgumentError, "Invalid arguments when calling ping()"
     end
+    # @return [void]
+    def on_server_activity
+      if !block_given?
+        return @j_del.java_method(:onServerActivity, []).call()
+      end
+      raise ArgumentError, "Invalid arguments when calling on_server_activity()"
+    end
+    # @param [Fixnum] ping 
+    # @param [Fixnum] pong 
+    # @yield 
+    # @return [void]
+    def configure_heartbeat(ping=nil,pong=nil)
+      if ping.class == Fixnum && pong.class == Fixnum && block_given?
+        return @j_del.java_method(:configureHeartbeat, [Java::long.java_class,Java::long.java_class,Java::IoVertxCore::Handler.java_class]).call(ping,pong,(Proc.new { |event| yield(::Vertx::Util::Utils.safe_create(event,::VertxStomp::StompServerConnection)) }))
+      end
+      raise ArgumentError, "Invalid arguments when calling configure_heartbeat(ping,pong)"
+    end
   end
 end

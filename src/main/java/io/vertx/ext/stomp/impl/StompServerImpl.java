@@ -88,7 +88,7 @@ public class StompServerImpl implements StompServer {
             log.error("The STOMP server caught a TCP socket error - closing connection", exception);
             connection.close();
           });
-          socket.endHandler(v -> stomp.onClose(connection));
+          socket.endHandler(v -> connection.close());
           parser
               .errorHandler((exception) -> {
                     connection.write(
@@ -152,7 +152,7 @@ public class StompServerImpl implements StompServer {
   public void close(Handler<AsyncResult<Void>> done) {
     if (!listening) {
       if (done != null) {
-        vertx.getOrCreateContext().runOnContext((v) -> done.handle(Future.succeededFuture()));
+        vertx.runOnContext((v) -> done.handle(Future.succeededFuture()));
       }
       return;
     }

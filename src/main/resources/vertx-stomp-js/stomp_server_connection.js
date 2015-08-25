@@ -122,6 +122,34 @@ var StompServerConnection = function(j_val) {
     } else utils.invalidArgs();
   };
 
+  /**
+
+   @public
+
+   */
+  this.onServerActivity = function() {
+    var __args = arguments;
+    if (__args.length === 0) {
+      j_stompServerConnection["onServerActivity()"]();
+    } else utils.invalidArgs();
+  };
+
+  /**
+
+   @public
+   @param ping {number} 
+   @param pong {number} 
+   @param pingHandler {function} 
+   */
+  this.configureHeartbeat = function(ping, pong, pingHandler) {
+    var __args = arguments;
+    if (__args.length === 3 && typeof __args[0] ==='number' && typeof __args[1] ==='number' && typeof __args[2] === 'function') {
+      j_stompServerConnection["configureHeartbeat(long,long,io.vertx.core.Handler)"](ping, pong, function(jVal) {
+      pingHandler(utils.convReturnVertxGen(jVal, StompServerConnection));
+    });
+    } else utils.invalidArgs();
+  };
+
   // A reference to the underlying Java delegate
   // NOTE! This is an internal API and must not be used in user code.
   // If you rely on this property your code is likely to break if we change it / remove it without warning.

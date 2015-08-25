@@ -1,9 +1,6 @@
 package io.vertx.ext.stomp.impl;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
+import io.vertx.core.*;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
@@ -30,7 +27,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   private final StompClient client;
   private final NetSocket socket;
   private final Handler<AsyncResult<StompClientConnection>> resultHandler;
-  private final Vertx vertx;
+  private final Context context;
 
   private volatile long lastServerActivity;
 
@@ -68,7 +65,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     this.socket = socket;
     this.client = client;
     this.resultHandler = resultHandler;
-    this.vertx = vertx;
+    this.context = vertx.getOrCreateContext();
 
     FrameParser parser = new FrameParser();
     parser.handler(this);
@@ -94,7 +91,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   public synchronized void close() {
 
     if (closeHandler != null) {
-      vertx.runOnContext(v -> closeHandler.handle(this));
+      context.runOnContext(v -> closeHandler.handle(this));
     }
 
     if (pinger != 0) {

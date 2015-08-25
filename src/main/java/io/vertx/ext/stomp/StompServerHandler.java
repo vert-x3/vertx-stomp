@@ -262,5 +262,4 @@ public interface StompServerHandler extends Handler<ServerFrame> {
   @Fluent
   StompServerHandler destinationFactory(DestinationFactory factory);
 
-
 }

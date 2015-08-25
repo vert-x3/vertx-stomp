@@ -1,9 +1,6 @@
 package io.vertx.ext.stomp.impl;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
+import io.vertx.core.*;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
@@ -13,7 +10,6 @@ import io.vertx.ext.stomp.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * A plug-able implementation of {@link StompServerHandler}. The default behavior is compliant with the STOMP
@@ -30,6 +26,7 @@ public class DefaultStompHandler implements StompServerHandler {
 
   private static final Logger log = LoggerFactory.getLogger(DefaultStompHandler.class);
   private final Vertx vertx;
+  private final Context context;
 
   private Handler<ServerFrame> connectHandler = new DefaultConnectHandler();
 
@@ -55,7 +52,6 @@ public class DefaultStompHandler implements StompServerHandler {
     StompServerConnection connection = sf.connection();
     Frames.handleReceipt(sf.frame(), connection);
     connection.close();
-    onClose(connection);
   });
 
   private AuthProvider authProvider;
@@ -69,28 +65,17 @@ public class DefaultStompHandler implements StompServerHandler {
 
   private final LocalMap<String, Destination> destinations;
 
-  private volatile long lastClientActivity;
-  private volatile long pinger;
-  private volatile long ponger;
-
   private DestinationFactory factory = Destination::topic;
 
   public DefaultStompHandler(Vertx vertx) {
     this.vertx = vertx;
+    this.context = Vertx.currentContext();
     this.destinations = vertx.sharedData().getLocalMap("stomp.destinations");
   }
 
   public synchronized void onClose(StompServerConnection connection) {
-    // Default behavior.
-    if (pinger != 0) {
-      vertx.cancelTimer(pinger);
-      pinger = 0;
-    }
-    if (ponger != 0) {
-      vertx.cancelTimer(ponger);
-      ponger = 0;
-    }
 
+    // Default behavior.
     getDestinations().stream().forEach((d) -> d.unsubscribeConnection(connection));
     Transactions.instance().unregisterTransactionsFromConnection(connection);
 
@@ -175,8 +160,7 @@ public class DefaultStompHandler implements StompServerHandler {
   public void handle(ServerFrame serverFrame) {
     Frame frame = serverFrame.frame();
     StompServerConnection connection = serverFrame.connection();
-
-    lastClientActivity = System.nanoTime();
+    connection.onServerActivity();
     switch (frame.getCommand()) {
       case CONNECT:
         handleConnect(frame, connection);
@@ -301,13 +285,13 @@ public class DefaultStompHandler implements StompServerHandler {
   private void handleConnect(Frame frame, StompServerConnection connection) {
 
     Handler<ServerFrame> handler;
+    Handler<StompServerConnection> pingH;
     synchronized (this) {
       handler = connectHandler;
+      pingH = pingHandler;
     }
 
-    if (handler != null) {
-      handler.handle(new ServerFrameImpl(frame, connection));
-    }
+
     // Compute heartbeat, and register pinger and ponger
     long ping = Frame.Heartbeat.computePingPeriod(
         Frame.Heartbeat.parse(frame.getHeader(Frame.HEARTBEAT)),
@@ -315,20 +299,12 @@ public class DefaultStompHandler implements StompServerHandler {
     long pong = Frame.Heartbeat.computePongPeriod(
         Frame.Heartbeat.parse(frame.getHeader(Frame.HEARTBEAT)),
         Frame.Heartbeat.create(connection.server().options().getHeartbeat()));
-    if (ping > 0) {
-      pinger = connection.server().vertx().setPeriodic(ping, (l) -> pingHandler.handle(connection));
-    }
-    if (pong > 0) {
-      ponger = connection.server().vertx().setPeriodic(pong, l -> {
-        long delta = System.nanoTime() - lastClientActivity;
-        final long deltaInMs = TimeUnit.MILLISECONDS.convert(delta, TimeUnit.NANOSECONDS);
-        if (deltaInMs > pong * 2) {
-          log.warn("Disconnecting client " + connection + " - no client activity in the last " + deltaInMs + " ms");
-          connection.close();
-          onClose(connection);
-          vertx.cancelTimer(ponger);
-        }
-      });
+
+    connection.configureHeartbeat(ping, pong, pingH);
+
+    // Then, handle the frame.
+    if (handler != null) {
+      handler.handle(new ServerFrameImpl(frame, connection));
     }
   }
 
@@ -375,22 +351,22 @@ public class DefaultStompHandler implements StompServerHandler {
       if (auth != null) {
         log.warn("Authentication handler set while the server is not secured");
       }
-      vertx.runOnContext(v -> handler.handle(Future.succeededFuture(true)));
+      context.runOnContext(v -> handler.handle(Future.succeededFuture(true)));
       return this;
     }
 
     if (server.options().isSecured() && auth == null) {
       log.error("Cannot authenticate connection - no authentication provider");
-      vertx.runOnContext(v -> handler.handle(Future.succeededFuture(false)));
+      context.runOnContext(v -> handler.handle(Future.succeededFuture(false)));
       return this;
     }
 
-    vertx.runOnContext(v ->
+    context.runOnContext(v ->
         auth.authenticate(new JsonObject().put("username", login).put("password", passcode), ar -> {
           if (ar.succeeded()) {
-            vertx.runOnContext(v2 -> handler.handle(Future.succeededFuture(true)));
+            context.runOnContext(v2 -> handler.handle(Future.succeededFuture(true)));
           } else {
-            vertx.runOnContext(v2 -> handler.handle(Future.succeededFuture(false)));
+            context.runOnContext(v2 -> handler.handle(Future.succeededFuture(false)));
           }
         }));
     return this;
