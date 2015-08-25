@@ -104,10 +104,20 @@ public class StompServerConnection {
     this.delegate.ping();
   }
 
+  /**
+   * Notifies the connection about server activity (the server has sent a frame). This method is used to handle the
+   * heartbeat.
+   */
   public void onServerActivity() { 
     this.delegate.onServerActivity();
   }
 
+  /**
+   * Configures the heartbeat.
+   * @param ping ping time
+   * @param pong pong time
+   * @param pingHandler the ping handler
+   */
   public void configureHeartbeat(long ping, long pong, Handler<StompServerConnection> pingHandler) { 
     this.delegate.configureHeartbeat(ping, pong, new Handler<io.vertx.ext.stomp.StompServerConnection>() {
       public void handle(io.vertx.ext.stomp.StompServerConnection event) {

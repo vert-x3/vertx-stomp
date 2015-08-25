@@ -73,6 +73,8 @@ module VertxStomp
       end
       raise ArgumentError, "Invalid arguments when calling ping()"
     end
+    #  Notifies the connection about server activity (the server has sent a frame). This method is used to handle the
+    #  heartbeat.
     # @return [void]
     def on_server_activity
       if !block_given?
@@ -80,9 +82,10 @@ module VertxStomp
       end
       raise ArgumentError, "Invalid arguments when calling on_server_activity()"
     end
-    # @param [Fixnum] ping 
-    # @param [Fixnum] pong 
-    # @yield 
+    #  Configures the heartbeat.
+    # @param [Fixnum] ping ping time
+    # @param [Fixnum] pong pong time
+    # @yield the ping handler
     # @return [void]
     def configure_heartbeat(ping=nil,pong=nil)
       if ping.class == Fixnum && pong.class == Fixnum && block_given?

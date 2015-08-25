@@ -123,6 +123,8 @@ var StompServerConnection = function(j_val) {
   };
 
   /**
+   Notifies the connection about server activity (the server has sent a frame). This method is used to handle the
+   heartbeat.
 
    @public
 
@@ -135,11 +137,12 @@ var StompServerConnection = function(j_val) {
   };
 
   /**
+   Configures the heartbeat.
 
    @public
-   @param ping {number} 
-   @param pong {number} 
-   @param pingHandler {function} 
+   @param ping {number} ping time 
+   @param pong {number} pong time 
+   @param pingHandler {function} the ping handler 
    */
   this.configureHeartbeat = function(ping, pong, pingHandler) {
     var __args = arguments;
