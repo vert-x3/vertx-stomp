@@ -38,12 +38,11 @@
       <artifactId>vertx-codegen</artifactId>
       <optional>true</optional>
     </dependency>
-    <!-- TODO Enable groovy, there is a missing import -->
-    <!--<dependency>-->
-      <!--<groupId>io.vertx</groupId>-->
-      <!--<artifactId>vertx-lang-groovy</artifactId>-->
-      <!--<optional>true</optional>-->
-    <!--</dependency>-->
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-lang-groovy</artifactId>
+      <optional>true</optional>
+    </dependency>
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-lang-ruby</artifactId>
