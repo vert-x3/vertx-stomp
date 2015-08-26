@@ -70,7 +70,6 @@ public class ServerConnectionTest {
       }
       NetSocket socket = result.result();
       socket.handler(buffer -> {
-        System.out.println(buffer);
         context.assertTrue(buffer.toString().contains("CONNECTED"));
         context.assertTrue(buffer.toString().contains("version:1.2"));
         // Optional headers:

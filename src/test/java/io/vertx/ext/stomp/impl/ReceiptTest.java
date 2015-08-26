@@ -25,7 +25,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
-@RunWith(VertxUnitRunner.class)
 public class ReceiptTest {
 
   private Vertx vertx;
@@ -34,7 +33,7 @@ public class ReceiptTest {
   private List<StompClient> clients = new ArrayList<>();
 
   @Before
-  public void setUp(TestContext context) {
+  public void setUp() {
     vertx = Vertx.vertx();
     AsyncLock<StompServer> lock = new AsyncLock<>();
     vertx = Vertx.vertx();
@@ -45,7 +44,7 @@ public class ReceiptTest {
   }
 
   @After
-  public void tearDown(TestContext context) {
+  public void tearDown() {
     clients.forEach(StompClient::close);
     clients.clear();
     AsyncLock<Void> lock = new AsyncLock<>();
