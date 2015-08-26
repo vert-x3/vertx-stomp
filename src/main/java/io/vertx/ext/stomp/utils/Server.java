@@ -17,7 +17,7 @@ public class Server {
   static {
     try (InputStream is = Server.class.getClassLoader().getResourceAsStream("vertx-stomp-version.txt")) {
       if (is == null) {
-        throw new IllegalStateException("Cannot find vertx-version.txt on classpath");
+        throw new IllegalStateException("Cannot find vertx-stomp-version.txt on classpath");
       }
       try (Scanner scanner = new Scanner(is, "UTF-8").useDelimiter("\\A")) {
         SERVER_NAME = "vertx-stomp" + (scanner.hasNext() ? "/" + scanner.next() : "");
