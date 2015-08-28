@@ -5,13 +5,9 @@ import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.stomp.*;
 import io.vertx.ext.stomp.utils.Headers;
-import io.vertx.ext.unit.Async;
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,7 +24,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
-@RunWith(VertxUnitRunner.class)
 public class SubscriptionsUsingTopicTest {
 
   private Vertx vertx;
@@ -36,19 +32,25 @@ public class SubscriptionsUsingTopicTest {
   private List<StompClient> clients = new ArrayList<>();
 
   @Before
-  public void setUp(TestContext context) {
+  public void setUp() {
+    AsyncLock<StompServer> lock = new AsyncLock<>();
     vertx = Vertx.vertx();
     server = Stomp.createStompServer(vertx)
         .handler(StompServerHandler.create(vertx))
-        .listen(context.asyncAssertSuccess());
+        .listen(lock.handler());
+    lock.waitForSuccess();
   }
 
   @After
-  public void tearDown(TestContext context) {
+  public void tearDown() {
+    AsyncLock<Void> lock = new AsyncLock<>();
     clients.forEach(StompClient::close);
     clients.clear();
-    server.close(context.asyncAssertSuccess());
-    vertx.close(context.asyncAssertSuccess());
+    server.close(lock.handler());
+    lock.waitForSuccess();
+    lock = new AsyncLock<>();
+    vertx.close(lock.handler());
+    lock.waitForSuccess();
   }
 
 
@@ -123,9 +125,7 @@ public class SubscriptionsUsingTopicTest {
       connection.send("/topic", Buffer.buffer("Hello"));
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> {
-      return frames.size() == 2;
-    });
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> frames.size() == 2);
 
     assertThat(frames).hasSize(2);
     assertThat(frames.get(0).getBodyAsString()).isEqualTo("Hello");
@@ -142,31 +142,31 @@ public class SubscriptionsUsingTopicTest {
   }
 
   @Test
-  public void testSendingWithoutDestination(TestContext context) {
-    Async async = context.async();
+  public void testSendingWithoutDestination() {
+    AtomicBoolean failureDetected = new AtomicBoolean();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       try {
         connection.send((String) null, Buffer.buffer("hello"));
-        context.fail("Exception expected");
       } catch (IllegalArgumentException e) {
-        async.complete();
+        failureDetected.set(true);
       }
     }));
+    Awaitility.await().atMost(10, TimeUnit.SECONDS).until(failureDetected::get);
   }
 
   @Test
-  public void testSendingWithHeadersButWithoutDestination(TestContext context) {
-    Async async = context.async();
+  public void testSendingWithHeadersButWithoutDestination() {
+    AtomicBoolean failureDetected = new AtomicBoolean();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       try {
         connection.send(Headers.create("foo", "bar"), Buffer.buffer("hello"));
-        context.fail("Exception expected");
       } catch (IllegalArgumentException e) {
-        async.complete();
+        failureDetected.set(true);
       }
     }));
+    Awaitility.await().atMost(10, TimeUnit.SECONDS).until(failureDetected::get);
   }
 
   @Test
@@ -299,8 +299,8 @@ public class SubscriptionsUsingTopicTest {
   }
 
   @Test
-  public void testSubscriptionsUsingTheSameDefaultId(TestContext context) {
-    Async async = context.async();
+  public void testSubscriptionsUsingTheSameDefaultId() {
+    AtomicBoolean failureDetected = new AtomicBoolean();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/topic", frame -> {
@@ -308,16 +308,16 @@ public class SubscriptionsUsingTopicTest {
       try {
         connection.subscribe("/topic", frame -> {
         });
-        context.fail("Exception expected");
       } catch (IllegalArgumentException e) {
-        async.complete();
+        failureDetected.set(true);
       }
     }));
+    Awaitility.await().atMost(10, TimeUnit.SECONDS).until(failureDetected::get);
   }
 
   @Test
-  public void testSubscriptionsUsingTheSameCustomId(TestContext context) {
-    Async async = context.async();
+  public void testSubscriptionsUsingTheSameCustomId() {
+    AtomicBoolean failureDetected = new AtomicBoolean();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/topic", Headers.create("id", "0"), frame -> {
@@ -325,29 +325,26 @@ public class SubscriptionsUsingTopicTest {
       try {
         connection.subscribe("/queue2", Headers.create("id", "0"), frame -> {
         });
-        context.fail("Exception expected");
       } catch (IllegalArgumentException e) {
-        async.complete();
+        failureDetected.set(true);
       }
     }));
+    Awaitility.await().atMost(10, TimeUnit.SECONDS).until(failureDetected::get);
   }
 
 
   @Test
-  public void testSubscriptionsUsingTheSameDestinationButDifferentId(TestContext context) {
-    Async async = context.async();
+  public void testSubscriptionsUsingTheSameDestinationButDifferentId() {
+    AtomicBoolean complete = new AtomicBoolean();
     clients.add(Stomp.createStompClient(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
-      try {
-        connection.subscribe("/topic", Headers.create(Frame.ID, "0"), frame -> {
-        });
-        connection.subscribe("/topic", Headers.create(Frame.ID, "1"), frame -> {
-        });
-        async.complete();
-      } catch (IllegalArgumentException e) {
-        context.fail("Exception unexpected");
-      }
+      connection.subscribe("/topic", Headers.create(Frame.ID, "0"), frame -> {
+      });
+      connection.subscribe("/topic", Headers.create(Frame.ID, "1"), frame -> {
+      });
+      complete.set(true);
     }));
+    Awaitility.await().atMost(10, TimeUnit.SECONDS).until(complete::get);
   }
 
   @Test
@@ -377,8 +374,6 @@ public class SubscriptionsUsingTopicTest {
 
     client.close();
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> {
-      return server.stompHandler().getDestinations().size() == 0;
-    });
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestinations().size() == 0);
   }
 }
