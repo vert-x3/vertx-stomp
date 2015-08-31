@@ -3,10 +3,7 @@ package io.vertx.ext.stomp.impl;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.parsetools.RecordParser;
-import io.vertx.ext.stomp.Frame;
-import io.vertx.ext.stomp.Frames;
-import io.vertx.ext.stomp.Stomp;
-import io.vertx.ext.stomp.StompServerOptions;
+import io.vertx.ext.stomp.*;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -79,7 +76,7 @@ public class FrameParser implements Handler<Buffer> {
         // It's the verb line.
         // We try to find the right verb, here we can trim the line (would remove the optional \r).
         // Commands and Header are encoded in UTF-8 (spec)
-        command = Frame.Command.valueOf(buffer.toString(Stomp.UTF_8).trim());
+        command = Frame.Command.valueOf(buffer.toString(StompOptions.UTF_8).trim());
         // Only one verb line, so next state
         current = State.HEADERS;
         break;
@@ -101,7 +98,7 @@ public class FrameParser implements Handler<Buffer> {
           // Split should work here, if all server would have implemented the header encoding correctly. It's not
           // the case (ActiveMQ, looking at you right now), so, using subString instead.
 
-          String line = buffer.toString(Stomp.UTF_8);
+          String line = buffer.toString(StompOptions.UTF_8);
           int index = line.indexOf(COLON);
           if (index == -1) {
             reportOrThrow("Invalid header line : '" + buffer.toString() + "'");

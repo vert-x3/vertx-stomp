@@ -41,8 +41,9 @@ public class AckTest {
     AsyncLock<StompServer> lock = new AsyncLock<>();
 
     vertx = Vertx.vertx();
-    server = Stomp.createStompServer(vertx)
+    server = StompServer.create(vertx)
         .handler(StompServerHandler.create(vertx)
+            .destinationFactory(new QueueManagingAcknowledgmentsFactory())
             .onAckHandler(acknowledgement -> acked.addAll(acknowledgement.frames()))
             .onNackHandler(acknowledgement -> nacked.addAll(acknowledgement.frames())))
         .listen(lock.handler());
@@ -66,14 +67,14 @@ public class AckTest {
 
   @Test
   public void testSimpleAck() {
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", Headers.create(Frame.ACK, "client"), frame -> connection.ack(frame.getAck()));
     }));
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.send("/queue", Buffer.buffer("Hello"));
     }));
@@ -83,7 +84,7 @@ public class AckTest {
 
   @Test
   public void testSimpleNack() {
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", Headers.create(Frame.ACK, "client"), frame -> connection.nack(frame.getAck()));
     }));
@@ -92,7 +93,7 @@ public class AckTest {
             Helper.hasDestination(server.stompHandler().getDestinations(), "/queue")
     );
 
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.send("/queue", Buffer.buffer("Hello"));
     }));
@@ -104,7 +105,7 @@ public class AckTest {
   @Test
   public void testCumulativeAck() {
     List<Frame> frames = new CopyOnWriteArrayList<>();
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", Headers.create(Frame.ACK, "client"), (frame) -> {
         frames.add(frame);
@@ -116,7 +117,7 @@ public class AckTest {
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.send("/queue", Buffer.buffer("Hello"));
       connection.send("/queue", Buffer.buffer("World"));
@@ -130,7 +131,7 @@ public class AckTest {
   @Test
   public void testCumulativeNack() {
     List<Frame> frames = new CopyOnWriteArrayList<>();
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", Headers.create(Frame.ACK, "client"), (frame) -> {
         frames.add(frame);
@@ -142,7 +143,7 @@ public class AckTest {
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.send("/queue", Buffer.buffer("Hello"));
       connection.send("/queue", Buffer.buffer("World"));
@@ -157,7 +158,7 @@ public class AckTest {
   @Test
   public void testIndividualAck() {
     List<Frame> frames = new CopyOnWriteArrayList<>();
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", Headers.create(Frame.ACK, "client-individual"), (frame) -> {
         frames.add(frame);
@@ -171,7 +172,7 @@ public class AckTest {
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.send("/queue", Buffer.buffer("Hello"));
       connection.send("/queue", Buffer.buffer("World"));
@@ -185,7 +186,7 @@ public class AckTest {
   @Test
   public void testIndividualNack() {
     List<Frame> frames = new CopyOnWriteArrayList<>();
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", Headers.create(Frame.ACK, "client-individual"), (frame) -> {
         frames.add(frame);
@@ -199,7 +200,7 @@ public class AckTest {
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.send("/queue", Buffer.buffer("Hello"));
       connection.send("/queue", Buffer.buffer("World"));
@@ -214,7 +215,7 @@ public class AckTest {
   @Test
   public void testAckInTransaction() {
     List<Frame> frames = new CopyOnWriteArrayList<>();
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", Headers.create(Frame.ACK, "client"),
           frame -> {
@@ -232,21 +233,21 @@ public class AckTest {
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.send("/queue", Buffer.buffer("Hello"));
     }));
 
     assertThat(acked.isEmpty());
 
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.send("/queue", Buffer.buffer("Hello"));
     }));
 
     assertThat(acked.isEmpty());
 
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.send("/queue", Buffer.buffer("Hello"));
     }));
@@ -257,7 +258,7 @@ public class AckTest {
   @Test
   public void testNackInTransaction() {
     List<Frame> frames = new CopyOnWriteArrayList<>();
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", Headers.create(Frame.ACK, "client"),
           frame -> {
@@ -275,21 +276,21 @@ public class AckTest {
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.send("/queue", Buffer.buffer("Hello"));
     }));
 
     assertThat(nacked.isEmpty());
 
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.send("/queue", Buffer.buffer("Hello"));
     }));
 
     assertThat(nacked.isEmpty());
 
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.send("/queue", Buffer.buffer("Hello"));
     }));
@@ -300,7 +301,7 @@ public class AckTest {
   @Test
   public void testUnknownMessageInAck(TestContext context) {
     Async async = context.async();
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(frame -> context.fail("unexpected error"));
       connection.ack("unknown", frame -> {
@@ -309,7 +310,7 @@ public class AckTest {
     }));
 
     Async async2 = context.async();
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(frame -> context.fail("unexpected error"));
       connection.nack("unknown", frame -> {
@@ -321,7 +322,7 @@ public class AckTest {
   @Test
   public void testWrongTransactionIdInAckAndNack(TestContext context) {
     Async async = context.async();
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(frame -> async.complete());
       connection.ack("id",
@@ -329,11 +330,79 @@ public class AckTest {
     }));
 
     Async async2 = context.async();
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(frame -> async2.complete());
       connection.ack("id",
           "unknown", frame -> context.fail("unexpected receipt"));
     }));
+  }
+
+  @Test
+  public void testSubscriptionAndTwoReceptionsWithNackInClientMode() {
+    List<Frame> frames1 = new CopyOnWriteArrayList<>();
+    List<Frame> frames2 = new CopyOnWriteArrayList<>();
+    clients.add(StompClient.create(vertx).connect(ar -> {
+      final StompClientConnection connection = ar.result();
+      connection.subscribe("/queue", Headers.create("ack", "client"), frame -> {
+        frames1.add(frame);
+        if (frames1.size() == 2) {
+          connection.nack(frame.getAck());
+        }
+      });
+    }));
+    clients.add(StompClient.create(vertx).connect(ar -> {
+      final StompClientConnection connection = ar.result();
+      connection.subscribe("/queue", Headers.create("ack", "client"), frames2::add);
+    }));
+
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> {
+      final Destination destination = server.stompHandler().getDestination("/queue");
+      return destination != null && destination.numberOfSubscriptions() == 2;
+    });
+
+    clients.add(StompClient.create(vertx).connect(ar -> {
+      final StompClientConnection connection = ar.result();
+      connection.send("/queue", Buffer.buffer("Hello"));
+      connection.send("/queue", Buffer.buffer("vert.x"));
+      connection.send("/queue", Buffer.buffer("Hello"));
+      connection.send("/queue", Buffer.buffer("vert.x"));
+    }));
+
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() ->
+            frames2.size() == 4
+    );
+  }
+
+  @Test
+  public void testSubscriptionAndTwoReceptionsWithNack() {
+    List<Frame> frames2 = new CopyOnWriteArrayList<>();
+    clients.add(StompClient.create(vertx).connect(ar -> {
+      final StompClientConnection connection = ar.result();
+      connection.subscribe("/queue", Headers.create("ack", "client-individual"), frame -> {
+        connection.nack(frame.getAck());
+      });
+    }));
+    clients.add(StompClient.create(vertx).connect(ar -> {
+      final StompClientConnection connection = ar.result();
+      connection.subscribe("/queue", Headers.create("ack", "client-individual"), frames2::add);
+    }));
+
+
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> {
+      final Destination destination = server.stompHandler().getDestination("/queue");
+      return destination != null && destination.numberOfSubscriptions() == 2;
+    });
+
+    clients.add(StompClient.create(vertx).connect(ar -> {
+      final StompClientConnection connection = ar.result();
+      connection.send("/queue", Buffer.buffer("Hello"));
+      connection.send("/queue", Buffer.buffer("vert.x"));
+    }));
+
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() ->
+            frames2.size() == 2
+    );
+
   }
 }

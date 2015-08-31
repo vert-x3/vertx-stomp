@@ -3,7 +3,6 @@ package examples;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.NetClient;
-import io.vertx.ext.stomp.Stomp;
 import io.vertx.ext.stomp.StompClient;
 import io.vertx.ext.stomp.StompClientConnection;
 import io.vertx.ext.stomp.StompClientOptions;
@@ -12,12 +11,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *  @author <a href="http://escoffier.me">Clement Escoffier</a>
+ * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class StompClientExamples {
 
   public void example1(Vertx vertx) {
-    StompClient client = Stomp.createStompClient(vertx)
+    StompClient client = StompClient.create(vertx)
         .connect(ar -> {
           if (ar.succeeded()) {
             StompClientConnection connection = ar.result();
@@ -29,7 +28,7 @@ public class StompClientExamples {
   }
 
   public void example2(Vertx vertx) {
-    StompClient client = Stomp.createStompClient(vertx)
+    StompClient client = StompClient.create(vertx)
         .connect(61613, "0.0.0.0", ar -> {
           if (ar.succeeded()) {
             StompClientConnection connection = ar.result();
@@ -41,7 +40,7 @@ public class StompClientExamples {
   }
 
   public void example3(Vertx vertx) {
-    StompClient client = Stomp.createStompClient(vertx, new StompClientOptions().setHost("localhost").setPort(1234))
+    StompClient client = StompClient.create(vertx, new StompClientOptions().setHost("localhost").setPort(1234))
         .connect(ar -> {
           if (ar.succeeded()) {
             StompClientConnection connection = ar.result();
@@ -53,7 +52,7 @@ public class StompClientExamples {
   }
 
   public void example4(Vertx vertx) {
-    StompClient client = Stomp.createStompClient(vertx, new StompClientOptions().setHost("localhost").setPort(1234))
+    StompClient client = StompClient.create(vertx, new StompClientOptions().setHost("localhost").setPort(1234))
         .connect(ar -> {
           if (ar.succeeded()) {
             StompClientConnection connection = ar.result();
@@ -67,7 +66,7 @@ public class StompClientExamples {
   }
 
   public void example5(Vertx vertx) {
-    StompClient client = Stomp.createStompClient(vertx, new StompClientOptions().setHost("localhost").setPort(1234))
+    StompClient client = StompClient.create(vertx, new StompClientOptions().setHost("localhost").setPort(1234))
         .connect(ar -> {
           if (ar.succeeded()) {
             StompClientConnection connection = ar.result();
@@ -80,7 +79,7 @@ public class StompClientExamples {
   }
 
   public void example6(Vertx vertx) {
-    StompClient client = Stomp.createStompClient(vertx, new StompClientOptions().setHost("localhost").setPort(1234))
+    StompClient client = StompClient.create(vertx, new StompClientOptions().setHost("localhost").setPort(1234))
         .connect(ar -> {
           if (ar.succeeded()) {
             StompClientConnection connection = ar.result();
@@ -92,7 +91,7 @@ public class StompClientExamples {
   }
 
   public void example7(Vertx vertx, NetClient netClient) {
-    StompClient client = Stomp.createStompClient(vertx)
+    StompClient client = StompClient.create(vertx)
         .connect(netClient, ar -> {
           if (ar.succeeded()) {
             StompClientConnection connection = ar.result();
@@ -104,7 +103,7 @@ public class StompClientExamples {
   }
 
   public void example8(Vertx vertx) {
-    StompClient client = Stomp.createStompClient(vertx)
+    StompClient client = StompClient.create(vertx)
         .connect(ar -> {
           if (ar.succeeded()) {
             StompClientConnection connection = ar.result();
@@ -117,7 +116,7 @@ public class StompClientExamples {
   }
 
   public void example9(Vertx vertx) {
-    StompClient client = Stomp.createStompClient(vertx)
+    StompClient client = StompClient.create(vertx)
         .connect(ar -> {
           if (ar.succeeded()) {
             StompClientConnection connection = ar.result();
@@ -134,7 +133,7 @@ public class StompClientExamples {
   }
 
   public void example10(Vertx vertx) {
-    StompClient client = Stomp.createStompClient(vertx)
+    StompClient client = StompClient.create(vertx)
         .connect(ar -> {
           if (ar.succeeded()) {
             StompClientConnection connection = ar.result();
@@ -150,7 +149,7 @@ public class StompClientExamples {
   }
 
   public void example11(Vertx vertx) {
-    StompClient client = Stomp.createStompClient(vertx)
+    StompClient client = StompClient.create(vertx)
         .connect(ar -> {
           if (ar.succeeded()) {
             StompClientConnection connection = ar.result();
@@ -166,7 +165,7 @@ public class StompClientExamples {
   }
 
   public void example12(Vertx vertx) {
-    StompClient client = Stomp.createStompClient(vertx)
+    StompClient client = StompClient.create(vertx)
         .connect(ar -> {
           if (ar.succeeded()) {
             StompClientConnection connection = ar.result();
@@ -186,7 +185,7 @@ public class StompClientExamples {
   }
 
   public void example13(Vertx vertx) {
-    StompClient client = Stomp.createStompClient(vertx)
+    StompClient client = StompClient.create(vertx)
         .connect(ar -> {
           if (ar.succeeded()) {
             StompClientConnection connection = ar.result();

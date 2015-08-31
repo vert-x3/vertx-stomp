@@ -198,7 +198,7 @@ public interface StompServerHandler extends Handler<ServerFrame> {
 
   /**
    * Method called by single message (client-individual policy) or a set of message (client policy) are
-   * <storng>not</storng> acknowledged. Not acknowledgment can result from a {@code NACK} frame or from a timeout (no
+   * <strong>not</strong> acknowledged. Not acknowledgment can result from a {@code NACK} frame or from a timeout (no
    * {@code ACK} frame received in a given time. Implementations must call the handler configured using
    * {@link #onNackHandler(Handler)}.
    *

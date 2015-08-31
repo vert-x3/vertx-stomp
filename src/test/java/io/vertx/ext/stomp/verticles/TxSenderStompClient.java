@@ -3,7 +3,7 @@ package io.vertx.ext.stomp.verticles;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.stomp.Frame;
-import io.vertx.ext.stomp.Stomp;
+import io.vertx.ext.stomp.StompClient;
 import io.vertx.ext.stomp.StompClientConnection;
 import io.vertx.ext.stomp.utils.Headers;
 
@@ -17,7 +17,7 @@ public class TxSenderStompClient extends AbstractVerticle {
 
   @Override
   public void start() throws Exception {
-    Stomp.createStompClient(vertx).connect(ar -> {
+    StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(frame -> System.err.println("Tx Sender has received an ERROR frame : \n" + frame));
       connection.beginTX("my-transaction");

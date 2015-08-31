@@ -227,7 +227,7 @@ module VertxStomp
       raise ArgumentError, "Invalid arguments when calling on_ack(connection,subscribe,messages)"
     end
     #  Method called by single message (client-individual policy) or a set of message (client policy) are
-    #  <storng>not</storng> acknowledged. Not acknowledgment can result from a <code>NACK</code> frame or from a timeout (no
+    #  <strong>not</strong> acknowledged. Not acknowledgment can result from a <code>NACK</code> frame or from a timeout (no
     #  <code>ACK</code> frame received in a given time. Implementations must call the handler configured using
     #  {::VertxStomp::StompServerHandler#on_nack_handler}.
     # @param [::VertxStomp::StompServerConnection] connection the connection

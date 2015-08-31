@@ -15,7 +15,7 @@ public interface DestinationFactory {
    * Creates a destination for the given <em>address</em>.
    *
    * @param vertx the vert.x instance used by the STOMP server.
-   * @param name  the name
+   * @param name  the destination name.
    * @return the destination, {@code null} to reject the creation.
    * @see Destination#topic(Vertx, String)
    * @see Destination#queue(Vertx, String)

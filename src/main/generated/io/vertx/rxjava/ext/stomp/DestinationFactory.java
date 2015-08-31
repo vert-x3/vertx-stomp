@@ -43,7 +43,7 @@ public class DestinationFactory {
   /**
    * Creates a destination for the given <em>address</em>.
    * @param vertx the vert.x instance used by the STOMP server.
-   * @param name the name
+   * @param name the destination name.
    * @return the destination, <code>null</code> to reject the creation.
    */
   public Destination create(Vertx vertx, String name) { 

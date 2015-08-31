@@ -5,7 +5,6 @@ import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.NetClient;
 import io.vertx.core.net.NetSocket;
-import io.vertx.ext.stomp.Stomp;
 import io.vertx.ext.stomp.StompServer;
 import io.vertx.ext.stomp.StompServerHandler;
 import io.vertx.ext.unit.Async;
@@ -39,7 +38,7 @@ public class ServerConnectionTest {
   public void setUp(TestContext context) {
     vertx = Vertx.vertx();
     AsyncLock<StompServer> lock = new AsyncLock<>();
-    server = Stomp.createStompServer(vertx)
+    server = StompServer.create(vertx)
         .handler(StompServerHandler.create(vertx))
         .listen(lock.handler());
     lock.waitForSuccess();

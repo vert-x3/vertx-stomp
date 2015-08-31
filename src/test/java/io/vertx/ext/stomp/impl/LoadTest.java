@@ -38,7 +38,7 @@ public class LoadTest {
   @Before
   public void setUp(TestContext context) {
     vertx = Vertx.vertx();
-    server = Stomp.createStompServer(vertx, new StompServerOptions().setHeartbeat(
+    server = StompServer.create(vertx, new StompServerOptions().setHeartbeat(
         new JsonObject().put("x", 0).put("y", 0)))
         .handler(StompServerHandler.create(vertx)
             .onAckHandler(acknowledgement -> acked.addAll(acknowledgement.frames()))
@@ -69,7 +69,7 @@ public class LoadTest {
     // Init consumers
     for (int i = 0; i < consumer; i++) {
 
-      clients.add(Stomp.createStompClient(vertx)
+      clients.add(StompClient.create(vertx)
           .connect(ar -> {
             if (ar.failed()) {
               System.err.println("Consumer connection error " + ar.cause().getMessage());
@@ -131,7 +131,7 @@ public class LoadTest {
     // Init consumers
     for (int i = 0; i < consumer; i++) {
 
-      clients.add(Stomp.createStompClient(vertx)
+      clients.add(StompClient.create(vertx)
           .connect(ar -> {
             if (ar.failed()) {
               System.err.println("Consumer connection error " + ar.cause().getMessage());

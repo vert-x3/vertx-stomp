@@ -38,7 +38,7 @@ var DestinationFactory = function(j_val) {
 
    @public
    @param vertx {Vertx} the vert.x instance used by the STOMP server. 
-   @param name {string} the name 
+   @param name {string} the destination name. 
    @return {Destination} the destination, <code>null</code> to reject the creation.
    */
   this.create = function(vertx, name) {

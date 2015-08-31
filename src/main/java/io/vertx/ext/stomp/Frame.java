@@ -392,13 +392,13 @@ public class Frame {
   public String encoding() {
     String header = getHeader(CONTENT_TYPE);
     if (header == null) {
-      return Stomp.UTF_8;
+      return StompOptions.UTF_8;
     } else {
       final Matcher matcher = CHARSET_PATTERN.matcher(header);
       if (matcher.matches()) {
         return matcher.group(1);
       } else {
-        return Stomp.UTF_8;
+        return StompOptions.UTF_8;
       }
     }
   }

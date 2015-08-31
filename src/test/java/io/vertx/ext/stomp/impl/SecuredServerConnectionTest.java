@@ -6,7 +6,6 @@ import io.vertx.core.net.NetSocket;
 import io.vertx.ext.auth.AuthProvider;
 import io.vertx.ext.auth.shiro.ShiroAuth;
 import io.vertx.ext.auth.shiro.ShiroAuthRealmType;
-import io.vertx.ext.stomp.Stomp;
 import io.vertx.ext.stomp.StompServer;
 import io.vertx.ext.stomp.StompServerHandler;
 import io.vertx.ext.stomp.StompServerOptions;
@@ -38,7 +37,7 @@ public class SecuredServerConnectionTest {
     JsonObject config = new JsonObject().put("properties_path", "classpath:test-auth.properties");
     AuthProvider provider = ShiroAuth.create(vertx, ShiroAuthRealmType.PROPERTIES, config);
     AsyncLock<StompServer> lock = new AsyncLock<>();
-    server = Stomp.createStompServer(vertx, new StompServerOptions().setSecured(true))
+    server = StompServer.create(vertx, new StompServerOptions().setSecured(true))
         .handler(StompServerHandler.create(vertx).authProvider(provider))
         .listen(lock.handler());
     lock.waitForSuccess();

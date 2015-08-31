@@ -5,12 +5,9 @@ import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.stomp.*;
 import io.vertx.ext.stomp.utils.Headers;
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +34,7 @@ public class ReceiptTest {
     vertx = Vertx.vertx();
     AsyncLock<StompServer> lock = new AsyncLock<>();
     vertx = Vertx.vertx();
-    server = Stomp.createStompServer(vertx)
+    server = StompServer.create(vertx)
         .handler(StompServerHandler.create(vertx))
         .listen(lock.handler());
     lock.waitForSuccess();
@@ -61,7 +58,7 @@ public class ReceiptTest {
   public void testReceiptsOnSend() {
     List<Frame> frames = new CopyOnWriteArrayList<>();
     List<Frame> receipts = new CopyOnWriteArrayList<>();
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", frames::add, receipts::add);
     }));
@@ -70,7 +67,7 @@ public class ReceiptTest {
     assertThat(receipts).hasSize(1);
     assertThat(receipts.get(0).toString()).contains("SUBSCRIBE", "/queue");
 
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.send("/queue", Buffer.buffer("Hello"), receipts::add);
     }));
@@ -85,11 +82,11 @@ public class ReceiptTest {
     List<Frame> frames = new CopyOnWriteArrayList<>();
     List<Frame> receipts = new CopyOnWriteArrayList<>();
     AtomicReference<StompClientConnection> client = new AtomicReference<>();
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", frames::add, receipts::add);
     }));
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       client.set(connection);
       connection.subscribe("/queue", frames::add, receipts::add);
@@ -97,7 +94,7 @@ public class ReceiptTest {
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.send("/queue", Buffer.buffer("Hello"), receipts::add);
     }));
@@ -112,7 +109,7 @@ public class ReceiptTest {
   @Test
   public void testReceiptsWithAck() {
     List<Frame> receipts = new CopyOnWriteArrayList<>();
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", Headers.create(Frame.ACK, "client"),
           frame -> connection.ack(frame.getAck()),
@@ -121,7 +118,7 @@ public class ReceiptTest {
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.send("/queue", Buffer.buffer("Hello"), receipts::add);
     }));
@@ -132,7 +129,7 @@ public class ReceiptTest {
   @Test
   public void testReceiptsWithNack() {
     List<Frame> receipts = new CopyOnWriteArrayList<>();
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", Headers.create(Frame.ACK, "client"),
           frame -> connection.nack(frame.getAck()),
@@ -141,7 +138,7 @@ public class ReceiptTest {
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.send("/queue", Buffer.buffer("Hello"), receipts::add);
     }));
@@ -154,14 +151,14 @@ public class ReceiptTest {
     List<Frame> receipts = new CopyOnWriteArrayList<>();
     List<Frame> frames = new CopyOnWriteArrayList<>();
     List<Frame> errors = new CopyOnWriteArrayList<>();
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", frames::add, receipts::add);
     }));
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> receipts.size() == 1);
 
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(errors::add);
       connection.beginTX("my-tx", receipts::add);
@@ -184,14 +181,14 @@ public class ReceiptTest {
     List<Frame> errors = new CopyOnWriteArrayList<>();
     List<Frame> receipts = new CopyOnWriteArrayList<>();
 
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", frames::add, receipts::add);
     }));
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> receipts.size() == 1);
 
-    clients.add(Stomp.createStompClient(vertx).connect(ar -> {
+    clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(errors::add);
       connection.beginTX("my-tx", receipts::add);

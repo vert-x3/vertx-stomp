@@ -48,8 +48,7 @@ public class Topic implements Destination {
     for (Subscription subscription : subscriptions) {
       String messageId = UUID.randomUUID().toString();
       Frame message = transform(frame, subscription, messageId);
-      subscription.enqueue(message);
-      subscription.connection().write(message.toBuffer());
+      subscription.connection.write(message.toBuffer());
     }
     return this;
   }
@@ -57,9 +56,9 @@ public class Topic implements Destination {
   public static Frame transform(Frame frame, Subscription subscription, String messageId) {
     final Headers headers = Headers.create(frame.getHeaders())
         // Destination already set in the input headers.
-        .add(Frame.SUBSCRIPTION, subscription.id())
+        .add(Frame.SUBSCRIPTION, subscription.id)
         .add(Frame.MESSAGE_ID, messageId);
-    if (!subscription.ackMode().equals("auto")) {
+    if (!subscription.ackMode.equals("auto")) {
       // We reuse the message Id as ack Id
       headers.add(Frame.ACK, messageId);
     }
@@ -94,7 +93,7 @@ public class Topic implements Destination {
   public synchronized boolean unsubscribe(StompServerConnection connection, Frame frame) {
     boolean r = false;
     for (Subscription subscription : subscriptions) {
-      if (subscription.connection().equals(connection) && subscription.id().equals(frame.getId())) {
+      if (subscription.connection.equals(connection) && subscription.id.equals(frame.getId())) {
         r = subscriptions.remove(subscription);
         // Subscription id are unique for a connection.
         break;
@@ -116,7 +115,7 @@ public class Topic implements Destination {
   public synchronized Destination unsubscribeConnection(StompServerConnection connection) {
     new ArrayList<>(subscriptions)
         .stream()
-        .filter(subscription -> subscription.connection().equals(connection))
+        .filter(subscription -> subscription.connection.equals(connection))
         .forEach(subscriptions::remove);
 
     if (subscriptions.isEmpty()) {
@@ -134,12 +133,6 @@ public class Topic implements Destination {
    */
   @Override
   public synchronized boolean ack(StompServerConnection connection, Frame frame) {
-    String messageId = frame.getId();
-    for (Subscription subscription : subscriptions) {
-      if (subscription.connection().equals(connection) && subscription.contains(messageId)) {
-        return ! subscription.ack(messageId).isEmpty();
-      }
-    }
     return false;
   }
 
@@ -152,12 +145,6 @@ public class Topic implements Destination {
    */
   @Override
   public synchronized boolean nack(StompServerConnection connection, Frame frame) {
-    String messageId = frame.getId();
-    for (Subscription subscription : subscriptions) {
-      if (subscription.connection().equals(connection) && subscription.contains(messageId)) {
-        return ! subscription.nack(messageId).isEmpty();
-      }
-    }
     return false;
   }
 
@@ -170,8 +157,8 @@ public class Topic implements Destination {
   @Override
   public synchronized List<String> getSubscriptions(StompServerConnection connection) {
     return subscriptions.stream()
-        .filter(subscription -> subscription.connection().equals(connection))
-        .map(Subscription::id)
+        .filter(subscription -> subscription.connection.equals(connection))
+        .map(s -> s.id)
         .collect(Collectors.toList());
   }
 
@@ -183,6 +170,18 @@ public class Topic implements Destination {
   @Override
   public synchronized int numberOfSubscriptions() {
     return subscriptions.size();
+  }
+
+  private class Subscription {
+    private final StompServerConnection connection;
+    private final String id;
+    private final String ackMode;
+
+    private Subscription(StompServerConnection connection, Frame frame) {
+      this.connection = connection;
+      this.ackMode = frame.getAck();
+      this.id = frame.getId();
+    }
   }
 
 }

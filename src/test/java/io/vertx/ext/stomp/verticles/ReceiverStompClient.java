@@ -3,10 +3,9 @@ package io.vertx.ext.stomp.verticles;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.ext.stomp.Frame;
-import io.vertx.ext.stomp.Stomp;
+import io.vertx.ext.stomp.StompClient;
 import io.vertx.ext.stomp.StompClientConnection;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -21,7 +20,7 @@ public class ReceiverStompClient extends AbstractVerticle {
 
   @Override
   public void start(Future<Void> future) throws Exception {
-    Stomp.createStompClient(vertx).connect(ar -> {
+    StompClient.create(vertx).connect(ar -> {
       if (ar.failed()) {
         future.fail(ar.cause());
       }

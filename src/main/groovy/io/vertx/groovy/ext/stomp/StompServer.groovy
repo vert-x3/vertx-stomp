@@ -49,6 +49,16 @@ public class StompServer {
   /**
    * Creates a {@link io.vertx.groovy.ext.stomp.StompServer} based on the default Stomp Server implementation.
    * @param vertx the vert.x instance to use
+   * @param netServer the Net server used by the STOMP server
+   * @return the created {@link io.vertx.groovy.ext.stomp.StompServer}
+   */
+  public static StompServer create(Vertx vertx, NetServer netServer) {
+    def ret= InternalHelper.safeCreate(io.vertx.ext.stomp.StompServer.create((io.vertx.core.Vertx)vertx.getDelegate(), (io.vertx.core.net.NetServer)netServer.getDelegate()), io.vertx.groovy.ext.stomp.StompServer.class);
+    return ret;
+  }
+  /**
+   * Creates a {@link io.vertx.groovy.ext.stomp.StompServer} based on the default Stomp Server implementation.
+   * @param vertx the vert.x instance to use
    * @param net the Net server used by the STOMP server
    * @param options the server options (see <a href="../../../../../../../cheatsheet/StompServerOptions.html">StompServerOptions</a>)
    * @return the created {@link io.vertx.groovy.ext.stomp.StompServer}

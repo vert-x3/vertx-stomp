@@ -59,6 +59,17 @@ public class StompServer {
   /**
    * Creates a {@link io.vertx.rxjava.ext.stomp.StompServer} based on the default Stomp Server implementation.
    * @param vertx the vert.x instance to use
+   * @param netServer the Net server used by the STOMP server
+   * @return the created {@link io.vertx.rxjava.ext.stomp.StompServer}
+   */
+  public static StompServer create(Vertx vertx, NetServer netServer) { 
+    StompServer ret= StompServer.newInstance(io.vertx.ext.stomp.StompServer.create((io.vertx.core.Vertx) vertx.getDelegate(), (io.vertx.core.net.NetServer) netServer.getDelegate()));
+    return ret;
+  }
+
+  /**
+   * Creates a {@link io.vertx.rxjava.ext.stomp.StompServer} based on the default Stomp Server implementation.
+   * @param vertx the vert.x instance to use
    * @param net the Net server used by the STOMP server
    * @param options the server options
    * @return the created {@link io.vertx.rxjava.ext.stomp.StompServer}

@@ -12,6 +12,11 @@ import java.util.List;
  */
 public interface StompOptions {
 
+  /**
+   * UTF-8 encoding name.
+   */
+  String UTF_8 = "utf-8";
+
   int DEFAULT_STOMP_PORT = 61613;
   String DEFAULT_STOMP_HOST = "0.0.0.0";
   List<String> SUPPORTED_VERSIONS = Arrays.asList("1.2", "1.1", "1.0");

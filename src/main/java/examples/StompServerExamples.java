@@ -4,7 +4,10 @@ import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.NetServer;
 import io.vertx.ext.auth.AuthProvider;
-import io.vertx.ext.stomp.*;
+import io.vertx.ext.stomp.Destination;
+import io.vertx.ext.stomp.StompServer;
+import io.vertx.ext.stomp.StompServerHandler;
+import io.vertx.ext.stomp.StompServerOptions;
 
 /**
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
@@ -12,21 +15,20 @@ import io.vertx.ext.stomp.*;
 public class StompServerExamples {
 
   public void example1(Vertx vertx) {
-    StompServer server = Stomp.createStompServer(vertx)
+    StompServer server = StompServer.create(vertx)
         .handler(StompServerHandler.create(vertx))
         .listen();
   }
 
 
-
   public void example2(Vertx vertx) {
-    StompServer server = Stomp.createStompServer(vertx)
+    StompServer server = StompServer.create(vertx)
         .handler(StompServerHandler.create(vertx))
         .listen(1234, "0.0.0.0");
   }
 
   public void example3(Vertx vertx) {
-    StompServer server = Stomp.createStompServer(vertx)
+    StompServer server = StompServer.create(vertx)
         .handler(StompServerHandler.create(vertx))
         .listen(ar -> {
           if (ar.failed()) {
@@ -38,32 +40,32 @@ public class StompServerExamples {
   }
 
   public void example4(Vertx vertx) {
-    StompServer server = Stomp.createStompServer(vertx, new StompServerOptions().setPort(1234).setHost("0.0.0.0"))
+    StompServer server = StompServer.create(vertx, new StompServerOptions().setPort(1234).setHost("0.0.0.0"))
         .handler(StompServerHandler.create(vertx))
         .listen();
   }
 
   public void example5(Vertx vertx, NetServer netServer) {
-    StompServer server = Stomp.createStompServer(vertx, netServer)
+    StompServer server = StompServer.create(vertx, netServer)
         .handler(StompServerHandler.create(vertx))
         .listen();
   }
 
   public void example6(Vertx vertx) {
-    StompServer server = Stomp.createStompServer(vertx, new StompServerOptions().setHeartbeat(
+    StompServer server = StompServer.create(vertx, new StompServerOptions().setHeartbeat(
         new JsonObject().put("x", 1000).put("y", 1000)))
         .handler(StompServerHandler.create(vertx))
         .listen();
   }
 
   public void example7(Vertx vertx, AuthProvider provider) {
-    StompServer server = Stomp.createStompServer(vertx, new StompServerOptions().setSecured(true))
+    StompServer server = StompServer.create(vertx, new StompServerOptions().setSecured(true))
         .handler(StompServerHandler.create(vertx).authProvider(provider))
         .listen();
   }
 
   public void example8(Vertx vertx) {
-    StompServer server = Stomp.createStompServer(vertx)
+    StompServer server = StompServer.create(vertx)
         .handler(StompServerHandler.create(vertx)
             .onAckHandler(acknowledgement -> {
               // Action to execute when the frames (one in `client-individual` mode, several
@@ -77,7 +79,7 @@ public class StompServerExamples {
   }
 
   public void example9(Vertx vertx) {
-    StompServer server = Stomp.createStompServer(vertx)
+    StompServer server = StompServer.create(vertx)
         .handler(StompServerHandler.create(vertx)
                 .closeHandler(connection -> {
                   // client connection closed
@@ -104,7 +106,7 @@ public class StompServerExamples {
   }
 
   public void example11(Vertx vertx) {
-    StompServer server = Stomp.createStompServer(vertx)
+    StompServer server = StompServer.create(vertx)
         .handler(StompServerHandler.create(vertx)
             .destinationFactory((v, name) -> {
               if (name.startsWith("/queue")) {
@@ -117,7 +119,7 @@ public class StompServerExamples {
   }
 
   public void example12(Vertx vertx) {
-    StompServer server = Stomp.createStompServer(vertx)
+    StompServer server = StompServer.create(vertx)
         .handler(StompServerHandler.create(vertx)
             .destinationFactory((v, name) -> {
               if (name.startsWith("/forbidden")) {

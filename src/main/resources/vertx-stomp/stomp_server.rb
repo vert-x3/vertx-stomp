@@ -23,6 +23,9 @@ module VertxStomp
     # @overload create(vertx,options)
     #   @param [::Vertx::Vertx] vertx the vert.x instance to use
     #   @param [Hash] options the server options
+    # @overload create(vertx,netServer)
+    #   @param [::Vertx::Vertx] vertx the vert.x instance to use
+    #   @param [::Vertx::NetServer] netServer the Net server used by the STOMP server
     # @overload create(vertx,net,options)
     #   @param [::Vertx::Vertx] vertx the vert.x instance to use
     #   @param [::Vertx::NetServer] net the Net server used by the STOMP server
@@ -33,6 +36,8 @@ module VertxStomp
         return ::Vertx::Util::Utils.safe_create(Java::IoVertxExtStomp::StompServer.java_method(:create, [Java::IoVertxCore::Vertx.java_class]).call(param_1.j_del),::VertxStomp::StompServer)
       elsif param_1.class.method_defined?(:j_del) && param_2.class == Hash && !block_given? && param_3 == nil
         return ::Vertx::Util::Utils.safe_create(Java::IoVertxExtStomp::StompServer.java_method(:create, [Java::IoVertxCore::Vertx.java_class,Java::IoVertxExtStomp::StompServerOptions.java_class]).call(param_1.j_del,Java::IoVertxExtStomp::StompServerOptions.new(::Vertx::Util::Utils.to_json_object(param_2))),::VertxStomp::StompServer)
+      elsif param_1.class.method_defined?(:j_del) && param_2.class.method_defined?(:j_del) && !block_given? && param_3 == nil
+        return ::Vertx::Util::Utils.safe_create(Java::IoVertxExtStomp::StompServer.java_method(:create, [Java::IoVertxCore::Vertx.java_class,Java::IoVertxCoreNet::NetServer.java_class]).call(param_1.j_del,param_2.j_del),::VertxStomp::StompServer)
       elsif param_1.class.method_defined?(:j_del) && param_2.class.method_defined?(:j_del) && param_3.class == Hash && !block_given?
         return ::Vertx::Util::Utils.safe_create(Java::IoVertxExtStomp::StompServer.java_method(:create, [Java::IoVertxCore::Vertx.java_class,Java::IoVertxCoreNet::NetServer.java_class,Java::IoVertxExtStomp::StompServerOptions.java_class]).call(param_1.j_del,param_2.j_del,Java::IoVertxExtStomp::StompServerOptions.new(::Vertx::Util::Utils.to_json_object(param_3))),::VertxStomp::StompServer)
       end

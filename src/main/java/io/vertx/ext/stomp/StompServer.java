@@ -32,6 +32,17 @@ public interface StompServer {
    * Creates a {@link StompServer} based on the default Stomp Server implementation.
    *
    * @param vertx   the vert.x instance to use
+   * @param netServer     the Net server used by the STOMP server
+   * @return the created {@link StompServer}
+   */
+  static StompServer create(Vertx vertx, NetServer netServer) {
+    return new StompServerImpl(vertx, netServer, new StompServerOptions());
+  }
+
+  /**
+   * Creates a {@link StompServer} based on the default Stomp Server implementation.
+   *
+   * @param vertx   the vert.x instance to use
    * @param net     the Net server used by the STOMP server
    * @param options the server options
    * @return the created {@link StompServer}

@@ -7,25 +7,25 @@ import io.vertx.ext.stomp.StompServerConnection;
 import io.vertx.ext.stomp.utils.Headers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**
- * Implementation of {@link Destination} dispatching messages to a single subscriber. It dispatches
- * the messages using a round-robin strategy.
+ * An example of {@link Destination} implementation providing a 'queue'-semantic supporting ACK and NACK.
  *
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
-public class Queue implements Destination {
+public class QueueManagingAcknowledgments implements Destination {
 
   private final String destination;
-
-  private final List<Subscription> subscriptions = new ArrayList<>();
   private final Vertx vertx;
+  private final List<Subscription> subscriptions = new CopyOnWriteArrayList<>();
   private int lastUsedSubscriptions = -1;
 
-  public Queue(Vertx vertx, String destination) {
+  public QueueManagingAcknowledgments(Vertx vertx, String destination) {
     this.destination = destination;
     this.vertx = vertx;
   }
@@ -54,7 +54,8 @@ public class Queue implements Destination {
     Subscription subscription = getNextSubscription();
     String messageId = UUID.randomUUID().toString();
     Frame message = transform(frame, subscription, messageId);
-    subscription.connection.write(message.toBuffer());
+    subscription.enqueue(message);
+    subscription.connection().write(message.toBuffer());
     return this;
   }
 
@@ -69,9 +70,9 @@ public class Queue implements Destination {
   public static Frame transform(Frame frame, Subscription subscription, String messageId) {
     final Headers headers = Headers.create(frame.getHeaders())
         // Destination already set in the input headers.
-        .add(Frame.SUBSCRIPTION, subscription.id)
+        .add(Frame.SUBSCRIPTION, subscription.id())
         .add(Frame.MESSAGE_ID, messageId);
-    if (!subscription.ackMode.equals("auto")) {
+    if (!subscription.ackMode().equals("auto")) {
       // We reuse the message Id as ack Id
       headers.add(Frame.ACK, messageId);
     }
@@ -106,7 +107,7 @@ public class Queue implements Destination {
   public synchronized boolean unsubscribe(StompServerConnection connection, Frame frame) {
     boolean r = false;
     for (Subscription subscription : subscriptions) {
-      if (subscription.connection.equals(connection) && subscription.id.equals(frame.getId())) {
+      if (subscription.connection().equals(connection) && subscription.id().equals(frame.getId())) {
         r = subscriptions.remove(subscription);
         // Subscription id are unique for a connection.
         break;
@@ -128,7 +129,7 @@ public class Queue implements Destination {
   public synchronized Destination unsubscribeConnection(StompServerConnection connection) {
     new ArrayList<>(subscriptions)
         .stream()
-        .filter(subscription -> subscription.connection.equals(connection))
+        .filter(subscription -> subscription.connection().equals(connection))
         .forEach(subscriptions::remove);
 
     if (subscriptions.isEmpty()) {
@@ -146,6 +147,12 @@ public class Queue implements Destination {
    */
   @Override
   public synchronized boolean ack(StompServerConnection connection, Frame frame) {
+    String messageId = frame.getId();
+    for (Subscription subscription : subscriptions) {
+      if (subscription.connection().equals(connection) && subscription.contains(messageId)) {
+        return !subscription.ack(messageId).isEmpty();
+      }
+    }
     return false;
   }
 
@@ -158,6 +165,26 @@ public class Queue implements Destination {
    */
   @Override
   public synchronized boolean nack(StompServerConnection connection, Frame frame) {
+    String messageId = frame.getId();
+    for (Subscription subscription : subscriptions) {
+      if (subscription.connection().equals(connection) && subscription.contains(messageId)) {
+        final List<Frame> frames = subscription.nack(messageId);
+        // Try using the next subscriber.
+        if (!frames.isEmpty() && subscriptions.size() > 1) {
+          Subscription next = getNextSubscription();
+          if (next == subscription) {
+            // If the same subscriber is picked, try the next one.
+            next = getNextSubscription();
+          }
+          for (Frame f : frames) {
+            Frame message = transform(f, next, messageId);
+            next.enqueue(message);
+            next.connection().write(message.toBuffer());
+          }
+        }
+        return true;
+      }
+    }
     return false;
   }
 
@@ -170,8 +197,8 @@ public class Queue implements Destination {
   @Override
   public synchronized List<String> getSubscriptions(StompServerConnection connection) {
     return subscriptions.stream()
-        .filter(subscription -> subscription.connection.equals(connection))
-        .map(s -> s.id)
+        .filter(subscription -> subscription.connection().equals(connection))
+        .map(Subscription::id)
         .collect(Collectors.toList());
   }
 
@@ -185,16 +212,134 @@ public class Queue implements Destination {
     return subscriptions.size();
   }
 
-  private class Subscription {
-    private final StompServerConnection connection;
-    private final String id;
-    private final String ackMode;
+  public enum Ack {
 
-    private Subscription(StompServerConnection connection, Frame frame) {
-      this.connection = connection;
-      this.ackMode = frame.getAck();
-      this.id = frame.getId();
+    AUTO("auto"),
+
+    CLIENT("client"),
+
+    CLIENT_INDIVIDUAL("client-individual");
+
+    String ack;
+
+    Ack(String value) {
+      this.ack = value;
+    }
+
+    public static Ack fromString(String s) {
+      for (Ack ack : Ack.values()) {
+        if (ack.ack.equals(s)) {
+          return ack;
+        }
+      }
+
+      return null;
     }
   }
+
+
+  private class Subscription {
+    private final StompServerConnection connection;
+    private final Ack ack;
+    private final String id;
+    private final String destination;
+
+    private final List<Frame> queue = new ArrayList<>();
+
+    public Subscription(StompServerConnection connection, Frame frame) {
+      this.connection = connection;
+      this.ack = Ack.fromString(frame.getAck());
+      this.id = frame.getId();
+      this.destination = frame.getDestination();
+    }
+
+
+    public StompServerConnection connection() {
+      return connection;
+    }
+
+    public String ackMode() {
+      return ack.ack;
+    }
+
+    public String id() {
+      return id;
+    }
+
+    public String destination() {
+      return destination;
+    }
+
+    public List<Frame> ack(String messageId) {
+      if (ack == Ack.AUTO) {
+        return Collections.emptyList();
+      }
+
+      synchronized (this) {
+        // The research / deletion here is a bit tricky.
+        // In client mode we must collect all messages until the acknowledged messages, and when found, remove all
+        // these messages. However, if not found, the collection must not be modified.
+        List<Frame> collected = new ArrayList<>();
+        for (Frame frame : new ArrayList<>(queue)) {
+          if (messageId.equals(frame.getHeader(Frame.MESSAGE_ID))) {
+            collected.add(frame);
+            queue.removeAll(collected);
+            connection.handler().onAck(connection, frame, collected);
+            return collected;
+          } else {
+            if (ack == Ack.CLIENT) {
+              collected.add(frame);
+            }
+          }
+        }
+      }
+      return Collections.emptyList();
+    }
+
+    public List<Frame> nack(String messageId) {
+      if (ack == Ack.AUTO) {
+        return Collections.emptyList();
+      }
+
+      synchronized (this) {
+        // The research / deletion here is a bit tricky.
+        // In client mode we must collect all messages until the acknowledged messages, and when found, remove all
+        // these messages. However, if not found, the collection must not be modified.
+        List<Frame> collected = new ArrayList<>();
+        for (Frame frame : new ArrayList<>(queue)) {
+          if (messageId.equals(frame.getHeader(Frame.MESSAGE_ID))) {
+            collected.add(frame);
+            queue.removeAll(collected);
+            connection.handler().onNack(connection, frame, collected);
+            return collected;
+          } else {
+            if (ack == Ack.CLIENT) {
+              collected.add(frame);
+            }
+          }
+        }
+      }
+      return Collections.emptyList();
+    }
+
+    public void enqueue(Frame frame) {
+      if (ack == Ack.AUTO) {
+        return;
+      }
+      synchronized (this) {
+        queue.add(frame);
+      }
+    }
+
+    public synchronized boolean contains(String messageId) {
+      for (Frame frame : queue) {
+        if (messageId.equals(frame.getHeader(Frame.MESSAGE_ID))) {
+          return true;
+        }
+      }
+      return false;
+    }
+  }
+
 
 }

@@ -34,7 +34,7 @@ public class StompServerImplTest {
   @Test
   public void testStartStop(TestContext context) {
     final Async async = context.async();
-    Stomp.createStompServer(vertx)
+    StompServer.create(vertx)
         .handler(StompServerHandler.create(vertx))
         .listen(ar -> {
           ensureListening(context, ar);
@@ -49,7 +49,7 @@ public class StompServerImplTest {
   @Test
   public void testStartReceiveStop(TestContext context) {
     final Async async = context.async();
-    StompServer server = Stomp.createStompServer(vertx);
+    StompServer server = StompServer.create(vertx);
     server.handler(StompServerHandler.create(vertx)
             .connectHandler(
                 sf -> {
@@ -71,7 +71,7 @@ public class StompServerImplTest {
   @Test
   public void testWithStompServerHandler(TestContext context) {
     final Async async = context.async();
-    StompServer server = Stomp.createStompServer(vertx);
+    StompServer server = StompServer.create(vertx);
     server.handler(
         StompServerHandler.create(vertx).connectHandler(
             sf -> {

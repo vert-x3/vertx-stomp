@@ -2,7 +2,6 @@ package io.vertx.ext.stomp.integration;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.ext.stomp.Stomp;
 import io.vertx.ext.stomp.StompClient;
 import io.vertx.ext.stomp.StompClientOptions;
 
@@ -18,7 +17,7 @@ public class StompPublisher extends AbstractVerticle {
   @Override
   public void start() throws Exception {
     System.out.println("Starting publisher");
-    client = Stomp.createStompClient(vertx, new StompClientOptions(config()));
+    client = StompClient.create(vertx, new StompClientOptions(config()));
     client.connect(ar -> {
       if (ar.failed()) {
         System.err.println("Cannot connect to STOMP server");

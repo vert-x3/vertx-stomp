@@ -2,7 +2,7 @@ package io.vertx.ext.stomp.impl;
 
 import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.stomp.Frame;
-import io.vertx.ext.stomp.Stomp;
+import io.vertx.ext.stomp.StompOptions;
 import io.vertx.ext.stomp.StompServerOptions;
 import org.junit.Test;
 
@@ -78,7 +78,7 @@ public class FrameParserTest {
     Frame frame = parse(buffer);
 
     assertThat(frame.getCommand()).isEqualTo(Frame.Command.ERROR);
-    assertThat(frame.getBodyAsString(Stomp.UTF_8)).isEqualTo("Supported protocol versions are 1.2 2.1");
+    assertThat(frame.getBodyAsString(StompOptions.UTF_8)).isEqualTo("Supported protocol versions are 1.2 2.1");
     assertThat(frame.getHeader("version")).isEqualTo("1.2,2.1");
     assertThat(frame.getHeader("content-type")).isEqualTo("text/plain");
   }
@@ -125,7 +125,7 @@ public class FrameParserTest {
     Frame frame = parse(buffer);
     assertThat(frame.getCommand()).isEqualTo(Frame.Command.SEND);
     assertThat(frame.getHeader("header")).isEqualTo("hello");
-    assertThat(frame.getBodyAsString(Stomp.UTF_8)).isEqualTo("this is my content.");
+    assertThat(frame.getBodyAsString(StompOptions.UTF_8)).isEqualTo("this is my content.");
   }
 
   @Test
@@ -139,7 +139,7 @@ public class FrameParserTest {
     Frame frame = parse(buffer);
     assertThat(frame.getCommand()).isEqualTo(Frame.Command.SEND);
     assertThat(frame.getHeader("header")).isEqualTo("hello:-)");
-    assertThat(frame.getBodyAsString(Stomp.UTF_8)).isEqualTo("this is my content.");
+    assertThat(frame.getBodyAsString(StompOptions.UTF_8)).isEqualTo("this is my content.");
   }
 
   @Test
@@ -168,7 +168,7 @@ public class FrameParserTest {
     assertThat(frame.getCommand()).isEqualTo(Frame.Command.SEND);
     assertThat(frame.getHeader("header")).isEqualTo(" hello");
     assertThat(frame.getHeader("header2")).isEqualTo("hello ");
-    assertThat(frame.getBodyAsString(Stomp.UTF_8)).isEqualTo("this is my content.");
+    assertThat(frame.getBodyAsString(StompOptions.UTF_8)).isEqualTo("this is my content.");
   }
 
   @Test
@@ -182,7 +182,7 @@ public class FrameParserTest {
     Frame frame = parse(buffer);
     assertThat(frame.getCommand()).isEqualTo(Frame.Command.SEND);
     assertThat(frame.getHeader("head er")).isEqualTo(" hello");
-    assertThat(frame.getBodyAsString(Stomp.UTF_8)).isEqualTo("this is my content.");
+    assertThat(frame.getBodyAsString(StompOptions.UTF_8)).isEqualTo("this is my content.");
   }
 
   @Test
@@ -196,7 +196,7 @@ public class FrameParserTest {
     Frame frame = parse(buffer);
     assertThat(frame.getCommand()).isEqualTo(Frame.Command.SEND);
     assertThat(frame.getHeader("header")).isEqualTo("hello");
-    assertThat(frame.getBodyAsString(Stomp.UTF_8)).isEqualTo("this is my content.");
+    assertThat(frame.getBodyAsString(StompOptions.UTF_8)).isEqualTo("this is my content.");
   }
 
   @Test
@@ -212,7 +212,7 @@ public class FrameParserTest {
     Frame frame = parse(buffer);
     assertThat(frame.getCommand()).isEqualTo(Frame.Command.SEND);
     assertThat(frame.getHeader("header")).isEqualTo("hello");
-    assertThat(frame.getBodyAsString(Stomp.UTF_8)).isEqualTo("this is my \n content.");
+    assertThat(frame.getBodyAsString(StompOptions.UTF_8)).isEqualTo("this is my \n content.");
   }
 
   @Test(expected = NumberFormatException.class)
@@ -228,7 +228,7 @@ public class FrameParserTest {
     Frame frame = parse(buffer);
     assertThat(frame.getCommand()).isEqualTo(Frame.Command.SEND);
     assertThat(frame.getHeader("header")).isEqualTo("hello");
-    assertThat(frame.getBodyAsString(Stomp.UTF_8)).isEqualTo("this is my \n content.");
+    assertThat(frame.getBodyAsString(StompOptions.UTF_8)).isEqualTo("this is my \n content.");
   }
 
   @Test
@@ -244,7 +244,7 @@ public class FrameParserTest {
     Frame frame = parse(buffer);
     assertThat(frame.getCommand()).isEqualTo(Frame.Command.SEND);
     assertThat(frame.getHeader("header")).isEqualTo("hello");
-    assertThat(frame.getBodyAsString(Stomp.UTF_8)).isEqualTo("this is my \n conten");
+    assertThat(frame.getBodyAsString(StompOptions.UTF_8)).isEqualTo("this is my \n conten");
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -260,7 +260,7 @@ public class FrameParserTest {
     Frame frame = parse(buffer);
     assertThat(frame.getCommand()).isEqualTo(Frame.Command.SEND);
     assertThat(frame.getHeader("header")).isEqualTo("hello");
-    assertThat(frame.getBodyAsString(Stomp.UTF_8)).isEqualTo("this is my \n content.");
+    assertThat(frame.getBodyAsString(StompOptions.UTF_8)).isEqualTo("this is my \n content.");
   }
 
   @Test
@@ -276,7 +276,7 @@ public class FrameParserTest {
     Frame frame = parse(buffer);
     assertThat(frame.getCommand()).isEqualTo(Frame.Command.SEND);
     assertThat(frame.getHeader("header")).isEqualTo("hello");
-    assertThat(frame.getBodyAsString(Stomp.UTF_8)).isEqualTo("this is my \u0000 content.");
+    assertThat(frame.getBodyAsString(StompOptions.UTF_8)).isEqualTo("this is my \u0000 content.");
   }
 
   @Test

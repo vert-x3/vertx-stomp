@@ -135,7 +135,7 @@
  * and it not hierarchic. By default the STOMP server follow a _topic_ semantic (so messages are dispatched to all
  * subscribers).
  *
- * === Type of destination
+ * === Type of destinations
  *
  * By default, the STOMP server manages _destinations_ as topics. So messages are dispatched to all subscribers. You
  * can configure the server to use queues, or mix both types:
@@ -159,19 +159,27 @@
  *
  * Queues dispatches messages using a round-robin strategies.
  *
+ * === Providing your own type of destination
+ *
+ * On purpose the STOMP server does not implement any advanced feature. IF you need more advanced dispatching policy,
+ * you can implement your own type of destination by providing a {@link io.vertx.ext.stomp.DestinationFactory}
+ * returning your own {@link io.vertx.ext.stomp.Destination} object.
+ *
  * === Acknowledgment
  *
- * Messages requiring acknowledgment are placed in a queue. By default, the STOMP server does
- * nothing (except writing a log message) when a message is not acknowledged. You can customize this using a specific
- * handler:
+ * By default, the STOMP server does nothing when a message is not acknowledged. You can customize this by
+ * providing your own {@link io.vertx.ext.stomp.Destination} implementation.
+ *
+ * The custom destination should call the
+ * {@link io.vertx.ext.stomp.StompServerHandler#onAck(io.vertx.ext.stomp.StompServerConnection, io.vertx.ext.stomp.Frame, java.util.List)
+ * and
+ * {@link io.vertx.ext.stomp.StompServerHandler#onNack(io.vertx.ext.stomp.StompServerConnection, io.vertx.ext.stomp.Frame, java.util.List)}
+ * method in order to let the {@link io.vertx.ext.stomp.StompServerHandler} customizes the behavior:
  *
  * [source,$lang]
  * ----
  * {@link examples.StompServerExamples#example8}
  * ----
- *
- * In addition to the behavior described previously, queues handle non-acknowledgements by trying to dispatch the
- * not-acknowledged messages to another subscriber. If there are no available subscriber, the message is dropped.
  *
  * === Customizing the STOMP server
  *

@@ -17,7 +17,7 @@ module VertxStomp
     end
     #  Creates a destination for the given <em>address</em>.
     # @param [::Vertx::Vertx] vertx the vert.x instance used by the STOMP server.
-    # @param [String] name the name
+    # @param [String] name the destination name.
     # @return [::VertxStomp::Destination] the destination, <code>null</code> to reject the creation.
     def create(vertx=nil,name=nil)
       if vertx.class.method_defined?(:j_del) && name.class == String && !block_given?

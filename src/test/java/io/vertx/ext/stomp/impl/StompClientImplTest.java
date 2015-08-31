@@ -33,7 +33,7 @@ public class StompClientImplTest {
   @Before
   public void setUp(TestContext context) {
     vertx = Vertx.vertx();
-    server = Stomp.createStompServer(vertx)
+    server = StompServer.create(vertx)
         .handler(StompServerHandler.create(vertx))
         .listen(context.asyncAssertSuccess());
   }
@@ -47,7 +47,7 @@ public class StompClientImplTest {
   @Test
   public void testConnection(TestContext context) {
     Async async = context.async();
-    StompClient client = Stomp.createStompClient(vertx);
+    StompClient client = StompClient.create(vertx);
     client.connect(ar -> {
       if (ar.failed()) {
         context.fail("Connection failed");
@@ -64,7 +64,7 @@ public class StompClientImplTest {
   @Test
   public void testConnectionWithStompFrame(TestContext context) {
     Async async = context.async();
-    StompClient client = Stomp.createStompClient(vertx, new StompClientOptions().setUseStompFrame(true));
+    StompClient client = StompClient.create(vertx, new StompClientOptions().setUseStompFrame(true));
     client.connect(ar -> {
       if (ar.failed()) {
         context.fail("Connection failed");
@@ -81,7 +81,7 @@ public class StompClientImplTest {
   @Test(timeout = 5000)
   public void testSendingMessages(TestContext context) {
     Async async = context.async();
-    StompClient client = Stomp.createStompClient(vertx);
+    StompClient client = StompClient.create(vertx);
     client.connect(ar -> {
       if (ar.failed()) {
         context.fail("Connection failed");
@@ -97,7 +97,7 @@ public class StompClientImplTest {
   @Test
   public void testConnectionAndDisconnect(TestContext context) {
     Async async = context.async();
-    StompClient client = Stomp.createStompClient(vertx, new StompClientOptions().setUseStompFrame(true));
+    StompClient client = StompClient.create(vertx, new StompClientOptions().setUseStompFrame(true));
     client.connect(ar -> {
       if (ar.failed()) {
         context.fail("Connection failed");
@@ -110,7 +110,7 @@ public class StompClientImplTest {
   @Test
   public void testConnectionAndDisconnectWithCustomFrame(TestContext context) {
     Async async = context.async();
-    StompClient client = Stomp.createStompClient(vertx, new StompClientOptions().setUseStompFrame(true));
+    StompClient client = StompClient.create(vertx, new StompClientOptions().setUseStompFrame(true));
     client.connect(ar -> {
       if (ar.failed()) {
         context.fail("Connection failed");
@@ -137,7 +137,7 @@ public class StompClientImplTest {
         .listen(lock.handler());
     lock.waitForSuccess();
 
-    StompClient client = Stomp.createStompClient(vertx, new StompClientOptions().setHeartbeat(new JsonObject().put
+    StompClient client = StompClient.create(vertx, new StompClientOptions().setHeartbeat(new JsonObject().put
         ("x", 100).put("y", 100)));
     client.connect(ar -> reference.set(ar.result()));
 
@@ -160,7 +160,7 @@ public class StompClientImplTest {
         .listen(lock.handler());
     lock.waitForSuccess();
 
-    StompClient client = Stomp.createStompClient(vertx, new StompClientOptions().setHeartbeat(new JsonObject()
+    StompClient client = StompClient.create(vertx, new StompClientOptions().setHeartbeat(new JsonObject()
         .put("x", 100).put("y", 100)));
     client.connect(ar -> reference.set(ar.result()));
 
@@ -179,7 +179,7 @@ public class StompClientImplTest {
         .listen(lock.handler());
     lock.waitForSuccess();
 
-    StompClient client = Stomp.createStompClient(vertx, new StompClientOptions().setHeartbeat(new JsonObject()
+    StompClient client = StompClient.create(vertx, new StompClientOptions().setHeartbeat(new JsonObject()
         .put("x", 100).put("y", 100)));
     client.connect(ar -> {
       reference.set(ar.result());
