@@ -15,33 +15,33 @@ import java.util.List;
 @DataObject(generateConverter = true)
 public class StompServerOptions extends NetServerOptions implements StompOptions {
 
-  public static final int MAX_HEADER_LENGTH = 1024 * 10;
-  public static final int MAX_HEADERS = 1000;
+  public static final int DEFAULT_MAX_HEADER_LENGTH = 1024 * 10;
+  public static final int DEFAULT_MAX_HEADERS = 1000;
 
-  public static final int MAX_BODY_LENGTH = 1024 * 1024 * 100;
+  public static final int DEFAULT_MAX_BODY_LENGTH = 1024 * 1024 * 100;
 
-  public static final int MAX_FRAME_IN_TRANSACTION = 1000;
-  public static final int TRANSACTION_CHUNK_SIZE = 1000;
-  public static final int MAX_SUBSCRIPTIONS_BY_CLIENT = 1000;
+  public static final int DEFAULT_MAX_FRAME_IN_TRANSACTION = 1000;
+  public static final int DEFAULT_TRANSACTION_CHUNK_SIZE = 1000;
+  public static final int DEFAULT_MAX_SUBSCRIPTIONS_BY_CLIENT = 1000;
 
 
-  private int maxHeaderLength = MAX_HEADER_LENGTH;
-  private int maxHeaders = MAX_HEADERS;
-  private int maxBodyLength = MAX_BODY_LENGTH;
+  private int maxHeaderLength = DEFAULT_MAX_HEADER_LENGTH;
+  private int maxHeaders = DEFAULT_MAX_HEADERS;
+  private int maxBodyLength = DEFAULT_MAX_BODY_LENGTH;
 
-  private int maxFrameInTransaction = MAX_FRAME_IN_TRANSACTION;
+  private int maxFrameInTransaction = DEFAULT_MAX_FRAME_IN_TRANSACTION;
 
   /**
    * The set of version of the STOMP specification supported by the server. Must be decreasing.
    */
-  private List<String> supportedVersions = new ArrayList<>(SUPPORTED_VERSIONS);
+  private List<String> supportedVersions = new ArrayList<>(DEFAULT_SUPPORTED_VERSIONS);
   private boolean secured = false;
   private boolean sendErrorOnNoSubscriptions = false;
   private long ackTimeout = 10000;
   private int timeFactor = 1;
   private JsonObject heartbeat = DEFAULT_STOMP_HEARTBEAT;
-  private int transactionChunkSize = TRANSACTION_CHUNK_SIZE;
-  private int maxSubscriptionsByClient = MAX_SUBSCRIPTIONS_BY_CLIENT;
+  private int transactionChunkSize = DEFAULT_TRANSACTION_CHUNK_SIZE;
+  private int maxSubscriptionsByClient = DEFAULT_MAX_SUBSCRIPTIONS_BY_CLIENT;
 
   /**
    * Default constructor.

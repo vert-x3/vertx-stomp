@@ -32,7 +32,7 @@ public class StompClientOptions extends NetClientOptions implements StompOptions
    */
   public StompClientOptions() {
     super();
-    acceptedVersions = new ArrayList<>(SUPPORTED_VERSIONS);
+    acceptedVersions = new ArrayList<>(DEFAULT_SUPPORTED_VERSIONS);
     Collections.reverse(acceptedVersions);
   }
 
