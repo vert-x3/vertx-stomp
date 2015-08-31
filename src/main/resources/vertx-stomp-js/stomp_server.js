@@ -136,16 +136,18 @@ var StompServer = function(j_val) {
   };
 
   /**
-   Gets the port on which the server is listening. 0 is not listening.
+   Gets the port on which the server is listening.
+   <p/>
+   This is useful if you bound the server specifying 0 as port number signifying an ephemeral port.
 
    @public
 
    @return {number} the port
    */
-  this.getPort = function() {
+  this.actualPort = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      return j_stompServer["getPort()"]();
+      return j_stompServer["actualPort()"]();
     } else utils.invalidArgs();
   };
 

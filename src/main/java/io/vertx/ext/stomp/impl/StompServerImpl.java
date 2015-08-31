@@ -128,7 +128,7 @@ public class StompServerImpl implements StompServer {
   }
 
   @Override
-  public int getPort() {
+  public int actualPort() {
     return server.actualPort();
   }
 

@@ -100,13 +100,15 @@ module VertxStomp
       end
       raise ArgumentError, "Invalid arguments when calling listening?()"
     end
-    #  Gets the port on which the server is listening. 0 is not listening.
+    #  Gets the port on which the server is listening.
+    #  <p/>
+    #  This is useful if you bound the server specifying 0 as port number signifying an ephemeral port.
     # @return [Fixnum] the port
-    def get_port
+    def actual_port
       if !block_given?
-        return @j_del.java_method(:getPort, []).call()
+        return @j_del.java_method(:actualPort, []).call()
       end
-      raise ArgumentError, "Invalid arguments when calling get_port()"
+      raise ArgumentError, "Invalid arguments when calling actual_port()"
     end
     #  @return the server options
     # @return [Hash]

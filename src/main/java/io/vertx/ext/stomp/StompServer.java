@@ -151,11 +151,14 @@ public interface StompServer {
   boolean isListening();
 
   /**
-   * Gets the port on which the server is listening. 0 is not listening.
+   * Gets the port on which the server is listening.
+   * <p/>
+   * This is useful if you bound the server specifying 0 as port number signifying an ephemeral port.
    *
    * @return the port
+   * @see NetServer#actualPort()
    */
-  int getPort();
+  int actualPort();
 
   /**
    * @return the server options

@@ -57,7 +57,7 @@ public class SecuredServerConnectionTest {
   @Test
   public void testAuthenticatedConnection(TestContext context) {
     Async async = context.async();
-    vertx.createNetClient().connect(server.getPort(), "0.0.0.0", result -> {
+    vertx.createNetClient().connect(server.actualPort(), "0.0.0.0", result -> {
       if (result.failed()) {
         context.fail("Connection failed");
         return;
@@ -75,7 +75,7 @@ public class SecuredServerConnectionTest {
   @Test
   public void testFailedAuthentication(TestContext context) {
     Async async = context.async();
-    vertx.createNetClient().connect(server.getPort(), "0.0.0.0", result -> {
+    vertx.createNetClient().connect(server.actualPort(), "0.0.0.0", result -> {
       if (result.failed()) {
         context.fail("Connection failed");
         return;
@@ -93,7 +93,7 @@ public class SecuredServerConnectionTest {
   @Test(timeout = 5000)
   public void testFailedAuthenticationBecauseOfMissingHeaders(TestContext context) {
     Async async = context.async();
-    vertx.createNetClient().connect(server.getPort(), "0.0.0.0", result -> {
+    vertx.createNetClient().connect(server.actualPort(), "0.0.0.0", result -> {
       if (result.failed()) {
         context.fail("Connection failed");
         return;
@@ -111,7 +111,7 @@ public class SecuredServerConnectionTest {
   @Test
   public void testAuthenticatedConnectionWithStompFrame(TestContext context) {
     Async async = context.async();
-    vertx.createNetClient().connect(server.getPort(), "0.0.0.0", result -> {
+    vertx.createNetClient().connect(server.actualPort(), "0.0.0.0", result -> {
       if (result.failed()) {
         context.fail("Connection failed");
         return;
