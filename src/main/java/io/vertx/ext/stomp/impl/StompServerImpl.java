@@ -72,7 +72,7 @@ public class StompServerImpl implements StompServer {
   }
 
   @Override
-  public synchronized StompServer listen(int port, String host, Handler<AsyncResult<StompServer>> handler) {
+  public StompServer listen(int port, String host, Handler<AsyncResult<StompServer>> handler) {
     StompServerHandler stomp;
     synchronized (this) {
       stomp = this.handler;
