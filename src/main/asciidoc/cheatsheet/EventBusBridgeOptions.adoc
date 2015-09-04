@@ -1,0 +1,27 @@
+== EventBusBridgeOptions
+
+++++
+ Specify the event bus bridge options.
+++++
+'''
+
+[cols=">25%,^25%,50%"]
+[frame="topbot"]
+|===
+^|Name | Type ^| Description
+
+|[[inbound]]`inbound`
+|`Array of link:PermittedOptions.html[PermittedOptions]`
+|-
+|[[inbounds]]`inbounds`
+|`Array of link:PermittedOptions.html[PermittedOptions]`
+|-
+|[[outbound]]`outbound`
+|`Array of link:PermittedOptions.html[PermittedOptions]`
+|-
+|[[outbounds]]`outbounds`
+|`Array of link:PermittedOptions.html[PermittedOptions]`
+|-
+|[[pointToPoint]]`pointToPoint`
+|`Boolean`
+|-|===

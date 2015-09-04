@@ -24,7 +24,8 @@
  *
  * Vertx-Stomp is an implementation of a STOMP server and client. You can use the STOMP server with other clients and
  * use the STOMP client with other servers. The server and the client supports the version 1.0, 1.1 and 1.2 of the
- * STOMP protocol (see https://stomp.github.io/stomp-specification-1.2.html).
+ * STOMP protocol (see https://stomp.github.io/stomp-specification-1.2.html). The STOMP server can also be used as a
+ * bridge with the vert.x event bus.
  *
  * == Using vertx-stomp
  *
@@ -349,6 +350,28 @@
  * [source,$lang]
  * ----
  * {@link examples.StompClientExamples#example13(io.vertx.core.Vertx)}
+ * ----
+ *
+ * == Using the STOMP server as a bridge to the vert.x Event Bus
+ *
+ * The STOMP server can be used as a bridge to the vert.x Event Bus. The bridge is bi-directional meaning the STOMP
+ * frames are translated to Event Bus messages and Event Bus messages are translated to STOMP frames.
+ *
+ * To enable the bridge you need to configure the inbount and outbound addresses. Inbound addresses are STOMP
+ * destination that are transfered to the event bus. The STOMP destination is used as the event bus adress. Outbound
+ * addresses are event bus addresses that are tranfered to STOMP.
+ *
+ * [source,$lang]
+ * ----
+ * {@link examples.StompServerExamples#example13(io.vertx.core.Vertx)}
+ * ----
+ *
+ * By default, the bridge use a publish/subscribe delivery (topic). You can configure it to use a point to point
+ * delivery where only one STOMP client or Event Bus consumer is invoked:
+ *
+ * [source,$lang]
+ * ----
+ * {@link examples.StompServerExamples#example14(io.vertx.core.Vertx)}
  * ----
  *
  */

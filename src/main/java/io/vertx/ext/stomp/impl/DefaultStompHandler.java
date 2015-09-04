@@ -79,9 +79,10 @@ public class DefaultStompHandler implements StompServerHandler {
   private Handler<Acknowledgement> onNackHandler = (acknowledgement) ->
       log.warn("Messages not acknowledge - " + acknowledgement.frames());
 
-  private final LocalMap<String, Destination> destinations;
+  private final LocalMap<Destination, String> destinations;
 
   private DestinationFactory factory = Destination::topic;
+  private Destination bridge;
 
   public DefaultStompHandler(Vertx vertx) {
     this.vertx = vertx;
@@ -390,7 +391,7 @@ public class DefaultStompHandler implements StompServerHandler {
 
   @Override
   public List<Destination> getDestinations() {
-    return new ArrayList<>(destinations.values());
+    return new ArrayList<>(destinations.keySet());
   }
 
   /**
@@ -400,7 +401,12 @@ public class DefaultStompHandler implements StompServerHandler {
    * @return the {@link Destination}, {@code null} if not found.
    */
   public Destination getDestination(String destination) {
-    return destinations.get(destination);
+    for (Destination d : destinations.keySet()) {
+      if (d.matches(destination)) {
+        return d;
+      }
+    }
+    return null;
   }
 
   public Destination getOrCreateDestination(String destination) {
@@ -409,11 +415,12 @@ public class DefaultStompHandler implements StompServerHandler {
       factory = this.factory;
     }
     synchronized (vertx) {
-      Destination d = destinations.get(destination);
+      Destination d = getDestination(destination);
       if (d == null) {
         d = factory.create(vertx, destination);
         if (d != null) {
-          destinations.put(destination, d);
+          // We use the local map as a set, the value is irrelevant.
+          destinations.put(d, "");
         }
       }
       return d;
@@ -423,6 +430,19 @@ public class DefaultStompHandler implements StompServerHandler {
   @Override
   public synchronized StompServerHandler destinationFactory(DestinationFactory factory) {
     this.factory = factory;
+    return this;
+  }
+
+  /**
+   * Configures the STOMP server to act as a bridge with the Vert.x event bus.
+   *
+   * @param options the configuration options
+   * @return the current {@link StompServerHandler}.
+   * @see Vertx#eventBus()
+   */
+  @Override
+  public synchronized StompServerHandler bridge(EventBusBridgeOptions options) {
+    destinations.put(Destination.bridge(vertx, options), "");
     return this;
   }
 

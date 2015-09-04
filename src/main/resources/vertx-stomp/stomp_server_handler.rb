@@ -295,5 +295,15 @@ module VertxStomp
       end
       raise ArgumentError, "Invalid arguments when calling destination_factory(factory)"
     end
+    #  Configures the STOMP server to act as a bridge with the Vert.x event bus.
+    # @param [Hash] options the configuration options
+    # @return [self]
+    def bridge(options=nil)
+      if options.class == Hash && !block_given?
+        @j_del.java_method(:bridge, [Java::IoVertxExtStomp::EventBusBridgeOptions.java_class]).call(Java::IoVertxExtStomp::EventBusBridgeOptions.new(::Vertx::Util::Utils.to_json_object(options)))
+        return self
+      end
+      raise ArgumentError, "Invalid arguments when calling bridge(options)"
+    end
   end
 end

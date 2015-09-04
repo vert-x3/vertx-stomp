@@ -28,7 +28,7 @@ import java.util.List;
 public class Helper {
   public static boolean hasDestination(List<Destination> destinations, String dest) {
     for (Destination d : destinations) {
-      if (d.destination().equals(dest)) {
+      if (d.matches(dest)) {
         return true;
       }
     }

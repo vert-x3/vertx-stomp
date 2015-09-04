@@ -129,7 +129,7 @@ public class Queue implements Destination {
       }
     }
     if (subscriptions.isEmpty()) {
-      vertx.sharedData().getLocalMap("stomp.destinations").remove(destination);
+      vertx.sharedData().getLocalMap("stomp.destinations").remove(this);
     }
     return r;
   }
@@ -148,7 +148,7 @@ public class Queue implements Destination {
         .forEach(subscriptions::remove);
 
     if (subscriptions.isEmpty()) {
-      vertx.sharedData().getLocalMap("stomp.destinations").remove(destination);
+      vertx.sharedData().getLocalMap("stomp.destinations").remove(this);
     }
     return this;
   }
@@ -199,6 +199,17 @@ public class Queue implements Destination {
   @Override
   public synchronized int numberOfSubscriptions() {
     return subscriptions.size();
+  }
+
+  /**
+   * Checks whether or not the given address matches with the current destination.
+   *
+   * @param address the address
+   * @return {@code true} if it matches, {@code false} otherwise.
+   */
+  @Override
+  public boolean matches(String address) {
+    return this.destination.equals(address);
   }
 
   private class Subscription {

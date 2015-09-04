@@ -466,9 +466,9 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
         handleReceipt(frame);
         break;
       case MESSAGE:
-        String destination = frame.getHeader(Frame.DESTINATION);
+        String id = frame.getHeader(Frame.SUBSCRIPTION);
         subscriptions.stream()
-            .filter(s -> s.destination.equals(destination)).forEach(s -> s.handler.handle(frame));
+            .filter(s -> s.id.equals(id)).forEach(s -> s.handler.handle(frame));
         break;
       case ERROR:
         if (errorHandler != null) {

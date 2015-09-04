@@ -25,6 +25,7 @@ import java.util.List;
 import io.vertx.ext.stomp.Frame;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
+import io.vertx.ext.stomp.EventBusBridgeOptions;
 
 /**
  * STOMP server handler implements the behavior of the STOMP server when a specific event occurs. For instance, if
@@ -389,6 +390,16 @@ public class StompServerHandler implements Handler<ServerFrame> {
    */
   public StompServerHandler destinationFactory(DestinationFactory factory) { 
     this.delegate.destinationFactory((io.vertx.ext.stomp.DestinationFactory) factory.getDelegate());
+    return this;
+  }
+
+  /**
+   * Configures the STOMP server to act as a bridge with the Vert.x event bus.
+   * @param options the configuration options
+   * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}.
+   */
+  public StompServerHandler bridge(EventBusBridgeOptions options) { 
+    this.delegate.bridge(options);
     return this;
   }
 

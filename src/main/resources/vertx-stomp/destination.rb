@@ -37,6 +37,15 @@ module VertxStomp
       end
       raise ArgumentError, "Invalid arguments when calling queue(vertx,destination)"
     end
+    # @param [::Vertx::Vertx] vertx 
+    # @param [Hash] options 
+    # @return [::VertxStomp::Destination]
+    def self.bridge(vertx=nil,options=nil)
+      if vertx.class.method_defined?(:j_del) && options.class == Hash && !block_given?
+        return ::Vertx::Util::Utils.safe_create(Java::IoVertxExtStomp::Destination.java_method(:bridge, [Java::IoVertxCore::Vertx.java_class,Java::IoVertxExtStomp::EventBusBridgeOptions.java_class]).call(vertx.j_del,Java::IoVertxExtStomp::EventBusBridgeOptions.new(::Vertx::Util::Utils.to_json_object(options))),::VertxStomp::Destination)
+      end
+      raise ArgumentError, "Invalid arguments when calling bridge(vertx,options)"
+    end
     #  @return the destination address.
     # @return [String]
     def destination
@@ -123,6 +132,15 @@ module VertxStomp
         return @j_del.java_method(:numberOfSubscriptions, []).call()
       end
       raise ArgumentError, "Invalid arguments when calling number_of_subscriptions()"
+    end
+    #  Checks whether or not the given address matches with the current destination.
+    # @param [String] address the address
+    # @return [true,false] <code>true</code> if it matches, <code>false</code> otherwise.
+    def matches?(address=nil)
+      if address.class == String && !block_given?
+        return @j_del.java_method(:matches, [Java::java.lang.String.java_class]).call(address)
+      end
+      raise ArgumentError, "Invalid arguments when calling matches?(address)"
     end
   end
 end

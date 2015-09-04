@@ -228,6 +228,17 @@ public class QueueManagingAcknowledgments implements Destination {
     return subscriptions.size();
   }
 
+  /**
+   * Checks whether or not the given address matches with the current destination.
+   *
+   * @param address the address
+   * @return {@code true} if it matches, {@code false} otherwise.
+   */
+  @Override
+  public boolean matches(String address) {
+    return this.destination.equals(address);
+  }
+
   public enum Ack {
 
     AUTO("auto"),

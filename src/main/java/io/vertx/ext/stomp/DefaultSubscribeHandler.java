@@ -73,7 +73,14 @@ public class DefaultSubscribeHandler implements Handler<ServerFrame> {
 
     final Destination dest = connection.handler().getOrCreateDestination(destination);
     if (dest != null) {
-      dest.subscribe(connection, frame);
+      if (dest.subscribe(connection, frame) == null) {
+        // Access denied
+        connection.write(Frames.createErrorFrame(
+            "Access denied",
+            Headers.create(frame.getHeaders()), "The destination has been rejected by the server"));
+        connection.close();
+        return;
+      }
     } else {
       connection.write(Frames.createErrorFrame(
           "Invalid subscription",
