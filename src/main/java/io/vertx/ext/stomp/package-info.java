@@ -375,9 +375,10 @@
  * ----
  *
  */
-@GenModule(name = "vertx-stomp")
+@ModuleGen(name = "vertx-stomp", groupPackage = "io.vertx")
 @Document(fileName = "index.adoc")
 package io.vertx.ext.stomp;
 
 import io.vertx.codegen.annotations.GenModule;
+import io.vertx.codegen.annotations.ModuleGen;
 import io.vertx.docgen.Document;
