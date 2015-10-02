@@ -20,11 +20,11 @@ import io.vertx.lang.groovy.InternalHelper
 import io.vertx.core.json.JsonObject
 import io.vertx.groovy.core.Vertx
 import io.vertx.groovy.ext.auth.AuthProvider
+import io.vertx.ext.stomp.BridgeOptions
 import java.util.List
 import io.vertx.ext.stomp.Frame
 import io.vertx.core.AsyncResult
 import io.vertx.core.Handler
-import io.vertx.ext.stomp.EventBusBridgeOptions
 /**
  * STOMP server handler implements the behavior of the STOMP server when a specific event occurs. For instance, if
  * let customize the behavior when specific STOMP frames arrives or when a connection is closed. This class has been
@@ -346,11 +346,11 @@ public class StompServerHandler implements Handler<ServerFrame> {
   }
   /**
    * Configures the STOMP server to act as a bridge with the Vert.x event bus.
-   * @param options the configuration options (see <a href="../../../../../../../cheatsheet/EventBusBridgeOptions.html">EventBusBridgeOptions</a>)
+   * @param options the configuration options (see <a href="../../../../../../../cheatsheet/BridgeOptions.html">BridgeOptions</a>)
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServerHandler}.
    */
   public StompServerHandler bridge(Map<String, Object> options = [:]) {
-    this.delegate.bridge(options != null ? new io.vertx.ext.stomp.EventBusBridgeOptions(new io.vertx.core.json.JsonObject(options)) : null);
+    this.delegate.bridge(options != null ? new io.vertx.ext.stomp.BridgeOptions(new io.vertx.core.json.JsonObject(options)) : null);
     return this;
   }
 }

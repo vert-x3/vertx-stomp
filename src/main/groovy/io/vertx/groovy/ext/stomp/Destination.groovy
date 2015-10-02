@@ -18,11 +18,11 @@ package io.vertx.groovy.ext.stomp;
 import groovy.transform.CompileStatic
 import io.vertx.lang.groovy.InternalHelper
 import io.vertx.core.json.JsonObject
+import io.vertx.ext.stomp.BridgeOptions
 import java.util.List
 import io.vertx.ext.stomp.Frame
 import io.vertx.groovy.core.Vertx
 import io.vertx.core.shareddata.Shareable
-import io.vertx.ext.stomp.EventBusBridgeOptions
 /**
  * Represents a STOMP destination.
  * Depending on the implementation, the message delivery is different. Queue are sending message to only one
@@ -48,7 +48,7 @@ public class Destination {
     return ret;
   }
   public static Destination bridge(Vertx vertx, Map<String, Object> options) {
-    def ret= InternalHelper.safeCreate(io.vertx.ext.stomp.Destination.bridge((io.vertx.core.Vertx)vertx.getDelegate(), options != null ? new io.vertx.ext.stomp.EventBusBridgeOptions(new io.vertx.core.json.JsonObject(options)) : null), io.vertx.groovy.ext.stomp.Destination.class);
+    def ret= InternalHelper.safeCreate(io.vertx.ext.stomp.Destination.bridge((io.vertx.core.Vertx)vertx.getDelegate(), options != null ? new io.vertx.ext.stomp.BridgeOptions(new io.vertx.core.json.JsonObject(options)) : null), io.vertx.groovy.ext.stomp.Destination.class);
     return ret;
   }
   /**

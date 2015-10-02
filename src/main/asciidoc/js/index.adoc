@@ -80,7 +80,7 @@ var server = StompServer.create(vertx).handler(StompServerHandler.create(vertx))
 
 The handler receive a reference on the `link:jsdoc/stomp_server-StompServer.html[StompServer]`.
 
-You can also configure the host and port in `link:../cheatsheet/StompServerOptions.html[StompServerOptions]`:
+You can also configure the host and port in `link:../dataobjects.html#StompServerOptions[StompServerOptions]`:
 
 [source,js]
 ----
@@ -111,11 +111,11 @@ server.close(function (ar, ar_err) {
 
 === Configuration
 
-The `link:../cheatsheet/StompServerOptions.html[StompServerOptions]` let you configure some aspects of the STOMP server.
+The `link:../dataobjects.html#StompServerOptions[StompServerOptions]` let you configure some aspects of the STOMP server.
 
 First, the STOMP server is based on a
 `link:../../vertx-core/js/jsdoc/net_server-NetServer.html[NetServer]`, so you can configure the underlying `link:../../vertx-core/js/jsdoc/net_server-NetServer.html[NetServer]` from
-the `link:../cheatsheet/StompServerOptions.html[StompServerOptions]`. Alternatively you can also pass the
+the `link:../dataobjects.html#StompServerOptions[StompServerOptions]`. Alternatively you can also pass the
 `link:../../vertx-core/js/jsdoc/net_server-NetServer.html[NetServer]` you want to use:
 
 [source,js]
@@ -126,7 +126,7 @@ var server = StompServer.create(vertx, netServer).handler(StompServerHandler.cre
 
 ----
 
-The `link:../cheatsheet/StompServerOptions.html[StompServerOptions]` let you configure:
+The `link:../dataobjects.html#StompServerOptions[StompServerOptions]` let you configure:
 
 * the host and port of the STOMP server - defaults to `0.0.0.0:61613`.
 * whether or not the STOMP server is secured - defaults to `false`
@@ -137,7 +137,7 @@ The `link:../cheatsheet/StompServerOptions.html[StompServerOptions]` let you con
 * the supported STOMP protocol versions (1.0, 1.1 and 1.2 by default)
 * the maximum number of frame allowed in a transaction (defaults to 1000)
 * the size of the transaction chunk - defaults to 1000 (see
-`link:../cheatsheet/StompServerOptions.html#transactionChunkSize[transactionChunkSize]`)
+`link:../dataobjects.html#StompServerOptions#setTransactionChunkSize[transactionChunkSize]`)
 * the maximum number of subscriptions a client can handle - defaults to 1000
 
 The STOMP heartbeat is configured using a JSON object as follows:

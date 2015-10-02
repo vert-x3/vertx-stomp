@@ -22,8 +22,8 @@ var StompServerConnection = require('vertx-stomp-js/stomp_server_connection');
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
 var JDestination = io.vertx.ext.stomp.Destination;
+var BridgeOptions = io.vertx.ext.stomp.BridgeOptions;
 var Frame = io.vertx.ext.stomp.Frame;
-var EventBusBridgeOptions = io.vertx.ext.stomp.EventBusBridgeOptions;
 
 /**
  Represents a STOMP destination.
@@ -231,7 +231,7 @@ Destination.queue = function(vertx, destination) {
 Destination.bridge = function(vertx, options) {
   var __args = arguments;
   if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'object') {
-    return utils.convReturnVertxGen(JDestination["bridge(io.vertx.core.Vertx,io.vertx.ext.stomp.EventBusBridgeOptions)"](vertx._jdel, options != null ? new EventBusBridgeOptions(new JsonObject(JSON.stringify(options))) : null), Destination);
+    return utils.convReturnVertxGen(JDestination["bridge(io.vertx.core.Vertx,io.vertx.ext.stomp.BridgeOptions)"](vertx._jdel, options != null ? new BridgeOptions(new JsonObject(JSON.stringify(options))) : null), Destination);
   } else utils.invalidArgs();
 };
 

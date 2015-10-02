@@ -300,7 +300,7 @@ module VertxStomp
     # @return [self]
     def bridge(options=nil)
       if options.class == Hash && !block_given?
-        @j_del.java_method(:bridge, [Java::IoVertxExtStomp::EventBusBridgeOptions.java_class]).call(Java::IoVertxExtStomp::EventBusBridgeOptions.new(::Vertx::Util::Utils.to_json_object(options)))
+        @j_del.java_method(:bridge, [Java::IoVertxExtStomp::BridgeOptions.java_class]).call(Java::IoVertxExtStomp::BridgeOptions.new(::Vertx::Util::Utils.to_json_object(options)))
         return self
       end
       raise ArgumentError, "Invalid arguments when calling bridge(options)"

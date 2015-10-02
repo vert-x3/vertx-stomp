@@ -19,11 +19,11 @@ package io.vertx.rxjava.ext.stomp;
 import java.util.Map;
 import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
+import io.vertx.ext.stomp.BridgeOptions;
 import java.util.List;
 import io.vertx.ext.stomp.Frame;
 import io.vertx.rxjava.core.Vertx;
 import io.vertx.core.shareddata.Shareable;
-import io.vertx.ext.stomp.EventBusBridgeOptions;
 
 /**
  * Represents a STOMP destination.
@@ -58,7 +58,7 @@ public class Destination {
     return ret;
   }
 
-  public static Destination bridge(Vertx vertx, EventBusBridgeOptions options) { 
+  public static Destination bridge(Vertx vertx, BridgeOptions options) { 
     Destination ret= Destination.newInstance(io.vertx.ext.stomp.Destination.bridge((io.vertx.core.Vertx) vertx.getDelegate(), options));
     return ret;
   }

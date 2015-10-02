@@ -28,8 +28,8 @@ var AuthProvider = require('vertx-auth-common-js/auth_provider');
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
 var JStompServerHandler = io.vertx.ext.stomp.StompServerHandler;
+var BridgeOptions = io.vertx.ext.stomp.BridgeOptions;
 var Frame = io.vertx.ext.stomp.Frame;
-var EventBusBridgeOptions = io.vertx.ext.stomp.EventBusBridgeOptions;
 
 /**
  STOMP server handler implements the behavior of the STOMP server when a specific event occurs. For instance, if
@@ -476,7 +476,7 @@ var StompServerHandler = function(j_val) {
   this.bridge = function(options) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'object') {
-      j_stompServerHandler["bridge(io.vertx.ext.stomp.EventBusBridgeOptions)"](options != null ? new EventBusBridgeOptions(new JsonObject(JSON.stringify(options))) : null);
+      j_stompServerHandler["bridge(io.vertx.ext.stomp.BridgeOptions)"](options != null ? new BridgeOptions(new JsonObject(JSON.stringify(options))) : null);
       return that;
     } else utils.invalidArgs();
   };

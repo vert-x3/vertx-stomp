@@ -21,11 +21,11 @@ import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
 import io.vertx.rxjava.core.Vertx;
 import io.vertx.rxjava.ext.auth.AuthProvider;
+import io.vertx.ext.stomp.BridgeOptions;
 import java.util.List;
 import io.vertx.ext.stomp.Frame;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
-import io.vertx.ext.stomp.EventBusBridgeOptions;
 
 /**
  * STOMP server handler implements the behavior of the STOMP server when a specific event occurs. For instance, if
@@ -398,7 +398,7 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @param options the configuration options
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}.
    */
-  public StompServerHandler bridge(EventBusBridgeOptions options) { 
+  public StompServerHandler bridge(BridgeOptions options) { 
     this.delegate.bridge(options);
     return this;
   }
