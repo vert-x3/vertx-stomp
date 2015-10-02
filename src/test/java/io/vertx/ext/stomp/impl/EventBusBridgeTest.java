@@ -54,9 +54,9 @@ public class EventBusBridgeTest {
     vertx = Vertx.vertx();
     server = StompServer.create(vertx)
         .handler(StompServerHandler.create(vertx)
-                .bridge(new EventBusBridgeOptions()
-                    .addInbound(new PermittedOptions().setAddress("/bus"))
-                    .addOutbound(new PermittedOptions().setAddress("/bus")))
+                .bridge(new BridgeOptions()
+                    .addInboundPermitted(new PermittedOptions().setAddress("/bus"))
+                    .addOutboundPermitted(new PermittedOptions().setAddress("/bus")))
         )
         .listen(lock.handler());
 
@@ -122,9 +122,9 @@ public class EventBusBridgeTest {
 
   @Test
   public void testBidirectionalPingPong() {
-    server.stompHandler().bridge(new EventBusBridgeOptions()
-            .addInbound(new PermittedOptions().setAddress("/toBus"))
-            .addOutbound(new PermittedOptions().setAddress("/toStomp"))
+    server.stompHandler().bridge(new BridgeOptions()
+            .addInboundPermitted(new PermittedOptions().setAddress("/toBus"))
+            .addOutboundPermitted(new PermittedOptions().setAddress("/toStomp"))
     );
     List<Frame> stomp = new ArrayList<>();
     List<Message> bus = new ArrayList<>();
@@ -249,8 +249,8 @@ public class EventBusBridgeTest {
 
   @Test
   public void testThatOnlyOnEventBusConsumersReceiveAStompMessageInP2P() throws InterruptedException {
-    server.stompHandler().bridge(new EventBusBridgeOptions()
-            .addInbound(new PermittedOptions().setAddress("/toBus"))
+    server.stompHandler().bridge(new BridgeOptions()
+            .addInboundPermitted(new PermittedOptions().setAddress("/toBus"))
             .setPointToPoint(true)
     );
     List<Message> messages = new CopyOnWriteArrayList<>();
@@ -289,8 +289,8 @@ public class EventBusBridgeTest {
   @Test
   public void testThatEventBusMessagesAreOnlyTransferredToOneStompClientsInP2P() throws InterruptedException {
     List<Frame> frames = new CopyOnWriteArrayList<>();
-    server.stompHandler().bridge(new EventBusBridgeOptions()
-            .addOutbound(new PermittedOptions().setAddress("/toStomp"))
+    server.stompHandler().bridge(new BridgeOptions()
+            .addOutboundPermitted(new PermittedOptions().setAddress("/toStomp"))
             .setPointToPoint(true)
     );
 
@@ -313,9 +313,9 @@ public class EventBusBridgeTest {
 
   @Test
   public void testThatEventBusConsumerCanReplyToStompMessages() {
-    server.stompHandler().bridge(new EventBusBridgeOptions()
-            .addOutbound(new PermittedOptions().setAddress("/replyTo"))
-            .addInbound(new PermittedOptions().setAddress("/request"))
+    server.stompHandler().bridge(new BridgeOptions()
+            .addOutboundPermitted(new PermittedOptions().setAddress("/replyTo"))
+            .addInboundPermitted(new PermittedOptions().setAddress("/request"))
             .setPointToPoint(true)
     );
 

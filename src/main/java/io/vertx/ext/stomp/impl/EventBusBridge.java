@@ -37,14 +37,14 @@ import java.util.regex.Pattern;
  */
 public class EventBusBridge extends Topic {
 
-  private final EventBusBridgeOptions options;
+  private final BridgeOptions options;
 
   private final Map<String, Pattern> expressions = new HashMap<>();
 
   private final Map<String, MessageConsumer<?>> registry = new HashMap<>();
 
 
-  public EventBusBridge(Vertx vertx, EventBusBridgeOptions options) {
+  public EventBusBridge(Vertx vertx, BridgeOptions options) {
     super(vertx, null);
     this.options = options;
   }
@@ -276,7 +276,7 @@ public class EventBusBridge extends Topic {
 
   private boolean checkMatches(boolean inbound, String address) {
 
-    List<PermittedOptions> matches = inbound ? options.getInbound() : options.getOutbound();
+    List<PermittedOptions> matches = inbound ? options.getInboundPermitteds() : options.getOutboundPermitteds();
 
     for (PermittedOptions matchHolder : matches) {
       String matchAddress = matchHolder.getAddress();

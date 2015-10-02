@@ -286,5 +286,5 @@ public interface StompServerHandler extends Handler<ServerFrame> {
    * @see Vertx#eventBus()
    */
   @Fluent
-  StompServerHandler bridge(EventBusBridgeOptions options);
+  StompServerHandler bridge(BridgeOptions options);
 }

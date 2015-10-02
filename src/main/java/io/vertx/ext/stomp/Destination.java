@@ -46,7 +46,7 @@ public interface Destination extends Shareable {
     return new Queue(vertx, destination);
   }
 
-  static Destination bridge(Vertx vertx, EventBusBridgeOptions options) {
+  static Destination bridge(Vertx vertx, BridgeOptions options) {
     return new EventBusBridge(vertx, options);
   }
 

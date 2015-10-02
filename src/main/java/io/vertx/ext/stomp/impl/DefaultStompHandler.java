@@ -441,7 +441,7 @@ public class DefaultStompHandler implements StompServerHandler {
    * @see Vertx#eventBus()
    */
   @Override
-  public synchronized StompServerHandler bridge(EventBusBridgeOptions options) {
+  public synchronized StompServerHandler bridge(BridgeOptions options) {
     destinations.put(Destination.bridge(vertx, options), "");
     return this;
   }

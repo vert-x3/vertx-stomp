@@ -149,9 +149,9 @@ public class StompServerExamples {
   public void example13(Vertx vertx) {
     StompServer server = StompServer.create(vertx)
         .handler(StompServerHandler.create(vertx)
-            .bridge(new EventBusBridgeOptions()
-                .addInbound(new PermittedOptions().setAddress("/toBus"))
-                .addOutbound(new PermittedOptions().setAddress("/toStomp"))
+            .bridge(new BridgeOptions()
+                .addInboundPermitted(new PermittedOptions().setAddress("/toBus"))
+                .addOutboundPermitted(new PermittedOptions().setAddress("/toStomp"))
             )
         )
         .listen();
@@ -160,9 +160,9 @@ public class StompServerExamples {
   public void example14(Vertx vertx) {
     StompServer server = StompServer.create(vertx)
         .handler(StompServerHandler.create(vertx)
-                .bridge(new EventBusBridgeOptions()
-                        .addInbound(new PermittedOptions().setAddress("/toBus"))
-                        .addOutbound(new PermittedOptions().setAddress("/toStomp"))
+                .bridge(new BridgeOptions()
+                        .addInboundPermitted(new PermittedOptions().setAddress("/toBus"))
+                        .addOutboundPermitted(new PermittedOptions().setAddress("/toStomp"))
                         .setPointToPoint(true)
                 )
         )
