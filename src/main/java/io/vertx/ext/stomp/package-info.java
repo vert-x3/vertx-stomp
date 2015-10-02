@@ -18,9 +18,9 @@
  * = Vert.x-Stomp
  * :toc: left
  *
- * STOMP (https://stomp.github.io/index.html) is the Simple (or Streaming) Text Orientated Messaging Protocol. STOMP
+ * STOMP is the Simple (or Streaming) Text Orientated Messaging Protocol. STOMP
  * provides an interoperable wire format so that STOMP clients can communicate with any STOMP message broker to
- * provide easy and widespread messaging interoperability among many languages, platforms and brokers.
+ * provide easy and widespread messaging interoperability among many languages, platforms and brokers. Get more details about STOMP on https://stomp.github.io/index.html.
  *
  * Vertx-Stomp is an implementation of a STOMP server and client. You can use the STOMP server with other clients and
  * use the STOMP client with other servers. The server and the client supports the version 1.0, 1.1 and 1.2 of the
@@ -36,9 +36,9 @@
  * [source,xml,subs="+attributes"]
  * ----
  * <dependency>
- *   <groupId>{maven-groupId}</groupId>
- *   <artifactId>{maven-artifactId}</artifactId>
- *   <version>{maven-version}</version>
+ *   <groupId>${maven.groupId}</groupId>
+ *   <artifactId>${maven.artifactId}</artifactId>
+ *   <version>${maven.version}</version>
  * </dependency>
  * ----
  *
@@ -46,7 +46,7 @@
  *
  * [source,groovy,subs="+attributes"]
  * ----
- * compile {maven-groupId}:{maven-artifactId}:{maven-version}
+ * compile ${maven.groupId}:${maven.artifactId}:${maven.version}
  * ----
  *
  * == STOMP server

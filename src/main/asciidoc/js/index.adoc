@@ -1,11 +1,11 @@
 = Vert.x-Stomp
 :toc: left
 
-STOMP (https://stomp.github.io/index.html) is the Simple (or Streaming) Text Orientated Messaging Protocol.
+STOMP is the Simple (or Streaming) Text Orientated Messaging Protocol.
 
 STOMP
 provides an interoperable wire format so that STOMP clients can communicate with any STOMP message broker to
-provide easy and widespread messaging interoperability among many languages, platforms and brokers.
+provide easy and widespread messaging interoperability among many languages, platforms and brokers. Get more details about STOMP on https://stomp.github.io/index.html.
 
 Vertx-Stomp is an implementation of a STOMP server and client. You can use the STOMP server with other clients and
 use the STOMP client with other servers. The server and the client supports the version 1.0, 1.1 and 1.2 of the
@@ -21,9 +21,9 @@ descriptor:
 [source,xml,subs="+attributes"]
 ----
 <dependency>
-  <groupId>{maven-groupId}</groupId>
-  <artifactId>{maven-artifactId}</artifactId>
-  <version>{maven-version}</version>
+  <groupId>io.vertx</groupId>
+  <artifactId>vertx-stomp</artifactId>
+  <version>3.1.0-SNAPSHOT</version>
 </dependency>
 ----
 
@@ -31,7 +31,7 @@ descriptor:
 
 [source,groovy,subs="+attributes"]
 ----
-compile {maven-groupId}:{maven-artifactId}:{maven-version}
+compile io.vertx:vertx-stomp:3.1.0-SNAPSHOT
 ----
 
 == STOMP server
@@ -79,7 +79,7 @@ var server = StompServer.create(vertx).handler(StompServerHandler.create(vertx))
 
 The handler receive a reference on the `link:jsdoc/stomp_server-StompServer.html[StompServer]`.
 
-You can also configure the host and port in `link:../cheatsheet/StompServerOptions.html[StompServerOptions]`:
+You can also configure the host and port in `link:../dataobjects.html#StompServerOptions[StompServerOptions]`:
 
 [source,js]
 ----
@@ -110,11 +110,11 @@ server.close(function (ar, ar_err) {
 
 === Configuration
 
-The `link:../cheatsheet/StompServerOptions.html[StompServerOptions]` let you configure some aspects of the STOMP server.
+The `link:../dataobjects.html#StompServerOptions[StompServerOptions]` let you configure some aspects of the STOMP server.
 
 First, the STOMP server is based on a
 `link:../../vertx-core/js/jsdoc/net_server-NetServer.html[NetServer]`, so you can configure the underlying `link:../../vertx-core/js/jsdoc/net_server-NetServer.html[NetServer]` from
-the `link:../cheatsheet/StompServerOptions.html[StompServerOptions]`. Alternatively you can also pass the
+the `link:../dataobjects.html#StompServerOptions[StompServerOptions]`. Alternatively you can also pass the
 `link:../../vertx-core/js/jsdoc/net_server-NetServer.html[NetServer]` you want to use:
 
 [source,js]
@@ -125,7 +125,7 @@ var server = StompServer.create(vertx, netServer).handler(StompServerHandler.cre
 
 ----
 
-The `link:../cheatsheet/StompServerOptions.html[StompServerOptions]` let you configure:
+The `link:../dataobjects.html#StompServerOptions[StompServerOptions]` let you configure:
 
 * the host and port of the STOMP server - defaults to `0.0.0.0:61613`.
 * whether or not the STOMP server is secured - defaults to `false`
@@ -136,7 +136,7 @@ The `link:../cheatsheet/StompServerOptions.html[StompServerOptions]` let you con
 * the supported STOMP protocol versions (1.0, 1.1 and 1.2 by default)
 * the maximum number of frame allowed in a transaction (defaults to 1000)
 * the size of the transaction chunk - defaults to 1000 (see
-`link:../cheatsheet/StompServerOptions.html#transactionChunkSize[transactionChunkSize]`)
+`link:../dataobjects.html#StompServerOptions#setTransactionChunkSize[transactionChunkSize]`)
 * the maximum number of subscriptions a client can handle - defaults to 1000
 
 The STOMP heartbeat is configured using a JSON object as follows:
