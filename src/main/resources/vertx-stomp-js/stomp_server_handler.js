@@ -28,6 +28,7 @@ var AuthProvider = require('vertx-auth-common-js/auth_provider');
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
 var JStompServerHandler = io.vertx.ext.stomp.StompServerHandler;
+var BridgeOptions = io.vertx.ext.stomp.BridgeOptions;
 var Frame = io.vertx.ext.stomp.Frame;
 
 /**
@@ -461,6 +462,21 @@ var StompServerHandler = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
       j_stompServerHandler["destinationFactory(io.vertx.ext.stomp.DestinationFactory)"](factory._jdel);
+      return that;
+    } else utils.invalidArgs();
+  };
+
+  /**
+   Configures the STOMP server to act as a bridge with the Vert.x event bus.
+
+   @public
+   @param options {Object} the configuration options 
+   @return {StompServerHandler} the current {@link StompServerHandler}.
+   */
+  this.bridge = function(options) {
+    var __args = arguments;
+    if (__args.length === 1 && typeof __args[0] === 'object') {
+      j_stompServerHandler["bridge(io.vertx.ext.stomp.BridgeOptions)"](options != null ? new BridgeOptions(new JsonObject(JSON.stringify(options))) : null);
       return that;
     } else utils.invalidArgs();
   };

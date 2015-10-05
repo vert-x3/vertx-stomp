@@ -34,10 +34,10 @@ import java.util.stream.Collectors;
  */
 public class Topic implements Destination {
 
-  private final String destination;
+  protected final String destination;
 
-  private final List<Subscription> subscriptions = new ArrayList<>();
-  private final Vertx vertx;
+  protected final List<Subscription> subscriptions = new ArrayList<>();
+  protected final Vertx vertx;
 
   public Topic(Vertx vertx, String destination) {
     this.destination = destination;
@@ -116,7 +116,7 @@ public class Topic implements Destination {
       }
     }
     if (subscriptions.isEmpty()) {
-      vertx.sharedData().getLocalMap("stomp.destinations").remove(destination);
+      vertx.sharedData().getLocalMap("stomp.destinations").remove(this);
     }
     return r;
   }
@@ -135,7 +135,7 @@ public class Topic implements Destination {
         .forEach(subscriptions::remove);
 
     if (subscriptions.isEmpty()) {
-      vertx.sharedData().getLocalMap("stomp.destinations").remove(destination);
+      vertx.sharedData().getLocalMap("stomp.destinations").remove(this);
     }
     return this;
   }
@@ -188,15 +188,28 @@ public class Topic implements Destination {
     return subscriptions.size();
   }
 
-  private class Subscription {
-    private final StompServerConnection connection;
-    private final String id;
-    private final String ackMode;
+  /**
+   * Checks whether or not the given address matches with the current destination.
+   *
+   * @param address the address
+   * @return {@code true} if it matches, {@code false} otherwise.
+   */
+  @Override
+  public boolean matches(String address) {
+    return this.destination.equals(address);
+  }
 
-    private Subscription(StompServerConnection connection, Frame frame) {
+  protected class Subscription {
+    final StompServerConnection connection;
+    final String id;
+    final String ackMode;
+    final String destination;
+
+    protected Subscription(StompServerConnection connection, Frame frame) {
       this.connection = connection;
       this.ackMode = frame.getAck();
       this.id = frame.getId();
+      this.destination = frame.getDestination();
     }
   }
 

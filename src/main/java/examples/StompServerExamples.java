@@ -20,10 +20,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.NetServer;
 import io.vertx.ext.auth.AuthProvider;
-import io.vertx.ext.stomp.Destination;
-import io.vertx.ext.stomp.StompServer;
-import io.vertx.ext.stomp.StompServerHandler;
-import io.vertx.ext.stomp.StompServerOptions;
+import io.vertx.ext.stomp.*;
 
 /**
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
@@ -146,6 +143,29 @@ public class StompServerExamples {
                 return Destination.topic(vertx, name);
               }
             }))
+        .listen();
+  }
+
+  public void example13(Vertx vertx) {
+    StompServer server = StompServer.create(vertx)
+        .handler(StompServerHandler.create(vertx)
+            .bridge(new BridgeOptions()
+                .addInboundPermitted(new PermittedOptions().setAddress("/toBus"))
+                .addOutboundPermitted(new PermittedOptions().setAddress("/toStomp"))
+            )
+        )
+        .listen();
+  }
+
+  public void example14(Vertx vertx) {
+    StompServer server = StompServer.create(vertx)
+        .handler(StompServerHandler.create(vertx)
+                .bridge(new BridgeOptions()
+                        .addInboundPermitted(new PermittedOptions().setAddress("/toBus"))
+                        .addOutboundPermitted(new PermittedOptions().setAddress("/toStomp"))
+                        .setPointToPoint(true)
+                )
+        )
         .listen();
   }
 

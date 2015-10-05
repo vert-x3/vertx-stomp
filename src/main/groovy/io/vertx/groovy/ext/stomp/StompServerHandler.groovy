@@ -20,6 +20,7 @@ import io.vertx.lang.groovy.InternalHelper
 import io.vertx.core.json.JsonObject
 import io.vertx.groovy.core.Vertx
 import io.vertx.groovy.ext.auth.AuthProvider
+import io.vertx.ext.stomp.BridgeOptions
 import java.util.List
 import io.vertx.ext.stomp.Frame
 import io.vertx.core.AsyncResult
@@ -341,6 +342,15 @@ public class StompServerHandler implements Handler<ServerFrame> {
    */
   public StompServerHandler destinationFactory(DestinationFactory factory) {
     this.delegate.destinationFactory((io.vertx.ext.stomp.DestinationFactory)factory.getDelegate());
+    return this;
+  }
+  /**
+   * Configures the STOMP server to act as a bridge with the Vert.x event bus.
+   * @param options the configuration options (see <a href="../../../../../../../cheatsheet/BridgeOptions.html">BridgeOptions</a>)
+   * @return the current {@link io.vertx.groovy.ext.stomp.StompServerHandler}.
+   */
+  public StompServerHandler bridge(Map<String, Object> options = [:]) {
+    this.delegate.bridge(options != null ? new io.vertx.ext.stomp.BridgeOptions(new io.vertx.core.json.JsonObject(options)) : null);
     return this;
   }
 }

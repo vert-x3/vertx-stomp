@@ -21,6 +21,7 @@ import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
 import io.vertx.rxjava.core.Vertx;
 import io.vertx.rxjava.ext.auth.AuthProvider;
+import io.vertx.ext.stomp.BridgeOptions;
 import java.util.List;
 import io.vertx.ext.stomp.Frame;
 import io.vertx.core.AsyncResult;
@@ -389,6 +390,16 @@ public class StompServerHandler implements Handler<ServerFrame> {
    */
   public StompServerHandler destinationFactory(DestinationFactory factory) { 
     this.delegate.destinationFactory((io.vertx.ext.stomp.DestinationFactory) factory.getDelegate());
+    return this;
+  }
+
+  /**
+   * Configures the STOMP server to act as a bridge with the Vert.x event bus.
+   * @param options the configuration options
+   * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}.
+   */
+  public StompServerHandler bridge(BridgeOptions options) { 
+    this.delegate.bridge(options);
     return this;
   }
 

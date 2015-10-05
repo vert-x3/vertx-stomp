@@ -278,4 +278,13 @@ public interface StompServerHandler extends Handler<ServerFrame> {
   @Fluent
   StompServerHandler destinationFactory(DestinationFactory factory);
 
+  /**
+   * Configures the STOMP server to act as a bridge with the Vert.x event bus.
+   *
+   * @param options the configuration options
+   * @return the current {@link StompServerHandler}.
+   * @see Vertx#eventBus()
+   */
+  @Fluent
+  StompServerHandler bridge(BridgeOptions options);
 }

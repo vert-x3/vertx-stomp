@@ -20,6 +20,7 @@ import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.Vertx;
 import io.vertx.core.shareddata.Shareable;
+import io.vertx.ext.stomp.impl.EventBusBridge;
 import io.vertx.ext.stomp.impl.Queue;
 import io.vertx.ext.stomp.impl.Topic;
 
@@ -43,6 +44,10 @@ public interface Destination extends Shareable {
 
   static Destination queue(Vertx vertx, String destination) {
     return new Queue(vertx, destination);
+  }
+
+  static Destination bridge(Vertx vertx, BridgeOptions options) {
+    return new EventBusBridge(vertx, options);
   }
 
   /**
@@ -117,7 +122,16 @@ public interface Destination extends Shareable {
 
   /**
    * Gets the number of subscriptions attached to the current {@link Destination}.
+   *
    * @return the number of subscriptions.
    */
   int numberOfSubscriptions();
+
+  /**
+   * Checks whether or not the given address matches with the current destination.
+   *
+   * @param address the address
+   * @return {@code true} if it matches, {@code false} otherwise.
+   */
+  boolean matches(String address);
 }

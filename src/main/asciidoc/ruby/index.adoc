@@ -9,7 +9,8 @@ provide easy and widespread messaging interoperability among many languages, pla
 
 Vertx-Stomp is an implementation of a STOMP server and client. You can use the STOMP server with other clients and
 use the STOMP client with other servers. The server and the client supports the version 1.0, 1.1 and 1.2 of the
-STOMP protocol (see https://stomp.github.io/stomp-specification-1.2.html).
+STOMP protocol (see https://stomp.github.io/stomp-specification-1.2.html). The STOMP server can also be used as a
+bridge with the vert.x event bus.
 
 == Using vertx-stomp
 

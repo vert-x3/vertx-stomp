@@ -19,6 +19,7 @@ package io.vertx.rxjava.ext.stomp;
 import java.util.Map;
 import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
+import io.vertx.ext.stomp.BridgeOptions;
 import java.util.List;
 import io.vertx.ext.stomp.Frame;
 import io.vertx.rxjava.core.Vertx;
@@ -54,6 +55,11 @@ public class Destination {
 
   public static Destination queue(Vertx vertx, String destination) { 
     Destination ret= Destination.newInstance(io.vertx.ext.stomp.Destination.queue((io.vertx.core.Vertx) vertx.getDelegate(), destination));
+    return ret;
+  }
+
+  public static Destination bridge(Vertx vertx, BridgeOptions options) { 
+    Destination ret= Destination.newInstance(io.vertx.ext.stomp.Destination.bridge((io.vertx.core.Vertx) vertx.getDelegate(), options));
     return ret;
   }
 
@@ -148,6 +154,16 @@ public class Destination {
    */
   public int numberOfSubscriptions() { 
     int ret = this.delegate.numberOfSubscriptions();
+    return ret;
+  }
+
+  /**
+   * Checks whether or not the given address matches with the current destination.
+   * @param address the address
+   * @return <code>true</code> if it matches, <code>false</code> otherwise.
+   */
+  public boolean matches(String address) { 
+    boolean ret = this.delegate.matches(address);
     return ret;
   }
 

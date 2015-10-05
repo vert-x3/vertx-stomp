@@ -17,14 +17,9 @@
 package io.vertx.ext.stomp;
 
 import io.vertx.core.Handler;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.stomp.impl.Transaction;
 import io.vertx.ext.stomp.impl.Transactions;
 import io.vertx.ext.stomp.utils.Headers;
-
-import java.util.List;
-import java.util.UUID;
 
 /**
  * STOMP compliant actions executed when receiving a {@code SEND} sf.frame().
@@ -99,7 +94,10 @@ public class DefaultSendHandler implements Handler<ServerFrame> {
     }
 
     if (dest != null) {
-      dest.dispatch(sf.connection(), sf.frame());
+      if (dest.dispatch(sf.connection(), sf.frame()) == null) {
+        // Error managed by the destination.
+        return;
+      }
     }
 
     Frames.handleReceipt(sf.frame(), sf.connection());

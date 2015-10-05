@@ -22,6 +22,7 @@ var StompServerConnection = require('vertx-stomp-js/stomp_server_connection');
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
 var JDestination = io.vertx.ext.stomp.Destination;
+var BridgeOptions = io.vertx.ext.stomp.BridgeOptions;
 var Frame = io.vertx.ext.stomp.Frame;
 
 /**
@@ -172,6 +173,20 @@ var Destination = function(j_val) {
     } else utils.invalidArgs();
   };
 
+  /**
+   Checks whether or not the given address matches with the current destination.
+
+   @public
+   @param address {string} the address 
+   @return {boolean} <code>true</code> if it matches, <code>false</code> otherwise.
+   */
+  this.matches = function(address) {
+    var __args = arguments;
+    if (__args.length === 1 && typeof __args[0] === 'string') {
+      return j_destination["matches(java.lang.String)"](address);
+    } else utils.invalidArgs();
+  };
+
   // A reference to the underlying Java delegate
   // NOTE! This is an internal API and must not be used in user code.
   // If you rely on this property your code is likely to break if we change it / remove it without warning.
@@ -203,6 +218,20 @@ Destination.queue = function(vertx, destination) {
   var __args = arguments;
   if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'string') {
     return utils.convReturnVertxGen(JDestination["queue(io.vertx.core.Vertx,java.lang.String)"](vertx._jdel, destination), Destination);
+  } else utils.invalidArgs();
+};
+
+/**
+
+ @memberof module:vertx-stomp-js/destination
+ @param vertx {Vertx} 
+ @param options {Object} 
+ @return {Destination}
+ */
+Destination.bridge = function(vertx, options) {
+  var __args = arguments;
+  if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'object') {
+    return utils.convReturnVertxGen(JDestination["bridge(io.vertx.core.Vertx,io.vertx.ext.stomp.BridgeOptions)"](vertx._jdel, options != null ? new BridgeOptions(new JsonObject(JSON.stringify(options))) : null), Destination);
   } else utils.invalidArgs();
 };
 
