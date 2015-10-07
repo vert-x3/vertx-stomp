@@ -83,7 +83,7 @@ var StompClient = function(j_val) {
       }
     });
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -96,7 +96,7 @@ var StompClient = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       j_stompClient["close()"]();
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -110,7 +110,7 @@ var StompClient = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       return utils.convReturnDataObject(j_stompClient["options()"]());
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -124,7 +124,7 @@ var StompClient = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       return utils.convReturnVertxGen(j_stompClient["vertx()"](), Vertx);
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   // A reference to the underlying Java delegate
@@ -147,7 +147,7 @@ StompClient.create = function() {
     return utils.convReturnVertxGen(JStompClient["create(io.vertx.core.Vertx)"](__args[0]._jdel), StompClient);
   }else if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'object') {
     return utils.convReturnVertxGen(JStompClient["create(io.vertx.core.Vertx,io.vertx.ext.stomp.StompClientOptions)"](__args[0]._jdel, __args[1] != null ? new StompClientOptions(new JsonObject(JSON.stringify(__args[1]))) : null), StompClient);
-  } else utils.invalidArgs();
+  } else throw new TypeError('function invoked with invalid arguments');
 };
 
 // We export the Constructor function

@@ -43,7 +43,7 @@ var StompClientConnection = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       return j_stompClientConnection["session()"]();
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -57,7 +57,7 @@ var StompClientConnection = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       return j_stompClientConnection["version()"]();
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -70,7 +70,7 @@ var StompClientConnection = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       j_stompClientConnection["close()"]();
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -84,7 +84,7 @@ var StompClientConnection = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       return j_stompClientConnection["server()"]();
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -131,7 +131,7 @@ var StompClientConnection = function(j_val) {
       __args[3](utils.convReturnDataObject(jVal));
     });
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -166,7 +166,7 @@ var StompClientConnection = function(j_val) {
     }, function(jVal) {
       __args[3](utils.convReturnDataObject(jVal));
     });
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -197,7 +197,7 @@ var StompClientConnection = function(j_val) {
       __args[2](utils.convReturnDataObject(jVal));
     });
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -214,7 +214,7 @@ var StompClientConnection = function(j_val) {
       handler(utils.convReturnDataObject(jVal));
     });
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -231,7 +231,7 @@ var StompClientConnection = function(j_val) {
       handler(utils.convReturnVertxGen(jVal, StompClientConnection));
     });
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -249,7 +249,7 @@ var StompClientConnection = function(j_val) {
       handler(utils.convReturnVertxGen(jVal, StompClientConnection));
     });
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -279,7 +279,7 @@ var StompClientConnection = function(j_val) {
       __args[2](utils.convReturnDataObject(jVal));
     });
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -309,7 +309,7 @@ var StompClientConnection = function(j_val) {
       __args[2](utils.convReturnDataObject(jVal));
     });
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -339,7 +339,7 @@ var StompClientConnection = function(j_val) {
       __args[2](utils.convReturnDataObject(jVal));
     });
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -369,7 +369,7 @@ var StompClientConnection = function(j_val) {
       __args[1](utils.convReturnDataObject(jVal));
     });
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -400,7 +400,7 @@ var StompClientConnection = function(j_val) {
       __args[2](utils.convReturnDataObject(jVal));
     });
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -431,7 +431,7 @@ var StompClientConnection = function(j_val) {
       __args[2](utils.convReturnDataObject(jVal));
     });
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   // A reference to the underlying Java delegate

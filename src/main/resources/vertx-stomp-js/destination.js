@@ -50,7 +50,7 @@ var Destination = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       return j_destination["destination()"]();
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -66,7 +66,7 @@ var Destination = function(j_val) {
     if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'object') {
       j_destination["dispatch(io.vertx.ext.stomp.StompServerConnection,io.vertx.ext.stomp.Frame)"](connection._jdel, frame != null ? new Frame(new JsonObject(JSON.stringify(frame))) : null);
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -82,7 +82,7 @@ var Destination = function(j_val) {
     if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'object') {
       j_destination["subscribe(io.vertx.ext.stomp.StompServerConnection,io.vertx.ext.stomp.Frame)"](connection._jdel, frame != null ? new Frame(new JsonObject(JSON.stringify(frame))) : null);
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -97,7 +97,7 @@ var Destination = function(j_val) {
     var __args = arguments;
     if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'object') {
       return j_destination["unsubscribe(io.vertx.ext.stomp.StompServerConnection,io.vertx.ext.stomp.Frame)"](connection._jdel, frame != null ? new Frame(new JsonObject(JSON.stringify(frame))) : null);
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -112,7 +112,7 @@ var Destination = function(j_val) {
     if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
       j_destination["unsubscribeConnection(io.vertx.ext.stomp.StompServerConnection)"](connection._jdel);
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -127,7 +127,7 @@ var Destination = function(j_val) {
     var __args = arguments;
     if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'object') {
       return j_destination["ack(io.vertx.ext.stomp.StompServerConnection,io.vertx.ext.stomp.Frame)"](connection._jdel, frame != null ? new Frame(new JsonObject(JSON.stringify(frame))) : null);
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -142,7 +142,7 @@ var Destination = function(j_val) {
     var __args = arguments;
     if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'object') {
       return j_destination["nack(io.vertx.ext.stomp.StompServerConnection,io.vertx.ext.stomp.Frame)"](connection._jdel, frame != null ? new Frame(new JsonObject(JSON.stringify(frame))) : null);
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -156,7 +156,7 @@ var Destination = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
       return j_destination["getSubscriptions(io.vertx.ext.stomp.StompServerConnection)"](connection._jdel);
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -170,7 +170,7 @@ var Destination = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       return j_destination["numberOfSubscriptions()"]();
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -184,7 +184,7 @@ var Destination = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'string') {
       return j_destination["matches(java.lang.String)"](address);
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   // A reference to the underlying Java delegate
@@ -204,7 +204,7 @@ Destination.topic = function(vertx, destination) {
   var __args = arguments;
   if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'string') {
     return utils.convReturnVertxGen(JDestination["topic(io.vertx.core.Vertx,java.lang.String)"](vertx._jdel, destination), Destination);
-  } else utils.invalidArgs();
+  } else throw new TypeError('function invoked with invalid arguments');
 };
 
 /**
@@ -218,7 +218,7 @@ Destination.queue = function(vertx, destination) {
   var __args = arguments;
   if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'string') {
     return utils.convReturnVertxGen(JDestination["queue(io.vertx.core.Vertx,java.lang.String)"](vertx._jdel, destination), Destination);
-  } else utils.invalidArgs();
+  } else throw new TypeError('function invoked with invalid arguments');
 };
 
 /**
@@ -232,7 +232,7 @@ Destination.bridge = function(vertx, options) {
   var __args = arguments;
   if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'object') {
     return utils.convReturnVertxGen(JDestination["bridge(io.vertx.core.Vertx,io.vertx.ext.stomp.BridgeOptions)"](vertx._jdel, options != null ? new BridgeOptions(new JsonObject(JSON.stringify(options))) : null), Destination);
-  } else utils.invalidArgs();
+  } else throw new TypeError('function invoked with invalid arguments');
 };
 
 // We export the Constructor function

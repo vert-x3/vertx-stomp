@@ -43,7 +43,7 @@ var ServerFrame = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       return utils.convReturnDataObject(j_serverFrame["frame()"]());
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -57,7 +57,7 @@ var ServerFrame = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       return utils.convReturnVertxGen(j_serverFrame["connection()"](), StompServerConnection);
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   // A reference to the underlying Java delegate

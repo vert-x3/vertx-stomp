@@ -45,7 +45,7 @@ var DestinationFactory = function(j_val) {
     var __args = arguments;
     if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'string') {
       return utils.convReturnVertxGen(j_destinationFactory["create(io.vertx.core.Vertx,java.lang.String)"](vertx._jdel, name), Destination);
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   // A reference to the underlying Java delegate

@@ -51,7 +51,7 @@ var StompServerConnection = function(j_val) {
     }  else if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
       j_stompServerConnection["write(io.vertx.core.buffer.Buffer)"](__args[0]._jdel);
       return that;
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -65,7 +65,7 @@ var StompServerConnection = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       return utils.convReturnVertxGen(j_stompServerConnection["server()"](), StompServer);
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -79,7 +79,7 @@ var StompServerConnection = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       return utils.convReturnVertxGen(j_stompServerConnection["handler()"](), StompServerHandler);
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -93,7 +93,7 @@ var StompServerConnection = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       return j_stompServerConnection["session()"]();
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -106,7 +106,7 @@ var StompServerConnection = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       j_stompServerConnection["close()"]();
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -119,7 +119,7 @@ var StompServerConnection = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       j_stompServerConnection["ping()"]();
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -133,7 +133,7 @@ var StompServerConnection = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       j_stompServerConnection["onServerActivity()"]();
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -150,7 +150,7 @@ var StompServerConnection = function(j_val) {
       j_stompServerConnection["configureHeartbeat(long,long,io.vertx.core.Handler)"](ping, pong, function(jVal) {
       pingHandler(utils.convReturnVertxGen(jVal, StompServerConnection));
     });
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   // A reference to the underlying Java delegate

@@ -42,7 +42,7 @@ var Acknowledgement = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       return utils.convReturnDataObject(j_acknowledgement["subscription()"]());
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   /**
@@ -57,7 +57,7 @@ var Acknowledgement = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       return utils.convReturnListSetDataObject(j_acknowledgement["frames()"]());
-    } else utils.invalidArgs();
+    } else throw new TypeError('function invoked with invalid arguments');
   };
 
   // A reference to the underlying Java delegate
