@@ -395,7 +395,6 @@ public class TransactionsTest {
     server.options().setMaxFrameInTransaction(10000);
 
     List<Frame> frames = new CopyOnWriteArrayList<>();
-    List<Frame> errors = new CopyOnWriteArrayList<>();
     clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", (frames::add));
@@ -405,7 +404,6 @@ public class TransactionsTest {
 
     clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
-      connection.errorHandler(errors::add);
       connection.beginTX("my-tx");
       for (int i = 0; i < 5000; i++) {
         connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
@@ -414,7 +412,7 @@ public class TransactionsTest {
       connection.commit("my-tx");
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> frames.size() == 5000 && errors.isEmpty());
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> frames.size() == 5000);
     int i = 0;
     for (Frame frame : frames) {
       assertThat(frame.getHeader(Frame.TRANSACTION)).isEqualTo("my-tx");

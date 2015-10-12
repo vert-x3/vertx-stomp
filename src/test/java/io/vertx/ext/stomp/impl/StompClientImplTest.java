@@ -30,10 +30,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Test the STOMP client.
@@ -61,37 +63,46 @@ public class StompClientImplTest {
   }
 
   @Test
-  public void testConnection(TestContext context) {
-    Async async = context.async();
+  public void testConnection() throws InterruptedException {
+    CountDownLatch latch = new CountDownLatch(1);
+    AtomicReference<StompClientConnection> reference = new AtomicReference<>();
     StompClient client = StompClient.create(vertx);
     client.connect(ar -> {
       if (ar.failed()) {
-        context.fail("Connection failed");
-        return;
+        reference.set(null);
+      } else {
+        reference.set(ar.result());
       }
-      context.assertNotNull(ar.result());
-      context.assertNotNull(ar.result().session());
-      context.assertNotNull(ar.result().server());
-      context.assertNotNull(ar.result().version());
-      async.complete();
+      latch.countDown();
     });
+
+    latch.await(1, TimeUnit.MINUTES);
+    assertNotNull(reference.get());
+    assertNotNull(reference.get().session());
+    assertNotNull(reference.get().server());
+    assertNotNull(reference.get().version());
   }
 
+
   @Test
-  public void testConnectionWithStompFrame(TestContext context) {
-    Async async = context.async();
+  public void testConnectionWithStompFrame() throws InterruptedException {
+    CountDownLatch latch = new CountDownLatch(1);
+    AtomicReference<StompClientConnection> reference = new AtomicReference<>();
     StompClient client = StompClient.create(vertx, new StompClientOptions().setUseStompFrame(true));
     client.connect(ar -> {
       if (ar.failed()) {
-        context.fail("Connection failed");
-        return;
+        reference.set(null);
+      } else {
+        reference.set(ar.result());
       }
-      context.assertNotNull(ar.result());
-      context.assertNotNull(ar.result().session());
-      context.assertNotNull(ar.result().server());
-      context.assertNotNull(ar.result().version());
-      async.complete();
+      latch.countDown();
     });
+
+    latch.await(1, TimeUnit.MINUTES);
+    assertNotNull(reference.get());
+    assertNotNull(reference.get().session());
+    assertNotNull(reference.get().server());
+    assertNotNull(reference.get().version());
   }
 
   @Test(timeout = 5000)
@@ -111,37 +122,50 @@ public class StompClientImplTest {
   }
 
   @Test
-  public void testConnectionAndDisconnect(TestContext context) {
-    Async async = context.async();
+  public void testConnectionAndDisconnect() throws InterruptedException {
+    CountDownLatch latch = new CountDownLatch(1);
+    AtomicReference<Frame> reference = new AtomicReference<>();
     StompClient client = StompClient.create(vertx, new StompClientOptions().setUseStompFrame(true));
     client.connect(ar -> {
       if (ar.failed()) {
-        context.fail("Connection failed");
-        return;
+        reference.set(null);
+        latch.countDown();
+      } else {
+        ar.result().disconnect(
+            frame -> {
+              reference.set(frame);
+              latch.countDown();
+            });
       }
-      ar.result().disconnect(frame -> async.complete());
     });
+    latch.await(1, TimeUnit.MINUTES);
+    assertNotNull(reference.get());
   }
 
   @Test
-  public void testConnectionAndDisconnectWithCustomFrame(TestContext context) {
-    Async async = context.async();
+  public void testConnectionAndDisconnectWithCustomFrame() throws InterruptedException {
+    CountDownLatch latch = new CountDownLatch(1);
+    AtomicReference<Frame> reference = new AtomicReference<>();
     StompClient client = StompClient.create(vertx, new StompClientOptions().setUseStompFrame(true));
     client.connect(ar -> {
       if (ar.failed()) {
-        context.fail("Connection failed");
-        return;
+        reference.set(null);
+        latch.countDown();
+      } else {
+        ar.result().disconnect(new Frame(Frame.Command.DISCONNECT, Headers.create("message", "bye bye"), null),
+            frame -> {
+              reference.set(frame);
+              latch.countDown();
+            });
       }
-      ar.result().disconnect(new Frame(Frame.Command.DISCONNECT, Headers.create("message", "bye bye"), null),
-          frame -> {
-            context.assertTrue(frame.getHeader("message").contains("bye bye"));
-            async.complete();
-          });
     });
+    latch.await(1, TimeUnit.MINUTES);
+    assertNotNull(reference.get());
+    assertThat(reference.get().getHeader("message")).contains("bye bye");
   }
 
   @Test
-  public void testClientHeartbeatWhenNoServerActivity(TestContext context) {
+  public void testClientHeartbeatWhenNoServerActivity() {
     AtomicReference<StompClientConnection> reference = new AtomicReference<>();
     server.close();
     AsyncLock<StompServer> lock = new AsyncLock<>();
