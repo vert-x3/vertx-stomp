@@ -237,10 +237,6 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     subscriptions.add(new Subscription(destination, id, handler));
 
     headers.put(Frame.DESTINATION, destination);
-    // Spec says that by default ack is 'auto'. The server should handle it as auto if none passed.
-    if (!headers.containsKey(Frame.ACK)) {
-      headers.put(Frame.ACK, "auto");
-    }
 
     if (!headers.containsKey(Frame.ID)) {
       headers.put(Frame.ID, id);

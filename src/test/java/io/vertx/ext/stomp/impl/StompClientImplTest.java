@@ -209,7 +209,7 @@ public class StompClientImplTest {
   }
 
   @Test
-  public void testServerHeartbeatWhenNoClientActivity(TestContext context) {
+  public void testServerHeartbeatWhenNoClientActivity() {
     AtomicReference<StompClientConnection> reference = new AtomicReference<>();
     server.close();
     AsyncLock<StompServer> lock = new AsyncLock<>();

@@ -207,7 +207,7 @@ public class Topic implements Destination {
 
     protected Subscription(StompServerConnection connection, Frame frame) {
       this.connection = connection;
-      this.ackMode = frame.getAck();
+      this.ackMode = frame.getAck() != null ? frame.getAck() : "auto";
       this.id = frame.getId();
       this.destination = frame.getDestination();
     }

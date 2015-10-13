@@ -29,7 +29,6 @@ public class StompServerTest {
   @Test
   public void checkThatVersionIsReadFromFile() {
     String server = Server.SERVER_NAME;
-    System.out.println(server);
     assertThat(server).startsWith("vertx-stomp");
   }
 

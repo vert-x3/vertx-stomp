@@ -51,7 +51,7 @@ public class ServerConnectionTest {
   private NetClient client;
 
   @Before
-  public void setUp(TestContext context) {
+  public void setUp() {
     vertx = Vertx.vertx();
     AsyncLock<StompServer> lock = new AsyncLock<>();
     server = StompServer.create(vertx)
@@ -61,7 +61,7 @@ public class ServerConnectionTest {
   }
 
   @After
-  public void tearDown(TestContext context) {
+  public void tearDown() {
     AsyncLock<Void> lock = new AsyncLock<>();
     server.close(lock.handler());
     lock.waitForSuccess();
