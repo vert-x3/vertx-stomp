@@ -188,7 +188,8 @@
  * providing your own {@link io.vertx.ext.stomp.Destination} implementation.
  *
  * The custom destination should call the
- * {@link io.vertx.ext.stomp.StompServerHandler#onAck(io.vertx.ext.stomp.StompServerConnection, io.vertx.ext.stomp.Frame, java.util.List)
+ *
+ * {@link io.vertx.ext.stomp.StompServerHandler#onAck(io.vertx.ext.stomp.StompServerConnection, io.vertx.ext.stomp.Frame, java.util.List)}
  * and
  * {@link io.vertx.ext.stomp.StompServerHandler#onNack(io.vertx.ext.stomp.StompServerConnection, io.vertx.ext.stomp.Frame, java.util.List)}
  * method in order to let the {@link io.vertx.ext.stomp.StompServerHandler} customizes the behavior:
