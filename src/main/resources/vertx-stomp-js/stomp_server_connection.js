@@ -45,7 +45,7 @@ var StompServerConnection = function(j_val) {
    */
   this.write = function() {
     var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'object') {
+    if (__args.length === 1 && (typeof __args[0] === 'object' && __args[0] != null)) {
       j_stompServerConnection["write(io.vertx.ext.stomp.Frame)"](__args[0] != null ? new Frame(new JsonObject(JSON.stringify(__args[0]))) : null);
       return that;
     }  else if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {

@@ -48,7 +48,7 @@ var Frames = function(j_val) {
  */
 Frames.createErrorFrame = function(message, headers, body) {
   var __args = arguments;
-  if (__args.length === 3 && typeof __args[0] === 'string' && typeof __args[1] === 'object' && typeof __args[2] === 'string') {
+  if (__args.length === 3 && typeof __args[0] === 'string' && (typeof __args[1] === 'object' && __args[1] != null) && typeof __args[2] === 'string') {
     return utils.convReturnDataObject(JFrames["createErrorFrame(java.lang.String,java.util.Map,java.lang.String)"](message, headers, body));
   } else throw new TypeError('function invoked with invalid arguments');
 };
@@ -62,7 +62,7 @@ Frames.createErrorFrame = function(message, headers, body) {
  */
 Frames.createReceiptFrame = function(receiptId, headers) {
   var __args = arguments;
-  if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'object') {
+  if (__args.length === 2 && typeof __args[0] === 'string' && (typeof __args[1] === 'object' && __args[1] != null)) {
     return utils.convReturnDataObject(JFrames["createReceiptFrame(java.lang.String,java.util.Map)"](receiptId, headers));
   } else throw new TypeError('function invoked with invalid arguments');
 };
@@ -75,7 +75,7 @@ Frames.createReceiptFrame = function(receiptId, headers) {
  */
 Frames.handleReceipt = function(frame, connection) {
   var __args = arguments;
-  if (__args.length === 2 && typeof __args[0] === 'object' && typeof __args[1] === 'object' && __args[1]._jdel) {
+  if (__args.length === 2 && (typeof __args[0] === 'object' && __args[0] != null) && typeof __args[1] === 'object' && __args[1]._jdel) {
     JFrames["handleReceipt(io.vertx.ext.stomp.Frame,io.vertx.ext.stomp.StompServerConnection)"](frame != null ? new Frame(new JsonObject(JSON.stringify(frame))) : null, connection._jdel);
   } else throw new TypeError('function invoked with invalid arguments');
 };

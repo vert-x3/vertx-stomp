@@ -99,21 +99,21 @@ var StompClientConnection = function(j_val) {
    */
   this.send = function() {
     var __args = arguments;
-    if (__args.length === 1 && typeof __args[0] === 'object') {
+    if (__args.length === 1 && (typeof __args[0] === 'object' && __args[0] != null)) {
       j_stompClientConnection["send(io.vertx.ext.stomp.Frame)"](__args[0] != null ? new Frame(new JsonObject(JSON.stringify(__args[0]))) : null);
       return that;
-    }  else if (__args.length === 2 && typeof __args[0] === 'object' && typeof __args[1] === 'object' && __args[1]._jdel) {
+    }  else if (__args.length === 2 && (typeof __args[0] === 'object' && __args[0] != null) && typeof __args[1] === 'object' && __args[1]._jdel) {
       j_stompClientConnection["send(java.util.Map,io.vertx.core.buffer.Buffer)"](__args[0], __args[1]._jdel);
       return that;
     }  else if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'object' && __args[1]._jdel) {
       j_stompClientConnection["send(java.lang.String,io.vertx.core.buffer.Buffer)"](__args[0], __args[1]._jdel);
       return that;
-    }  else if (__args.length === 2 && typeof __args[0] === 'object' && typeof __args[1] === 'function') {
+    }  else if (__args.length === 2 && (typeof __args[0] === 'object' && __args[0] != null) && typeof __args[1] === 'function') {
       j_stompClientConnection["send(io.vertx.ext.stomp.Frame,io.vertx.core.Handler)"](__args[0] != null ? new Frame(new JsonObject(JSON.stringify(__args[0]))) : null, function(jVal) {
       __args[1](utils.convReturnDataObject(jVal));
     });
       return that;
-    }  else if (__args.length === 3 && typeof __args[0] === 'object' && typeof __args[1] === 'object' && __args[1]._jdel && typeof __args[2] === 'function') {
+    }  else if (__args.length === 3 && (typeof __args[0] === 'object' && __args[0] != null) && typeof __args[1] === 'object' && __args[1]._jdel && typeof __args[2] === 'function') {
       j_stompClientConnection["send(java.util.Map,io.vertx.core.buffer.Buffer,io.vertx.core.Handler)"](__args[0], __args[1]._jdel, function(jVal) {
       __args[2](utils.convReturnDataObject(jVal));
     });
@@ -123,10 +123,10 @@ var StompClientConnection = function(j_val) {
       __args[2](utils.convReturnDataObject(jVal));
     });
       return that;
-    }  else if (__args.length === 3 && typeof __args[0] === 'string' && typeof __args[1] === 'object' && typeof __args[2] === 'object' && __args[2]._jdel) {
+    }  else if (__args.length === 3 && typeof __args[0] === 'string' && (typeof __args[1] === 'object' && __args[1] != null) && typeof __args[2] === 'object' && __args[2]._jdel) {
       j_stompClientConnection["send(java.lang.String,java.util.Map,io.vertx.core.buffer.Buffer)"](__args[0], __args[1], __args[2]._jdel);
       return that;
-    }  else if (__args.length === 4 && typeof __args[0] === 'string' && typeof __args[1] === 'object' && typeof __args[2] === 'object' && __args[2]._jdel && typeof __args[3] === 'function') {
+    }  else if (__args.length === 4 && typeof __args[0] === 'string' && (typeof __args[1] === 'object' && __args[1] != null) && typeof __args[2] === 'object' && __args[2]._jdel && typeof __args[3] === 'function') {
       j_stompClientConnection["send(java.lang.String,java.util.Map,io.vertx.core.buffer.Buffer,io.vertx.core.Handler)"](__args[0], __args[1], __args[2]._jdel, function(jVal) {
       __args[3](utils.convReturnDataObject(jVal));
     });
@@ -156,11 +156,11 @@ var StompClientConnection = function(j_val) {
     }, function(jVal) {
       __args[2](utils.convReturnDataObject(jVal));
     });
-    }  else if (__args.length === 3 && typeof __args[0] === 'string' && typeof __args[1] === 'object' && typeof __args[2] === 'function') {
+    }  else if (__args.length === 3 && typeof __args[0] === 'string' && (typeof __args[1] === 'object' && __args[1] != null) && typeof __args[2] === 'function') {
       return j_stompClientConnection["subscribe(java.lang.String,java.util.Map,io.vertx.core.Handler)"](__args[0], __args[1], function(jVal) {
       __args[2](utils.convReturnDataObject(jVal));
     });
-    }  else if (__args.length === 4 && typeof __args[0] === 'string' && typeof __args[1] === 'object' && typeof __args[2] === 'function' && typeof __args[3] === 'function') {
+    }  else if (__args.length === 4 && typeof __args[0] === 'string' && (typeof __args[1] === 'object' && __args[1] != null) && typeof __args[2] === 'function' && typeof __args[3] === 'function') {
       return j_stompClientConnection["subscribe(java.lang.String,java.util.Map,io.vertx.core.Handler,io.vertx.core.Handler)"](__args[0], __args[1], function(jVal) {
       __args[2](utils.convReturnDataObject(jVal));
     }, function(jVal) {
@@ -189,10 +189,10 @@ var StompClientConnection = function(j_val) {
       __args[1](utils.convReturnDataObject(jVal));
     });
       return that;
-    }  else if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'object') {
+    }  else if (__args.length === 2 && typeof __args[0] === 'string' && (typeof __args[1] === 'object' && __args[1] != null)) {
       j_stompClientConnection["unsubscribe(java.lang.String,java.util.Map)"](__args[0], __args[1]);
       return that;
-    }  else if (__args.length === 3 && typeof __args[0] === 'string' && typeof __args[1] === 'object' && typeof __args[2] === 'function') {
+    }  else if (__args.length === 3 && typeof __args[0] === 'string' && (typeof __args[1] === 'object' && __args[1] != null) && typeof __args[2] === 'function') {
       j_stompClientConnection["unsubscribe(java.lang.String,java.util.Map,io.vertx.core.Handler)"](__args[0], __args[1], function(jVal) {
       __args[2](utils.convReturnDataObject(jVal));
     });
@@ -271,10 +271,10 @@ var StompClientConnection = function(j_val) {
       __args[1](utils.convReturnDataObject(jVal));
     });
       return that;
-    }  else if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'object') {
+    }  else if (__args.length === 2 && typeof __args[0] === 'string' && (typeof __args[1] === 'object' && __args[1] != null)) {
       j_stompClientConnection["beginTX(java.lang.String,java.util.Map)"](__args[0], __args[1]);
       return that;
-    }  else if (__args.length === 3 && typeof __args[0] === 'string' && typeof __args[1] === 'object' && typeof __args[2] === 'function') {
+    }  else if (__args.length === 3 && typeof __args[0] === 'string' && (typeof __args[1] === 'object' && __args[1] != null) && typeof __args[2] === 'function') {
       j_stompClientConnection["beginTX(java.lang.String,java.util.Map,io.vertx.core.Handler)"](__args[0], __args[1], function(jVal) {
       __args[2](utils.convReturnDataObject(jVal));
     });
@@ -301,10 +301,10 @@ var StompClientConnection = function(j_val) {
       __args[1](utils.convReturnDataObject(jVal));
     });
       return that;
-    }  else if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'object') {
+    }  else if (__args.length === 2 && typeof __args[0] === 'string' && (typeof __args[1] === 'object' && __args[1] != null)) {
       j_stompClientConnection["commit(java.lang.String,java.util.Map)"](__args[0], __args[1]);
       return that;
-    }  else if (__args.length === 3 && typeof __args[0] === 'string' && typeof __args[1] === 'object' && typeof __args[2] === 'function') {
+    }  else if (__args.length === 3 && typeof __args[0] === 'string' && (typeof __args[1] === 'object' && __args[1] != null) && typeof __args[2] === 'function') {
       j_stompClientConnection["commit(java.lang.String,java.util.Map,io.vertx.core.Handler)"](__args[0], __args[1], function(jVal) {
       __args[2](utils.convReturnDataObject(jVal));
     });
@@ -331,10 +331,10 @@ var StompClientConnection = function(j_val) {
       __args[1](utils.convReturnDataObject(jVal));
     });
       return that;
-    }  else if (__args.length === 2 && typeof __args[0] === 'string' && typeof __args[1] === 'object') {
+    }  else if (__args.length === 2 && typeof __args[0] === 'string' && (typeof __args[1] === 'object' && __args[1] != null)) {
       j_stompClientConnection["abort(java.lang.String,java.util.Map)"](__args[0], __args[1]);
       return that;
-    }  else if (__args.length === 3 && typeof __args[0] === 'string' && typeof __args[1] === 'object' && typeof __args[2] === 'function') {
+    }  else if (__args.length === 3 && typeof __args[0] === 'string' && (typeof __args[1] === 'object' && __args[1] != null) && typeof __args[2] === 'function') {
       j_stompClientConnection["abort(java.lang.String,java.util.Map,io.vertx.core.Handler)"](__args[0], __args[1], function(jVal) {
       __args[2](utils.convReturnDataObject(jVal));
     });
@@ -361,10 +361,10 @@ var StompClientConnection = function(j_val) {
       __args[0](utils.convReturnDataObject(jVal));
     });
       return that;
-    }  else if (__args.length === 1 && typeof __args[0] === 'object') {
+    }  else if (__args.length === 1 && (typeof __args[0] === 'object' && __args[0] != null)) {
       j_stompClientConnection["disconnect(io.vertx.ext.stomp.Frame)"](__args[0] != null ? new Frame(new JsonObject(JSON.stringify(__args[0]))) : null);
       return that;
-    }  else if (__args.length === 2 && typeof __args[0] === 'object' && typeof __args[1] === 'function') {
+    }  else if (__args.length === 2 && (typeof __args[0] === 'object' && __args[0] != null) && typeof __args[1] === 'function') {
       j_stompClientConnection["disconnect(io.vertx.ext.stomp.Frame,io.vertx.core.Handler)"](__args[0] != null ? new Frame(new JsonObject(JSON.stringify(__args[0]))) : null, function(jVal) {
       __args[1](utils.convReturnDataObject(jVal));
     });
