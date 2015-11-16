@@ -52,7 +52,7 @@ public class StompServerOptionsConverter {
       obj.setSendErrorOnNoSubscriptions((Boolean)json.getValue("sendErrorOnNoSubscriptions"));
     }
     if (json.getValue("supportedVersions") instanceof JsonArray) {
-      java.util.List<java.lang.String> list = new java.util.ArrayList<>();
+      java.util.ArrayList<java.lang.String> list = new java.util.ArrayList<>();
       json.getJsonArray("supportedVersions").forEach( item -> {
         if (item instanceof String)
           list.add((String)item);

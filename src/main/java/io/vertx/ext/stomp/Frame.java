@@ -17,6 +17,7 @@
 package io.vertx.ext.stomp;
 
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.stomp.impl.FrameException;
@@ -422,6 +423,7 @@ public class Frame {
   /**
    * @return the body of the frame as a byte array, {@code null} if none.
    */
+  @GenIgnore
   public byte[] getBodyAsByteArray() {
     if (body == null) {
       return null;

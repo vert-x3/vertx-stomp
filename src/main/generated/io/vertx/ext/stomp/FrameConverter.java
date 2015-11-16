@@ -53,8 +53,14 @@ public class FrameConverter {
   }
 
   public static void toJson(Frame obj, JsonObject json) {
+    if (obj.getAck() != null) {
+      json.put("ack", obj.getAck());
+    }
     if (obj.getBody() != null) {
       json.put("body", obj.getBody().getBytes());
+    }
+    if (obj.getBodyAsString() != null) {
+      json.put("bodyAsString", obj.getBodyAsString());
     }
     if (obj.getCommand() != null) {
       json.put("command", obj.getCommand().name());
@@ -69,6 +75,9 @@ public class FrameConverter {
     }
     if (obj.getId() != null) {
       json.put("id", obj.getId());
+    }
+    if (obj.getReceipt() != null) {
+      json.put("receipt", obj.getReceipt());
     }
     if (obj.getTransaction() != null) {
       json.put("transaction", obj.getTransaction());
