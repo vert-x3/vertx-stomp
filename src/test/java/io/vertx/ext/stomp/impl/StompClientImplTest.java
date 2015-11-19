@@ -32,6 +32,7 @@ import org.junit.runner.RunWith;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -188,7 +189,7 @@ public class StompClientImplTest {
   }
 
   @Test
-  public void testClientHeartbeatWithServerActivity(TestContext context) throws InterruptedException {
+  public void testClientHeartbeatWithServerActivity() throws InterruptedException {
     AtomicReference<StompClientConnection> reference = new AtomicReference<>();
     AsyncLock lock = new AsyncLock<>();
     server.close(lock.handler());
@@ -233,4 +234,37 @@ public class StompClientImplTest {
         () -> reference.get().session() == null
     );
   }
+
+  @Test
+  public void testConnectionDroppedHandler() throws InterruptedException {
+    AtomicBoolean flag = new AtomicBoolean(true);
+    AtomicBoolean dropped = new AtomicBoolean(false);
+    AsyncLock lock = new AsyncLock<>();
+    server.close(lock.handler());
+    lock.waitForSuccess();
+    lock = new AsyncLock();
+    server = StompServer.create(vertx,
+        new StompServerOptions().setHeartbeat(new JsonObject().put("x", 100).put("y", 100)))
+        .handler(StompServerHandler.create(vertx).pingHandler(connection -> {
+          if (flag.get()) {
+            connection.ping();
+          }
+          // When the flag is set to false, the ping are not sent anymore. We use this mechanism to mimic a
+          // server not sending ping anymore.
+        }))
+        .listen(lock.handler());
+    lock.waitForSuccess();
+
+    StompClient client = StompClient.create(vertx, new StompClientOptions().setHeartbeat(new JsonObject()
+        .put("x", 100).put("y", 100)));
+    client.connect(ar -> {
+      ar.result().connectionDroppedHandler(v -> {
+        dropped.set(true);
+      });
+      flag.set(false); // Disable the ping.
+    });
+
+    Awaitility.await().atMost(10, TimeUnit.SECONDS).until(dropped::get);
+  }
+
 }

@@ -82,7 +82,8 @@ public class DefaultStompHandler implements StompServerHandler {
   private final LocalMap<Destination, String> destinations;
 
   private DestinationFactory factory = Destination::topic;
-  private Destination bridge;
+
+  private Handler<StompServerConnection> connectionDroppedHandler;
 
   public DefaultStompHandler(Vertx vertx) {
     this.vertx = vertx;

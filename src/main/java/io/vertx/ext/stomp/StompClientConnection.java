@@ -257,6 +257,17 @@ public interface StompClientConnection {
   StompClientConnection closeHandler(Handler<StompClientConnection> handler);
 
   /**
+   * Sets a handler notified when the server does not respond to a {@code ping} request in time. In other
+   * words, this handler is invoked when the heartbeat has detected a connection failure with the server.
+   * The handler can decide to reconnect to the server.
+   *
+   * @param handler the handler
+   * @return the current {@link StompClientConnection} receiving the dropped connection.
+   */
+  @Fluent
+  StompClientConnection connectionDroppedHandler(Handler<StompClientConnection> handler);
+
+  /**
    * Sets a handler that let customize the behavior when a ping needs to be sent to the server. Be aware that
    * changing the default behavior may break the compliance with the STOMP specification.
    *
@@ -543,4 +554,6 @@ public interface StompClientConnection {
    */
   @Fluent
   StompClientConnection nack(String id, String txId, Handler<Frame> receiptHandler);
+
+
 }

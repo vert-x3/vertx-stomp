@@ -177,6 +177,18 @@ module VertxStomp
       end
       raise ArgumentError, "Invalid arguments when calling close_handler()"
     end
+    #  Sets a handler notified when the server does not respond to a <code>ping</code> request in time. In other
+    #  words, this handler is invoked when the heartbeat has detected a connection failure with the server.
+    #  The handler can decide to reconnect to the server.
+    # @yield the handler
+    # @return [self]
+    def connection_dropped_handler
+      if block_given?
+        @j_del.java_method(:connectionDroppedHandler, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(::Vertx::Util::Utils.safe_create(event,::VertxStomp::StompClientConnection)) }))
+        return self
+      end
+      raise ArgumentError, "Invalid arguments when calling connection_dropped_handler()"
+    end
     #  Sets a handler that let customize the behavior when a ping needs to be sent to the server. Be aware that
     #  changing the default behavior may break the compliance with the STOMP specification.
     # @yield the handler

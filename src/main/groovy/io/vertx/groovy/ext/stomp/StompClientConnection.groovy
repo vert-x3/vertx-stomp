@@ -312,6 +312,21 @@ public class StompClientConnection {
     return this;
   }
   /**
+   * Sets a handler notified when the server does not respond to a <code>ping</code> request in time. In other
+   * words, this handler is invoked when the heartbeat has detected a connection failure with the server.
+   * The handler can decide to reconnect to the server.
+   * @param handler the handler
+   * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection} receiving the dropped connection.
+   */
+  public StompClientConnection connectionDroppedHandler(Handler<StompClientConnection> handler) {
+    this.delegate.connectionDroppedHandler(new Handler<io.vertx.ext.stomp.StompClientConnection>() {
+      public void handle(io.vertx.ext.stomp.StompClientConnection event) {
+        handler.handle(new io.vertx.groovy.ext.stomp.StompClientConnection(event));
+      }
+    });
+    return this;
+  }
+  /**
    * Sets a handler that let customize the behavior when a ping needs to be sent to the server. Be aware that
    * changing the default behavior may break the compliance with the STOMP specification.
    * @param handler the handler

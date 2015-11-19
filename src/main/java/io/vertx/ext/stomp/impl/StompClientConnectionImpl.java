@@ -60,6 +60,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
 
   private Handler<StompClientConnection> pingHandler = connection -> connection.send(Frames.ping());
   private Handler<StompClientConnection> closeHandler;
+  private Handler<StompClientConnection> droppedHandler = v -> {}; // Do nothing by default.
 
   private class Subscription {
     final String destination;
@@ -453,6 +454,12 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
+  public synchronized StompClientConnection connectionDroppedHandler(Handler<StompClientConnection> handler) {
+    this.droppedHandler = handler;
+    return this;
+  }
+
+  @Override
   public void handle(Frame frame) {
     switch (frame.getCommand()) {
       case CONNECTED:
@@ -512,6 +519,16 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
           log.error("Disconnecting client " + client + " - no server activity detected in the last " + deltaInMs + " ms.");
           client.vertx().cancelTimer(ponger);
           disconnect();
+
+          // Stack confinement, guarded by the parent class monitor lock.
+          Handler<StompClientConnection> handler;
+          synchronized (StompClientConnectionImpl.this) {
+            handler = droppedHandler;
+          }
+
+          if (handler != null) {
+            handler.handle(this);
+          }
         }
       });
     }

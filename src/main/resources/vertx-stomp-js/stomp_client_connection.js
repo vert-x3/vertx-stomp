@@ -235,6 +235,25 @@ var StompClientConnection = function(j_val) {
   };
 
   /**
+   Sets a handler notified when the server does not respond to a <code>ping</code> request in time. In other
+   words, this handler is invoked when the heartbeat has detected a connection failure with the server.
+   The handler can decide to reconnect to the server.
+
+   @public
+   @param handler {function} the handler 
+   @return {StompClientConnection} the current {@link StompClientConnection} receiving the dropped connection.
+   */
+  this.connectionDroppedHandler = function(handler) {
+    var __args = arguments;
+    if (__args.length === 1 && typeof __args[0] === 'function') {
+      j_stompClientConnection["connectionDroppedHandler(io.vertx.core.Handler)"](function(jVal) {
+      handler(utils.convReturnVertxGen(jVal, StompClientConnection));
+    });
+      return that;
+    } else throw new TypeError('function invoked with invalid arguments');
+  };
+
+  /**
    Sets a handler that let customize the behavior when a ping needs to be sent to the server. Be aware that
    changing the default behavior may break the compliance with the STOMP specification.
 

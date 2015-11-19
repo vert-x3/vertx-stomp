@@ -272,6 +272,12 @@
  * {@link examples.StompClientExamples#example6(io.vertx.core.Vertx)}
  * ----
  *
+ * The client can also be notified when a connection drop has been detected. Connection failures are detected using the
+ * STOMP heartbeat mechanism. When the server has not sent a message in the heartbeat time window, the connection is
+ * closed and the `connectionDroppedHandler` is called (if set). To configure a `connectionDroppedHandler`, call
+ * {@link io.vertx.ext.stomp.StompClientConnection#connectionDroppedHandler(io.vertx.core.Handler)}. The handler can
+ * for instance tries to reconnect to the server.
+ *
  * === Configuration
  *
  * You can configure various aspect by passing a

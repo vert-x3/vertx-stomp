@@ -43,6 +43,7 @@ public class StompClientImpl implements StompClient {
   private final StompClientOptions options;
   private NetClient client;
 
+
   public StompClientImpl(Vertx vertx, StompClientOptions options) {
     this.vertx = vertx;
     this.options = options;
