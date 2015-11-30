@@ -51,7 +51,7 @@ def server = StompServer.create(vertx).handler(StompServerHandler.create(vertx))
 
 This creates a STOMP server listening on `localhost:61613` that is compliant with the STOMP specification.
 
-You can configure the port and host in the `link:groovydoc/io/vertx/groovy/ext/stomp/StompServer.html#listen(int,%20java.lang.String)[listen]`
+You can configure the port and host in the `link:../../groovydoc/io/vertx/groovy/ext/stomp/StompServer.html#listen(int,%20java.lang.String)[listen]`
 method:
 
 [source,groovy]
@@ -78,7 +78,7 @@ def server = StompServer.create(vertx).handler(StompServerHandler.create(vertx))
 
 ----
 
-The handler receive a reference on the `link:groovydoc/io/vertx/groovy/ext/stomp/StompServer.html[StompServer]`.
+The handler receive a reference on the `link:../../groovydoc/io/vertx/groovy/ext/stomp/StompServer.html[StompServer]`.
 
 You can also configure the host and port in `link:../dataobjects.html#StompServerOptions[StompServerOptions]`:
 
@@ -114,9 +114,9 @@ server.close({ ar ->
 The `link:../dataobjects.html#StompServerOptions[StompServerOptions]` let you configure some aspects of the STOMP server.
 
 First, the STOMP server is based on a
-`link:../../vertx-core/groovy/groovydoc/io/vertx/groovy/core/net/NetServer.html[NetServer]`, so you can configure the underlying `link:../../vertx-core/groovy/groovydoc/io/vertx/groovy/core/net/NetServer.html[NetServer]` from
+`link:../../groovydoc/io/vertx/groovy/core/net/NetServer.html[NetServer]`, so you can configure the underlying `link:../../groovydoc/io/vertx/groovy/core/net/NetServer.html[NetServer]` from
 the `link:../dataobjects.html#StompServerOptions[StompServerOptions]`. Alternatively you can also pass the
-`link:../../vertx-core/groovy/groovydoc/io/vertx/groovy/core/net/NetServer.html[NetServer]` you want to use:
+`link:../../groovydoc/io/vertx/groovy/core/net/NetServer.html[NetServer]` you want to use:
 
 [source,groovy]
 ----
@@ -155,7 +155,7 @@ def server = StompServer.create(vertx, [
 
 ----
 
-Enabling security requires an additional `link:../../vertx-auth-common/groovy/groovydoc/io/vertx/groovy/ext/auth/AuthProvider.html[AuthProvider]` handling the
+Enabling security requires an additional `link:../../groovydoc/io/vertx/groovy/ext/auth/AuthProvider.html[AuthProvider]` handling the
 authentication requests:
 
 [source,groovy]
@@ -168,7 +168,7 @@ def server = StompServer.create(vertx, [
 
 ----
 
-More information about `link:../../vertx-auth-common/groovy/groovydoc/io/vertx/groovy/ext/auth/AuthProvider.html[AuthProvider]` is available
+More information about `link:../../groovydoc/io/vertx/groovy/ext/auth/AuthProvider.html[AuthProvider]` is available
 http://vertx.io/docs/#authentication_and_authorisation[here].
 
 If a frame exceeds one of the size limits, the frame is rejected and the client receives an `ERROR` frame. As the
@@ -230,20 +230,20 @@ Queues dispatches messages using a round-robin strategies.
 === Providing your own type of destination
 
 On purpose the STOMP server does not implement any advanced feature. IF you need more advanced dispatching policy,
-you can implement your own type of destination by providing a `link:groovydoc/io/vertx/groovy/ext/stomp/DestinationFactory.html[DestinationFactory]`
-returning your own `link:groovydoc/io/vertx/groovy/ext/stomp/Destination.html[Destination]` object.
+you can implement your own type of destination by providing a `link:../../groovydoc/io/vertx/groovy/ext/stomp/DestinationFactory.html[DestinationFactory]`
+returning your own `link:../../groovydoc/io/vertx/groovy/ext/stomp/Destination.html[Destination]` object.
 
 === Acknowledgment
 
 By default, the STOMP server does nothing when a message is not acknowledged. You can customize this by
-providing your own `link:groovydoc/io/vertx/groovy/ext/stomp/Destination.html[Destination]` implementation.
+providing your own `link:../../groovydoc/io/vertx/groovy/ext/stomp/Destination.html[Destination]` implementation.
 
 The custom destination should call the
 
-`link:groovydoc/io/vertx/groovy/ext/stomp/StompServerHandler.html#onAck(io.vertx.ext.stomp.StompServerConnection,%20io.vertx.ext.stomp.Frame,%20java.util.List)[onAck]`
+`link:../../groovydoc/io/vertx/groovy/ext/stomp/StompServerHandler.html#onAck(io.vertx.ext.stomp.StompServerConnection,%20io.vertx.ext.stomp.Frame,%20java.util.List)[onAck]`
 and
-`link:groovydoc/io/vertx/groovy/ext/stomp/StompServerHandler.html#onNack(io.vertx.ext.stomp.StompServerConnection,%20io.vertx.ext.stomp.Frame,%20java.util.List)[onNack]`
-method in order to let the `link:groovydoc/io/vertx/groovy/ext/stomp/StompServerHandler.html[StompServerHandler]` customizes the behavior:
+`link:../../groovydoc/io/vertx/groovy/ext/stomp/StompServerHandler.html#onNack(io.vertx.ext.stomp.StompServerConnection,%20io.vertx.ext.stomp.Frame,%20java.util.List)[onNack]`
+method in order to let the `link:../../groovydoc/io/vertx/groovy/ext/stomp/StompServerHandler.html[StompServerHandler]` customizes the behavior:
 
 [source,groovy]
 ----
@@ -288,7 +288,7 @@ STOMP clients connect to STOMP server and can send and receive frames.
 
 === Creating a STOMP client
 
-You create a `link:groovydoc/io/vertx/groovy/ext/stomp/StompClient.html[StompClient]` instance with default options as follows:
+You create a `link:../../groovydoc/io/vertx/groovy/ext/stomp/StompClient.html[StompClient]` instance with default options as follows:
 
 [source,groovy]
 ----
@@ -305,7 +305,7 @@ def client = StompClient.create(vertx).connect({ ar ->
 ----
 
 The previous snippet creates a STOMP client connecting to "0.0.0.0:61613". Once connected, you get a
-`link:groovydoc/io/vertx/groovy/ext/stomp/StompClientConnection.html[StompClientConnection]` that let you interact with the server. You can
+`link:../../groovydoc/io/vertx/groovy/ext/stomp/StompClientConnection.html[StompClientConnection]` that let you interact with the server. You can
 configure the host and port as follows:
 
 [source,groovy]
@@ -365,7 +365,7 @@ client.close()
 ----
 
 However, this way would not notify the server of the disconnection. To cleanly close the connection, you should
-use the `link:groovydoc/io/vertx/groovy/ext/stomp/StompClientConnection.html#disconnect()[disconnect]` method:
+use the `link:../../groovydoc/io/vertx/groovy/ext/stomp/StompClientConnection.html#disconnect()[disconnect]` method:
 
 [source,groovy]
 ----
@@ -390,7 +390,7 @@ connection is automatically closed.
 
 === Handling errors
 
-On the `link:groovydoc/io/vertx/groovy/ext/stomp/StompClientConnection.html[StompClientConnection]`, you can register an error handler receiving `ERROR`
+On the `link:../../groovydoc/io/vertx/groovy/ext/stomp/StompClientConnection.html[StompClientConnection]`, you can register an error handler receiving `ERROR`
 frames sent by the server. Notice that the server closes the connection with the client after having sent such frame:
 
 [source,groovy]
@@ -415,17 +415,17 @@ def client = StompClient.create(vertx, [
 The client can also be notified when a connection drop has been detected. Connection failures are detected using the
 STOMP heartbeat mechanism. When the server has not sent a message in the heartbeat time window, the connection is
 closed and the `connectionDroppedHandler` is called (if set). To configure a `connectionDroppedHandler`, call
-`link:groovydoc/io/vertx/groovy/ext/stomp/StompClientConnection.html#connectionDroppedHandler(io.vertx.core.Handler)[connectionDroppedHandler]`. The handler can
+`link:../../groovydoc/io/vertx/groovy/ext/stomp/StompClientConnection.html#connectionDroppedHandler(io.vertx.core.Handler)[connectionDroppedHandler]`. The handler can
 for instance tries to reconnect to the server.
 
 === Configuration
 
 You can configure various aspect by passing a
-`link:../dataobjects.html#StompClientOptions[StompClientOptions]` when creating the `link:groovydoc/io/vertx/groovy/ext/stomp/StompClient.html[StompClient]`. As the
-STOMP client relies on a `link:../../vertx-core/groovy/groovydoc/io/vertx/groovy/core/net/NetClient.html[NetClient]`, you can configure the underlying Net Client from
-the `link:../dataobjects.html#StompClientOptions[StompClientOptions]`. Alternatively, you can pass the `link:../../vertx-core/groovy/groovydoc/io/vertx/groovy/core/net/NetClient.html[NetClient]`
+`link:../dataobjects.html#StompClientOptions[StompClientOptions]` when creating the `link:../../groovydoc/io/vertx/groovy/ext/stomp/StompClient.html[StompClient]`. As the
+STOMP client relies on a `link:../../groovydoc/io/vertx/groovy/core/net/NetClient.html[NetClient]`, you can configure the underlying Net Client from
+the `link:../dataobjects.html#StompClientOptions[StompClientOptions]`. Alternatively, you can pass the `link:../../groovydoc/io/vertx/groovy/core/net/NetClient.html[NetClient]`
 you want to use in the
-`link:groovydoc/io/vertx/groovy/ext/stomp/StompClient.html#connect(io.vertx.core.net.NetClient,%20io.vertx.core.Handler)[connect]` method:
+`link:../../groovydoc/io/vertx/groovy/ext/stomp/StompClient.html#connect(io.vertx.core.net.NetClient,%20io.vertx.core.Handler)[connect]` method:
 
 [source,groovy]
 ----
@@ -597,9 +597,9 @@ def client = StompClient.create(vertx).connect({ ar ->
 The STOMP server can be used as a bridge to the vert.x Event Bus. The bridge is bi-directional meaning the STOMP
 frames are translated to Event Bus messages and Event Bus messages are translated to STOMP frames.
 
-To enable the bridge you need to configure the inbount and outbound addresses. Inbound addresses are STOMP
-destination that are transfered to the event bus. The STOMP destination is used as the event bus adress. Outbound
-addresses are event bus addresses that are tranfered to STOMP.
+To enable the bridge you need to configure the inbound and outbound addresses. Inbound addresses are STOMP
+destination that are transferred to the event bus. The STOMP destination is used as the event bus address. Outbound
+addresses are event bus addresses that are transferred to STOMP.
 
 [source,groovy]
 ----
@@ -631,6 +631,33 @@ def server = StompServer.create(vertx).handler(StompServerHandler.create(vertx).
   inboundPermitteds:[
     [
       address:"/toBus"
+    ]
+  ],
+  outboundPermitteds:[
+    [
+      address:"/toStomp"
+    ]
+  ],
+  pointToPoint:true
+])).listen()
+
+----
+
+The permitted options can also be expressed as a "regex" or with a _match_. A _match_ is a structure that the
+message payload must meet. For instance, in the next examples, the payload must contains the field "foo" set to
+"bar". Structure match only supports JSON object.
+
+[source,groovy]
+----
+import io.vertx.groovy.ext.stomp.StompServerHandler
+import io.vertx.groovy.ext.stomp.StompServer
+def server = StompServer.create(vertx).handler(StompServerHandler.create(vertx).bridge([
+  inboundPermitteds:[
+    [
+      address:"/toBus",
+      match:[
+        foo:"bar"
+      ]
     ]
   ],
   outboundPermitteds:[

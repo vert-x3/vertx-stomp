@@ -19,6 +19,7 @@ package io.vertx.ext.stomp;
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.shareddata.Shareable;
 import io.vertx.ext.stomp.impl.EventBusBridge;
 import io.vertx.ext.stomp.impl.Queue;

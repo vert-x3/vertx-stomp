@@ -51,7 +51,7 @@ server = VertxStomp::StompServer.create(vertx).handler(VertxStomp::StompServerHa
 
 This creates a STOMP server listening on `localhost:61613` that is compliant with the STOMP specification.
 
-You can configure the port and host in the `link:yardoc/VertxStomp/StompServer.html#listen-instance_method[listen]`
+You can configure the port and host in the `link:../../yardoc/VertxStomp/StompServer.html#listen-instance_method[listen]`
 method:
 
 [source,ruby]
@@ -78,7 +78,7 @@ server = VertxStomp::StompServer.create(vertx).handler(VertxStomp::StompServerHa
 
 ----
 
-The handler receive a reference on the `link:yardoc/VertxStomp/StompServer.html[StompServer]`.
+The handler receive a reference on the `link:../../yardoc/VertxStomp/StompServer.html[StompServer]`.
 
 You can also configure the host and port in `link:../dataobjects.html#StompServerOptions[StompServerOptions]`:
 
@@ -114,9 +114,9 @@ server.close() { |ar_err,ar|
 The `link:../dataobjects.html#StompServerOptions[StompServerOptions]` let you configure some aspects of the STOMP server.
 
 First, the STOMP server is based on a
-`link:../../vertx-core/ruby/yardoc/Vertx/NetServer.html[NetServer]`, so you can configure the underlying `link:../../vertx-core/ruby/yardoc/Vertx/NetServer.html[NetServer]` from
+`link:../../yardoc/Vertx/NetServer.html[NetServer]`, so you can configure the underlying `link:../../yardoc/Vertx/NetServer.html[NetServer]` from
 the `link:../dataobjects.html#StompServerOptions[StompServerOptions]`. Alternatively you can also pass the
-`link:../../vertx-core/ruby/yardoc/Vertx/NetServer.html[NetServer]` you want to use:
+`link:../../yardoc/Vertx/NetServer.html[NetServer]` you want to use:
 
 [source,ruby]
 ----
@@ -155,7 +155,7 @@ server = VertxStomp::StompServer.create(vertx, {
 
 ----
 
-Enabling security requires an additional `link:../../vertx-auth-common/ruby/yardoc/VertxAuthCommon/AuthProvider.html[AuthProvider]` handling the
+Enabling security requires an additional `link:../../yardoc/VertxAuthCommon/AuthProvider.html[AuthProvider]` handling the
 authentication requests:
 
 [source,ruby]
@@ -168,7 +168,7 @@ server = VertxStomp::StompServer.create(vertx, {
 
 ----
 
-More information about `link:../../vertx-auth-common/ruby/yardoc/VertxAuthCommon/AuthProvider.html[AuthProvider]` is available
+More information about `link:../../yardoc/VertxAuthCommon/AuthProvider.html[AuthProvider]` is available
 http://vertx.io/docs/#authentication_and_authorisation[here].
 
 If a frame exceeds one of the size limits, the frame is rejected and the client receives an `ERROR` frame. As the
@@ -230,20 +230,20 @@ Queues dispatches messages using a round-robin strategies.
 === Providing your own type of destination
 
 On purpose the STOMP server does not implement any advanced feature. IF you need more advanced dispatching policy,
-you can implement your own type of destination by providing a `link:yardoc/VertxStomp/DestinationFactory.html[DestinationFactory]`
-returning your own `link:yardoc/VertxStomp/Destination.html[Destination]` object.
+you can implement your own type of destination by providing a `link:../../yardoc/VertxStomp/DestinationFactory.html[DestinationFactory]`
+returning your own `link:../../yardoc/VertxStomp/Destination.html[Destination]` object.
 
 === Acknowledgment
 
 By default, the STOMP server does nothing when a message is not acknowledged. You can customize this by
-providing your own `link:yardoc/VertxStomp/Destination.html[Destination]` implementation.
+providing your own `link:../../yardoc/VertxStomp/Destination.html[Destination]` implementation.
 
 The custom destination should call the
 
-`link:yardoc/VertxStomp/StompServerHandler.html#on_ack-instance_method[onAck]`
+`link:../../yardoc/VertxStomp/StompServerHandler.html#on_ack-instance_method[onAck]`
 and
-`link:yardoc/VertxStomp/StompServerHandler.html#on_nack-instance_method[onNack]`
-method in order to let the `link:yardoc/VertxStomp/StompServerHandler.html[StompServerHandler]` customizes the behavior:
+`link:../../yardoc/VertxStomp/StompServerHandler.html#on_nack-instance_method[onNack]`
+method in order to let the `link:../../yardoc/VertxStomp/StompServerHandler.html[StompServerHandler]` customizes the behavior:
 
 [source,ruby]
 ----
@@ -288,7 +288,7 @@ STOMP clients connect to STOMP server and can send and receive frames.
 
 === Creating a STOMP client
 
-You create a `link:yardoc/VertxStomp/StompClient.html[StompClient]` instance with default options as follows:
+You create a `link:../../yardoc/VertxStomp/StompClient.html[StompClient]` instance with default options as follows:
 
 [source,ruby]
 ----
@@ -305,7 +305,7 @@ client = VertxStomp::StompClient.create(vertx).connect() { |ar_err,ar|
 ----
 
 The previous snippet creates a STOMP client connecting to "0.0.0.0:61613". Once connected, you get a
-`link:yardoc/VertxStomp/StompClientConnection.html[StompClientConnection]` that let you interact with the server. You can
+`link:../../yardoc/VertxStomp/StompClientConnection.html[StompClientConnection]` that let you interact with the server. You can
 configure the host and port as follows:
 
 [source,ruby]
@@ -365,7 +365,7 @@ client.close()
 ----
 
 However, this way would not notify the server of the disconnection. To cleanly close the connection, you should
-use the `link:yardoc/VertxStomp/StompClientConnection.html#disconnect-instance_method[disconnect]` method:
+use the `link:../../yardoc/VertxStomp/StompClientConnection.html#disconnect-instance_method[disconnect]` method:
 
 [source,ruby]
 ----
@@ -390,7 +390,7 @@ connection is automatically closed.
 
 === Handling errors
 
-On the `link:yardoc/VertxStomp/StompClientConnection.html[StompClientConnection]`, you can register an error handler receiving `ERROR`
+On the `link:../../yardoc/VertxStomp/StompClientConnection.html[StompClientConnection]`, you can register an error handler receiving `ERROR`
 frames sent by the server. Notice that the server closes the connection with the client after having sent such frame:
 
 [source,ruby]
@@ -415,17 +415,17 @@ client = VertxStomp::StompClient.create(vertx, {
 The client can also be notified when a connection drop has been detected. Connection failures are detected using the
 STOMP heartbeat mechanism. When the server has not sent a message in the heartbeat time window, the connection is
 closed and the `connectionDroppedHandler` is called (if set). To configure a `connectionDroppedHandler`, call
-`link:yardoc/VertxStomp/StompClientConnection.html#connection_dropped_handler-instance_method[connectionDroppedHandler]`. The handler can
+`link:../../yardoc/VertxStomp/StompClientConnection.html#connection_dropped_handler-instance_method[connectionDroppedHandler]`. The handler can
 for instance tries to reconnect to the server.
 
 === Configuration
 
 You can configure various aspect by passing a
-`link:../dataobjects.html#StompClientOptions[StompClientOptions]` when creating the `link:yardoc/VertxStomp/StompClient.html[StompClient]`. As the
-STOMP client relies on a `link:../../vertx-core/ruby/yardoc/Vertx/NetClient.html[NetClient]`, you can configure the underlying Net Client from
-the `link:../dataobjects.html#StompClientOptions[StompClientOptions]`. Alternatively, you can pass the `link:../../vertx-core/ruby/yardoc/Vertx/NetClient.html[NetClient]`
+`link:../dataobjects.html#StompClientOptions[StompClientOptions]` when creating the `link:../../yardoc/VertxStomp/StompClient.html[StompClient]`. As the
+STOMP client relies on a `link:../../yardoc/Vertx/NetClient.html[NetClient]`, you can configure the underlying Net Client from
+the `link:../dataobjects.html#StompClientOptions[StompClientOptions]`. Alternatively, you can pass the `link:../../yardoc/Vertx/NetClient.html[NetClient]`
 you want to use in the
-`link:yardoc/VertxStomp/StompClient.html#connect-instance_method[connect]` method:
+`link:../../yardoc/VertxStomp/StompClient.html#connect-instance_method[connect]` method:
 
 [source,ruby]
 ----
@@ -596,9 +596,9 @@ client = VertxStomp::StompClient.create(vertx).connect() { |ar_err,ar|
 The STOMP server can be used as a bridge to the vert.x Event Bus. The bridge is bi-directional meaning the STOMP
 frames are translated to Event Bus messages and Event Bus messages are translated to STOMP frames.
 
-To enable the bridge you need to configure the inbount and outbound addresses. Inbound addresses are STOMP
-destination that are transfered to the event bus. The STOMP destination is used as the event bus adress. Outbound
-addresses are event bus addresses that are tranfered to STOMP.
+To enable the bridge you need to configure the inbound and outbound addresses. Inbound addresses are STOMP
+destination that are transferred to the event bus. The STOMP destination is used as the event bus address. Outbound
+addresses are event bus addresses that are transferred to STOMP.
 
 [source,ruby]
 ----
@@ -630,6 +630,33 @@ server = VertxStomp::StompServer.create(vertx).handler(VertxStomp::StompServerHa
   'inboundPermitteds' => [
     {
       'address' => "/toBus"
+    }
+  ],
+  'outboundPermitteds' => [
+    {
+      'address' => "/toStomp"
+    }
+  ],
+  'pointToPoint' => true
+})).listen()
+
+----
+
+The permitted options can also be expressed as a "regex" or with a _match_. A _match_ is a structure that the
+message payload must meet. For instance, in the next examples, the payload must contains the field "foo" set to
+"bar". Structure match only supports JSON object.
+
+[source,ruby]
+----
+require 'vertx-stomp/stomp_server_handler'
+require 'vertx-stomp/stomp_server'
+server = VertxStomp::StompServer.create(vertx).handler(VertxStomp::StompServerHandler.create(vertx).bridge({
+  'inboundPermitteds' => [
+    {
+      'address' => "/toBus",
+      'match' => {
+        'foo' => "bar"
+      }
     }
   ],
   'outboundPermitteds' => [

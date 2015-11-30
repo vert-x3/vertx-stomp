@@ -19,8 +19,9 @@ package io.vertx.ext.stomp;
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.bridge.*;
+import io.vertx.ext.bridge.PermittedOptions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,92 +29,33 @@ import java.util.List;
  *
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
-@DataObject(generateConverter = false)
-public class BridgeOptions {
+@DataObject
+public class BridgeOptions extends io.vertx.ext.bridge.BridgeOptions {
 
   public static final boolean DEFAULT_POINT_TO_POINT = false;
-
-  private List<PermittedOptions> inboundPermitted = new ArrayList<>();
-  private List<PermittedOptions> outboundPermitted = new ArrayList<>();
 
   private boolean pointToPoint;
 
 
   public BridgeOptions() {
+    super();
     pointToPoint = DEFAULT_POINT_TO_POINT;
   }
 
   public BridgeOptions(BridgeOptions that) {
-    this.inboundPermitted = that.inboundPermitted;
-    this.outboundPermitted = that.outboundPermitted;
+    super(that);
     this.pointToPoint = that.pointToPoint;
   }
 
   public BridgeOptions(JsonObject json) {
-    JsonArray inbound = json.getJsonArray("inboundPermitteds");
-    JsonArray outbound = json.getJsonArray("outboundPermitteds");
-    if (inbound != null) {
-      for (Object object : inbound) {
-        if (!(object instanceof JsonObject)) {
-          throw new IllegalArgumentException("Invalid type " + object.getClass() + " in inboundPermitteds array");
-        }
-        this.inboundPermitted.add(new PermittedOptions((JsonObject) object));
-      }
-    }
-
-    if (outbound != null) {
-      for (Object object : outbound) {
-        if (!(object instanceof JsonObject)) {
-          throw new IllegalArgumentException("Invalid type " + object.getClass() + " in outboundPermitteds array");
-        }
-        this.outboundPermitted.add(new PermittedOptions((JsonObject) object));
-      }
-    }
-
-
-    this.pointToPoint = json.getBoolean("pointToPoint", DEFAULT_POINT_TO_POINT);
+    super(json);
+    this.pointToPoint=json.getBoolean("pointToPoint",DEFAULT_POINT_TO_POINT);
   }
 
   public JsonObject toJson() {
-    JsonObject json = new JsonObject();
-    JsonArray in = new JsonArray();
-    JsonArray out = new JsonArray();
-    for (PermittedOptions p : inboundPermitted) {
-      in.add(p.toJson());
-    }
-    for (PermittedOptions p : outboundPermitted) {
-      out.add(p.toJson());
-    }
-    json.put("inboundPermitteds", in);
-    json.put("outboundPermitteds", out);
+    JsonObject json = super.toJson();
     json.put("pointToPoint", pointToPoint);
     return json;
-  }
-
-  public BridgeOptions addInboundPermitted(PermittedOptions permitted) {
-    inboundPermitted.add(permitted);
-    return this;
-  }
-
-  public List<PermittedOptions> getInboundPermitteds() {
-    return inboundPermitted;
-  }
-
-  public void setInboundPermitted(List<PermittedOptions> inboundPermitted) {
-    this.inboundPermitted = inboundPermitted;
-  }
-
-  public BridgeOptions addOutboundPermitted(PermittedOptions permitted) {
-    outboundPermitted.add(permitted);
-    return this;
-  }
-
-  public List<PermittedOptions> getOutboundPermitteds() {
-    return outboundPermitted;
-  }
-
-  public void setOutboundPermitted(List<PermittedOptions> outboundPermitted) {
-    this.outboundPermitted = outboundPermitted;
   }
 
   public BridgeOptions setPointToPoint(boolean v) {
@@ -123,5 +65,29 @@ public class BridgeOptions {
 
   public boolean isPointToPoint() {
     return pointToPoint;
+  }
+
+  @Override
+  public BridgeOptions setInboundPermitteds(List<PermittedOptions> inboundPermitted) {
+    super.setInboundPermitteds(inboundPermitted);
+    return this;
+  }
+
+  @Override
+  public BridgeOptions setOutboundPermitteds(List<PermittedOptions> outboundPermitted) {
+    super.setOutboundPermitteds(outboundPermitted);
+    return this;
+  }
+
+  @Override
+  public BridgeOptions addInboundPermitted(PermittedOptions permitted) {
+    super.addInboundPermitted(permitted);
+    return this;
+  }
+
+  @Override
+  public BridgeOptions addOutboundPermitted(PermittedOptions permitted) {
+    super.addOutboundPermitted(permitted);
+    return this;
   }
 }

@@ -17,6 +17,7 @@
 package io.vertx.ext.stomp.impl;
 
 import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.stomp.Destination;
 import io.vertx.ext.stomp.Frame;
 import io.vertx.ext.stomp.StompServerConnection;

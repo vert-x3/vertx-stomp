@@ -23,6 +23,7 @@ import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.bridge.PermittedOptions;
 import io.vertx.ext.stomp.*;
 import io.vertx.ext.stomp.utils.Headers;
 import org.junit.After;
@@ -123,8 +124,8 @@ public class EventBusBridgeTest {
   @Test
   public void testBidirectionalPingPong() {
     server.stompHandler().bridge(new BridgeOptions()
-            .addInboundPermitted(new PermittedOptions().setAddress("/toBus"))
-            .addOutboundPermitted(new PermittedOptions().setAddress("/toStomp"))
+            .addInboundPermitted(new PermittedOptions().setAddressRegex("/toBu."))
+            .addOutboundPermitted(new PermittedOptions().setAddressRegex("/to.tomp"))
     );
     List<Frame> stomp = new ArrayList<>();
     List<Message> bus = new ArrayList<>();
@@ -411,5 +412,139 @@ public class EventBusBridgeTest {
 
     Thread.sleep(500);
     assertThat(frames).hasSize(1);
+  }
+
+  @Test
+  public void testThatStompFrameMatchingTheStructureAreTransferred() {
+    tearDown();
+    AsyncLock<StompServer> lock = new AsyncLock<>();
+
+    vertx = Vertx.vertx();
+    server = StompServer.create(vertx)
+        .handler(StompServerHandler.create(vertx)
+            .bridge(new BridgeOptions()
+                .addInboundPermitted(new PermittedOptions().setAddress("/bus").setMatch(new JsonObject().put("id", 1)))
+                .addOutboundPermitted(new PermittedOptions().setAddress("/bus")))
+        )
+        .listen(lock.handler());
+
+    lock.waitForSuccess();
+
+    AtomicReference<Message> reference = new AtomicReference<>();
+    consumers.add(vertx.eventBus().consumer("/bus", reference::set));
+
+    clients.add(StompClient.create(vertx).connect(ar -> {
+      final StompClientConnection connection = ar.result();
+      connection.send("/bus", Headers.create("foo", "bar"), Buffer.buffer(new JsonObject().put("id", 1).put("msg",
+          "Hello from STOMP").toString()));
+    }));
+
+    Awaitility.await().atMost(10, TimeUnit.SECONDS).until(() -> reference.get() != null);
+    assertThat(reference.get().headers().get("foo")).isEqualTo("bar");
+    assertThat(reference.get().headers().get("destination")).isEqualTo("/bus");
+    assertThat(reference.get().address()).isEqualTo("/bus");
+    assertThat(reference.get().replyAddress()).isNullOrEmpty();
+    JsonObject json = new JsonObject(reference.get().body().toString());
+    assertThat(json.getString("msg")).isEqualTo("Hello from STOMP");
+  }
+
+  @Test
+  public void testThatStompFrameNotMatchingTheStructureAreRejected() throws InterruptedException {
+    tearDown();
+    AsyncLock<StompServer> lock = new AsyncLock<>();
+
+    vertx = Vertx.vertx();
+    server = StompServer.create(vertx)
+        .handler(StompServerHandler.create(vertx)
+            .bridge(new BridgeOptions()
+                .addInboundPermitted(new PermittedOptions().setAddress("/bus").setMatch(new JsonObject().put("id", 2)))
+                .addOutboundPermitted(new PermittedOptions().setAddress("/bus")))
+        )
+        .listen(lock.handler());
+
+    lock.waitForSuccess();
+
+    AtomicReference<Message> reference = new AtomicReference<>();
+    consumers.add(vertx.eventBus().consumer("/bus", reference::set));
+
+    clients.add(StompClient.create(vertx).connect(ar -> {
+      final StompClientConnection connection = ar.result();
+      connection.send("/bus", Headers.create("foo", "bar"), Buffer.buffer(new JsonObject().put("msg",
+          "Hello from STOMP").toString()));
+    }));
+
+    Thread.sleep(2000);
+    assertThat(reference.get()).isNull();
+  }
+
+  @Test
+  public void testThatEventBusMessagesMatchingTheStructureAreTransferredToStomp() {
+    tearDown();
+    AsyncLock<StompServer> lock = new AsyncLock<>();
+
+    vertx = Vertx.vertx();
+    server = StompServer.create(vertx)
+        .handler(StompServerHandler.create(vertx)
+            .bridge(new BridgeOptions()
+                .addInboundPermitted(new PermittedOptions().setAddress("/bus"))
+                .addOutboundPermitted(new PermittedOptions().setAddress("/bus").setMatch(new JsonObject().put("id", 2)
+        ))))
+        .listen(lock.handler());
+
+    lock.waitForSuccess();
+
+
+    AtomicReference<Frame> reference = new AtomicReference<>();
+
+    clients.add(StompClient.create(vertx).connect(ar -> {
+          final StompClientConnection connection = ar.result();
+          connection.subscribe("/bus", reference::set,
+              f -> {
+                JsonObject payload = new JsonObject().put("id", 2).put("message", "Hello from Vert.x");
+                vertx.eventBus().publish("/bus", payload, new DeliveryOptions().addHeader("foo", "bar"));
+              }
+          );
+        }
+    ));
+
+    Awaitility.await().atMost(10, TimeUnit.SECONDS).until(() -> reference.get() != null);
+
+    assertThat(reference.get().getHeaders().get("foo")).isEqualTo("bar");
+    assertThat(reference.get().getHeaders().get("destination")).isEqualTo("/bus");
+    JsonObject json = new JsonObject(reference.get().getBodyAsString());
+    assertThat(json.getString("message")).isEqualTo("Hello from Vert.x");
+  }
+
+  @Test
+  public void testThatEventBusMessagesNotMatchingTheStructureAreRejected() throws InterruptedException {
+    tearDown();
+    AsyncLock<StompServer> lock = new AsyncLock<>();
+
+    vertx = Vertx.vertx();
+    server = StompServer.create(vertx)
+        .handler(StompServerHandler.create(vertx)
+            .bridge(new BridgeOptions()
+                .addInboundPermitted(new PermittedOptions().setAddress("/bus"))
+                .addOutboundPermitted(new PermittedOptions().setAddress("/bus").setMatch(new JsonObject().put("id", 2)
+                ))))
+        .listen(lock.handler());
+
+    lock.waitForSuccess();
+
+
+    AtomicReference<Frame> reference = new AtomicReference<>();
+
+    clients.add(StompClient.create(vertx).connect(ar -> {
+          final StompClientConnection connection = ar.result();
+          connection.subscribe("/bus", reference::set,
+              f -> {
+                JsonObject payload = new JsonObject().put("id", 1).put("message", "Hello from Vert.x");
+                vertx.eventBus().publish("/bus", payload, new DeliveryOptions().addHeader("foo", "bar"));
+              }
+          );
+        }
+    ));
+    Thread.sleep(2000);
+    assertThat(reference.get()).isNull();
   }
 }

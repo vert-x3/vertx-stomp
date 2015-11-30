@@ -12,9 +12,7 @@
 [frame="topbot"]
 |===
 ^|Name | Type ^| Description
-|[[inboundPermitted]]`inboundPermitted`|`Array of link:dataobjects.html#PermittedOptions[PermittedOptions]`|-
 |[[inboundPermitteds]]`inboundPermitteds`|`Array of link:dataobjects.html#PermittedOptions[PermittedOptions]`|-
-|[[outboundPermitted]]`outboundPermitted`|`Array of link:dataobjects.html#PermittedOptions[PermittedOptions]`|-
 |[[outboundPermitteds]]`outboundPermitteds`|`Array of link:dataobjects.html#PermittedOptions[PermittedOptions]`|-
 |[[pointToPoint]]`pointToPoint`|`Boolean`|-
 |===
@@ -54,7 +52,7 @@ Sets the frame command.
 |[[destination]]`destination`|`String`|-
 |[[headers]]`headers`|`String`|
 +++
-Gets the frame headers. Modifications to the returned  modifies the headers of the frame.
+Sets the headers of the frames.
 +++
 |[[id]]`id`|`String`|-
 |[[receipt]]`receipt`|`String`|-
@@ -73,17 +71,9 @@ Gets the frame headers. Modifications to the returned  modifies the headers of t
 [frame="topbot"]
 |===
 ^|Name | Type ^| Description
-|[[address]]`address`|`String`|
-+++
-The exact address the message is being sent to. If you want to allow messages based on
- an exact address you use this field.
-+++
-|[[addressRegex]]`addressRegex`|`String`|
-+++
-A regular expression that will be matched against the address. If you want to allow messages
- based on a regular expression you use this field. If the link value is specified
- this will be ignored.
-+++
+|[[address]]`address`|`String`|-
+|[[addressRegex]]`addressRegex`|`String`|-
+|[[match]]`match`|`Json object`|-
 |===
 
 [[StompServerOptions]]
@@ -106,34 +96,32 @@ A regular expression that will be matched against the address. If you want to al
 |[[enabledCipherSuites]]`enabledCipherSuites`|`Array of String`|-
 |[[heartbeat]]`heartbeat`|`Json object`|
 +++
-Gets the heartbeat configuration. Defaults to <code>x: 1000, y: 1000</code>.
+Sets the heartbeat configuration.
 +++
 |[[host]]`host`|`String`|-
 |[[idleTimeout]]`idleTimeout`|`Number (int)`|-
 |[[keyStoreOptions]]`keyStoreOptions`|`link:dataobjects.html#JksOptions[JksOptions]`|-
 |[[maxBodyLength]]`maxBodyLength`|`Number (int)`|
 +++
-Gets the max length of the frame body accepted by the server. If a frame exceeds this size, the frame is
- rejected and an error is sent to the client.
+Sets the max body length accepted by the server. 10 Mb by default.
 +++
 |[[maxFrameInTransaction]]`maxFrameInTransaction`|`Number (int)`|
 +++
-Gets the maximum number of frames that can be added to a transaction. If the number of frame added to a
- transaction exceeds this threshold, the client receives an <code>ERROR</code> frame and is disconnected.
+Sets the maximum number of frame that can be added in a transaction. If the number of frame added to a
+ transaction exceeds this threshold, the client receives an <code>ERROR</code> frame and is disconnected. The default
+ is 1000.
 +++
 |[[maxHeaderLength]]`maxHeaderLength`|`Number (int)`|
 +++
-Gets the max length of header's value. If a frame has an header with a value exceeding this length, the frame is
- rejected and an error is sent to the client. 10240 by default.
+Sets the max header length.
 +++
 |[[maxHeaders]]`maxHeaders`|`Number (int)`|
 +++
-Gets the maximum number of headers supported by the server. If a frame exceeds the number of headers, the frame
- is rejected and an error is sent to the client.
+Sets the maximum number of headers. 1000 by default.
 +++
 |[[maxSubscriptionsByClient]]`maxSubscriptionsByClient`|`Number (int)`|
 +++
-Gets the maximum of subscriptions a client is allowed to register. If a client exceeds this number, it receives
+Sets the maximum of subscriptions a client is allowed to register. If a client exceeds this number, it receives
  an error and the connection is closed.
 +++
 |[[pemKeyCertOptions]]`pemKeyCertOptions`|`link:dataobjects.html#PemKeyCertOptions[PemKeyCertOptions]`|-
@@ -145,33 +133,31 @@ Gets the maximum of subscriptions a client is allowed to register. If a client e
 |[[reuseAddress]]`reuseAddress`|`Boolean`|-
 |[[secured]]`secured`|`Boolean`|
 +++
-Checks whether or not the server is secured (meaning it has an authentication mechanism). Security is disabled
- by default and requires an link handler.
+Enables or disables the server security feature. It requires an link handler.
 +++
 |[[sendBufferSize]]`sendBufferSize`|`Number (int)`|-
 |[[sendErrorOnNoSubscriptions]]`sendErrorOnNoSubscriptions`|`Boolean`|
 +++
-Checks whether or not an error is sent to the client when this client sends a message to an not subscribed
+Sets whether or not an error is sent to the client when this client sends a message to an not subscribed
  destinations (no subscriptions on this destination).
 +++
 |[[soLinger]]`soLinger`|`Number (int)`|-
 |[[ssl]]`ssl`|`Boolean`|-
 |[[supportedVersions]]`supportedVersions`|`Array of String`|
 +++
-Gets the STOMP protocol versions supported by the server. Versions are provided in the decreasing order. By
- default it's <code>"1.2", "1.1", "1.0"</code>.
+Sets the STOMP protocol versions supported by the server. Versions must be given in the decreasing order.
 +++
 |[[tcpKeepAlive]]`tcpKeepAlive`|`Boolean`|-
 |[[tcpNoDelay]]`tcpNoDelay`|`Boolean`|-
 |[[timeFactor]]`timeFactor`|`Number (int)`|
 +++
-Gets the time factor, i.e. a multiplier applied to time constraints as a window error. 1 by default.
+Sets the time factor.
 +++
 |[[trafficClass]]`trafficClass`|`Number (int)`|-
 |[[transactionChunkSize]]`transactionChunkSize`|`Number (int)`|
 +++
-Gets the chunk size when replaying a transaction. To avoid blocking the event loop for too long, large
- transactions are split into chunks, replayed one by one. This settings gets the chunk size.
+Sets the chunk size when replaying a transaction. To avoid blocking the event loop for too long, large
+ transactions are split into chunks, replayed one by one. This settings sets the chunk size.
 +++
 |[[trustStoreOptions]]`trustStoreOptions`|`link:dataobjects.html#JksOptions[JksOptions]`|-
 |[[usePooledBuffers]]`usePooledBuffers`|`Boolean`|-
@@ -192,16 +178,19 @@ Gets the chunk size when replaying a transaction. To avoid blocking the event lo
 ^|Name | Type ^| Description
 |[[acceptedVersions]]`acceptedVersions`|`Array of String`|
 +++
-Gets the list of STOMP protocol versions accepted by the client.
+Sets the list of STOMP protocol versions accepted by the client. The list must be ordered from the lowest
+ version to the highest. By default the following list is used: <code>1.0, 1.1, 1.2</code>
 +++
 |[[autoComputeContentLength]]`autoComputeContentLength`|`Boolean`|
 +++
-Whether or not the automatic computation of the <code>content-length</code> header is enabled.
+Sets whether or not the automatic computation of the <code>content-length</code> header is enabled. If enabled, the
+ <code>content-length</code> header is set in all frame with a body that do not explicitly set the header. The option
+ is enabled by default.
 +++
 |[[bypassHostHeader]]`bypassHostHeader`|`Boolean`|
 +++
-Checks whether or not the <code>host</code> header must be dropped from the <code>CONNECT/STOMP</code> frame. Server may
- be picky about this header (such as RabbitMQ that does not support it).
+Sets whether or not the <code>host</code> header must be dropped from the <code>CONNECT/STOMP</code> frame. Server may
+ be picky about this header (such as RabbitMQ that does not support it). Options disabled by default.
 +++
 |[[connectTimeout]]`connectTimeout`|`Number (int)`|-
 |[[crlPaths]]`crlPaths`|`Array of String`|-
@@ -209,21 +198,21 @@ Checks whether or not the <code>host</code> header must be dropped from the <cod
 |[[enabledCipherSuites]]`enabledCipherSuites`|`Array of String`|-
 |[[heartbeat]]`heartbeat`|`Json object`|
 +++
-Gets the heartbeat configuration.
+Sets the heartbeat configuration.
 +++
 |[[host]]`host`|`String`|
 +++
-Gets the STOMP server host.
+Sets the STOMP server host. <code>0.0.0.0</code> by default.
 +++
 |[[idleTimeout]]`idleTimeout`|`Number (int)`|-
 |[[keyStoreOptions]]`keyStoreOptions`|`link:dataobjects.html#JksOptions[JksOptions]`|-
 |[[login]]`login`|`String`|
 +++
-Gets the configured login.
+Sets the login to use if the STOMP server is secured.
 +++
 |[[passcode]]`passcode`|`String`|
 +++
-Gets the configured passcode.
+Sets the passcode to use if the STOMP server is secured.
 +++
 |[[pemKeyCertOptions]]`pemKeyCertOptions`|`link:dataobjects.html#PemKeyCertOptions[PemKeyCertOptions]`|-
 |[[pemTrustOptions]]`pemTrustOptions`|`link:dataobjects.html#PemTrustOptions[PemTrustOptions]`|-
@@ -231,7 +220,7 @@ Gets the configured passcode.
 |[[pfxTrustOptions]]`pfxTrustOptions`|`link:dataobjects.html#PfxOptions[PfxOptions]`|-
 |[[port]]`port`|`Number (int)`|
 +++
-Gets the STOMP server port.
+Sets the STOMP server port. <code>61613</code> by default.
 +++
 |[[receiveBufferSize]]`receiveBufferSize`|`Number (int)`|-
 |[[reconnectAttempts]]`reconnectAttempts`|`Number (int)`|-
@@ -248,10 +237,10 @@ Gets the STOMP server port.
 |[[usePooledBuffers]]`usePooledBuffers`|`Boolean`|-
 |[[useStompFrame]]`useStompFrame`|`Boolean`|
 +++
-Checks whether or not the connection is made using the <code>STOMP</code> command instead of the <code>CONNECT</code>
- command. The <code>STOMP</code> command has been introduced in the 1.2 version of the protocol to ease the network
- analysis (as <code>CONNECT</code> is also used by HTTP. To be compliant with server not implementing the 1.2
- specification, this option should be disabled.
+Sets whether or not the connection is made using the <code>STOMP</code> command instead of the <code>CONNECT</code> command.
+ The <code>STOMP</code> command has been introduced in the 1.2 version of the protocol to ease the network analysis
+ (as <code>CONNECT</code> is also used by HTTP. To be compliant with server not implementing the 1.2 specification,
+ this option should be disabled. This option is disabled by default.
 +++
 |===
 

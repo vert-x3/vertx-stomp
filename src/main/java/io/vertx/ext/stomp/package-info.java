@@ -364,9 +364,9 @@
  * The STOMP server can be used as a bridge to the vert.x Event Bus. The bridge is bi-directional meaning the STOMP
  * frames are translated to Event Bus messages and Event Bus messages are translated to STOMP frames.
  *
- * To enable the bridge you need to configure the inbount and outbound addresses. Inbound addresses are STOMP
- * destination that are transfered to the event bus. The STOMP destination is used as the event bus adress. Outbound
- * addresses are event bus addresses that are tranfered to STOMP.
+ * To enable the bridge you need to configure the inbound and outbound addresses. Inbound addresses are STOMP
+ * destination that are transferred to the event bus. The STOMP destination is used as the event bus address. Outbound
+ * addresses are event bus addresses that are transferred to STOMP.
  *
  * [source,$lang]
  * ----
@@ -381,6 +381,14 @@
  * {@link examples.StompServerExamples#example14(io.vertx.core.Vertx)}
  * ----
  *
+ * The permitted options can also be expressed as a "regex" or with a _match_. A _match_ is a structure that the
+ * message payload must meet. For instance, in the next examples, the payload must contains the field "foo" set to
+ * "bar". Structure match only supports JSON object.
+ *
+ * [source,$lang]
+ * ----
+ * {@link examples.StompServerExamples#example15(io.vertx.core.Vertx)}
+ * ----
  */
 @ModuleGen(name = "vertx-stomp", groupPackage = "io.vertx")
 @Document(fileName = "index.adoc")

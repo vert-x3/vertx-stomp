@@ -25,6 +25,7 @@ import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.bridge.PermittedOptions;
 import io.vertx.ext.stomp.*;
 import io.vertx.ext.stomp.utils.Headers;
 
@@ -69,12 +70,15 @@ public class EventBusBridge extends Topic {
   public synchronized Destination subscribe(StompServerConnection connection, Frame frame) {
     String address = frame.getDestination();
     // Need to check whether the client can receive message from the event bus (outbound).
-    if (checkMatches(false, address)) {
+    if (checkMatches(false, address, null)) {
       // We need the subscription object to transform messages.
       Subscription subscription = new Subscription(connection, frame);
       subscriptions.add(subscription);
       if (!registry.containsKey(address)) {
         registry.put(address, vertx.eventBus().consumer(address, msg -> {
+          if (!checkMatches(false, address, msg.body())) {
+            return;
+          }
           if (options.isPointToPoint()) {
             Optional<Subscription> chosen = subscriptions.stream().filter(s -> s.destination.equals(address)).findAny();
             if (chosen.isPresent()) {
@@ -206,7 +210,7 @@ public class EventBusBridge extends Topic {
   public Destination dispatch(StompServerConnection connection, Frame frame) {
     String address = frame.getDestination();
     // Send a frame to the event bus, check if this inbound traffic is allowed.
-    if (checkMatches(true, address)) {
+    if (checkMatches(true, address, frame.getBody())) {
       final String replyAddress = frame.getHeader("reply-address");
       if (replyAddress != null) {
         send(address, frame, (AsyncResult<Message<Object>> res) -> {
@@ -257,11 +261,21 @@ public class EventBusBridge extends Topic {
    * Checks whether or not the given address matches with the current destination.
    *
    * @param address the address
+   * @param payload the payload - may be {@link null}
    * @return {@code true} if it matches, {@code false} otherwise.
    */
-  @Override
+  public boolean matches(String address, Buffer payload) {
+    return checkMatches(false, address, payload) || checkMatches(true, address, payload);
+  }
+
+  /**
+   * Checks whether or not the given address matches with the current destination.
+   *
+   * @param address the address
+   * @return {@code true} if it matches, {@code false} otherwise.
+   */
   public boolean matches(String address) {
-    return checkMatches(false, address) || checkMatches(true, address);
+    return checkMatches(false, address, null) || checkMatches(true, address, null);
   }
 
   private boolean regexMatches(String matchRegex, String address) {
@@ -274,7 +288,7 @@ public class EventBusBridge extends Topic {
     return m.matches();
   }
 
-  private boolean checkMatches(boolean inbound, String address) {
+  private boolean checkMatches(boolean inbound, String address, Object body) {
 
     List<PermittedOptions> matches = inbound ? options.getInboundPermitteds() : options.getOutboundPermitteds();
 
@@ -295,10 +309,56 @@ public class EventBusBridge extends Topic {
       }
 
       if (addressOK) {
-        return true;
+        return structureMatches(matchHolder.getMatch(), body);
       }
     }
 
     return false;
+  }
+
+  /**
+   * Checks whether or not the given message payload matches the permitted option required structure (match).
+   * It only supports JSON payload. If the payload is not JSOn and the `match` is not {@link null}, the structure
+   * does not matches (it returns {@link false}).
+   *
+   * @param match the required structure, may be {@code null}
+   * @param body  the body, may be {@code null}. It is either a {@link JsonObject} or a {@link Buffer}.
+   * @return whether or not the payload matches the structure. {@link true} is returned if `match` is {@code null},
+   * or `body` is {@code null}.
+   */
+  private boolean structureMatches(JsonObject match, Object body) {
+    if (match == null || body == null) return true;
+
+    // Can send message other than JSON too - in which case we can't do deep matching on structure of message
+
+    try {
+      JsonObject object;
+      if (body instanceof JsonObject) {
+        object = (JsonObject) body;
+      } else if (body instanceof Buffer) {
+        object = new JsonObject(((Buffer) body).toString("UTF-8"));
+      } else if (body instanceof String) {
+        object = new JsonObject((String) body);
+      } else {
+        return false;
+      }
+
+      for (String fieldName : match.fieldNames()) {
+        Object mv = match.getValue(fieldName);
+        Object bv = object.getValue(fieldName);
+        // Support deep matching
+        if (mv instanceof JsonObject) {
+          if (!structureMatches((JsonObject) mv, bv)) {
+            return false;
+          }
+        } else if (!match.getValue(fieldName).equals(object.getValue(fieldName))) {
+          return false;
+        }
+      }
+      return true;
+    } catch (Exception e) {
+      // Was not a valid json object refuse the message
+      return false;
+    }
   }
 }

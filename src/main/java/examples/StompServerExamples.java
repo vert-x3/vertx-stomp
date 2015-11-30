@@ -20,6 +20,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.NetServer;
 import io.vertx.ext.auth.AuthProvider;
+import io.vertx.ext.bridge.PermittedOptions;
 import io.vertx.ext.stomp.*;
 
 /**
@@ -165,6 +166,19 @@ public class StompServerExamples {
                         .addOutboundPermitted(new PermittedOptions().setAddress("/toStomp"))
                         .setPointToPoint(true)
                 )
+        )
+        .listen();
+  }
+
+  public void example15(Vertx vertx) {
+    StompServer server = StompServer.create(vertx)
+        .handler(StompServerHandler.create(vertx)
+            .bridge(new BridgeOptions()
+                .addInboundPermitted(new PermittedOptions().setAddress("/toBus")
+                    .setMatch(new JsonObject().put("foo", "bar")))
+                .addOutboundPermitted(new PermittedOptions().setAddress("/toStomp"))
+                .setPointToPoint(true)
+            )
         )
         .listen();
   }
