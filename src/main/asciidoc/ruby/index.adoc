@@ -32,7 +32,7 @@ descriptor:
 
 [source,groovy,subs="+attributes"]
 ----
-compile io.vertx:vertx-stomp:3.2.0-SNAPSHOT
+compile 'io.vertx:vertx-stomp:3.2.0-SNAPSHOT'
 ----
 
 == STOMP server
