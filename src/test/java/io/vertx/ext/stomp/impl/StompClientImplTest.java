@@ -22,13 +22,10 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.stomp.*;
 import io.vertx.ext.stomp.utils.Headers;
-import io.vertx.ext.unit.Async;
-import io.vertx.ext.unit.TestContext;
-import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -43,24 +40,30 @@ import static org.junit.Assert.assertNotNull;
  *
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
-@RunWith(VertxUnitRunner.class)
 public class StompClientImplTest {
 
   private Vertx vertx;
   private StompServer server;
 
   @Before
-  public void setUp(TestContext context) {
+  public void setUp() {
+    AsyncLock<StompServer> lock = new AsyncLock<>();
     vertx = Vertx.vertx();
     server = StompServer.create(vertx)
         .handler(StompServerHandler.create(vertx))
-        .listen(context.asyncAssertSuccess());
+        .listen(lock.handler());
+
+    lock.waitForSuccess();
   }
 
   @After
-  public void tearDown(TestContext context) {
-    server.close(context.asyncAssertSuccess());
-    vertx.close(context.asyncAssertSuccess());
+  public void tearDown() {
+    AsyncLock<Void> lock = new AsyncLock<>();
+    server.close(lock.handler());
+    lock.waitForSuccess();
+    lock = new AsyncLock<>();
+    vertx.close(lock.handler());
+    lock.waitForSuccess();
   }
 
   @Test
@@ -106,20 +109,19 @@ public class StompClientImplTest {
     assertNotNull(reference.get().version());
   }
 
-  @Test(timeout = 5000)
-  public void testSendingMessages(TestContext context) {
-    Async async = context.async();
+  @Test
+  public void testSendingMessages() {
+    AtomicReference<Frame> ref = new AtomicReference<>();
     StompClient client = StompClient.create(vertx);
     client.connect(ar -> {
       if (ar.failed()) {
-        context.fail("Connection failed");
         return;
       }
-      ar.result().send("/hello", Buffer.buffer("this is my content"), frame -> {
-        context.assertEquals(frame.getDestination(), "/hello");
-        async.complete();
-      });
+      ar.result().send("/hello", Buffer.buffer("this is my content"), ref::set);
     });
+
+    Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAtomic(ref, Matchers.notNullValue(Frame.class));
+    assertThat(ref.get().getDestination()).isEqualTo("/hello");
   }
 
   @Test
