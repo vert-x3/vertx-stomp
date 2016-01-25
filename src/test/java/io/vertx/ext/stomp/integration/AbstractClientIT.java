@@ -68,6 +68,10 @@ public abstract class AbstractClientIT {
 
   public abstract StompClientOptions getOptionsWithSSL();
 
+  public String getDestination() {
+    return "box";
+  }
+
   /**
    * The test is the following:
    * 1. Create a client subscribing to the "box" destination
@@ -88,7 +92,7 @@ public abstract class AbstractClientIT {
             connection.cause().printStackTrace();
           } else {
             receiver.set(connection.result());
-            connection.result().subscribe("box", frame::set);
+            connection.result().subscribe(getDestination(), frame::set);
           }
         });
     clients.add(client1);
@@ -102,7 +106,7 @@ public abstract class AbstractClientIT {
             connection.cause().printStackTrace();
           } else {
             sender.set(connection.result());
-            connection.result().send("box", Buffer.buffer("hello from vert.x"));
+            connection.result().send(getDestination(), Buffer.buffer("hello from vert.x"));
           }
         });
     clients.add(client2);
@@ -138,7 +142,7 @@ public abstract class AbstractClientIT {
             connection.cause().printStackTrace();
           } else {
             receiver.set(connection.result());
-            connection.result().subscribe("box", frame::set);
+            connection.result().subscribe(getDestination(), frame::set);
           }
         });
     clients.add(client1);
@@ -152,7 +156,7 @@ public abstract class AbstractClientIT {
             connection.cause().printStackTrace();
           } else {
             sender.set(connection.result());
-            connection.result().send("box", Buffer.buffer("hello from vert.x"));
+            connection.result().send(getDestination(), Buffer.buffer("hello from vert.x"));
           }
         });
     clients.add(client2);

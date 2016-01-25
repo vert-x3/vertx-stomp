@@ -214,6 +214,33 @@
                   </run>
                 </image>
                 <image>
+                  <!-- Artemis -->
+                  <alias>artemis</alias>
+                  <name>vertx-stomp/artemis-stomp</name>
+                  <build>
+                    <assembly>
+                      <dockerFileDir>${project.basedir}/src/test/resources/integration/artemis</dockerFileDir>
+                    </assembly>
+                  </build>
+                  <run>
+                    <ports>
+                      <port>61653:61613</port>
+                      <port>61656:61616</port>
+                      <port>5445:5445</port>
+                    </ports>
+                    <wait>
+                      <tcp>
+                        <ports>
+                          <port>61616</port>
+                          <port>61613</port>
+                          <port>5445</port>
+                        </ports>
+                      </tcp>
+                      <time>10000</time>
+                    </wait>
+                  </run>
+                </image>
+                <image>
                   <!-- Efrecon -->
                   <alias>efrecon</alias>
                   <name>vertx-stomp/efrecon-stomp</name>
