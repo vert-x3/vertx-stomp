@@ -65,6 +65,12 @@ public class StompServerOptionsConverter {
     if (json.getValue("transactionChunkSize") instanceof Number) {
       obj.setTransactionChunkSize(((Number)json.getValue("transactionChunkSize")).intValue());
     }
+    if (json.getValue("websocketBridge") instanceof Boolean) {
+      obj.setWebsocketBridge((Boolean)json.getValue("websocketBridge"));
+    }
+    if (json.getValue("websocketPath") instanceof String) {
+      obj.setWebsocketPath((String)json.getValue("websocketPath"));
+    }
   }
 
   public static void toJson(StompServerOptions obj, JsonObject json) {
@@ -87,5 +93,9 @@ public class StompServerOptionsConverter {
     }
     json.put("timeFactor", obj.getTimeFactor());
     json.put("transactionChunkSize", obj.getTransactionChunkSize());
+    json.put("websocketBridge", obj.isWebsocketBridge());
+    if (obj.getWebsocketPath() != null) {
+      json.put("websocketPath", obj.getWebsocketPath());
+    }
   }
 }

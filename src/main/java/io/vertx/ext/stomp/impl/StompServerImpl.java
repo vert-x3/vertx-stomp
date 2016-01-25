@@ -20,6 +20,7 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
+import io.vertx.core.http.ServerWebSocket;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.core.net.NetServer;
@@ -89,6 +90,10 @@ public class StompServerImpl implements StompServer {
 
   @Override
   public StompServer listen(int port, String host, Handler<AsyncResult<StompServer>> handler) {
+    if (port == -1) {
+      handler.handle(Future.failedFuture("TCP server disabled. The port is set to '-1'."));
+      return this;
+    }
     StompServerHandler stomp;
     synchronized (this) {
       stomp = this.handler;
@@ -98,7 +103,7 @@ public class StompServerImpl implements StompServer {
         "server.");
     server
         .connectHandler(socket -> {
-          StompServerConnection connection = new StompServerConnectionImpl(socket, this);
+          StompServerConnection connection = new StompServerTCPConnectionImpl(socket, this);
           FrameParser parser = new FrameParser(options);
           socket.exceptionHandler((exception) -> {
             log.error("The STOMP server caught a TCP socket error - closing connection", exception);
@@ -187,6 +192,43 @@ public class StompServerImpl implements StompServer {
     };
 
     server.close(listener);
+  }
+
+  @Override
+  public Handler<ServerWebSocket> webSocketHandler() {
+    if (!options.isWebsocketBridge()) {
+      return null;
+    }
+
+    StompServerHandler stomp;
+    synchronized (this) {
+      stomp = this.handler;
+    }
+
+    return socket -> {
+      if (!socket.path().equals(options.getWebsocketPath())) {
+        log.error("Receiving a web socket connection on an invalid path (" + socket.path() + "), the path is " +
+            "configured to " + options.getWebsocketPath() + ". Rejecting connection");
+        socket.reject();
+        return;
+      }
+      StompServerConnection connection = new StompServerWebSocketConnectionImpl(socket, this);
+      FrameParser parser = new FrameParser(options);
+      socket.exceptionHandler((exception) -> {
+        log.error("The STOMP server caught a WebSocket error - closing connection", exception);
+        connection.close();
+      });
+      socket.endHandler(v -> connection.close());
+      parser
+          .errorHandler((exception) -> {
+                connection.write(
+                    Frames.createInvalidFrameErrorFrame(exception).toBuffer());
+                connection.close();
+              }
+          )
+          .handler(frame -> stomp.handle(new ServerFrameImpl(frame, connection)));
+      socket.handler(parser);
+    };
   }
 
 

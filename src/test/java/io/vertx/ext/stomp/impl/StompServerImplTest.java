@@ -67,17 +67,17 @@ public class StompServerImplTest {
     final Async async = context.async();
     StompServer server = StompServer.create(vertx);
     server.handler(StompServerHandler.create(vertx)
-            .connectHandler(
-                sf -> {
-                  Frame frame = sf.frame();
-                  context.assertTrue(frame.getCommand() == Frame.Command.CONNECT);
-                  context.assertTrue(frame.getHeader("login").equals("system"));
-                  server.close(ar2 -> {
-                    ensureClosed(context, ar2, server);
-                    async.complete();
-                  });
-                }
-            )
+        .connectHandler(
+            sf -> {
+              Frame frame = sf.frame();
+              context.assertTrue(frame.getCommand() == Frame.Command.CONNECT);
+              context.assertTrue(frame.getHeader("login").equals("system"));
+              server.close(ar2 -> {
+                ensureClosed(context, ar2, server);
+                async.complete();
+              });
+            }
+        )
     ).listen(ar -> {
       ensureListening(context, ar);
       writeMessage(vertx);
@@ -103,6 +103,46 @@ public class StompServerImplTest {
       ensureListening(context, ar);
       writeMessage(vertx);
     });
+  }
+
+  @Test
+  public void testWhenPortIsSetToMinusOneInOptions(TestContext context) {
+    final Async async = context.async();
+    StompServer.create(vertx, new StompServerOptions().setPort(-1)).handler(StompServerHandler
+        .create(vertx))
+        .listen(ar -> {
+          if (!ar.failed()) {
+            context.fail("Error expected");
+          } else {
+            // Create a client and check it cannot connect
+            StompClient.create(vertx).connect(61613, "localhost", x -> {
+              if (!x.failed()) {
+                context.fail("Error expected on the client side");
+              }
+              async.complete();
+            });
+          }
+        });
+  }
+
+  @Test
+  public void testWhenPortIsSetToMinusOneInListen(TestContext context) {
+    final Async async = context.async();
+    StompServer.create(vertx).handler(StompServerHandler
+        .create(vertx))
+        .listen(-1, ar -> {
+          if (!ar.failed()) {
+            context.fail("Error expected");
+          } else {
+            // Create a client and check it cannot connect
+            StompClient.create(vertx).connect(61613, "localhost", x -> {
+              if (!x.failed()) {
+                context.fail("Error expected on the client side");
+              }
+              async.complete();
+            });
+          }
+        });
   }
 
   private void writeMessage(Vertx vertx) {

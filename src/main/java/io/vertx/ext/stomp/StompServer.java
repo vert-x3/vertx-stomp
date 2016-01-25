@@ -17,10 +17,12 @@
 package io.vertx.ext.stomp;
 
 import io.vertx.codegen.annotations.Fluent;
+import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
+import io.vertx.core.http.ServerWebSocket;
 import io.vertx.core.net.NetServer;
 import io.vertx.ext.stomp.impl.StompServerImpl;
 
@@ -190,4 +192,16 @@ public interface StompServer {
    * @return the {@link StompServerHandler} used by this server.
    */
   StompServerHandler stompHandler();
+
+  /**
+   * Gets the {@link Handler} able to manage web socket connections. If the web socket bridge is disabled, it returns
+   * {@code null}.
+   *
+   * @return the handler that can be passed to {@link io.vertx.core.http.HttpServer#websocketHandler(Handler)}.
+   */
+  //TODO remove the @GenIgnore on webSocketHandler once https://github.com/vert-x3/vertx-rx/issues/31 is fixed.
+  @GenIgnore
+  Handler<ServerWebSocket> webSocketHandler();
+
+
 }

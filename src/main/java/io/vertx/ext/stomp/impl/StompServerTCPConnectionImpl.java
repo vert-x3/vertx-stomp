@@ -35,9 +35,9 @@ import java.util.concurrent.TimeUnit;
  *
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
-public class StompServerConnectionImpl implements StompServerConnection {
+public class StompServerTCPConnectionImpl implements StompServerConnection {
 
-  private static final Logger log = LoggerFactory.getLogger(StompServerConnectionImpl.class);
+  private static final Logger log = LoggerFactory.getLogger(StompServerTCPConnectionImpl.class);
 
   private final StompServer server;
   private final NetSocket socket;
@@ -47,10 +47,17 @@ public class StompServerConnectionImpl implements StompServerConnection {
   private long pinger = -1;
   private long ponger = -1;
 
-  public StompServerConnectionImpl(NetSocket socket, StompServer server) {
+  public StompServerTCPConnectionImpl(NetSocket socket, StompServer server) {
     Objects.requireNonNull(socket);
     Objects.requireNonNull(server);
     this.socket = socket;
+    this.server = server;
+    this.sessionId = UUID.randomUUID().toString();
+  }
+
+  public StompServerTCPConnectionImpl(StompServer server) {
+    Objects.requireNonNull(server);
+    this.socket = null;
     this.server = server;
     this.sessionId = UUID.randomUUID().toString();
   }

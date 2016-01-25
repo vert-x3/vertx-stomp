@@ -128,7 +128,10 @@ Sets the maximum of subscriptions a client is allowed to register. If a client e
 |[[pemTrustOptions]]`pemTrustOptions`|`link:dataobjects.html#PemTrustOptions[PemTrustOptions]`|-
 |[[pfxKeyCertOptions]]`pfxKeyCertOptions`|`link:dataobjects.html#PfxOptions[PfxOptions]`|-
 |[[pfxTrustOptions]]`pfxTrustOptions`|`link:dataobjects.html#PfxOptions[PfxOptions]`|-
-|[[port]]`port`|`Number (int)`|-
+|[[port]]`port`|`Number (int)`|
++++
+Sets the port on which the server is going to listen for TCP connection.
++++
 |[[receiveBufferSize]]`receiveBufferSize`|`Number (int)`|-
 |[[reuseAddress]]`reuseAddress`|`Boolean`|-
 |[[secured]]`secured`|`Boolean`|
@@ -161,6 +164,14 @@ Sets the chunk size when replaying a transaction. To avoid blocking the event lo
 +++
 |[[trustStoreOptions]]`trustStoreOptions`|`link:dataobjects.html#JksOptions[JksOptions]`|-
 |[[usePooledBuffers]]`usePooledBuffers`|`Boolean`|-
+|[[websocketBridge]]`websocketBridge`|`Boolean`|
++++
+Enables or disables the web socket bridge.
++++
+|[[websocketPath]]`websocketPath`|`String`|
++++
+Sets the websocket path. Only frames received on this path would be considered as STOMP frame.
++++
 |===
 
 [[StompClientOptions]]

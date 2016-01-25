@@ -17,6 +17,8 @@
 package examples;
 
 import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpServer;
+import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.NetServer;
 import io.vertx.ext.auth.AuthProvider;
@@ -181,6 +183,20 @@ public class StompServerExamples {
             )
         )
         .listen();
+  }
+
+  public void example16(Vertx vertx) {
+    StompServer server = StompServer.create(vertx, new StompServerOptions()
+        .setPort(-1) // Disable the TCP port, optional
+        .setWebsocketBridge(true) // Enable the web socket support
+        .setWebsocketPath("/stomp")) // Configure the web socket path, /stomp by default
+        .handler(StompServerHandler.create(vertx));
+
+    HttpServer http = vertx.createHttpServer(
+        new HttpServerOptions().setWebsocketSubProtocols("v10.stomp, v11.stomp")
+    )
+        .websocketHandler(server.webSocketHandler())
+        .listen(8080);
   }
 
 }

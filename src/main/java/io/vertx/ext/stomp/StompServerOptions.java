@@ -17,6 +17,7 @@
 package io.vertx.ext.stomp;
 
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.NetServerOptions;
 
@@ -40,6 +41,8 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
   public static final int DEFAULT_TRANSACTION_CHUNK_SIZE = 1000;
   public static final int DEFAULT_MAX_SUBSCRIPTIONS_BY_CLIENT = 1000;
 
+  public static final String DEFAULT_WEBSOCKET_PATH = "/stomp";
+
 
   private int maxHeaderLength = DEFAULT_MAX_HEADER_LENGTH;
   private int maxHeaders = DEFAULT_MAX_HEADERS;
@@ -58,6 +61,11 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
   private JsonObject heartbeat = DEFAULT_STOMP_HEARTBEAT;
   private int transactionChunkSize = DEFAULT_TRANSACTION_CHUNK_SIZE;
   private int maxSubscriptionsByClient = DEFAULT_MAX_SUBSCRIPTIONS_BY_CLIENT;
+
+  private boolean websocketBridge = false;
+  private String websocketPath = DEFAULT_WEBSOCKET_PATH;
+
+  private boolean disableTCPServer;
 
   /**
    * Default constructor.
@@ -87,6 +95,11 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
     this.maxFrameInTransaction = other.maxFrameInTransaction;
     this.transactionChunkSize = other.transactionChunkSize;
     this.maxSubscriptionsByClient = other.maxSubscriptionsByClient;
+
+    this.websocketBridge = other.websocketBridge;
+    this.websocketPath = other.websocketPath;
+
+    this.disableTCPServer = other.disableTCPServer;
   }
 
   /**
@@ -264,10 +277,33 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
     return this;
   }
 
+  /**
+   * Sets the port on which the server is going to listen for TCP connection.
+   *
+   * @param port the port number, {@code -1} to disable the TCP server.
+   * @return the current {@link StompServerOptions}.
+   */
   @Override
   public StompServerOptions setPort(int port) {
-    super.setPort(port);
+    if (port != -1) {
+      // -1 is not a valid port, we can't pass it to the super class.
+      super.setPort(port);
+    } else {
+      disableTCPServer = true;
+    }
     return this;
+  }
+
+  /**
+   * @return the port, -1 if the TCP server has been disabled.
+   */
+  @Override
+  public int getPort() {
+    if (disableTCPServer) {
+      return -1;
+    } else {
+      return super.getPort();
+    }
   }
 
   @Override
@@ -365,6 +401,50 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
    */
   public StompServerOptions setMaxSubscriptionsByClient(int maxSubscriptionsByClient) {
     this.maxSubscriptionsByClient = maxSubscriptionsByClient;
+    return this;
+  }
+
+  /**
+   * Checks whether or not the web socket bridge is enabled. This bridge allows receiving and sending STOMP frames on
+   * a web socket. If set to {@code true}, the Stomp server provides a
+   * {@link io.vertx.core.Handler<io.vertx.core.http.ServerWebSocket>} to read and write from the web socket. This
+   * {@link Handler} must be passed to {@link io.vertx.core.http.HttpServer#websocketHandler(Handler)}.
+   *
+   * @return whether or not the web socket bridge is enabled, {@code false} by default.
+   */
+  public boolean isWebsocketBridge() {
+    return websocketBridge;
+  }
+
+  /**
+   * Enables or disables the web socket bridge.
+   *
+   * @param websocketBridge whether or not the web socket bridge should be enabled.
+   * @return the current {@link StompServerOptions}
+   */
+  public StompServerOptions setWebsocketBridge(boolean websocketBridge) {
+    this.websocketBridge = websocketBridge;
+    return this;
+  }
+
+  /**
+   * Gets the path for the web socket. Only web sockets frame receiving on this path would be handled. By default
+   * it's {@link #DEFAULT_WEBSOCKET_PATH}. The returned String is not a prefix but an exact match.
+   *
+   * @return the path
+   */
+  public String getWebsocketPath() {
+    return websocketPath;
+  }
+
+  /**
+   * Sets the websocket path. Only frames received on this path would be considered as STOMP frame.
+   *
+   * @param websocketPath the path, must not be {@code null}.
+   * @return the current {@link StompServerOptions}
+   */
+  public StompServerOptions setWebsocketPath(String websocketPath) {
+    this.websocketPath = websocketPath;
     return this;
   }
 }

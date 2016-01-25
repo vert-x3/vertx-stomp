@@ -25,7 +25,7 @@
  * Vertx-Stomp is an implementation of a STOMP server and client. You can use the STOMP server with other clients and
  * use the STOMP client with other servers. The server and the client supports the version 1.0, 1.1 and 1.2 of the
  * STOMP protocol (see https://stomp.github.io/stomp-specification-1.2.html). The STOMP server can also be used as a
- * bridge with the vert.x event bus.
+ * bridge with the vert.x event bus, or directly with web sockets (using StompJS).
  *
  * == Using vertx-stomp
  *
@@ -71,7 +71,8 @@
  * {@link examples.StompServerExamples#example2}
  * ----
  *
- * To be notified when the server is ready, use a handler as follows:
+ * If you pass {@code -1} as port, the TCP server would not be started. This is useful when using the websocket
+ * bridge. To be notified when the server is ready, use a handler as follows:
  *
  * [source,$lang]
  * ----
@@ -389,6 +390,48 @@
  * ----
  * {@link examples.StompServerExamples#example15(io.vertx.core.Vertx)}
  * ----
+ *
+ * == Using the STOMP server with web sockets
+ *
+ * If you want to connect a JavaScript client (node.js or a browser) directly with the STOMP server, you can use a
+ * web socket. The STOMP protocol has been adapted to work over web sockets in
+ * http://jmesnil.net/stomp-websocket/doc/[StompJS]. The JavaScript connects directly to the STOMP server and send
+ * STOMP frames on the web socket. It also receives the STOMP frame directly on the web socket.
+ *
+ * To configure the server to use StompJS, you need to:
+ *
+ * 1. Enable the web socket bridge and configure the path of the listening web socket ({@code /stomp} by default).
+ * 2. Import http://jmesnil.net/stomp-websocket/doc/#download[StompJS] in your application (as a script on an
+ * HTML page, or as an npm module (https://www.npmjs.com/package/stompjs).
+ * 3. Connect to the server
+ *
+ * To achieve the first step, you would need a HTTP server, and pass the
+ * {@link io.vertx.ext.stomp.StompServer#webSocketHandler()} result to
+ * {@link io.vertx.core.http.HttpServer#websocketHandler(io.vertx.core.Handler)}:
+ *
+ * [source,$lang]
+ * ----
+ * {@link examples.StompServerExamples#example16(io.vertx.core.Vertx)}
+ * ----
+ *
+ * Don't forget to declare the supported sub-protocols. Without this, the connection will be rejected.
+ *
+ * Then follow the instructions from  http://jmesnil.net/stomp-websocket/doc/[the StompJS documentation] to connect to
+ * the server. Here is a simple example:
+ *
+ * [source, javascript]
+ * ----
+ * var url = "ws://localhost:8080/stomp";
+ * var client = Stomp.client(url);
+ * var callback = function(frame) {
+ *    console.log(frame);
+ * };
+ *
+ * client.connect({}, function() {
+ *  var subscription = client.subscribe("foo", callback);
+ * });
+ * ----
+ *
  */
 @ModuleGen(name = "vertx-stomp", groupPackage = "io.vertx")
 @Document(fileName = "index.adoc")
