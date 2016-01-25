@@ -151,9 +151,159 @@
               <goal>integration-test</goal>
               <goal>verify</goal>
             </goals>
+            <configuration>
+              <excludes>
+                <exclude>**/*DockerIT.java</exclude>
+              </excludes>
+            </configuration>
           </execution>
         </executions>
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <!--
+      This profile checks the behavior of the stomp client against several stomp server started in docker
+      containers.
+
+      on mac:
+      mvn clean verify -Pit-with-docker -Ddockerhost=(docker-machine ip dev)
+      on linux:
+      mvn clean verify -Pit-with-docker -Ddockerhost=localhost
+
+       -->
+      <id>it-with-docker</id>
+      <properties>
+        <dockerhost>localhost</dockerhost>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.jolokia</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+            <version>0.13.8</version>
+            <configuration>
+              <images>
+                <image>
+                  <!-- ActiveMQ -->
+                  <alias>activemq</alias>
+                  <name>vertx-stomp/activemq-stomp</name>
+                  <build>
+                    <assembly>
+                      <dockerFileDir>${project.basedir}/src/test/resources/integration/activemq</dockerFileDir>
+                    </assembly>
+                  </build>
+                  <run>
+                    <ports>
+                      <port>61622:61612</port>
+                      <port>61623:61613</port>
+                      <port>61626:61616</port>
+                      <port>8161:8161</port>
+                    </ports>
+                    <wait>
+                      <tcp>
+                        <ports>
+                          <port>61612</port>
+                          <port>61613</port>
+                        </ports>
+                      </tcp>
+                      <time>10000</time>
+                    </wait>
+                  </run>
+                </image>
+                <image>
+                  <!-- Efrecon -->
+                  <alias>efrecon</alias>
+                  <name>vertx-stomp/efrecon-stomp</name>
+                  <build>
+                    <assembly>
+                      <dockerFileDir>${project.basedir}/src/test/resources/integration/efrecon</dockerFileDir>
+                    </assembly>
+                  </build>
+                  <run>
+                    <ports>
+                      <port>61633:61613</port>
+                    </ports>
+                    <wait>
+                      <tcp>
+                        <ports>
+                          <port>61613</port>
+                        </ports>
+                      </tcp>
+                      <time>10000</time>
+                    </wait>
+                  </run>
+                </image>
+                <image>
+                  <!-- RabbitMQ -->
+                  <alias>rabbitmq</alias>
+                  <name>vertx-stomp/rabbitmq-stomp</name>
+                  <build>
+                    <assembly>
+                      <dockerFileDir>${project.basedir}/src/test/resources/integration/rabbitmq</dockerFileDir>
+                    </assembly>
+                  </build>
+                  <run>
+                    <ports>
+                      <port>61643:61613</port>
+                    </ports>
+                    <wait>
+                      <tcp>
+                        <ports>
+                          <port>61613</port>
+                        </ports>
+                      </tcp>
+                      <time>10000</time>
+                    </wait>
+                  </run>
+                </image>
+              </images>
+            </configuration>
+            <executions>
+              <execution>
+                <id>start</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>build</goal>
+                  <goal>start</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>stop</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>stop</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <version>2.19.1</version>
+            <executions>
+              <execution>
+                <id>docker-its</id>
+                <goals>
+                  <goal>integration-test</goal>
+                  <goal>verify</goal>
+                </goals>
+                <configuration>
+                  <includes>
+                    <include>**/CloudAmqpIT</include>
+                    <include>**/*DockerIT.java</include>
+                  </includes>
+                  <systemPropertyVariables>
+                    <dockerhost>${dockerhost}</dockerhost>
+                  </systemPropertyVariables>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+
+    </profile>
+  </profiles>
 </project>
