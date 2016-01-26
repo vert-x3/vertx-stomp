@@ -18,6 +18,7 @@ package io.vertx.groovy.ext.stomp;
 import groovy.transform.CompileStatic
 import io.vertx.lang.groovy.InternalHelper
 import io.vertx.core.json.JsonObject
+import io.vertx.groovy.core.http.ServerWebSocket
 import io.vertx.groovy.core.net.NetServer
 import io.vertx.groovy.core.Vertx
 import io.vertx.ext.stomp.StompServerOptions
@@ -228,6 +229,20 @@ public class StompServer {
    */
   public StompServerHandler stompHandler() {
     def ret= InternalHelper.safeCreate(this.delegate.stompHandler(), io.vertx.groovy.ext.stomp.StompServerHandler.class);
+    return ret;
+  }
+  /**
+   * Gets the  able to manage web socket connections. If the web socket bridge is disabled, it returns
+   * <code>null</code>.
+   * @return the handler that can be passed to {@link io.vertx.groovy.core.http.HttpServer#websocketHandler}.
+   */
+  public Handler<ServerWebSocket> webSocketHandler() {
+    def handlerDelegate = this.delegate.webSocketHandler();
+    Handler<ServerWebSocket> ret = new Handler<ServerWebSocket>() {
+      public void handle(ServerWebSocket event) {
+        handlerDelegate.handle((io.vertx.core.http.ServerWebSocket)event.getDelegate());
+      }
+    };
     return ret;
   }
 }

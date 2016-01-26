@@ -704,6 +704,8 @@ http = vertx.create_http_server({
 
 ----
 
+Don't forget to declare the supported sub-protocols. Without this, the connection will be rejected.
+
 Then follow the instructions from  http://jmesnil.net/stomp-websocket/doc/[the StompJS documentation] to connect to
 the server. Here is a simple example:
 

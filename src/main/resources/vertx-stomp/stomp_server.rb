@@ -1,4 +1,5 @@
 require 'vertx-stomp/stomp_server_handler'
+require 'vertx/server_web_socket'
 require 'vertx/net_server'
 require 'vertx/vertx'
 require 'vertx/util/utils.rb'
@@ -133,6 +134,15 @@ module VertxStomp
         return ::Vertx::Util::Utils.safe_create(@j_del.java_method(:stompHandler, []).call(),::VertxStomp::StompServerHandler)
       end
       raise ArgumentError, "Invalid arguments when calling stomp_handler()"
+    end
+    #  Gets the  able to manage web socket connections. If the web socket bridge is disabled, it returns
+    #  <code>null</code>.
+    # @return [Proc] the handler that can be passed to {::Vertx::HttpServer#websocket_handler}.
+    def web_socket_handler
+      if !block_given?
+        return ::Vertx::Util::Utils.to_handler_proc(@j_del.java_method(:webSocketHandler, []).call()) { |val| val.j_del }
+      end
+      raise ArgumentError, "Invalid arguments when calling web_socket_handler()"
     end
   end
 end

@@ -17,7 +17,6 @@
 package io.vertx.ext.stomp;
 
 import io.vertx.codegen.annotations.Fluent;
-import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -199,8 +198,6 @@ public interface StompServer {
    *
    * @return the handler that can be passed to {@link io.vertx.core.http.HttpServer#websocketHandler(Handler)}.
    */
-  //TODO remove the @GenIgnore on webSocketHandler once https://github.com/vert-x3/vertx-rx/issues/31 is fixed.
-  @GenIgnore
   Handler<ServerWebSocket> webSocketHandler();
 
 

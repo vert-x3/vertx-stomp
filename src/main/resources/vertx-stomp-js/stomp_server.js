@@ -17,6 +17,7 @@
 /** @module vertx-stomp-js/stomp_server */
 var utils = require('vertx-js/util/utils');
 var StompServerHandler = require('vertx-stomp-js/stomp_server_handler');
+var ServerWebSocket = require('vertx-js/server_web_socket');
 var NetServer = require('vertx-js/net_server');
 var Vertx = require('vertx-js/vertx');
 
@@ -190,6 +191,21 @@ var StompServer = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       return utils.convReturnVertxGen(j_stompServer["stompHandler()"](), StompServerHandler);
+    } else throw new TypeError('function invoked with invalid arguments');
+  };
+
+  /**
+   Gets the  able to manage web socket connections. If the web socket bridge is disabled, it returns
+   <code>null</code>.
+
+   @public
+
+   @return {function} the handler that can be passed to {@link HttpServer#websocketHandler}.
+   */
+  this.webSocketHandler = function() {
+    var __args = arguments;
+    if (__args.length === 0) {
+      return utils.convReturnHandler(j_stompServer["webSocketHandler()"](), function(result) { return result._jdel; });
     } else throw new TypeError('function invoked with invalid arguments');
   };
 

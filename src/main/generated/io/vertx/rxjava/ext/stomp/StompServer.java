@@ -19,6 +19,7 @@ package io.vertx.rxjava.ext.stomp;
 import java.util.Map;
 import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
+import io.vertx.rxjava.core.http.ServerWebSocket;
 import io.vertx.rxjava.core.net.NetServer;
 import io.vertx.rxjava.core.Vertx;
 import io.vertx.ext.stomp.StompServerOptions;
@@ -300,6 +301,19 @@ public class StompServer {
    */
   public StompServerHandler stompHandler() { 
     StompServerHandler ret= StompServerHandler.newInstance(this.delegate.stompHandler());
+    return ret;
+  }
+
+  /**
+   * Gets the  able to manage web socket connections. If the web socket bridge is disabled, it returns
+   * <code>null</code>.
+   * @return the handler that can be passed to {@link io.vertx.rxjava.core.http.HttpServer#websocketHandler}.
+   */
+  public Handler<ServerWebSocket> webSocketHandler() { 
+    io.vertx.core.Handler<io.vertx.core.http.ServerWebSocket> handlerDelegate = this.delegate.webSocketHandler();
+    Handler<ServerWebSocket> ret = event -> {
+      handlerDelegate.handle((io.vertx.core.http.ServerWebSocket) event.getDelegate());
+    };
     return ret;
   }
 
