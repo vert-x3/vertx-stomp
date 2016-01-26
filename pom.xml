@@ -111,6 +111,12 @@
       <artifactId>vertx-auth-shiro</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.projectodd.stilts</groupId>
+      <artifactId>stilts-stomp-client</artifactId>
+      <version>0.1.40</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -318,8 +324,7 @@
                 </goals>
                 <configuration>
                   <includes>
-                    <include>**/CloudAmqpIT</include>
-                    <include>**/*DockerIT.java</include>
+                    <include>**/*IT.java</include>
                   </includes>
                   <systemPropertyVariables>
                     <dockerhost>${dockerhost}</dockerhost>
