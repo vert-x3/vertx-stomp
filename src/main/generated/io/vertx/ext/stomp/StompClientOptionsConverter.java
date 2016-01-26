@@ -59,6 +59,9 @@ public class StompClientOptionsConverter {
     if (json.getValue("useStompFrame") instanceof Boolean) {
       obj.setUseStompFrame((Boolean)json.getValue("useStompFrame"));
     }
+    if (json.getValue("virtualHost") instanceof String) {
+      obj.setVirtualHost((String)json.getValue("virtualHost"));
+    }
   }
 
   public static void toJson(StompClientOptions obj, JsonObject json) {
@@ -85,5 +88,8 @@ public class StompClientOptionsConverter {
     }
     json.put("port", obj.getPort());
     json.put("useStompFrame", obj.isUseStompFrame());
+    if (obj.getVirtualHost() != null) {
+      json.put("virtualHost", obj.getVirtualHost());
+    }
   }
 }

@@ -112,6 +112,9 @@ public class StompClientImpl implements StompClient {
     if (!options.isBypassHostHeader()) {
       headers.put(Frame.HOST, host);
     }
+    if (options.getVirtualHost() != null) {
+      headers.put(Frame.HOST, options.getVirtualHost());
+    }
     if (options.getLogin() != null) {
       headers.put(Frame.LOGIN, options.getLogin());
     }

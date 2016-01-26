@@ -170,7 +170,10 @@ public class StompClientImplTest {
   @Test
   public void testClientHeartbeatWhenNoServerActivity() {
     AtomicReference<StompClientConnection> reference = new AtomicReference<>();
-    server.close();
+    AsyncLock<Void> closeLock = new AsyncLock<>();
+    server.close(closeLock.handler());
+    closeLock.waitForSuccess();
+
     AsyncLock<StompServer> lock = new AsyncLock<>();
     server = StompServer.create(vertx,
         new StompServerOptions().setHeartbeat(new JsonObject().put("x", 100).put("y", 100)))
@@ -213,8 +216,11 @@ public class StompClientImplTest {
 
   @Test
   public void testServerHeartbeatWhenNoClientActivity() {
+    AsyncLock<Void> closeLock = new AsyncLock<>();
     AtomicReference<StompClientConnection> reference = new AtomicReference<>();
-    server.close();
+    server.close(closeLock.handler());
+    closeLock.waitForSuccess();
+
     AsyncLock<StompServer> lock = new AsyncLock<>();
     server = StompServer.create(vertx,
         new StompServerOptions().setHeartbeat(new JsonObject().put("x", 100).put("y", 100)))

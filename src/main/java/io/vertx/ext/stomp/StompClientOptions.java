@@ -42,6 +42,7 @@ public class StompClientOptions extends NetClientOptions implements StompOptions
   private boolean useStompFrame = false;
   private boolean bypassHostHeader = false;
   private JsonObject heartbeat = DEFAULT_STOMP_HEARTBEAT;
+  private String virtualHost;
 
   /**
    * Default constructor.
@@ -67,6 +68,7 @@ public class StompClientOptions extends NetClientOptions implements StompOptions
     this.acceptedVersions = new ArrayList<>(other.acceptedVersions);
     this.bypassHostHeader = other.bypassHostHeader;
     this.heartbeat = other.heartbeat;
+    this.virtualHost = other.virtualHost;
   }
 
   /**
@@ -284,6 +286,27 @@ public class StompClientOptions extends NetClientOptions implements StompOptions
    */
   public StompClientOptions setHeartbeat(JsonObject heartbeat) {
     this.heartbeat = heartbeat;
+    return this;
+  }
+
+  /**
+   * Gets the virtual host that would be use a "host" header value in the `CONNECT` frame. This option is useful for
+   * Cloud AMQP.
+   *
+   * @return the virtual host
+   */
+  public String getVirtualHost() {
+    return virtualHost;
+  }
+
+  /**
+   * Sets the virtual host that will be used as "host" header value in the `CONNECT` frame.
+   *
+   * @param virtualHost the virtual host
+   * @return the current {@link StompClientOptions}
+   */
+  public StompClientOptions setVirtualHost(String virtualHost) {
+    this.virtualHost = virtualHost;
     return this;
   }
 }
