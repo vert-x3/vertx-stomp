@@ -288,7 +288,8 @@
                           <port>61613</port>
                         </ports>
                       </tcp>
-                      <time>10000</time>
+                      <!-- rabbitmq is a bit longer to start -->
+                      <time>30000</time>
                     </wait>
                   </run>
                 </image>
