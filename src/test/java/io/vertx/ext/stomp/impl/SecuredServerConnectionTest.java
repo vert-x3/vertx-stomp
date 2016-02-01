@@ -28,6 +28,7 @@ import io.vertx.ext.stomp.StompServerOptions;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.RunTestOnContext;
+import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -39,7 +40,7 @@ import org.junit.runner.RunWith;
  *
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
-@RunWith(io.vertx.ext.unit.junit.VertxUnitRunner.class)
+@RunWith(VertxUnitRunner.class)
 public class SecuredServerConnectionTest {
   private Vertx vertx;
   private StompServer server;
@@ -49,25 +50,18 @@ public class SecuredServerConnectionTest {
 
   @Before
   public void setUp(TestContext context) {
-    vertx = Vertx.vertx();
+    vertx = rule.vertx();
     JsonObject config = new JsonObject().put("properties_path", "classpath:test-auth.properties");
     AuthProvider provider = ShiroAuth.create(vertx, ShiroAuthRealmType.PROPERTIES, config);
-    AsyncLock<StompServer> lock = new AsyncLock<>();
     server = StompServer.create(vertx, new StompServerOptions().setSecured(true))
         .handler(StompServerHandler.create(vertx).authProvider(provider))
-        .listen(lock.handler());
-    lock.waitForSuccess();
+        .listen(context.asyncAssertSuccess());
   }
 
   @After
   public void tearDown(TestContext context) {
-    AsyncLock<Void> lock = new AsyncLock<>();
-    server.close(lock.handler());
-    lock.waitForSuccess();
-
-    lock = new AsyncLock<>();
-    vertx.close(lock.handler());
-    lock.waitForSuccess();
+    server.close(context.asyncAssertSuccess());
+    // Do not close the vert.x instance when using the RunTestOnContext rule.
   }
 
   @Test
