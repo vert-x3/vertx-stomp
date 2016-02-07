@@ -59,23 +59,6 @@ Sets the headers of the frames.
 |[[transaction]]`transaction`|`String`|-
 |===
 
-[[PermittedOptions]]
-== PermittedOptions
-
-++++
- Specify a match to allow for inbound and outbound traffic.
-++++
-'''
-
-[cols=">25%,^25%,50%"]
-[frame="topbot"]
-|===
-^|Name | Type ^| Description
-|[[address]]`address`|`String`|-
-|[[addressRegex]]`addressRegex`|`String`|-
-|[[match]]`match`|`Json object`|-
-|===
-
 [[StompServerOptions]]
 == StompServerOptions
 
