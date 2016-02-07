@@ -273,7 +273,7 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
 
   @Override
   public StompServerOptions setSsl(boolean ssl) {
-    super.setSsl(true);
+    super.setSsl(ssl);
     return this;
   }
 

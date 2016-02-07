@@ -241,7 +241,7 @@ public class StompClientOptions extends NetClientOptions implements StompOptions
 
   @Override
   public StompClientOptions setSsl(boolean ssl) {
-    super.setSsl(true);
+    super.setSsl(ssl);
     return this;
   }
 
