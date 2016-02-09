@@ -92,7 +92,14 @@ public class FrameParser implements Handler<Buffer> {
         // It's the verb line.
         // We try to find the right verb, here we can trim the line (would remove the optional \r).
         // Commands and Header are encoded in UTF-8 (spec)
-        command = Frame.Command.valueOf(buffer.toString(StompOptions.UTF_8).trim());
+        String commandLine = buffer.toString(StompOptions.UTF_8).trim();
+        try {
+          command = Frame.Command.valueOf(commandLine);
+        } catch (IllegalArgumentException e) {
+          // Not a valid command, use UNKNOWN, and write the given command as header.
+          command = Frame.Command.UNKNOWN;
+          headers.put(Frame.STOMP_FRAME_COMMAND, commandLine);
+        }
         // Only one verb line, so next state
         current = State.HEADERS;
         break;

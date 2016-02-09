@@ -96,6 +96,21 @@ public interface StompClient {
   @Fluent
   StompClient connect(Handler<AsyncResult<StompClientConnection>> resultHandler);
 
+
+
+  /**
+   * Configures a "general" handler that get notified when a STOMP frame is received by the client.
+   * This handler can be used for logging, debugging or ad-hoc behavior.
+   *
+   * When a connection is created, the handler is used as
+   * {@link StompClientConnection#frameHandler(Handler)}.
+   *
+   * @param handler the handler
+   * @return the current {@link StompClientConnection}
+   */
+  @Fluent
+  StompClient frameHandler(Handler<Frame> handler);
+
   /**
    * Closes the client.
    */

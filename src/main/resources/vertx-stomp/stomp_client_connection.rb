@@ -328,5 +328,19 @@ module VertxStomp
       end
       raise ArgumentError, "Invalid arguments when calling nack(id,txId)"
     end
+    #  Configures a "general" handler that get notified when a STOMP frame is received by the client.
+    #  This handler can be used for logging, debugging or ad-hoc behavior.
+    #  <p>
+    #  Unlike {::VertxStomp::StompClient#frame_handler}, the given handler won't receive the <code>CONNECTED</code> frame. If a frame handler is set on the {::VertxStomp::StompClient}, it will be used by all
+    #  clients connection, so calling this method is useless, except if you want to use a different handler.
+    # @yield the handler
+    # @return [self]
+    def frame_handler
+      if block_given?
+        @j_del.java_method(:frameHandler, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
+        return self
+      end
+      raise ArgumentError, "Invalid arguments when calling frame_handler()"
+    end
   end
 end

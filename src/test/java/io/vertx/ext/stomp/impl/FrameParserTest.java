@@ -376,7 +376,7 @@ public class FrameParserTest {
     assertThat(frames.get(1).getBodyAsString()).isEqualTo("Hello World");
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testWrongCommand() {
     Buffer buffer = Buffer.buffer("ILLEGAL\n"
         + "accept-version:1.2\n"
@@ -384,7 +384,9 @@ public class FrameParserTest {
         + "\n")
         .appendString(FrameParser.NULL);
 
-    parse(buffer);
+    Frame frame = parse(buffer);
+    assertThat(frame.getCommand()).isEqualTo(Frame.Command.UNKNOWN);
+    assertThat(frame.getHeader(Frame.STOMP_FRAME_COMMAND)).isEqualTo("ILLEGAL");
   }
 
   @Test(expected = FrameException.class)

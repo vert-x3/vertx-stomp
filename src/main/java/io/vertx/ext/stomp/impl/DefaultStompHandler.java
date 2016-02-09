@@ -26,6 +26,7 @@ import io.vertx.ext.stomp.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A plug-able implementation of {@link StompServerHandler}. The default behavior is compliant with the STOMP
@@ -83,7 +84,7 @@ public class DefaultStompHandler implements StompServerHandler {
 
   private DestinationFactory factory = Destination::topic;
 
-  private Handler<StompServerConnection> connectionDroppedHandler;
+  private Handler<ServerFrame> frameHandler = f -> {};
 
   public DefaultStompHandler(Vertx vertx) {
     this.vertx = vertx;
@@ -100,6 +101,13 @@ public class DefaultStompHandler implements StompServerHandler {
     if (closeHandler != null) {
       closeHandler.handle(connection);
     }
+  }
+
+  @Override
+  public synchronized StompServerHandler frameHandler(Handler<ServerFrame> handler) {
+    Objects.requireNonNull(handler);
+    this.frameHandler = handler;
+    return this;
   }
 
   @Override
@@ -179,6 +187,11 @@ public class DefaultStompHandler implements StompServerHandler {
     Frame frame = serverFrame.frame();
     StompServerConnection connection = serverFrame.connection();
     connection.onServerActivity();
+
+    synchronized (this) {
+      frameHandler.handle(serverFrame);
+    }
+
     switch (frame.getCommand()) {
       case CONNECT:
         handleConnect(frame, connection);
@@ -215,6 +228,9 @@ public class DefaultStompHandler implements StompServerHandler {
         break;
       case PING:
         // We received a ping frame, we do nothing.
+        break;
+      default:
+        // Unknown frames
         break;
     }
   }

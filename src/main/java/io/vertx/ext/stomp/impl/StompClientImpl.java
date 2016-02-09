@@ -42,6 +42,7 @@ public class StompClientImpl implements StompClient {
   private final Vertx vertx;
   private final StompClientOptions options;
   private NetClient client;
+  private Handler<Frame> frameHandler = v -> {};
 
 
   public StompClientImpl(Vertx vertx, StompClientOptions options) {
@@ -57,6 +58,19 @@ public class StompClientImpl implements StompClient {
   @Override
   public StompClient connect(Handler<AsyncResult<StompClientConnection>> resultHandler) {
     return connect(options.getPort(), options.getHost(), vertx.createNetClient(options), resultHandler);
+  }
+
+  /**
+   * Configures a "general" handler that get notified when a STOMP frame is received by the client.
+   * This handler can be used for logging, debugging or ad-hoc behavior.
+   *
+   * @param handler the handler
+   * @return the current {@link StompClientConnection}
+   */
+  @Override
+  public StompClient frameHandler(Handler<Frame> handler) {
+    frameHandler = handler;
+    return this;
   }
 
   @Override
@@ -95,7 +109,7 @@ public class StompClientImpl implements StompClient {
         }
       } else {
         // Create the connection, the connection attach a handler on the socket.
-        new StompClientConnectionImpl(vertx, ar.result(), this, resultHandler);
+        new StompClientConnectionImpl(vertx, ar.result(), this, resultHandler).frameHandler(frameHandler);
         // Socket connected - send "CONNECT" Frame
         ar.result().write(getConnectFrame(host));
       }

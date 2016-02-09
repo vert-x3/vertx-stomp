@@ -453,6 +453,27 @@ var StompClientConnection = function(j_val) {
     } else throw new TypeError('function invoked with invalid arguments');
   };
 
+  /**
+   Configures a "general" handler that get notified when a STOMP frame is received by the client.
+   This handler can be used for logging, debugging or ad-hoc behavior.
+   <p>
+   Unlike {@link StompClient#frameHandler}, the given handler won't receive the <code>CONNECTED</code> frame. If a frame handler is set on the {@link StompClient}, it will be used by all
+   clients connection, so calling this method is useless, except if you want to use a different handler.
+
+   @public
+   @param handler {function} the handler 
+   @return {StompClientConnection} the current {@link StompClientConnection}
+   */
+  this.frameHandler = function(handler) {
+    var __args = arguments;
+    if (__args.length === 1 && typeof __args[0] === 'function') {
+      j_stompClientConnection["frameHandler(io.vertx.core.Handler)"](function(jVal) {
+      handler(utils.convReturnDataObject(jVal));
+    });
+      return that;
+    } else throw new TypeError('function invoked with invalid arguments');
+  };
+
   // A reference to the underlying Java delegate
   // NOTE! This is an internal API and must not be used in user code.
   // If you rely on this property your code is likely to break if we change it / remove it without warning.

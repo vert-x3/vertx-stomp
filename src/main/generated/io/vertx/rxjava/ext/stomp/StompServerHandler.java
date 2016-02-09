@@ -64,6 +64,21 @@ public class StompServerHandler implements Handler<ServerFrame> {
   }
 
   /**
+   * Configures a "general" handler that get notified when a STOMP frame is received by the server.
+   * This handler can be used for logging, debugging or ad-hoc behavior.
+   * @param handler the handler
+   * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
+   */
+  public StompServerHandler frameHandler(Handler<ServerFrame> handler) { 
+    this.delegate.frameHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+      public void handle(io.vertx.ext.stomp.ServerFrame event) {
+        handler.handle(new ServerFrame(event));
+      }
+    });
+    return this;
+  }
+
+  /**
    * Configures the action to execute when a <code>CONNECT</code> frame is received.
    * @param handler the handler
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}

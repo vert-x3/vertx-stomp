@@ -41,6 +41,17 @@ module VertxStomp
       end
       raise ArgumentError, "Invalid arguments when calling create(vertx)"
     end
+    #  Configures a "general" handler that get notified when a STOMP frame is received by the server.
+    #  This handler can be used for logging, debugging or ad-hoc behavior.
+    # @yield the handler
+    # @return [self]
+    def frame_handler
+      if block_given?
+        @j_del.java_method(:frameHandler, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(::Vertx::Util::Utils.safe_create(event,::VertxStomp::ServerFrame)) }))
+        return self
+      end
+      raise ArgumentError, "Invalid arguments when calling frame_handler()"
+    end
     #  Configures the action to execute when a <code>CONNECT</code> frame is received.
     # @yield the handler
     # @return [self]

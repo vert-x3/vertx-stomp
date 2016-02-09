@@ -593,6 +593,20 @@ public class StompClientConnection {
     return this;
   }
 
+  /**
+   * Configures a "general" handler that get notified when a STOMP frame is received by the client.
+   * This handler can be used for logging, debugging or ad-hoc behavior.
+   * <p>
+   * Unlike {@link io.vertx.rxjava.ext.stomp.StompClient#frameHandler}, the given handler won't receive the <code>CONNECTED</code> frame. If a frame handler is set on the {@link io.vertx.rxjava.ext.stomp.StompClient}, it will be used by all
+   * clients connection, so calling this method is useless, except if you want to use a different handler.
+   * @param handler the handler
+   * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
+   */
+  public StompClientConnection frameHandler(Handler<Frame> handler) { 
+    this.delegate.frameHandler(handler);
+    return this;
+  }
+
 
   public static StompClientConnection newInstance(io.vertx.ext.stomp.StompClientConnection arg) {
     return arg != null ? new StompClientConnection(arg) : null;

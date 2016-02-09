@@ -48,6 +48,16 @@ public interface StompServerHandler extends Handler<ServerFrame> {
   }
 
   /**
+   * Configures a "general" handler that get notified when a STOMP frame is received by the server.
+   * This handler can be used for logging, debugging or ad-hoc behavior.
+   *
+   * @param handler the handler
+   * @return the current {@link StompServerHandler}
+   */
+  @Fluent
+  StompServerHandler frameHandler(Handler<ServerFrame> handler);
+
+  /**
    * Configures the action to execute when a {@code CONNECT} frame is received.
    *
    * @param handler the handler

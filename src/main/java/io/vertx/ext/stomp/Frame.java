@@ -73,6 +73,12 @@ public class Frame {
   public static final String MESSAGE = "message";
 
   /**
+   * Header used when a frame using an unknown command is received. The created {@link Frame} object uses
+   * the {@link Command#UNKNOWN} command and gives the original command in this header.
+   */
+  public static final String STOMP_FRAME_COMMAND = "frame-command";
+
+  /**
    * Regex used to extract the body encoding that may be specified in the {@code content-type} header. By default,
    * UTF-8 is used.
    */
@@ -106,7 +112,9 @@ public class Frame {
     ERROR,
 
     // This is not a real STOMP frame, it just notice a ping frame from the client.
-    PING
+    PING,
+
+    UNKNOWN
   }
 
   /**
@@ -199,7 +207,7 @@ public class Frame {
    * Only SEND, MESSAGE and ERROR frames accept bodies.
    */
   private final static List<Command> COMMANDS_ACCEPTING_BODY = Arrays.asList(
-      Command.SEND, Command.MESSAGE, Command.ERROR);
+      Command.SEND, Command.MESSAGE, Command.ERROR, Command.UNKNOWN);
 
   private Command command;
 

@@ -23,6 +23,7 @@ var NetClient = require('vertx-js/net_client');
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
 var JStompClient = io.vertx.ext.stomp.StompClient;
+var Frame = io.vertx.ext.stomp.Frame;
 var StompClientOptions = io.vertx.ext.stomp.StompClientOptions;
 
 /**
@@ -81,6 +82,27 @@ var StompClient = function(j_val) {
       } else {
         __args[3](null, ar.cause());
       }
+    });
+      return that;
+    } else throw new TypeError('function invoked with invalid arguments');
+  };
+
+  /**
+   Configures a "general" handler that get notified when a STOMP frame is received by the client.
+   This handler can be used for logging, debugging or ad-hoc behavior.
+  
+   When a connection is created, the handler is used as
+   {@link StompClientConnection#frameHandler}.
+
+   @public
+   @param handler {function} the handler 
+   @return {StompClient} the current {@link StompClientConnection}
+   */
+  this.frameHandler = function(handler) {
+    var __args = arguments;
+    if (__args.length === 1 && typeof __args[0] === 'function') {
+      j_stompClient["frameHandler(io.vertx.core.Handler)"](function(jVal) {
+      handler(utils.convReturnDataObject(jVal));
     });
       return that;
     } else throw new TypeError('function invoked with invalid arguments');

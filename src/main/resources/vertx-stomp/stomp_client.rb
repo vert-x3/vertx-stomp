@@ -60,6 +60,20 @@ module VertxStomp
       end
       raise ArgumentError, "Invalid arguments when calling connect(param_1,param_2,param_3)"
     end
+    #  Configures a "general" handler that get notified when a STOMP frame is received by the client.
+    #  This handler can be used for logging, debugging or ad-hoc behavior.
+    # 
+    #  When a connection is created, the handler is used as
+    #  {::VertxStomp::StompClientConnection#frame_handler}.
+    # @yield the handler
+    # @return [self]
+    def frame_handler
+      if block_given?
+        @j_del.java_method(:frameHandler, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
+        return self
+      end
+      raise ArgumentError, "Invalid arguments when calling frame_handler()"
+    end
     #  Closes the client.
     # @return [void]
     def close

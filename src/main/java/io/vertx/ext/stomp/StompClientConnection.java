@@ -556,4 +556,17 @@ public interface StompClientConnection {
   StompClientConnection nack(String id, String txId, Handler<Frame> receiptHandler);
 
 
+  /**
+   * Configures a "general" handler that get notified when a STOMP frame is received by the client.
+   * This handler can be used for logging, debugging or ad-hoc behavior.
+   * <p>
+   * Unlike {@link StompClient#frameHandler(Handler)}, the given handler won't receive the {@code
+   * CONNECTED} frame. If a frame handler is set on the {@link StompClient}, it will be used by all
+   * clients connection, so calling this method is useless, except if you want to use a different handler.
+   *
+   * @param handler the handler
+   * @return the current {@link StompClientConnection}
+   */
+  @Fluent
+  StompClientConnection frameHandler(Handler<Frame> handler);
 }

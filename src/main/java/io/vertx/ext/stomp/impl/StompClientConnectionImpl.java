@@ -21,10 +21,7 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.core.net.NetSocket;
-import io.vertx.ext.stomp.Frame;
-import io.vertx.ext.stomp.Frames;
-import io.vertx.ext.stomp.StompClient;
-import io.vertx.ext.stomp.StompClientConnection;
+import io.vertx.ext.stomp.*;
 import io.vertx.ext.stomp.utils.Headers;
 
 import java.util.*;
@@ -61,6 +58,8 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   private Handler<StompClientConnection> pingHandler = connection -> connection.send(Frames.ping());
   private Handler<StompClientConnection> closeHandler;
   private Handler<StompClientConnection> droppedHandler = v -> {}; // Do nothing by default.
+
+  private Handler<Frame> frameHandler = f -> {};
 
   private class Subscription {
     final String destination;
@@ -453,6 +452,12 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     return this;
   }
 
+  public synchronized StompClientConnection frameHandler(Handler<Frame> handler) {
+    Objects.requireNonNull(handler);
+    this.frameHandler = handler;
+    return this;
+  }
+
   @Override
   public synchronized StompClientConnection connectionDroppedHandler(Handler<StompClientConnection> handler) {
     this.droppedHandler = handler;
@@ -461,6 +466,9 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
 
   @Override
   public void handle(Frame frame) {
+    synchronized (this) {
+      frameHandler.handle(frame);
+    }
     switch (frame.getCommand()) {
       case CONNECTED:
         handleConnected(frame);
@@ -532,7 +540,15 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
         }
       });
     }
-
     resultHandler.handle(Future.succeededFuture(this));
+  }
+
+  /**
+   * Gets the underlying TCP socket.
+   *
+   * @return the socket
+   */
+  public NetSocket socket() {
+    return socket;
   }
 }

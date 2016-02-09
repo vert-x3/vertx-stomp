@@ -19,6 +19,7 @@ package io.vertx.rxjava.ext.stomp;
 import java.util.Map;
 import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
+import io.vertx.ext.stomp.Frame;
 import io.vertx.rxjava.core.Vertx;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
@@ -195,6 +196,20 @@ public class StompClient {
     io.vertx.rx.java.ObservableFuture<StompClientConnection> resultHandler = io.vertx.rx.java.RxHelper.observableFuture();
     connect(resultHandler.toHandler());
     return resultHandler;
+  }
+
+  /**
+   * Configures a "general" handler that get notified when a STOMP frame is received by the client.
+   * This handler can be used for logging, debugging or ad-hoc behavior.
+   *
+   * When a connection is created, the handler is used as
+   * {@link io.vertx.ext.stomp.StompClientConnection}.
+   * @param handler the handler
+   * @return the current {@link io.vertx.ext.stomp.StompClientConnection}
+   */
+  public StompClient frameHandler(Handler<Frame> handler) { 
+    this.delegate.frameHandler(handler);
+    return this;
   }
 
   /**

@@ -118,7 +118,7 @@ public class StompServerImpl implements StompServer {
                   }
               )
               .handler(frame -> stomp.handle(new ServerFrameImpl(frame, connection)));
-          socket.handler(parser::handle);
+          socket.handler(parser);
         })
         .listen(port, host, ar -> {
           if (ar.failed()) {

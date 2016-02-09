@@ -18,6 +18,7 @@ package io.vertx.groovy.ext.stomp;
 import groovy.transform.CompileStatic
 import io.vertx.lang.groovy.InternalHelper
 import io.vertx.core.json.JsonObject
+import io.vertx.ext.stomp.Frame
 import io.vertx.groovy.core.Vertx
 import io.vertx.core.AsyncResult
 import io.vertx.core.Handler
@@ -132,6 +133,23 @@ public class StompClient {
           f = InternalHelper.<StompClientConnection>failure(event.cause())
         }
         resultHandler.handle(f)
+      }
+    });
+    return this;
+  }
+  /**
+   * Configures a "general" handler that get notified when a STOMP frame is received by the client.
+   * This handler can be used for logging, debugging or ad-hoc behavior.
+   *
+   * When a connection is created, the handler is used as
+   * {@link io.vertx.groovy.ext.stomp.StompClientConnection#frameHandler}.
+   * @param handler the handler
+   * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
+   */
+  public StompClient frameHandler(Handler<Map<String, Object>> handler) {
+    this.delegate.frameHandler(new Handler<Frame>() {
+      public void handle(Frame event) {
+        handler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }
     });
     return this;
