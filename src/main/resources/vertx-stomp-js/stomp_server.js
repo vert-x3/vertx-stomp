@@ -20,6 +20,7 @@ var StompServerHandler = require('vertx-stomp-js/stomp_server_handler');
 var ServerWebSocket = require('vertx-js/server_web_socket');
 var NetServer = require('vertx-js/net_server');
 var Vertx = require('vertx-js/vertx');
+var ServerFrame = require('vertx-stomp-js/server_frame');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
@@ -206,6 +207,24 @@ var StompServer = function(j_val) {
     var __args = arguments;
     if (__args.length === 0) {
       return utils.convReturnHandler(j_stompServer["webSocketHandler()"](), function(result) { return result._jdel; });
+    } else throw new TypeError('function invoked with invalid arguments');
+  };
+
+  /**
+   Configures the handler that is invoked every time a frame is going to be written to the "wire". It lets you log
+   the frames, but also adapt the frame if needed.
+
+   @public
+   @param handler {function} the handler, must not be <code>null</code> 
+   @return {StompServer} the current {@link StompServer}
+   */
+  this.writingFrameHandler = function(handler) {
+    var __args = arguments;
+    if (__args.length === 1 && typeof __args[0] === 'function') {
+      j_stompServer["writingFrameHandler(io.vertx.core.Handler)"](function(jVal) {
+      handler(utils.convReturnVertxGen(jVal, ServerFrame));
+    });
+      return that;
     } else throw new TypeError('function invoked with invalid arguments');
   };
 

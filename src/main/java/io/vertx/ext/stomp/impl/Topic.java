@@ -65,7 +65,7 @@ public class Topic implements Destination {
     for (Subscription subscription : subscriptions) {
       String messageId = UUID.randomUUID().toString();
       Frame message = transform(frame, subscription, messageId);
-      subscription.connection.write(message.toBuffer());
+      subscription.connection.write(message);
     }
     return this;
   }

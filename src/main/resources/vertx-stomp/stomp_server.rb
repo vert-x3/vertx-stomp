@@ -2,6 +2,7 @@ require 'vertx-stomp/stomp_server_handler'
 require 'vertx/server_web_socket'
 require 'vertx/net_server'
 require 'vertx/vertx'
+require 'vertx-stomp/server_frame'
 require 'vertx/util/utils.rb'
 # Generated from io.vertx.ext.stomp.StompServer
 module VertxStomp
@@ -143,6 +144,17 @@ module VertxStomp
         return ::Vertx::Util::Utils.to_handler_proc(@j_del.java_method(:webSocketHandler, []).call()) { |val| val.j_del }
       end
       raise ArgumentError, "Invalid arguments when calling web_socket_handler()"
+    end
+    #  Configures the handler that is invoked every time a frame is going to be written to the "wire". It lets you log
+    #  the frames, but also adapt the frame if needed.
+    # @yield the handler, must not be <code>null</code>
+    # @return [self]
+    def writing_frame_handler
+      if block_given?
+        @j_del.java_method(:writingFrameHandler, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(::Vertx::Util::Utils.safe_create(event,::VertxStomp::ServerFrame)) }))
+        return self
+      end
+      raise ArgumentError, "Invalid arguments when calling writing_frame_handler()"
     end
   end
 end

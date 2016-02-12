@@ -24,7 +24,7 @@ descriptor:
 <dependency>
   <groupId>io.vertx</groupId>
   <artifactId>vertx-stomp</artifactId>
-  <version>3.2.1</version>
+  <version>3.3.0-SNAPSHOT</version>
 </dependency>
 ----
 
@@ -32,7 +32,7 @@ descriptor:
 
 [source,groovy,subs="+attributes"]
 ----
-compile 'io.vertx:vertx-stomp:3.2.1'
+compile 'io.vertx:vertx-stomp:3.3.0-SNAPSHOT'
 ----
 
 == STOMP server
@@ -721,4 +721,28 @@ var callback = function(frame) {
 client.connect({}, function() {
  var subscription = client.subscribe("foo", callback);
 });
+----
+
+== Registering received and writing frame handlers
+
+STOMP clients, client's connections and server handlers support registering a received
+`link:../dataobjects.html#Frame[Frame]` handler that would be notified every time a frame is received from the wire. It lets
+you log the frames, or implement custom behavior. The handler is already called for `PING`
+frames, and _illegal / unknown_ frames:
+
+[source,groovy]
+----
+Code not translatable
+----
+
+The handler is called before the frame is processed, so you can also _modify_ the frame.
+
+Frames not using a valid STOMP command use the `UNKNOWN` command. The original command is written
+in the headers using the `link:todo[Frame.STOMP_FRAME_COMMAND]` key.
+
+You can also register a handler to be notified when a frame is going to be sent (written to the wire):
+
+[source,groovy]
+----
+Code not translatable
 ----

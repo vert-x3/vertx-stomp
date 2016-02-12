@@ -328,19 +328,33 @@ module VertxStomp
       end
       raise ArgumentError, "Invalid arguments when calling nack(id,txId)"
     end
-    #  Configures a "general" handler that get notified when a STOMP frame is received by the client.
-    #  This handler can be used for logging, debugging or ad-hoc behavior.
+    #  Configures a received handler that get notified when a STOMP frame is received by the client.
+    #  This handler can be used for logging, debugging or ad-hoc behavior. The frame can still be modified by the handler.
     #  <p>
-    #  Unlike {::VertxStomp::StompClient#frame_handler}, the given handler won't receive the <code>CONNECTED</code> frame. If a frame handler is set on the {::VertxStomp::StompClient}, it will be used by all
+    #  Unlike {::VertxStomp::StompClient#received_frame_handler}, the given handler won't receive the <code>CONNECTED</code> frame. If a received frame handler is set on the {::VertxStomp::StompClient}, it will be used by all
     #  clients connection, so calling this method is useless, except if you want to use a different handler.
     # @yield the handler
     # @return [self]
-    def frame_handler
+    def received_frame_handler
       if block_given?
-        @j_del.java_method(:frameHandler, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
+        @j_del.java_method(:receivedFrameHandler, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling frame_handler()"
+      raise ArgumentError, "Invalid arguments when calling received_frame_handler()"
+    end
+    #  Configures a handler notified when a frame is going to be written on the wire. This handler can be used from
+    #  logging, debugging. The handler can modify the received frame.
+    # 
+    #  If a writing frame handler is set on the {::VertxStomp::StompClient}, it will be used by all
+    #  clients connection, so calling this method is useless, except if you want to use a different handler.
+    # @yield the handler
+    # @return [self]
+    def writing_frame_handler
+      if block_given?
+        @j_del.java_method(:writingFrameHandler, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
+        return self
+      end
+      raise ArgumentError, "Invalid arguments when calling writing_frame_handler()"
     end
   end
 end

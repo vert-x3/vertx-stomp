@@ -21,10 +21,7 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.core.net.NetSocket;
-import io.vertx.ext.stomp.Frame;
-import io.vertx.ext.stomp.StompServer;
-import io.vertx.ext.stomp.StompServerConnection;
-import io.vertx.ext.stomp.StompServerHandler;
+import io.vertx.ext.stomp.*;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -42,29 +39,36 @@ public class StompServerTCPConnectionImpl implements StompServerConnection {
   private final StompServer server;
   private final NetSocket socket;
   private final String sessionId;
+  private final Handler<ServerFrame> handler;
 
   private volatile long lastClientActivity;
   private long pinger = -1;
   private long ponger = -1;
 
-  public StompServerTCPConnectionImpl(NetSocket socket, StompServer server) {
+  public StompServerTCPConnectionImpl(NetSocket socket, StompServer server, Handler<ServerFrame> writingFrameHandler) {
     Objects.requireNonNull(socket);
     Objects.requireNonNull(server);
     this.socket = socket;
     this.server = server;
     this.sessionId = UUID.randomUUID().toString();
+    this.handler = writingFrameHandler;
   }
 
-  public StompServerTCPConnectionImpl(StompServer server) {
+  public StompServerTCPConnectionImpl(StompServer server, Handler<ServerFrame> writingFrameHandler) {
     Objects.requireNonNull(server);
     this.socket = null;
     this.server = server;
+    this.handler = writingFrameHandler;
     this.sessionId = UUID.randomUUID().toString();
   }
 
   @Override
   public StompServerConnection write(Frame frame) {
-    return write(frame.toBuffer());
+    if (handler != null) {
+      handler.handle(new ServerFrameImpl(frame, this));
+    }
+    write(frame.toBuffer());
+    return this;
   }
 
   @Override
@@ -100,6 +104,9 @@ public class StompServerTCPConnectionImpl implements StompServerConnection {
    */
   @Override
   public void ping() {
+    if (handler != null) {
+      handler.handle(new ServerFrameImpl(Frames.PING, this));
+    }
     socket.write(Buffer.buffer(FrameParser.EOL));
   }
 

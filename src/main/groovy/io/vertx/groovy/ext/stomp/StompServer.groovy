@@ -245,4 +245,18 @@ public class StompServer {
     };
     return ret;
   }
+  /**
+   * Configures the handler that is invoked every time a frame is going to be written to the "wire". It lets you log
+   * the frames, but also adapt the frame if needed.
+   * @param handler the handler, must not be <code>null</code>
+   * @return the current {@link io.vertx.groovy.ext.stomp.StompServer}
+   */
+  public StompServer writingFrameHandler(Handler<ServerFrame> handler) {
+    this.delegate.writingFrameHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+      public void handle(io.vertx.ext.stomp.ServerFrame event) {
+        handler.handle(new io.vertx.groovy.ext.stomp.ServerFrame(event));
+      }
+    });
+    return this;
+  }
 }

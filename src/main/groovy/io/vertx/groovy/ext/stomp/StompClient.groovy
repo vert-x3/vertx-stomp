@@ -138,16 +138,33 @@ public class StompClient {
     return this;
   }
   /**
-   * Configures a "general" handler that get notified when a STOMP frame is received by the client.
-   * This handler can be used for logging, debugging or ad-hoc behavior.
+   * Configures a received handler that gets notified when a STOMP frame is received by the client.
+   * This handler can be used for logging, debugging or ad-hoc behavior. The frame can still be modified at the time.
    *
    * When a connection is created, the handler is used as
-   * {@link io.vertx.groovy.ext.stomp.StompClientConnection#frameHandler}.
+   * {@link io.vertx.groovy.ext.stomp.StompClientConnection#receivedFrameHandler}.
    * @param handler the handler
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
-  public StompClient frameHandler(Handler<Map<String, Object>> handler) {
-    this.delegate.frameHandler(new Handler<Frame>() {
+  public StompClient receivedFrameHandler(Handler<Map<String, Object>> handler) {
+    this.delegate.receivedFrameHandler(new Handler<Frame>() {
+      public void handle(Frame event) {
+        handler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
+      }
+    });
+    return this;
+  }
+  /**
+   * Configures a writing handler that gets notified when a STOMP frame is written on the wire.
+   * This handler can be used for logging, debugging or ad-hoc behavior. The frame can still be modified at the time.
+   *
+   * When a connection is created, the handler is used as
+   * {@link io.vertx.groovy.ext.stomp.StompClientConnection#writingFrameHandler}.
+   * @param handler the handler
+   * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
+   */
+  public StompClient writingFrameHandler(Handler<Map<String, Object>> handler) {
+    this.delegate.writingFrameHandler(new Handler<Frame>() {
       public void handle(Frame event) {
         handler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }

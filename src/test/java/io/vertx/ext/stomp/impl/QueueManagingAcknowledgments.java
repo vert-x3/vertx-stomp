@@ -71,7 +71,7 @@ public class QueueManagingAcknowledgments implements Destination {
     String messageId = UUID.randomUUID().toString();
     Frame message = transform(frame, subscription, messageId);
     subscription.enqueue(message);
-    subscription.connection().write(message.toBuffer());
+    subscription.connection().write(message);
     return this;
   }
 
@@ -195,7 +195,7 @@ public class QueueManagingAcknowledgments implements Destination {
           for (Frame f : frames) {
             Frame message = transform(f, next, messageId);
             next.enqueue(message);
-            next.connection().write(message.toBuffer());
+            next.connection().write(message);
           }
         }
         return true;

@@ -88,20 +88,41 @@ var StompClient = function(j_val) {
   };
 
   /**
-   Configures a "general" handler that get notified when a STOMP frame is received by the client.
-   This handler can be used for logging, debugging or ad-hoc behavior.
+   Configures a received handler that gets notified when a STOMP frame is received by the client.
+   This handler can be used for logging, debugging or ad-hoc behavior. The frame can still be modified at the time.
   
    When a connection is created, the handler is used as
-   {@link StompClientConnection#frameHandler}.
+   {@link StompClientConnection#receivedFrameHandler}.
 
    @public
    @param handler {function} the handler 
    @return {StompClient} the current {@link StompClientConnection}
    */
-  this.frameHandler = function(handler) {
+  this.receivedFrameHandler = function(handler) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
-      j_stompClient["frameHandler(io.vertx.core.Handler)"](function(jVal) {
+      j_stompClient["receivedFrameHandler(io.vertx.core.Handler)"](function(jVal) {
+      handler(utils.convReturnDataObject(jVal));
+    });
+      return that;
+    } else throw new TypeError('function invoked with invalid arguments');
+  };
+
+  /**
+   Configures a writing handler that gets notified when a STOMP frame is written on the wire.
+   This handler can be used for logging, debugging or ad-hoc behavior. The frame can still be modified at the time.
+  
+   When a connection is created, the handler is used as
+   {@link StompClientConnection#writingFrameHandler}.
+
+   @public
+   @param handler {function} the handler 
+   @return {StompClient} the current {@link StompClientConnection}
+   */
+  this.writingFrameHandler = function(handler) {
+    var __args = arguments;
+    if (__args.length === 1 && typeof __args[0] === 'function') {
+      j_stompClient["writingFrameHandler(io.vertx.core.Handler)"](function(jVal) {
       handler(utils.convReturnDataObject(jVal));
     });
       return that;

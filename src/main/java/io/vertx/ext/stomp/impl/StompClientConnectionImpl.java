@@ -59,7 +59,8 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   private Handler<StompClientConnection> closeHandler;
   private Handler<StompClientConnection> droppedHandler = v -> {}; // Do nothing by default.
 
-  private Handler<Frame> frameHandler = f -> {};
+  private Handler<Frame> receivedFrameHandler;
+  private Handler<Frame> writingHandler;
 
   private class Subscription {
     final String destination;
@@ -165,6 +166,9 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
       String receiptId = UUID.randomUUID().toString();
       frame.addHeader(Frame.RECEIPT, receiptId);
       pendingReceipts.put(receiptId, f -> receiptHandler.handle(frame));
+    }
+    if (writingHandler != null) {
+      writingHandler.handle(frame);
     }
     socket.write(frame.toBuffer());
     return this;
@@ -452,9 +456,15 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     return this;
   }
 
-  public synchronized StompClientConnection frameHandler(Handler<Frame> handler) {
-    Objects.requireNonNull(handler);
-    this.frameHandler = handler;
+  @Override
+  public synchronized StompClientConnection receivedFrameHandler(Handler<Frame> handler) {
+    this.receivedFrameHandler = handler;
+    return this;
+  }
+
+  @Override
+  public synchronized StompClientConnection writingFrameHandler(Handler<Frame> handler) {
+    this.writingHandler = handler;
     return this;
   }
 
@@ -467,7 +477,9 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   @Override
   public void handle(Frame frame) {
     synchronized (this) {
-      frameHandler.handle(frame);
+      if (receivedFrameHandler != null) {
+        receivedFrameHandler.handle(frame);
+      }
     }
     switch (frame.getCommand()) {
       case CONNECTED:

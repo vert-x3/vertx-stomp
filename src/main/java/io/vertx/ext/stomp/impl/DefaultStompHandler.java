@@ -84,7 +84,7 @@ public class DefaultStompHandler implements StompServerHandler {
 
   private DestinationFactory factory = Destination::topic;
 
-  private Handler<ServerFrame> frameHandler = f -> {};
+  private Handler<ServerFrame> receivedFrameHandler;
 
   public DefaultStompHandler(Vertx vertx) {
     this.vertx = vertx;
@@ -93,7 +93,6 @@ public class DefaultStompHandler implements StompServerHandler {
   }
 
   public synchronized void onClose(StompServerConnection connection) {
-
     // Default behavior.
     getDestinations().stream().forEach((d) -> d.unsubscribeConnection(connection));
     Transactions.instance().unregisterTransactionsFromConnection(connection);
@@ -104,9 +103,8 @@ public class DefaultStompHandler implements StompServerHandler {
   }
 
   @Override
-  public synchronized StompServerHandler frameHandler(Handler<ServerFrame> handler) {
-    Objects.requireNonNull(handler);
-    this.frameHandler = handler;
+  public synchronized StompServerHandler receivedFrameHandler(Handler<ServerFrame> handler) {
+    this.receivedFrameHandler = handler;
     return this;
   }
 
@@ -189,7 +187,9 @@ public class DefaultStompHandler implements StompServerHandler {
     connection.onServerActivity();
 
     synchronized (this) {
-      frameHandler.handle(serverFrame);
+      if (receivedFrameHandler != null) {
+        receivedFrameHandler.handle(serverFrame);
+      }
     }
 
     switch (frame.getCommand()) {

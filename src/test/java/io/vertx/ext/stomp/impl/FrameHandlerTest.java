@@ -33,6 +33,7 @@ import static com.jayway.awaitility.Awaitility.await;
 import static org.assertj.core.api.StrictAssertions.assertThat;
 
 /**
+ * Test the received and writing frame handler
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class FrameHandlerTest {
@@ -45,6 +46,9 @@ public class FrameHandlerTest {
 
   // The last connection received by the server.
   private StompServerConnection connection;
+  private List<Frame> receivedByServer = new ArrayList<>();
+  private List<Frame> receivedByClient = new ArrayList<>();
+  private List<Frame> writtenByServer = new ArrayList<>();
 
   @Before
   public void setUp() {
@@ -52,15 +56,23 @@ public class FrameHandlerTest {
     vertx = Vertx.vertx();
     server = StompServer.create(vertx)
         .handler(StompServerHandler.create(vertx)
-            .frameHandler(frame -> {
+            .receivedFrameHandler(frame -> {
+              frame.frame().addHeader("mark", "true");
               receivedByServer.add(frame.frame());
               connection = frame.connection();
             }))
+        .writingFrameHandler(frame -> {
+          frame.frame().addHeader("mark", "true");
+          writtenByServer.add(frame.frame());
+        })
         .listen(lock.handler());
     lock.waitForSuccess();
 
     client = StompClient.create(vertx);
-    client.frameHandler(receivedByClient::add);
+    client.receivedFrameHandler(frame -> {
+      frame.addHeader("c-mark", "true");
+      receivedByClient.add(frame);
+    });
   }
 
   @After
@@ -77,9 +89,6 @@ public class FrameHandlerTest {
     receivedByServer.clear();
   }
 
-  List<Frame> receivedByServer = new ArrayList<>();
-  List<Frame> receivedByClient = new ArrayList<>();
-
   @Test
   public void testFrameHandler() {
     AtomicReference<StompClientConnection> reference = new AtomicReference<>();
@@ -91,14 +100,18 @@ public class FrameHandlerTest {
         containsFrameWithCommand(receivedByServer, Frame.Command.CONNECT));
     await().atMost(10, TimeUnit.SECONDS).until(() ->
         containsFrameWithCommand(receivedByClient, Frame.Command.CONNECTED));
+    await().atMost(10, TimeUnit.SECONDS).until(() ->
+        containsFrameWithCommand(writtenByServer, Frame.Command.CONNECTED));
 
     reference.get().send("foo", Buffer.buffer("hello"), f -> {
       // just there to receive a reply.
     });
 
-    await().atMost(10, TimeUnit.SECONDS).until(() -> containsFrameWithCommand(receivedByServer,
+    await().atMost(10, TimeUnit.SECONDS).until(() -> containsFrameWithCommandAndIsMarked(receivedByServer,
         Frame.Command.SEND));
-    await().atMost(10, TimeUnit.SECONDS).until(() -> containsFrameWithCommand(receivedByClient,
+    await().atMost(10, TimeUnit.SECONDS).until(() -> containsFrameWithCommandAndIsMarked(receivedByClient,
+        Frame.Command.RECEIPT));
+    await().atMost(10, TimeUnit.SECONDS).until(() -> containsFrameWithCommandAndIsMarked(writtenByServer,
         Frame.Command.RECEIPT));
   }
 
@@ -114,10 +127,14 @@ public class FrameHandlerTest {
         containsFrameWithCommand(receivedByServer, Frame.Command.CONNECT));
     await().atMost(10, TimeUnit.SECONDS).until(() ->
         containsFrameWithCommand(receivedByClient, Frame.Command.CONNECTED));
+    await().atMost(10, TimeUnit.SECONDS).until(() ->
+        containsFrameWithCommand(writtenByServer, Frame.Command.CONNECTED));
 
     await().atMost(10, TimeUnit.SECONDS).until(() -> containsFrameWithCommand(receivedByServer,
         Frame.Command.PING));
     await().atMost(10, TimeUnit.SECONDS).until(() -> containsFrameWithCommand(receivedByClient,
+        Frame.Command.PING));
+    await().atMost(10, TimeUnit.SECONDS).until(() -> containsFrameWithCommand(writtenByServer,
         Frame.Command.PING));
   }
 
@@ -169,6 +186,15 @@ public class FrameHandlerTest {
   private boolean containsFrameWithCommand(List<Frame> frames, Frame.Command command) {
     for (Frame frame : frames) {
       if (frame.getCommand() == command) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean containsFrameWithCommandAndIsMarked(List<Frame> frames, Frame.Command command) {
+    for (Frame frame : frames) {
+      if (frame.getCommand() == command  && frame.getHeader("mark") != null) {
         return true;
       }
     }

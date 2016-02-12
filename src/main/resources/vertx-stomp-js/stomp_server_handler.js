@@ -57,17 +57,17 @@ var StompServerHandler = function(j_val) {
   };
 
   /**
-   Configures a "general" handler that get notified when a STOMP frame is received by the server.
+   Configures a handler that get notified when a STOMP frame is received by the server.
    This handler can be used for logging, debugging or ad-hoc behavior.
 
    @public
    @param handler {function} the handler 
    @return {StompServerHandler} the current {@link StompServerHandler}
    */
-  this.frameHandler = function(handler) {
+  this.receivedFrameHandler = function(handler) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
-      j_stompServerHandler["frameHandler(io.vertx.core.Handler)"](function(jVal) {
+      j_stompServerHandler["receivedFrameHandler(io.vertx.core.Handler)"](function(jVal) {
       handler(utils.convReturnVertxGen(jVal, ServerFrame));
     });
       return that;

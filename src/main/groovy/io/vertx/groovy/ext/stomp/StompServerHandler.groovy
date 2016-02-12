@@ -53,13 +53,13 @@ public class StompServerHandler implements Handler<ServerFrame> {
     return ret;
   }
   /**
-   * Configures a "general" handler that get notified when a STOMP frame is received by the server.
+   * Configures a handler that get notified when a STOMP frame is received by the server.
    * This handler can be used for logging, debugging or ad-hoc behavior.
    * @param handler the handler
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServerHandler}
    */
-  public StompServerHandler frameHandler(Handler<ServerFrame> handler) {
-    this.delegate.frameHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+  public StompServerHandler receivedFrameHandler(Handler<ServerFrame> handler) {
+    this.delegate.receivedFrameHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
       public void handle(io.vertx.ext.stomp.ServerFrame event) {
         handler.handle(new io.vertx.groovy.ext.stomp.ServerFrame(event));
       }

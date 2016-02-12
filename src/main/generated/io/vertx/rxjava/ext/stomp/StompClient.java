@@ -199,16 +199,30 @@ public class StompClient {
   }
 
   /**
-   * Configures a "general" handler that get notified when a STOMP frame is received by the client.
-   * This handler can be used for logging, debugging or ad-hoc behavior.
+   * Configures a received handler that gets notified when a STOMP frame is received by the client.
+   * This handler can be used for logging, debugging or ad-hoc behavior. The frame can still be modified at the time.
    *
    * When a connection is created, the handler is used as
    * {@link io.vertx.ext.stomp.StompClientConnection}.
    * @param handler the handler
    * @return the current {@link io.vertx.ext.stomp.StompClientConnection}
    */
-  public StompClient frameHandler(Handler<Frame> handler) { 
-    this.delegate.frameHandler(handler);
+  public StompClient receivedFrameHandler(Handler<Frame> handler) { 
+    this.delegate.receivedFrameHandler(handler);
+    return this;
+  }
+
+  /**
+   * Configures a writing handler that gets notified when a STOMP frame is written on the wire.
+   * This handler can be used for logging, debugging or ad-hoc behavior. The frame can still be modified at the time.
+   *
+   * When a connection is created, the handler is used as
+   * {@link io.vertx.rxjava.ext.stomp.StompClientConnection#writingFrameHandler}.
+   * @param handler the handler
+   * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
+   */
+  public StompClient writingFrameHandler(Handler<Frame> handler) { 
+    this.delegate.writingFrameHandler(handler);
     return this;
   }
 

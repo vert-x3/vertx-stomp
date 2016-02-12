@@ -44,6 +44,8 @@ public class StompServerImpl implements StompServer {
   private StompServerHandler handler;
   private volatile boolean listening;
 
+  private Handler<ServerFrame> writingFrameHandler;
+
   public StompServerImpl(Vertx vertx, NetServer net, StompServerOptions options) {
     Objects.requireNonNull(vertx);
     Objects.requireNonNull(options);
@@ -103,7 +105,7 @@ public class StompServerImpl implements StompServer {
         "server.");
     server
         .connectHandler(socket -> {
-          StompServerConnection connection = new StompServerTCPConnectionImpl(socket, this);
+          StompServerConnection connection = new StompServerTCPConnectionImpl(socket, this, writingFrameHandler);
           FrameParser parser = new FrameParser(options);
           socket.exceptionHandler((exception) -> {
             log.error("The STOMP server caught a TCP socket error - closing connection", exception);
@@ -113,7 +115,7 @@ public class StompServerImpl implements StompServer {
           parser
               .errorHandler((exception) -> {
                     connection.write(
-                        Frames.createInvalidFrameErrorFrame(exception).toBuffer());
+                        Frames.createInvalidFrameErrorFrame(exception));
                     connection.close();
                   }
               )
@@ -212,7 +214,7 @@ public class StompServerImpl implements StompServer {
         socket.reject();
         return;
       }
-      StompServerConnection connection = new StompServerWebSocketConnectionImpl(socket, this);
+      StompServerConnection connection = new StompServerWebSocketConnectionImpl(socket, this, writingFrameHandler);
       FrameParser parser = new FrameParser(options);
       socket.exceptionHandler((exception) -> {
         log.error("The STOMP server caught a WebSocket error - closing connection", exception);
@@ -222,13 +224,21 @@ public class StompServerImpl implements StompServer {
       parser
           .errorHandler((exception) -> {
                 connection.write(
-                    Frames.createInvalidFrameErrorFrame(exception).toBuffer());
+                    Frames.createInvalidFrameErrorFrame(exception));
                 connection.close();
               }
           )
           .handler(frame -> stomp.handle(new ServerFrameImpl(frame, connection)));
       socket.handler(parser);
     };
+  }
+
+  @Override
+  public StompServer writingFrameHandler(Handler<ServerFrame> handler) {
+    synchronized (this) {
+      this.writingFrameHandler = handler;
+    }
+    return this;
   }
 
 

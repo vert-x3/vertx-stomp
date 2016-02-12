@@ -83,12 +83,12 @@ public class EventBusBridge extends Topic {
             Optional<Subscription> chosen = subscriptions.stream().filter(s -> s.destination.equals(address)).findAny();
             if (chosen.isPresent()) {
               Frame stompFrame = transform(msg, chosen.get());
-              chosen.get().connection.write(stompFrame.toBuffer());
+              chosen.get().connection.write(stompFrame);
             }
           } else {
             subscriptions.stream().filter(s -> s.destination.equals(address)).forEach(s -> {
               Frame stompFrame = transform(msg, s);
-              s.connection.write(stompFrame.toBuffer());
+              s.connection.write(stompFrame);
             });
           }
         }));
@@ -227,7 +227,7 @@ public class EventBusBridge extends Topic {
                 .findFirst();
             if (subscription.isPresent()) {
               Frame stompFrame = transform(res.result(), subscription.get());
-              subscription.get().connection.write(stompFrame.toBuffer());
+              subscription.get().connection.write(stompFrame);
             }
           }
         });

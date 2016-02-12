@@ -200,5 +200,15 @@ public interface StompServer {
    */
   Handler<ServerWebSocket> webSocketHandler();
 
+  /**
+   * Configures the handler that is invoked every time a frame is going to be written to the "wire". It lets you log
+   * the frames, but also adapt the frame if needed.
+   *
+   * @param handler the handler, must not be {@code null}
+   * @return the current {@link StompServer}
+   */
+  @Fluent
+  StompServer writingFrameHandler(Handler<ServerFrame> handler);
+
 
 }

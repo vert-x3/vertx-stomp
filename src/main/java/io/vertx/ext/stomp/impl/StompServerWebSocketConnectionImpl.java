@@ -22,10 +22,7 @@ import io.vertx.core.http.ServerWebSocket;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.core.net.NetSocket;
-import io.vertx.ext.stomp.Frame;
-import io.vertx.ext.stomp.StompServer;
-import io.vertx.ext.stomp.StompServerConnection;
-import io.vertx.ext.stomp.StompServerHandler;
+import io.vertx.ext.stomp.*;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -40,8 +37,8 @@ public class StompServerWebSocketConnectionImpl extends  StompServerTCPConnectio
 
   private final ServerWebSocket socket;
 
-  public StompServerWebSocketConnectionImpl(ServerWebSocket socket, StompServer server) {
-    super(server);
+  public StompServerWebSocketConnectionImpl(ServerWebSocket socket, StompServer server, Handler<ServerFrame> writtenFrameHandler) {
+    super(server, writtenFrameHandler);
     Objects.requireNonNull(socket);
     this.socket = socket;
   }

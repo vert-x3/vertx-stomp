@@ -42,7 +42,8 @@ public class StompClientImpl implements StompClient {
   private final Vertx vertx;
   private final StompClientOptions options;
   private NetClient client;
-  private Handler<Frame> frameHandler = v -> {};
+  private Handler<Frame> receivedFrameHandler;
+  private Handler<Frame> writingFrameHandler;
 
 
   public StompClientImpl(Vertx vertx, StompClientOptions options) {
@@ -61,15 +62,31 @@ public class StompClientImpl implements StompClient {
   }
 
   /**
-   * Configures a "general" handler that get notified when a STOMP frame is received by the client.
-   * This handler can be used for logging, debugging or ad-hoc behavior.
+   * Configures a received handler that get notified when a STOMP frame is received by the client.
+   * This handler can be used for logging, debugging or ad-hoc behavior. The frame can be modified by the handler.
    *
    * @param handler the handler
    * @return the current {@link StompClientConnection}
    */
   @Override
-  public StompClient frameHandler(Handler<Frame> handler) {
-    frameHandler = handler;
+  public synchronized StompClient receivedFrameHandler(Handler<Frame> handler) {
+    receivedFrameHandler = handler;
+    return this;
+  }
+
+  /**
+   * Configures a writing handler that gets notified when a STOMP frame is written on the wire.
+   * This handler can be used for logging, debugging or ad-hoc behavior. The frame can still be modified at the time.
+   * <p>
+   * When a connection is created, the handler is used as
+   * {@link StompClientConnection#writingFrameHandler(Handler)}.
+   *
+   * @param handler the handler
+   * @return the current {@link StompClientConnection}
+   */
+  @Override
+  public synchronized StompClient writingFrameHandler(Handler<Frame> handler) {
+    writingFrameHandler = handler;
     return this;
   }
 
@@ -100,6 +117,8 @@ public class StompClientImpl implements StompClient {
   @Override
   public synchronized StompClient connect(int port, String host, NetClient net, Handler<AsyncResult<StompClientConnection>>
       resultHandler) {
+    Handler<Frame> r = receivedFrameHandler;
+    Handler<Frame> w = writingFrameHandler;
     client = net.connect(port, host, ar -> {
       if (ar.failed()) {
         if (resultHandler != null) {
@@ -109,7 +128,9 @@ public class StompClientImpl implements StompClient {
         }
       } else {
         // Create the connection, the connection attach a handler on the socket.
-        new StompClientConnectionImpl(vertx, ar.result(), this, resultHandler).frameHandler(frameHandler);
+        new StompClientConnectionImpl(vertx, ar.result(), this, resultHandler)
+            .receivedFrameHandler(r)
+            .writingFrameHandler(w);
         // Socket connected - send "CONNECT" Frame
         ar.result().write(getConnectFrame(host));
       }

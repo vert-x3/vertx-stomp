@@ -256,6 +256,8 @@ public interface StompClientConnection {
   @Fluent
   StompClientConnection closeHandler(Handler<StompClientConnection> handler);
 
+
+
   /**
    * Sets a handler notified when the server does not respond to a {@code ping} request in time. In other
    * words, this handler is invoked when the heartbeat has detected a connection failure with the server.
@@ -557,16 +559,29 @@ public interface StompClientConnection {
 
 
   /**
-   * Configures a "general" handler that get notified when a STOMP frame is received by the client.
-   * This handler can be used for logging, debugging or ad-hoc behavior.
+   * Configures a received handler that get notified when a STOMP frame is received by the client.
+   * This handler can be used for logging, debugging or ad-hoc behavior. The frame can still be modified by the handler.
    * <p>
-   * Unlike {@link StompClient#frameHandler(Handler)}, the given handler won't receive the {@code
-   * CONNECTED} frame. If a frame handler is set on the {@link StompClient}, it will be used by all
+   * Unlike {@link StompClient#receivedFrameHandler(Handler)}, the given handler won't receive the {@code
+   * CONNECTED} frame. If a received frame handler is set on the {@link StompClient}, it will be used by all
    * clients connection, so calling this method is useless, except if you want to use a different handler.
    *
    * @param handler the handler
    * @return the current {@link StompClientConnection}
    */
   @Fluent
-  StompClientConnection frameHandler(Handler<Frame> handler);
+  StompClientConnection receivedFrameHandler(Handler<Frame> handler);
+
+  /**
+   * Configures a handler notified when a frame is going to be written on the wire. This handler can be used from
+   * logging, debugging. The handler can modify the received frame.
+   *
+   * If a writing frame handler is set on the {@link StompClient}, it will be used by all
+   * clients connection, so calling this method is useless, except if you want to use a different handler.
+   *
+   * @param handler the handler
+   * @return the current {@link StompClientConnection}
+   */
+  @Fluent
+  StompClientConnection writingFrameHandler(Handler<Frame> handler);
 }

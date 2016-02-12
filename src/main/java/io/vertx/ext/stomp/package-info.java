@@ -432,6 +432,30 @@
  * });
  * ----
  *
+ * == Registering received and writing frame handlers
+ *
+ * STOMP clients, client's connections and server handlers support registering a received
+ * {@link io.vertx.ext.stomp.Frame} handler that would be notified every time a frame is received from the wire. It lets
+ * you log the frames, or implement custom behavior. The handler is already called for {@code PING}
+ * frames, and _illegal / unknown_ frames:
+ *
+ * [source,$lang]
+ * ----
+ * {@link examples.StompServerExamples#example17(io.vertx.core.Vertx)}
+ * ----
+ *
+ * The handler is called before the frame is processed, so you can also _modify_ the frame.
+ *
+ * Frames not using a valid STOMP command use the {@code UNKNOWN} command. The original command is written
+ * in the headers using the {@link io.vertx.ext.stomp.Frame#STOMP_FRAME_COMMAND} key.
+ *
+ * You can also register a handler to be notified when a frame is going to be sent (written to the wire):
+ *
+ * [source,$lang]
+ * ----
+ * {@link examples.StompServerExamples#example18(io.vertx.core.Vertx)}
+ * ----
+ *
  */
 @ModuleGen(name = "vertx-stomp", groupPackage = "io.vertx")
 @Document(fileName = "index.adoc")
