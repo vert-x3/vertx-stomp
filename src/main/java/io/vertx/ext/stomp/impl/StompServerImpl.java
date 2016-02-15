@@ -35,7 +35,7 @@ import java.util.Objects;
  */
 public class StompServerImpl implements StompServer {
 
-  private static final Logger log = LoggerFactory.getLogger(StompServerImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(StompServerImpl.class);
 
   private final Vertx vertx;
   private final StompServerOptions options;
@@ -44,6 +44,12 @@ public class StompServerImpl implements StompServer {
   private StompServerHandler handler;
   private volatile boolean listening;
 
+  /**
+   * Creates a new instance of {@link StompServerImpl}.
+   * @param vertx the vert.x instance
+   * @param net the net server, may be {@code null}
+   * @param options the options
+   */
   public StompServerImpl(Vertx vertx, NetServer net, StompServerOptions options) {
     Objects.requireNonNull(vertx);
     Objects.requireNonNull(options);
@@ -106,7 +112,7 @@ public class StompServerImpl implements StompServer {
           StompServerConnection connection = new StompServerTCPConnectionImpl(socket, this);
           FrameParser parser = new FrameParser(options);
           socket.exceptionHandler((exception) -> {
-            log.error("The STOMP server caught a TCP socket error - closing connection", exception);
+            LOGGER.error("The STOMP server caught a TCP socket error - closing connection", exception);
             connection.close();
           });
           socket.endHandler(v -> connection.close());
@@ -118,18 +124,18 @@ public class StompServerImpl implements StompServer {
                   }
               )
               .handler(frame -> stomp.handle(new ServerFrameImpl(frame, connection)));
-          socket.handler(parser::handle);
+          socket.handler(parser);
         })
         .listen(port, host, ar -> {
           if (ar.failed()) {
             if (handler != null) {
               vertx.runOnContext(v -> handler.handle(Future.failedFuture(ar.cause())));
             } else {
-              log.error(ar.cause());
+              LOGGER.error(ar.cause());
             }
           } else {
             listening = true;
-            log.info("STOMP server listening on " + ar.result().actualPort());
+            LOGGER.info("STOMP server listening on " + ar.result().actualPort());
             if (handler != null) {
               vertx.runOnContext(v -> handler.handle(Future.succeededFuture(this)));
             }
@@ -180,9 +186,9 @@ public class StompServerImpl implements StompServer {
 
     Handler<AsyncResult<Void>> listener = (v) -> {
       if (v.succeeded()) {
-        log.info("STOMP Server stopped");
+        LOGGER.info("STOMP Server stopped");
       } else {
-        log.info("STOMP Server failed to stop", v.cause());
+        LOGGER.info("STOMP Server failed to stop", v.cause());
       }
 
       listening = false;
@@ -207,7 +213,7 @@ public class StompServerImpl implements StompServer {
 
     return socket -> {
       if (!socket.path().equals(options.getWebsocketPath())) {
-        log.error("Receiving a web socket connection on an invalid path (" + socket.path() + "), the path is " +
+        LOGGER.error("Receiving a web socket connection on an invalid path (" + socket.path() + "), the path is " +
             "configured to " + options.getWebsocketPath() + ". Rejecting connection");
         socket.reject();
         return;
@@ -215,7 +221,7 @@ public class StompServerImpl implements StompServer {
       StompServerConnection connection = new StompServerWebSocketConnectionImpl(socket, this);
       FrameParser parser = new FrameParser(options);
       socket.exceptionHandler((exception) -> {
-        log.error("The STOMP server caught a WebSocket error - closing connection", exception);
+        LOGGER.error("The STOMP server caught a WebSocket error - closing connection", exception);
         connection.close();
       });
       socket.endHandler(v -> connection.close());

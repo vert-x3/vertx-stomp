@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit;
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class StompClientConnectionImpl implements StompClientConnection, Handler<Frame> {
-  private static final Logger log = LoggerFactory.getLogger(StompClientConnectionImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(StompClientConnectionImpl.class);
 
   private final StompClient client;
   private final NetSocket socket;
@@ -60,11 +60,15 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
 
   private Handler<StompClientConnection> pingHandler = connection -> connection.send(Frames.ping());
   private Handler<StompClientConnection> closeHandler;
-  private Handler<StompClientConnection> droppedHandler = v -> {}; // Do nothing by default.
+  private Handler<StompClientConnection> droppedHandler = v -> {
+  }; // Do nothing by default.
 
-  private class Subscription {
+  private Handler<Frame> errorHandler;
+
+  private static class Subscription {
     final String destination;
     final String id;
+
     final Handler<Frame> handler;
 
     private Subscription(String destination, String id, Handler<Frame> handler) {
@@ -72,11 +76,18 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
       this.id = id;
       this.handler = handler;
     }
+
+
   }
 
-
-  private Handler<Frame> errorHandler;
-
+  /**
+   * Creates a {@link StompClientConnectionImpl} instance
+   *
+   * @param vertx         the vert.x instance
+   * @param socket        the underlying TCP socket
+   * @param client        the stomp client managing this connection
+   * @param resultHandler the result handler to invoke then the connection has been established
+   */
   public StompClientConnectionImpl(Vertx vertx, NetSocket socket, StompClient client,
                                    Handler<AsyncResult<StompClientConnection>> resultHandler) {
     this.socket = socket;
@@ -516,7 +527,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
         long delta = System.nanoTime() - lastServerActivity;
         final long deltaInMs = TimeUnit.MILLISECONDS.convert(delta, TimeUnit.NANOSECONDS);
         if (deltaInMs > pong * 2) {
-          log.error("Disconnecting client " + client + " - no server activity detected in the last " + deltaInMs + " ms.");
+          LOGGER.error("Disconnecting client " + client + " - no server activity detected in the last " + deltaInMs + " ms.");
           client.vertx().cancelTimer(ponger);
           disconnect();
 
