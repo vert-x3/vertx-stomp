@@ -26,7 +26,6 @@ import io.vertx.ext.stomp.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * A plug-able implementation of {@link StompServerHandler}. The default behavior is compliant with the STOMP
@@ -41,7 +40,7 @@ import java.util.Objects;
  */
 public class DefaultStompHandler implements StompServerHandler {
 
-  private static final Logger log = LoggerFactory.getLogger(DefaultStompHandler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultStompHandler.class);
   private final Vertx vertx;
   private final Context context;
 
@@ -65,7 +64,7 @@ public class DefaultStompHandler implements StompServerHandler {
 
   private Handler<ServerFrame> nackHandler = new DefaultNackHandler();
 
-  private Handler<ServerFrame> disconnectHandler = ((sf) -> {
+  private Handler<ServerFrame> disconnectHandler = (sf -> {
     StompServerConnection connection = sf.connection();
     Frames.handleReceipt(sf.frame(), connection);
     connection.close();
@@ -75,10 +74,10 @@ public class DefaultStompHandler implements StompServerHandler {
 
   private Handler<StompServerConnection> pingHandler = StompServerConnection::ping;
 
-  private Handler<Acknowledgement> onAckHandler = (acknowledgement) -> log.info("Acknowledge messages - " +
+  private Handler<Acknowledgement> onAckHandler = (acknowledgement) -> LOGGER.info("Acknowledge messages - " +
       acknowledgement.frames());
   private Handler<Acknowledgement> onNackHandler = (acknowledgement) ->
-      log.warn("Messages not acknowledge - " + acknowledgement.frames());
+      LOGGER.warn("Messages not acknowledge - " + acknowledgement.frames());
 
   private final LocalMap<Destination, String> destinations;
 
@@ -86,12 +85,18 @@ public class DefaultStompHandler implements StompServerHandler {
 
   private Handler<ServerFrame> receivedFrameHandler;
 
+  /**
+   * Creates a new instance of {@link DefaultStompHandler}.
+   *
+   * @param vertx the vert.x instance
+   */
   public DefaultStompHandler(Vertx vertx) {
     this.vertx = vertx;
     this.context = Vertx.currentContext();
     this.destinations = vertx.sharedData().getLocalMap("stomp.destinations");
   }
 
+  @Override
   public synchronized void onClose(StompServerConnection connection) {
     // Default behavior.
     getDestinations().stream().forEach((d) -> d.unsubscribeConnection(connection));
@@ -383,14 +388,14 @@ public class DefaultStompHandler implements StompServerHandler {
 
     if (!server.options().isSecured()) {
       if (auth != null) {
-        log.warn("Authentication handler set while the server is not secured");
+        LOGGER.warn("Authentication handler set while the server is not secured");
       }
       context.runOnContext(v -> handler.handle(Future.succeededFuture(true)));
       return this;
     }
 
     if (server.options().isSecured() && auth == null) {
-      log.error("Cannot authenticate connection - no authentication provider");
+      LOGGER.error("Cannot authenticate connection - no authentication provider");
       context.runOnContext(v -> handler.handle(Future.succeededFuture(false)));
       return this;
     }
@@ -427,14 +432,14 @@ public class DefaultStompHandler implements StompServerHandler {
   }
 
   public Destination getOrCreateDestination(String destination) {
-    DestinationFactory factory;
+    DestinationFactory destinationFactory;
     synchronized (this) {
-      factory = this.factory;
+      destinationFactory = this.factory;
     }
     synchronized (vertx) {
       Destination d = getDestination(destination);
       if (d == null) {
-        d = factory.create(vertx, destination);
+        d = destinationFactory.create(vertx, destination);
         if (d != null) {
           // We use the local map as a set, the value is irrelevant.
           destinations.put(d, "");

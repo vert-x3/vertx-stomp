@@ -163,7 +163,7 @@ public class EventBusBridge extends Topic {
         .add(Frame.SUBSCRIPTION, subscription.id)
         .add(Frame.MESSAGE_ID, messageId)
         .add(Frame.DESTINATION, msg.address());
-    if (!subscription.ackMode.equals("auto")) {
+    if (!"auto".equals(subscription.ackMode)) {
       // We reuse the message Id as ack Id
       headers.add(Frame.ACK, messageId);
     }
@@ -188,7 +188,7 @@ public class EventBusBridge extends Topic {
       } else if (body instanceof JsonObject) {
         frame.setBody(Buffer.buffer(((JsonObject) body).encode()));
       } else {
-        throw new RuntimeException("Illegal body - unsupported body type: " + body.getClass().getName());
+        throw new IllegalStateException("Illegal body - unsupported body type: " + body.getClass().getName());
       }
     }
 
@@ -223,7 +223,7 @@ public class EventBusBridge extends Topic {
             // having sent the given frame).
             // We look for the subscription with registered to the 'reply-to' destination. It must be unique.
             Optional<Subscription> subscription = subscriptions.stream()
-                .filter(s -> s.connection == connection && s.destination.equals(replyAddress))
+                .filter(s -> s.connection.equals(connection) && s.destination.equals(replyAddress))
                 .findFirst();
             if (subscription.isPresent()) {
               Frame stompFrame = transform(res.result(), subscription.get());
@@ -327,7 +327,9 @@ public class EventBusBridge extends Topic {
    * or `body` is {@code null}.
    */
   private boolean structureMatches(JsonObject match, Object body) {
-    if (match == null || body == null) return true;
+    if (match == null || body == null) {
+      return true;
+    }
 
     // Can send message other than JSON too - in which case we can't do deep matching on structure of message
 
