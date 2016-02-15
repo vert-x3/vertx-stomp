@@ -44,12 +44,14 @@ public class StompClientImplTest {
 
   private Vertx vertx;
   private StompServer server;
+  private StompServerOptions options;
 
   @Before
   public void setUp() {
     AsyncLock<StompServer> lock = new AsyncLock<>();
     vertx = Vertx.vertx();
-    server = StompServer.create(vertx)
+    options = new StompServerOptions();
+    server = StompServer.create(vertx, options)
         .handler(StompServerHandler.create(vertx))
         .listen(lock.handler());
 
@@ -71,6 +73,28 @@ public class StompClientImplTest {
     CountDownLatch latch = new CountDownLatch(1);
     AtomicReference<StompClientConnection> reference = new AtomicReference<>();
     StompClient client = StompClient.create(vertx);
+    client.connect(ar -> {
+      if (ar.failed()) {
+        reference.set(null);
+      } else {
+        reference.set(ar.result());
+      }
+      latch.countDown();
+    });
+
+    latch.await(1, TimeUnit.MINUTES);
+    assertNotNull(reference.get());
+    assertNotNull(reference.get().session());
+    assertNotNull(reference.get().server());
+    assertNotNull(reference.get().version());
+  }
+
+  @Test
+  public void testConnectionWithTrailingLine() throws InterruptedException {
+    options.setTrailingLine(true);
+    CountDownLatch latch = new CountDownLatch(1);
+    AtomicReference<StompClientConnection> reference = new AtomicReference<>();
+    StompClient client = StompClient.create(vertx, new StompClientOptions().setTrailingLine(true));
     client.connect(ar -> {
       if (ar.failed()) {
         reference.set(null);
@@ -110,9 +134,47 @@ public class StompClientImplTest {
   }
 
   @Test
+  public void testConnectionWithStompFrameWithTrailingLine() throws InterruptedException {
+    options.setTrailingLine(true);
+    CountDownLatch latch = new CountDownLatch(1);
+    AtomicReference<StompClientConnection> reference = new AtomicReference<>();
+    StompClient client = StompClient.create(vertx, new StompClientOptions().setUseStompFrame(true).setTrailingLine(true));
+    client.connect(ar -> {
+      if (ar.failed()) {
+        reference.set(null);
+      } else {
+        reference.set(ar.result());
+      }
+      latch.countDown();
+    });
+
+    latch.await(1, TimeUnit.MINUTES);
+    assertNotNull(reference.get());
+    assertNotNull(reference.get().session());
+    assertNotNull(reference.get().server());
+    assertNotNull(reference.get().version());
+  }
+
+  @Test
   public void testSendingMessages() {
     AtomicReference<Frame> ref = new AtomicReference<>();
     StompClient client = StompClient.create(vertx);
+    client.connect(ar -> {
+      if (ar.failed()) {
+        return;
+      }
+      ar.result().send("/hello", Buffer.buffer("this is my content"), ref::set);
+    });
+
+    Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAtomic(ref, Matchers.notNullValue(Frame.class));
+    assertThat(ref.get().getDestination()).isEqualTo("/hello");
+  }
+
+  @Test
+  public void testSendingMessagesWithTrailingLine() {
+    options.setTrailingLine(true);
+    AtomicReference<Frame> ref = new AtomicReference<>();
+    StompClient client = StompClient.create(vertx, new StompClientOptions().setTrailingLine(true));
     client.connect(ar -> {
       if (ar.failed()) {
         return;

@@ -18,6 +18,7 @@ package io.vertx.ext.stomp;
 
 import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.stomp.impl.FrameException;
+import io.vertx.ext.stomp.impl.FrameParser;
 import io.vertx.ext.stomp.utils.Headers;
 import org.junit.Test;
 
@@ -29,6 +30,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class FrameTest {
+
+  private Frame frame;
 
   @Test
   public void testThatPassCodeAreNotInToString() {
@@ -130,6 +133,18 @@ public class FrameTest {
     assertThat(Frame.Heartbeat.computePongPeriod(client, server)).isEqualTo(3);
     assertThat(Frame.Heartbeat.computePingPeriod(server, client)).isEqualTo(3);
     assertThat(Frame.Heartbeat.computePongPeriod(server, client)).isEqualTo(4);
+  }
+
+  @Test
+  public void testWithTrailingSpaces() {
+    frame = new Frame(Frame.Command.MESSAGE, Headers.create("foo", "bar"), Buffer.buffer("hello"));
+    assertThat(frame.toBuffer(true).toString()).endsWith(FrameParser.NULL + "\n");
+
+    frame = new Frame(Frame.Command.MESSAGE, Headers.create("foo", "bar"), null);
+    assertThat(frame.toBuffer(true).toString()).endsWith(FrameParser.NULL + "\n");
+
+    frame = new Frame(Frame.Command.MESSAGE, Headers.create(), null);
+    assertThat(frame.toBuffer(true).toString()).endsWith(FrameParser.NULL + "\n");
   }
 
 }

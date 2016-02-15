@@ -61,7 +61,8 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   private Handler<StompClientConnection> pingHandler = connection -> connection.send(Frames.ping());
   private Handler<StompClientConnection> closeHandler;
   private Handler<StompClientConnection> droppedHandler = v -> {
-  }; // Do nothing by default.
+    // Do nothing by default.
+  };
 
   private Handler<Frame> errorHandler;
 
@@ -178,7 +179,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
       frame.addHeader(Frame.RECEIPT, receiptId);
       pendingReceipts.put(receiptId, f -> receiptHandler.handle(frame));
     }
-    socket.write(frame.toBuffer());
+    socket.write(frame.toBuffer(client.options().isTrailingLine()));
     return this;
   }
 

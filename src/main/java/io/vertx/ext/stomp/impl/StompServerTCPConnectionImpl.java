@@ -64,7 +64,7 @@ public class StompServerTCPConnectionImpl implements StompServerConnection {
 
   @Override
   public StompServerConnection write(Frame frame) {
-    return write(frame.toBuffer());
+    return write(frame.toBuffer(server.options().isTrailingLine()));
   }
 
   @Override

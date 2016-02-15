@@ -70,7 +70,7 @@ public class Queue implements Destination {
     Subscription subscription = getNextSubscription();
     String messageId = UUID.randomUUID().toString();
     Frame message = transform(frame, subscription, messageId);
-    subscription.connection.write(message.toBuffer());
+    subscription.connection.write(message);
     return this;
   }
 
