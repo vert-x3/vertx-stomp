@@ -21,7 +21,7 @@ import org.junit.Test;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.StrictAssertions.entry;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Checks the behavior of {@link Headers}.
