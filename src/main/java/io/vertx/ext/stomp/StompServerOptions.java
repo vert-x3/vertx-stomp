@@ -66,6 +66,7 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
   private String websocketPath = DEFAULT_WEBSOCKET_PATH;
 
   private boolean disableTCPServer;
+  private boolean trailingLine = DEFAULT_TRAILING_LINE;
 
   /**
    * Default constructor.
@@ -100,6 +101,7 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
     this.websocketPath = other.websocketPath;
 
     this.disableTCPServer = other.disableTCPServer;
+    this.trailingLine = other.trailingLine;
   }
 
   /**
@@ -445,6 +447,28 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
    */
   public StompServerOptions setWebsocketPath(String websocketPath) {
     this.websocketPath = websocketPath;
+    return this;
+  }
+
+  /**
+   * Gets whether or not an empty line should be appended to the written STOMP frame. This option is disabled by
+   * default. This option is not compliant with the STOMP specification, and so is not documented on purpose.
+   *
+   * @return whether or not an empty line should be appended to the written STOMP frame.
+   */
+  public boolean isTrailingLine() {
+    return trailingLine;
+  }
+
+  /**
+   * Sets whether or not an empty line should be appended to the written STOMP frame. This option is disabled by
+   * default. This option is not compliant with the STOMP specification, and so is not documented on purpose.
+   *
+   * @param trailingLine {@code true} to add an empty line, {@code false} otherwise
+   * @return the current {@link StompServerOptions}
+   */
+  public StompServerOptions setTrailingLine(boolean trailingLine) {
+    this.trailingLine = trailingLine;
     return this;
   }
 }

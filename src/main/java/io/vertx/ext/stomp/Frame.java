@@ -432,6 +432,24 @@ public class Frame {
   }
 
   /**
+   * Creates a buffer for the current frame. This buffer may contain an empty line if the {@code trailingLine} is set
+   * to {@code true}
+   *
+   * @param trailingLine whether or not a trailing line should be added to the buffer
+   * @return a {@link Buffer} containing the STOMP frame. It follows strictly the STOMP specification (including
+   * header encoding).
+   */
+  public Buffer toBuffer(boolean trailingLine) {
+    Buffer buffer = toBuffer();
+    if (trailingLine) {
+      buffer.appendString("\n");
+    }
+    return buffer;
+  }
+
+  /**
+   * This method does not enforce the trainling line option. It should not be used directly, except for the PING frame.
+   *
    * @return a {@link Buffer} containing the STOMP frame. It follows strictly the STOMP specification (including
    * header encoding).
    */

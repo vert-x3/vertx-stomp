@@ -140,6 +140,11 @@ Sets the STOMP protocol versions supported by the server. Versions must be given
 Sets the time factor.
 +++
 |[[trafficClass]]`trafficClass`|`Number (int)`|-
+|[[trailingLine]]`trailingLine`|`Boolean`|
++++
+Sets whether or not an empty line should be appended to the written STOMP frame. This option is disabled by
+ default. This option is not compliant with the STOMP specification, and so is not documented on purpose.
++++
 |[[transactionChunkSize]]`transactionChunkSize`|`Number (int)`|
 +++
 Sets the chunk size when replaying a transaction. To avoid blocking the event loop for too long, large
@@ -226,6 +231,11 @@ Sets the STOMP server port. <code>61613</code> by default.
 |[[tcpKeepAlive]]`tcpKeepAlive`|`Boolean`|-
 |[[tcpNoDelay]]`tcpNoDelay`|`Boolean`|-
 |[[trafficClass]]`trafficClass`|`Number (int)`|-
+|[[trailingLine]]`trailingLine`|`Boolean`|
++++
+Sets whether or not an empty line should be appended to the written STOMP frame. This option is disabled by
+ default. This option is not compliant with the STOMP specification, and so is not documented on purpose.
++++
 |[[trustAll]]`trustAll`|`Boolean`|-
 |[[trustStoreOptions]]`trustStoreOptions`|`link:dataobjects.html#JksOptions[JksOptions]`|-
 |[[usePooledBuffers]]`usePooledBuffers`|`Boolean`|-

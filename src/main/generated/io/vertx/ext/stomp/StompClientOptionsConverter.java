@@ -56,6 +56,9 @@ public class StompClientOptionsConverter {
     if (json.getValue("port") instanceof Number) {
       obj.setPort(((Number)json.getValue("port")).intValue());
     }
+    if (json.getValue("trailingLine") instanceof Boolean) {
+      obj.setTrailingLine((Boolean)json.getValue("trailingLine"));
+    }
     if (json.getValue("useStompFrame") instanceof Boolean) {
       obj.setUseStompFrame((Boolean)json.getValue("useStompFrame"));
     }
@@ -87,6 +90,7 @@ public class StompClientOptionsConverter {
       json.put("passcode", obj.getPasscode());
     }
     json.put("port", obj.getPort());
+    json.put("trailingLine", obj.isTrailingLine());
     json.put("useStompFrame", obj.isUseStompFrame());
     if (obj.getVirtualHost() != null) {
       json.put("virtualHost", obj.getVirtualHost());

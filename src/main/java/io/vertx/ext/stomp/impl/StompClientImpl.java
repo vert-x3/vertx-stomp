@@ -125,7 +125,7 @@ public class StompClientImpl implements StompClient {
 
     Frame.Command cmd = options.isUseStompFrame() ? Frame.Command.STOMP : Frame.Command.CONNECT;
     final Frame frame = new Frame(cmd, headers, null);
-    return frame.toBuffer();
+    return frame.toBuffer(options.isTrailingLine());
   }
 
   private String getAcceptedVersions() {

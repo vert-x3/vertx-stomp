@@ -119,7 +119,7 @@ public class StompServerImpl implements StompServer {
           parser
               .errorHandler((exception) -> {
                     connection.write(
-                        Frames.createInvalidFrameErrorFrame(exception).toBuffer());
+                        Frames.createInvalidFrameErrorFrame(exception));
                     connection.close();
                   }
               )
@@ -228,7 +228,7 @@ public class StompServerImpl implements StompServer {
       parser
           .errorHandler((exception) -> {
                 connection.write(
-                    Frames.createInvalidFrameErrorFrame(exception).toBuffer());
+                    Frames.createInvalidFrameErrorFrame(exception));
                 connection.close();
               }
           )
