@@ -33,6 +33,7 @@ import java.util.List;
 @DataObject(generateConverter = true)
 public class StompClientOptions extends NetClientOptions implements StompOptions {
 
+
   private List<String> acceptedVersions;
   private int port = DEFAULT_STOMP_PORT;
   private String host = DEFAULT_STOMP_HOST;
@@ -43,6 +44,7 @@ public class StompClientOptions extends NetClientOptions implements StompOptions
   private boolean bypassHostHeader = false;
   private JsonObject heartbeat = DEFAULT_STOMP_HEARTBEAT;
   private String virtualHost;
+  private boolean trailingLine = DEFAULT_TRAILING_LINE;
 
   /**
    * Default constructor.
@@ -69,6 +71,7 @@ public class StompClientOptions extends NetClientOptions implements StompOptions
     this.bypassHostHeader = other.bypassHostHeader;
     this.heartbeat = other.heartbeat;
     this.virtualHost = other.virtualHost;
+    this.trailingLine = other.trailingLine;
   }
 
   /**
@@ -307,6 +310,28 @@ public class StompClientOptions extends NetClientOptions implements StompOptions
    */
   public StompClientOptions setVirtualHost(String virtualHost) {
     this.virtualHost = virtualHost;
+    return this;
+  }
+
+  /**
+   * Gets whether or not an empty line should be appended to the written STOMP frame. This option is disabled by
+   * default. This option is not compliant with the STOMP specification, and so is not documented on purpose.
+   *
+   * @return whether or not an empty line should be appended to the written STOMP frame.
+   */
+  public boolean isTrailingLine() {
+    return trailingLine;
+  }
+
+  /**
+   * Sets whether or not an empty line should be appended to the written STOMP frame. This option is disabled by
+   * default. This option is not compliant with the STOMP specification, and so is not documented on purpose.
+   *
+   * @param trailingLine {@code true} to add an empty line, {@code false} otherwise
+   * @return the current {@link StompClientOptions}
+   */
+  public StompClientOptions setTrailingLine(boolean trailingLine) {
+    this.trailingLine = trailingLine;
     return this;
   }
 }

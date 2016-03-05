@@ -67,8 +67,7 @@ public class StompServerTCPConnectionImpl implements StompServerConnection {
     if (handler != null) {
       handler.handle(new ServerFrameImpl(frame, this));
     }
-    write(frame.toBuffer());
-    return this;
+    return write(frame.toBuffer(server.options().isTrailingLine()));
   }
 
   @Override

@@ -38,4 +38,6 @@ public interface StompOptions {
   List<String> DEFAULT_SUPPORTED_VERSIONS = Arrays.asList("1.2", "1.1", "1.0");
 
   JsonObject DEFAULT_STOMP_HEARTBEAT = new JsonObject().put("x", 1000).put("y", 1000);
+
+  boolean DEFAULT_TRAILING_LINE = false;
 }

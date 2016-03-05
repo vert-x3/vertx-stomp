@@ -23,7 +23,7 @@ import io.vertx.ext.stomp.StompClient;
 import io.vertx.ext.stomp.StompClientConnection;
 import io.vertx.ext.stomp.StompClientOptions;
 import io.vertx.ext.stomp.impl.AsyncLock;
-import org.assertj.core.api.StrictAssertions;
+import org.assertj.core.api.Assertions;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -118,7 +118,7 @@ public abstract class AbstractClientIT {
     assertThat(frame.get().getHeaders())
         .contains(entry("content-length", "17"))
         .containsKeys("destination", "message-id", "subscription");
-    StrictAssertions.assertThat(frame.get().getBodyAsString()).isEqualToIgnoringCase("hello from vert.x");
+    Assertions.assertThat(frame.get().getBodyAsString()).isEqualToIgnoringCase("hello from vert.x");
   }
 
   /**

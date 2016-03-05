@@ -17,7 +17,6 @@
 package io.vertx.ext.stomp.impl;
 
 import io.vertx.core.Vertx;
-import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.stomp.Destination;
 import io.vertx.ext.stomp.Frame;
 import io.vertx.ext.stomp.StompServerConnection;
@@ -200,7 +199,7 @@ public class Topic implements Destination {
     return this.destination.equals(address);
   }
 
-  protected class Subscription {
+  protected static class Subscription {
     final StompServerConnection connection;
     final String id;
     final String ackMode;

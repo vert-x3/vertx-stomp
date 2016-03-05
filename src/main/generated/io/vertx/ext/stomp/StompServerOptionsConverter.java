@@ -62,6 +62,9 @@ public class StompServerOptionsConverter {
     if (json.getValue("timeFactor") instanceof Number) {
       obj.setTimeFactor(((Number)json.getValue("timeFactor")).intValue());
     }
+    if (json.getValue("trailingLine") instanceof Boolean) {
+      obj.setTrailingLine((Boolean)json.getValue("trailingLine"));
+    }
     if (json.getValue("transactionChunkSize") instanceof Number) {
       obj.setTransactionChunkSize(((Number)json.getValue("transactionChunkSize")).intValue());
     }
@@ -92,6 +95,7 @@ public class StompServerOptionsConverter {
               collect(java.util.stream.Collectors.toList())));
     }
     json.put("timeFactor", obj.getTimeFactor());
+    json.put("trailingLine", obj.isTrailingLine());
     json.put("transactionChunkSize", obj.getTransactionChunkSize());
     json.put("websocketBridge", obj.isWebsocketBridge());
     if (obj.getWebsocketPath() != null) {

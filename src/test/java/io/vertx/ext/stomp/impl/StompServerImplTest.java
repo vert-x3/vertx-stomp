@@ -85,6 +85,28 @@ public class StompServerImplTest {
   }
 
   @Test
+  public void testStartReceiveStopWithTrailingSpaces(TestContext context) {
+    final Async async = context.async();
+    StompServer server = StompServer.create(vertx, new StompServerOptions().setTrailingLine(true));
+    server.handler(StompServerHandler.create(vertx)
+        .connectHandler(
+            sf -> {
+              Frame frame = sf.frame();
+              context.assertTrue(frame.getCommand() == Frame.Command.CONNECT);
+              context.assertTrue(frame.getHeader("login").equals("system"));
+              server.close(ar2 -> {
+                ensureClosed(context, ar2, server);
+                async.complete();
+              });
+            }
+        )
+    ).listen(ar -> {
+      ensureListening(context, ar);
+      writeMessageWithTrailingLine(vertx);
+    });
+  }
+
+  @Test
   public void testWithStompServerHandler(TestContext context) {
     final Async async = context.async();
     StompServer server = StompServer.create(vertx);
@@ -102,6 +124,27 @@ public class StompServerImplTest {
         )).listen(ar -> {
       ensureListening(context, ar);
       writeMessage(vertx);
+    });
+  }
+
+  @Test
+  public void testWithStompServerHandlerWithTrailingLine(TestContext context) {
+    final Async async = context.async();
+    StompServer server = StompServer.create(vertx, new StompServerOptions().setTrailingLine(true));
+    server.handler(
+        StompServerHandler.create(vertx).connectHandler(
+            sf -> {
+              Frame frame = sf.frame();
+              context.assertTrue(frame.getCommand() == Frame.Command.CONNECT);
+              context.assertTrue(frame.getHeader("login").equals("system"));
+              server.close(ar2 -> {
+                ensureClosed(context, ar2, server);
+                async.complete();
+              });
+            }
+        )).listen(ar -> {
+      ensureListening(context, ar);
+      writeMessageWithTrailingLine(vertx);
     });
   }
 
@@ -148,6 +191,11 @@ public class StompServerImplTest {
   private void writeMessage(Vertx vertx) {
     vertx.createNetClient().connect(StompServerOptions.DEFAULT_STOMP_PORT, "0.0.0.0",
         ar -> ar.result().write("CONNECT\n" + "login:system\n" + "passcode:manager\n\n" + FrameParser.NULL));
+  }
+
+  private void writeMessageWithTrailingLine(Vertx vertx) {
+    vertx.createNetClient().connect(StompServerOptions.DEFAULT_STOMP_PORT, "0.0.0.0",
+        ar -> ar.result().write("CONNECT\n" + "login:system\n" + "passcode:manager\n\n" + FrameParser.NULL + "\n"));
   }
 
   private void ensureClosed(TestContext context, AsyncResult<Void> ar, StompServer server) {

@@ -180,7 +180,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     if (writingHandler != null) {
       writingHandler.handle(frame);
     }
-    socket.write(frame.toBuffer());
+    socket.write(frame.toBuffer(client.options().isTrailingLine()));
     return this;
   }
 
@@ -289,14 +289,14 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     final Optional<Subscription> maybeSubscription = subscriptions.stream()
         .filter(s -> s.id.equals(id)).findFirst();
 
-    if (!maybeSubscription.isPresent()) {
+    if (maybeSubscription.isPresent()) {
+      final Subscription subscription = maybeSubscription.get();
+      subscriptions.remove(subscription);
+      send(new Frame(Frame.Command.UNSUBSCRIBE, headers, null), receiptHandler);
+      return this;
+    } else {
       throw new IllegalArgumentException("No subscription with id " + id);
     }
-    final Subscription subscription = maybeSubscription.get();
-    subscriptions.remove(subscription);
-
-    send(new Frame(Frame.Command.UNSUBSCRIBE, headers, null), receiptHandler);
-    return this;
   }
 
   @Override
