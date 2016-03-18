@@ -201,11 +201,11 @@ public class StompClient {
   /**
    * Configures a received handler that gets notified when a STOMP frame is received by the client.
    * This handler can be used for logging, debugging or ad-hoc behavior. The frame can still be modified at the time.
-   *
+   * <p>
    * When a connection is created, the handler is used as
    * {@link io.vertx.ext.stomp.StompClientConnection}.
    * @param handler the handler
-   * @return the current {@link io.vertx.ext.stomp.StompClientConnection}
+   * @return the current {@link io.vertx.ext.stomp.StompClient}
    */
   public StompClient receivedFrameHandler(Handler<Frame> handler) { 
     this.delegate.receivedFrameHandler(handler);
@@ -215,14 +215,26 @@ public class StompClient {
   /**
    * Configures a writing handler that gets notified when a STOMP frame is written on the wire.
    * This handler can be used for logging, debugging or ad-hoc behavior. The frame can still be modified at the time.
-   *
+   * <p>
    * When a connection is created, the handler is used as
    * {@link io.vertx.rxjava.ext.stomp.StompClientConnection#writingFrameHandler}.
    * @param handler the handler
-   * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
+   * @return the current {@link io.vertx.rxjava.ext.stomp.StompClient}
    */
   public StompClient writingFrameHandler(Handler<Frame> handler) { 
     this.delegate.writingFrameHandler(handler);
+    return this;
+  }
+
+  /**
+   * A general error frame handler. It can be used to catch <code>ERROR</code> frame emitted during the connection process
+   * (wrong authentication). This error handler will be pass to all {@link io.vertx.rxjava.ext.stomp.StompClientConnection} created from this
+   * client. Obviously, the client can override it when the connection is established.
+   * @param handler the handler
+   * @return the current {@link io.vertx.rxjava.ext.stomp.StompClient}
+   */
+  public StompClient errorFrameHandler(Handler<Frame> handler) { 
+    this.delegate.errorFrameHandler(handler);
     return this;
   }
 

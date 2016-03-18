@@ -62,7 +62,7 @@ module VertxStomp
     end
     #  Configures a received handler that gets notified when a STOMP frame is received by the client.
     #  This handler can be used for logging, debugging or ad-hoc behavior. The frame can still be modified at the time.
-    # 
+    #  <p>
     #  When a connection is created, the handler is used as
     #  {::VertxStomp::StompClientConnection#received_frame_handler}.
     # @yield the handler
@@ -76,7 +76,7 @@ module VertxStomp
     end
     #  Configures a writing handler that gets notified when a STOMP frame is written on the wire.
     #  This handler can be used for logging, debugging or ad-hoc behavior. The frame can still be modified at the time.
-    # 
+    #  <p>
     #  When a connection is created, the handler is used as
     #  {::VertxStomp::StompClientConnection#writing_frame_handler}.
     # @yield the handler
@@ -87,6 +87,18 @@ module VertxStomp
         return self
       end
       raise ArgumentError, "Invalid arguments when calling writing_frame_handler()"
+    end
+    #  A general error frame handler. It can be used to catch <code>ERROR</code> frame emitted during the connection process
+    #  (wrong authentication). This error handler will be pass to all {::VertxStomp::StompClientConnection} created from this
+    #  client. Obviously, the client can override it when the connection is established.
+    # @yield the handler
+    # @return [self]
+    def error_frame_handler
+      if block_given?
+        @j_del.java_method(:errorFrameHandler, [Java::IoVertxCore::Handler.java_class]).call((Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
+        return self
+      end
+      raise ArgumentError, "Invalid arguments when calling error_frame_handler()"
     end
     #  Closes the client.
     # @return [void]

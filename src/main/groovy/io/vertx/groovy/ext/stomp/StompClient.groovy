@@ -140,11 +140,11 @@ public class StompClient {
   /**
    * Configures a received handler that gets notified when a STOMP frame is received by the client.
    * This handler can be used for logging, debugging or ad-hoc behavior. The frame can still be modified at the time.
-   *
+   * <p>
    * When a connection is created, the handler is used as
    * {@link io.vertx.groovy.ext.stomp.StompClientConnection#receivedFrameHandler}.
    * @param handler the handler
-   * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
+   * @return the current {@link io.vertx.groovy.ext.stomp.StompClient}
    */
   public StompClient receivedFrameHandler(Handler<Map<String, Object>> handler) {
     this.delegate.receivedFrameHandler(new Handler<Frame>() {
@@ -157,14 +157,29 @@ public class StompClient {
   /**
    * Configures a writing handler that gets notified when a STOMP frame is written on the wire.
    * This handler can be used for logging, debugging or ad-hoc behavior. The frame can still be modified at the time.
-   *
+   * <p>
    * When a connection is created, the handler is used as
    * {@link io.vertx.groovy.ext.stomp.StompClientConnection#writingFrameHandler}.
    * @param handler the handler
-   * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
+   * @return the current {@link io.vertx.groovy.ext.stomp.StompClient}
    */
   public StompClient writingFrameHandler(Handler<Map<String, Object>> handler) {
     this.delegate.writingFrameHandler(new Handler<Frame>() {
+      public void handle(Frame event) {
+        handler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
+      }
+    });
+    return this;
+  }
+  /**
+   * A general error frame handler. It can be used to catch <code>ERROR</code> frame emitted during the connection process
+   * (wrong authentication). This error handler will be pass to all {@link io.vertx.groovy.ext.stomp.StompClientConnection} created from this
+   * client. Obviously, the client can override it when the connection is established.
+   * @param handler the handler
+   * @return the current {@link io.vertx.groovy.ext.stomp.StompClient}
+   */
+  public StompClient errorFrameHandler(Handler<Map<String, Object>> handler) {
+    this.delegate.errorFrameHandler(new Handler<Frame>() {
       public void handle(Frame event) {
         handler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }

@@ -44,6 +44,7 @@ public class StompClientImpl implements StompClient {
   private NetClient client;
   private Handler<Frame> receivedFrameHandler;
   private Handler<Frame> writingFrameHandler;
+  private Handler<Frame> errorFrameHandler;
 
 
   public StompClientImpl(Vertx vertx, StompClientOptions options) {
@@ -82,11 +83,25 @@ public class StompClientImpl implements StompClient {
    * {@link StompClientConnection#writingFrameHandler(Handler)}.
    *
    * @param handler the handler
-   * @return the current {@link StompClientConnection}
+   * @return the current {@link StompClient}
    */
   @Override
   public synchronized StompClient writingFrameHandler(Handler<Frame> handler) {
     writingFrameHandler = handler;
+    return this;
+  }
+
+  /**
+   * A general error frame handler. It can be used to catch {@code ERROR} frame emitted during the connection process
+   * (wrong authentication). This error handler will be pass to all {@link StompClientConnection} created from this
+   * client. Obviously, the client can override it when the connection is established.
+   *
+   * @param handler the handler
+   * @return the current {@link StompClient}
+   */
+  @Override
+  public synchronized StompClient errorFrameHandler(Handler<Frame> handler) {
+    errorFrameHandler = handler;
     return this;
   }
 
@@ -130,7 +145,8 @@ public class StompClientImpl implements StompClient {
         // Create the connection, the connection attach a handler on the socket.
         new StompClientConnectionImpl(vertx, ar.result(), this, resultHandler)
             .receivedFrameHandler(r)
-            .writingFrameHandler(w);
+            .writingFrameHandler(w)
+            .errorHandler(errorFrameHandler);
         // Socket connected - send "CONNECT" Frame
         ar.result().write(getConnectFrame(host));
       }

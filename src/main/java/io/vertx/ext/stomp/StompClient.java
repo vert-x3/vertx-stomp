@@ -99,12 +99,12 @@ public interface StompClient {
   /**
    * Configures a received handler that gets notified when a STOMP frame is received by the client.
    * This handler can be used for logging, debugging or ad-hoc behavior. The frame can still be modified at the time.
-   *
+   * <p>
    * When a connection is created, the handler is used as
    * {@link StompClientConnection#receivedFrameHandler(Handler)}.
    *
    * @param handler the handler
-   * @return the current {@link StompClientConnection}
+   * @return the current {@link StompClient}
    */
   @Fluent
   StompClient receivedFrameHandler(Handler<Frame> handler);
@@ -112,15 +112,26 @@ public interface StompClient {
   /**
    * Configures a writing handler that gets notified when a STOMP frame is written on the wire.
    * This handler can be used for logging, debugging or ad-hoc behavior. The frame can still be modified at the time.
-   *
+   * <p>
    * When a connection is created, the handler is used as
    * {@link StompClientConnection#writingFrameHandler(Handler)}.
    *
    * @param handler the handler
-   * @return the current {@link StompClientConnection}
+   * @return the current {@link StompClient}
    */
   @Fluent
   StompClient writingFrameHandler(Handler<Frame> handler);
+
+  /**
+   * A general error frame handler. It can be used to catch {@code ERROR} frame emitted during the connection process
+   * (wrong authentication). This error handler will be pass to all {@link StompClientConnection} created from this
+   * client. Obviously, the client can override it when the connection is established.
+   *
+   * @param handler the handler
+   * @return the current {@link StompClient}
+   */
+  @Fluent
+  StompClient errorFrameHandler(Handler<Frame> handler);
 
   /**
    * Closes the client.

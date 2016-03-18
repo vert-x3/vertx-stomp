@@ -90,13 +90,13 @@ var StompClient = function(j_val) {
   /**
    Configures a received handler that gets notified when a STOMP frame is received by the client.
    This handler can be used for logging, debugging or ad-hoc behavior. The frame can still be modified at the time.
-  
+   <p>
    When a connection is created, the handler is used as
    {@link StompClientConnection#receivedFrameHandler}.
 
    @public
    @param handler {function} the handler 
-   @return {StompClient} the current {@link StompClientConnection}
+   @return {StompClient} the current {@link StompClient}
    */
   this.receivedFrameHandler = function(handler) {
     var __args = arguments;
@@ -111,18 +111,37 @@ var StompClient = function(j_val) {
   /**
    Configures a writing handler that gets notified when a STOMP frame is written on the wire.
    This handler can be used for logging, debugging or ad-hoc behavior. The frame can still be modified at the time.
-  
+   <p>
    When a connection is created, the handler is used as
    {@link StompClientConnection#writingFrameHandler}.
 
    @public
    @param handler {function} the handler 
-   @return {StompClient} the current {@link StompClientConnection}
+   @return {StompClient} the current {@link StompClient}
    */
   this.writingFrameHandler = function(handler) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_stompClient["writingFrameHandler(io.vertx.core.Handler)"](function(jVal) {
+      handler(utils.convReturnDataObject(jVal));
+    });
+      return that;
+    } else throw new TypeError('function invoked with invalid arguments');
+  };
+
+  /**
+   A general error frame handler. It can be used to catch <code>ERROR</code> frame emitted during the connection process
+   (wrong authentication). This error handler will be pass to all {@link StompClientConnection} created from this
+   client. Obviously, the client can override it when the connection is established.
+
+   @public
+   @param handler {function} the handler 
+   @return {StompClient} the current {@link StompClient}
+   */
+  this.errorFrameHandler = function(handler) {
+    var __args = arguments;
+    if (__args.length === 1 && typeof __args[0] === 'function') {
+      j_stompClient["errorFrameHandler(io.vertx.core.Handler)"](function(jVal) {
       handler(utils.convReturnDataObject(jVal));
     });
       return that;

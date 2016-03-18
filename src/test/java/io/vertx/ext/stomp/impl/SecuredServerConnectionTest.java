@@ -135,5 +135,18 @@ public class SecuredServerConnectionTest {
     });
   }
 
+  @Test
+  public void testFailedAuthenticationWithClient(TestContext context) {
+    Async async = context.async();
+    StompClient client = StompClient.create(vertx, new StompClientOptions()
+        .setPort(server.actualPort()).setHost("0.0.0.0").setLogin("admin").setPasscode("nope"))
+        .errorFrameHandler(frame -> {
+          async.complete();
+        });
+    client.connect(connection -> {
+      context.fail("Authentication issue expected");
+    });
+  }
+
 
 }
