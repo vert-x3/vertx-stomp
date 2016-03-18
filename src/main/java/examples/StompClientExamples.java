@@ -55,6 +55,21 @@ public class StompClientExamples {
         });
   }
 
+  public void example21(Vertx vertx) {
+    StompClient client = StompClient.create(vertx)
+        .errorFrameHandler(frame -> {
+          // Received the ERROR frame
+        })
+        .connect(61613, "0.0.0.0", ar -> {
+          if (ar.succeeded()) {
+            StompClientConnection connection = ar.result();
+
+          } else {
+            System.out.println("Failed to connect to the STOMP server: " + ar.cause().toString());
+          }
+        });
+  }
+
   public void example3(Vertx vertx) {
     StompClient client = StompClient.create(vertx, new StompClientOptions().setHost("localhost").setPort(1234))
         .connect(ar -> {

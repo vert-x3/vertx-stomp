@@ -236,7 +236,16 @@
  * {@link examples.StompClientExamples#example2(io.vertx.core.Vertx)}
  * ----
  *
- * Alternatively you can also configure the host and port in the {@link io.vertx.ext.stomp.StompClientOptions}:
+ * To catch connection errors due to authentication issues, or whatever error frames sent by the server during
+ * the connection negotiation, you can register a _error handler_ on the Stomp Client. All
+ * connections created with the client inherit of the error handler (but can have their own):
+ *
+ * [source,$lang]
+ * ----
+ * {@link examples.StompClientExamples#example21(io.vertx.core.Vertx)}
+ * ----
+ *
+ * You can also configure the host and port in the {@link io.vertx.ext.stomp.StompClientOptions}:
  *
  * [source,$lang]
  * ----

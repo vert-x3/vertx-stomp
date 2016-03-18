@@ -307,7 +307,27 @@ StompClient client = StompClient.create(vertx)
     });
 ----
 
-Alternatively you can also configure the host and port in the `link:../../apidocs/io/vertx/ext/stomp/StompClientOptions.html[StompClientOptions]`:
+To catch connection errors due to authentication issues, or whatever error frames sent by the server during
+the connection negotiation, you can register a _error handler_ on the Stomp Client. All
+connections created with the client inherit of the error handler (but can have their own):
+
+[source,java]
+----
+StompClient client = StompClient.create(vertx)
+    .errorFrameHandler(frame -> {
+      // Received the ERROR frame
+    })
+    .connect(61613, "0.0.0.0", ar -> {
+      if (ar.succeeded()) {
+        StompClientConnection connection = ar.result();
+
+      } else {
+        System.out.println("Failed to connect to the STOMP server: " + ar.cause().toString());
+      }
+    });
+----
+
+You can also configure the host and port in the `link:../../apidocs/io/vertx/ext/stomp/StompClientOptions.html[StompClientOptions]`:
 
 [source,java]
 ----

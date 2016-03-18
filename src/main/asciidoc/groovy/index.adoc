@@ -323,7 +323,27 @@ def client = StompClient.create(vertx).connect(61613, "0.0.0.0", { ar ->
 
 ----
 
-Alternatively you can also configure the host and port in the `link:../dataobjects.html#StompClientOptions[StompClientOptions]`:
+To catch connection errors due to authentication issues, or whatever error frames sent by the server during
+the connection negotiation, you can register a _error handler_ on the Stomp Client. All
+connections created with the client inherit of the error handler (but can have their own):
+
+[source,groovy]
+----
+import io.vertx.groovy.ext.stomp.StompClient
+def client = StompClient.create(vertx).errorFrameHandler({ frame ->
+  // Received the ERROR frame
+}).connect(61613, "0.0.0.0", { ar ->
+  if (ar.succeeded()) {
+    def connection = ar.result()
+
+  } else {
+    println("Failed to connect to the STOMP server: ${ar.cause().toString()}")
+  }
+})
+
+----
+
+You can also configure the host and port in the `link:../dataobjects.html#StompClientOptions[StompClientOptions]`:
 
 [source,groovy]
 ----

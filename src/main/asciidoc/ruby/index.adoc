@@ -323,7 +323,27 @@ client = VertxStomp::StompClient.create(vertx).connect(61613, "0.0.0.0") { |ar_e
 
 ----
 
-Alternatively you can also configure the host and port in the `link:../dataobjects.html#StompClientOptions[StompClientOptions]`:
+To catch connection errors due to authentication issues, or whatever error frames sent by the server during
+the connection negotiation, you can register a _error handler_ on the Stomp Client. All
+connections created with the client inherit of the error handler (but can have their own):
+
+[source,ruby]
+----
+require 'vertx-stomp/stomp_client'
+client = VertxStomp::StompClient.create(vertx).error_frame_handler() { |frame|
+  # Received the ERROR frame
+}.connect(61613, "0.0.0.0") { |ar_err,ar|
+  if (ar_err == nil)
+    connection = ar
+
+  else
+    puts "Failed to connect to the STOMP server: #{ar_err.to_string()}"
+  end
+}
+
+----
+
+You can also configure the host and port in the `link:../dataobjects.html#StompClientOptions[StompClientOptions]`:
 
 [source,ruby]
 ----
