@@ -22,6 +22,7 @@ import io.vertx.ext.stomp.StompOptions;
 import io.vertx.ext.stomp.StompServerOptions;
 import org.junit.Test;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -486,6 +487,7 @@ public class FrameParserTest {
     parser.handle(buffer);
     buffer = Buffer.buffer(LOREM);
     parser.handle(buffer);
+    assertThat(getCurrentBodySize(parser)).isGreaterThan(0);
 
     try {
       buffer = Buffer.buffer(LOREM);
@@ -493,6 +495,93 @@ public class FrameParserTest {
       fail("Exception expected");
     } catch (FrameException e) {
       // OK.
+    }
+
+    assertThat(getCurrentBodySize(parser)).isEqualTo(0);
+  }
+
+  @Test
+  public void testBodySizeExceededInOneFrame() {
+    // Would fail at the second body buffer.
+    FrameParser parser = new FrameParser(new StompServerOptions().setMaxBodyLength(LOREM.length()
+        + 5));
+    AtomicReference<Frame> ref = new AtomicReference<>();
+    parser.handler(ref::set);
+
+    Buffer buffer = Buffer.buffer("MESSAGE\n")
+        .appendString("hello:world\n")
+        .appendString("\n")
+        .appendString(LOREM)
+        .appendString("\n")
+        .appendString(LOREM)
+        .appendString(FrameParser.NULL);
+
+    try {
+      parser.handle(buffer);
+      fail("Exception expected");
+    } catch (FrameException e) {
+      // OK.
+    }
+    // Counter has been reset.
+    assertThat(getCurrentBodySize(parser)).isEqualTo(0);
+  }
+
+  @Test
+  public void testBodySizeComputation() {
+    List<Integer> sizes = new ArrayList<>();
+    List<Integer> stored = new ArrayList<>();
+    FrameParser parser = new FrameParser(new StompServerOptions());
+    parser.handler(frame -> {
+      sizes.add(frame.toBuffer().length());
+      stored.add(getCurrentBodySize(parser));
+    });
+
+    // Frame 1
+    Buffer buffer = Buffer.buffer("MESSAGE\n");
+    parser.handle(buffer);
+    buffer = Buffer.buffer("hello:world\n");
+    parser.handle(buffer);
+    buffer = Buffer.buffer("\n");
+    parser.handle(buffer);
+    parser.handle(Buffer.buffer(FrameParser.NULL));
+    assertThat(getCurrentBodySize(parser)).isEqualTo(0);
+
+    // Frame 2
+    buffer = Buffer.buffer("MESSAGE\n");
+    parser.handle(buffer);
+    buffer = Buffer.buffer("hello:world\n");
+    parser.handle(buffer);
+    buffer = Buffer.buffer("\n" + LOREM);
+    parser.handle(buffer);
+    parser.handle(Buffer.buffer(FrameParser.NULL));
+
+    assertThat(getCurrentBodySize(parser)).isEqualTo(0);
+
+    // Frame 3
+    buffer = Buffer.buffer("MESSAGE\n");
+    parser.handle(buffer);
+    buffer = Buffer.buffer("hello:world\n");
+    parser.handle(buffer);
+    buffer = Buffer.buffer("\n" + FrameParser.NULL);
+    parser.handle(buffer);
+    assertThat(getCurrentBodySize(parser)).isEqualTo(0);
+
+    for (int size : sizes) {
+      assertThat(size).isGreaterThan(0);
+    }
+
+    for (int size : stored) {
+      assertThat(size).isEqualTo(0);
+    }
+  }
+
+  private int getCurrentBodySize(FrameParser parser) {
+    try {
+      Field field = parser.getClass().getDeclaredField("bodyLength");
+      field.setAccessible(true);
+      return (int) field.get(parser);
+    } catch (Exception e) {
+      throw new RuntimeException("Cannot retrieve the current body length", e);
     }
   }
 

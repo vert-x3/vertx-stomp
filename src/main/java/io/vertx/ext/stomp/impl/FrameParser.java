@@ -19,7 +19,10 @@ package io.vertx.ext.stomp.impl;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.parsetools.RecordParser;
-import io.vertx.ext.stomp.*;
+import io.vertx.ext.stomp.Frame;
+import io.vertx.ext.stomp.Frames;
+import io.vertx.ext.stomp.StompOptions;
+import io.vertx.ext.stomp.StompServerOptions;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -146,6 +149,15 @@ public class FrameParser implements Handler<Buffer> {
           break;
         }
       case BODY:
+        if (bodyLength == 0) {
+          // Must accumulate and check before creating the frame
+          bodyLength = buffer.length();
+          if (hasExceededBodySize()) {
+            reportOrThrow("Body size exceeded");
+            return;
+          }
+        }
+
         try {
           Frame frame = new Frame(command, headers, buffer);
           reset();
@@ -158,6 +170,7 @@ public class FrameParser implements Handler<Buffer> {
 
   private void reset() {
     command = null;
+    bodyLength = 0;
     headers = new HashMap<>();
     current = State.COMMAND;
     frameParser.delimitedMode(EOL);
@@ -200,7 +213,7 @@ public class FrameParser implements Handler<Buffer> {
   public synchronized void handle(Buffer event) {
     if (current == State.BODY) {
       bodyLength += event.length();
-      if (!hasExceededBodySize()) {
+      if (hasExceededBodySize()) {
         reportOrThrow("Body size exceeded");
         return;
       }
@@ -209,7 +222,7 @@ public class FrameParser implements Handler<Buffer> {
   }
 
   private boolean hasExceededBodySize() {
-    return bodyLength <= options.getMaxBodyLength();
+    return bodyLength >= options.getMaxBodyLength();
   }
 
   /**
@@ -220,6 +233,7 @@ public class FrameParser implements Handler<Buffer> {
    */
   private void reportOrThrow(String error) {
     FrameException exception = new FrameException(error);
+    reset();
     if (errorHandler != null) {
       errorHandler.handle(exception);
     } else {
