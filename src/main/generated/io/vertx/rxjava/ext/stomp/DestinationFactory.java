@@ -17,7 +17,6 @@
 package io.vertx.rxjava.ext.stomp;
 
 import java.util.Map;
-import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
 import io.vertx.rxjava.core.Vertx;
 
@@ -47,7 +46,7 @@ public class DestinationFactory {
    * @return the destination, <code>null</code> to reject the creation.
    */
   public Destination create(Vertx vertx, String name) { 
-    Destination ret= Destination.newInstance(this.delegate.create((io.vertx.core.Vertx) vertx.getDelegate(), name));
+    Destination ret = Destination.newInstance(delegate.create((io.vertx.core.Vertx)vertx.getDelegate(), name));
     return ret;
   }
 

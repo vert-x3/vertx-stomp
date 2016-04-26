@@ -42,7 +42,7 @@ public class StompClient {
    * @return the created {@link io.vertx.groovy.ext.stomp.StompClient}
    */
   public static StompClient create(Vertx vertx) {
-    def ret= InternalHelper.safeCreate(io.vertx.ext.stomp.StompClient.create((io.vertx.core.Vertx)vertx.getDelegate()), io.vertx.groovy.ext.stomp.StompClient.class);
+    def ret = InternalHelper.safeCreate(io.vertx.ext.stomp.StompClient.create(vertx != null ? (io.vertx.core.Vertx)vertx.getDelegate() : null), io.vertx.groovy.ext.stomp.StompClient.class);
     return ret;
   }
   /**
@@ -52,7 +52,7 @@ public class StompClient {
    * @return the created {@link io.vertx.groovy.ext.stomp.StompClient}
    */
   public static StompClient create(Vertx vertx, Map<String, Object> options) {
-    def ret= InternalHelper.safeCreate(io.vertx.ext.stomp.StompClient.create((io.vertx.core.Vertx)vertx.getDelegate(), options != null ? new io.vertx.ext.stomp.StompClientOptions(new io.vertx.core.json.JsonObject(options)) : null), io.vertx.groovy.ext.stomp.StompClient.class);
+    def ret = InternalHelper.safeCreate(io.vertx.ext.stomp.StompClient.create(vertx != null ? (io.vertx.core.Vertx)vertx.getDelegate() : null, options != null ? new io.vertx.ext.stomp.StompClientOptions(new io.vertx.core.json.JsonObject(options)) : null), io.vertx.groovy.ext.stomp.StompClient.class);
     return ret;
   }
   /**
@@ -63,17 +63,15 @@ public class StompClient {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClient}
    */
   public StompClient connect(int port, String host, Handler<AsyncResult<StompClientConnection>> resultHandler) {
-    this.delegate.connect(port, host, new Handler<AsyncResult<io.vertx.ext.stomp.StompClientConnection>>() {
-      public void handle(AsyncResult<io.vertx.ext.stomp.StompClientConnection> event) {
-        AsyncResult<StompClientConnection> f
-        if (event.succeeded()) {
-          f = InternalHelper.<StompClientConnection>result(new StompClientConnection(event.result()))
+    delegate.connect(port, host, resultHandler != null ? new Handler<AsyncResult<io.vertx.ext.stomp.StompClientConnection>>() {
+      public void handle(AsyncResult<io.vertx.ext.stomp.StompClientConnection> ar) {
+        if (ar.succeeded()) {
+          resultHandler.handle(io.vertx.core.Future.succeededFuture(InternalHelper.safeCreate(ar.result(), io.vertx.groovy.ext.stomp.StompClientConnection.class)));
         } else {
-          f = InternalHelper.<StompClientConnection>failure(event.cause())
+          resultHandler.handle(io.vertx.core.Future.failedFuture(ar.cause()));
         }
-        resultHandler.handle(f)
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -83,17 +81,15 @@ public class StompClient {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClient}
    */
   public StompClient connect(NetClient net, Handler<AsyncResult<StompClientConnection>> resultHandler) {
-    this.delegate.connect((io.vertx.core.net.NetClient)net.getDelegate(), new Handler<AsyncResult<io.vertx.ext.stomp.StompClientConnection>>() {
-      public void handle(AsyncResult<io.vertx.ext.stomp.StompClientConnection> event) {
-        AsyncResult<StompClientConnection> f
-        if (event.succeeded()) {
-          f = InternalHelper.<StompClientConnection>result(new StompClientConnection(event.result()))
+    delegate.connect(net != null ? (io.vertx.core.net.NetClient)net.getDelegate() : null, resultHandler != null ? new Handler<AsyncResult<io.vertx.ext.stomp.StompClientConnection>>() {
+      public void handle(AsyncResult<io.vertx.ext.stomp.StompClientConnection> ar) {
+        if (ar.succeeded()) {
+          resultHandler.handle(io.vertx.core.Future.succeededFuture(InternalHelper.safeCreate(ar.result(), io.vertx.groovy.ext.stomp.StompClientConnection.class)));
         } else {
-          f = InternalHelper.<StompClientConnection>failure(event.cause())
+          resultHandler.handle(io.vertx.core.Future.failedFuture(ar.cause()));
         }
-        resultHandler.handle(f)
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -105,17 +101,15 @@ public class StompClient {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClient}
    */
   public StompClient connect(int port, String host, NetClient net, Handler<AsyncResult<StompClientConnection>> resultHandler) {
-    this.delegate.connect(port, host, (io.vertx.core.net.NetClient)net.getDelegate(), new Handler<AsyncResult<io.vertx.ext.stomp.StompClientConnection>>() {
-      public void handle(AsyncResult<io.vertx.ext.stomp.StompClientConnection> event) {
-        AsyncResult<StompClientConnection> f
-        if (event.succeeded()) {
-          f = InternalHelper.<StompClientConnection>result(new StompClientConnection(event.result()))
+    delegate.connect(port, host, net != null ? (io.vertx.core.net.NetClient)net.getDelegate() : null, resultHandler != null ? new Handler<AsyncResult<io.vertx.ext.stomp.StompClientConnection>>() {
+      public void handle(AsyncResult<io.vertx.ext.stomp.StompClientConnection> ar) {
+        if (ar.succeeded()) {
+          resultHandler.handle(io.vertx.core.Future.succeededFuture(InternalHelper.safeCreate(ar.result(), io.vertx.groovy.ext.stomp.StompClientConnection.class)));
         } else {
-          f = InternalHelper.<StompClientConnection>failure(event.cause())
+          resultHandler.handle(io.vertx.core.Future.failedFuture(ar.cause()));
         }
-        resultHandler.handle(f)
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -124,17 +118,15 @@ public class StompClient {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClient}
    */
   public StompClient connect(Handler<AsyncResult<StompClientConnection>> resultHandler) {
-    this.delegate.connect(new Handler<AsyncResult<io.vertx.ext.stomp.StompClientConnection>>() {
-      public void handle(AsyncResult<io.vertx.ext.stomp.StompClientConnection> event) {
-        AsyncResult<StompClientConnection> f
-        if (event.succeeded()) {
-          f = InternalHelper.<StompClientConnection>result(new StompClientConnection(event.result()))
+    delegate.connect(resultHandler != null ? new Handler<AsyncResult<io.vertx.ext.stomp.StompClientConnection>>() {
+      public void handle(AsyncResult<io.vertx.ext.stomp.StompClientConnection> ar) {
+        if (ar.succeeded()) {
+          resultHandler.handle(io.vertx.core.Future.succeededFuture(InternalHelper.safeCreate(ar.result(), io.vertx.groovy.ext.stomp.StompClientConnection.class)));
         } else {
-          f = InternalHelper.<StompClientConnection>failure(event.cause())
+          resultHandler.handle(io.vertx.core.Future.failedFuture(ar.cause()));
         }
-        resultHandler.handle(f)
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -147,11 +139,11 @@ public class StompClient {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClient}
    */
   public StompClient receivedFrameHandler(Handler<Map<String, Object>> handler) {
-    this.delegate.receivedFrameHandler(new Handler<Frame>() {
-      public void handle(Frame event) {
+    delegate.receivedFrameHandler(handler != null ? new Handler<io.vertx.ext.stomp.Frame>(){
+      public void handle(io.vertx.ext.stomp.Frame event) {
         handler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -164,11 +156,11 @@ public class StompClient {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClient}
    */
   public StompClient writingFrameHandler(Handler<Map<String, Object>> handler) {
-    this.delegate.writingFrameHandler(new Handler<Frame>() {
-      public void handle(Frame event) {
+    delegate.writingFrameHandler(handler != null ? new Handler<io.vertx.ext.stomp.Frame>(){
+      public void handle(io.vertx.ext.stomp.Frame event) {
         handler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -179,25 +171,25 @@ public class StompClient {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClient}
    */
   public StompClient errorFrameHandler(Handler<Map<String, Object>> handler) {
-    this.delegate.errorFrameHandler(new Handler<Frame>() {
-      public void handle(Frame event) {
+    delegate.errorFrameHandler(handler != null ? new Handler<io.vertx.ext.stomp.Frame>(){
+      public void handle(io.vertx.ext.stomp.Frame event) {
         handler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }
-    });
+    } : null);
     return this;
   }
   /**
    * Closes the client.
    */
   public void close() {
-    this.delegate.close();
+    delegate.close();
   }
   /**
    * @return the client's options.
    * @return  (see <a href="../../../../../../../cheatsheet/StompClientOptions.html">StompClientOptions</a>)
    */
   public Map<String, Object> options() {
-    def ret = (Map<String, Object>)InternalHelper.wrapObject(this.delegate.options()?.toJson());
+    def ret = (Map<String, Object>)InternalHelper.wrapObject(delegate.options()?.toJson());
     return ret;
   }
   /**
@@ -205,7 +197,7 @@ public class StompClient {
    * @return 
    */
   public Vertx vertx() {
-    def ret= InternalHelper.safeCreate(this.delegate.vertx(), io.vertx.groovy.core.Vertx.class);
+    def ret = InternalHelper.safeCreate(delegate.vertx(), io.vertx.groovy.core.Vertx.class);
     return ret;
   }
 }

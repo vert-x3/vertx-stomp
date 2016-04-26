@@ -17,7 +17,6 @@
 package io.vertx.rxjava.ext.stomp;
 
 import java.util.Map;
-import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
 import io.vertx.rxjava.core.http.ServerWebSocket;
 import io.vertx.rxjava.core.net.NetServer;
@@ -53,7 +52,7 @@ public class StompServer {
    * @return the created {@link io.vertx.rxjava.ext.stomp.StompServer}
    */
   public static StompServer create(Vertx vertx, StompServerOptions options) { 
-    StompServer ret= StompServer.newInstance(io.vertx.ext.stomp.StompServer.create((io.vertx.core.Vertx) vertx.getDelegate(), options));
+    StompServer ret = StompServer.newInstance(io.vertx.ext.stomp.StompServer.create((io.vertx.core.Vertx)vertx.getDelegate(), options));
     return ret;
   }
 
@@ -64,7 +63,7 @@ public class StompServer {
    * @return the created {@link io.vertx.rxjava.ext.stomp.StompServer}
    */
   public static StompServer create(Vertx vertx, NetServer netServer) { 
-    StompServer ret= StompServer.newInstance(io.vertx.ext.stomp.StompServer.create((io.vertx.core.Vertx) vertx.getDelegate(), (io.vertx.core.net.NetServer) netServer.getDelegate()));
+    StompServer ret = StompServer.newInstance(io.vertx.ext.stomp.StompServer.create((io.vertx.core.Vertx)vertx.getDelegate(), (io.vertx.core.net.NetServer)netServer.getDelegate()));
     return ret;
   }
 
@@ -76,7 +75,7 @@ public class StompServer {
    * @return the created {@link io.vertx.rxjava.ext.stomp.StompServer}
    */
   public static StompServer create(Vertx vertx, NetServer net, StompServerOptions options) { 
-    StompServer ret= StompServer.newInstance(io.vertx.ext.stomp.StompServer.create((io.vertx.core.Vertx) vertx.getDelegate(), (io.vertx.core.net.NetServer) net.getDelegate(), options));
+    StompServer ret = StompServer.newInstance(io.vertx.ext.stomp.StompServer.create((io.vertx.core.Vertx)vertx.getDelegate(), (io.vertx.core.net.NetServer)net.getDelegate(), options));
     return ret;
   }
 
@@ -86,7 +85,7 @@ public class StompServer {
    * @return the created {@link io.vertx.rxjava.ext.stomp.StompServer}
    */
   public static StompServer create(Vertx vertx) { 
-    StompServer ret= StompServer.newInstance(io.vertx.ext.stomp.StompServer.create((io.vertx.core.Vertx) vertx.getDelegate()));
+    StompServer ret = StompServer.newInstance(io.vertx.ext.stomp.StompServer.create((io.vertx.core.Vertx)vertx.getDelegate()));
     return ret;
   }
 
@@ -96,7 +95,7 @@ public class StompServer {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServer}
    */
   public StompServer handler(StompServerHandler handler) { 
-    this.delegate.handler((io.vertx.ext.stomp.StompServerHandler) handler.getDelegate());
+    delegate.handler((io.vertx.ext.stomp.StompServerHandler)handler.getDelegate());
     return this;
   }
 
@@ -106,7 +105,7 @@ public class StompServer {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServer}
    */
   public StompServer listen(int port) { 
-    this.delegate.listen(port);
+    delegate.listen(port);
     return this;
   }
 
@@ -117,7 +116,7 @@ public class StompServer {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServer}
    */
   public StompServer listen(int port, String host) { 
-    this.delegate.listen(port, host);
+    delegate.listen(port, host);
     return this;
   }
 
@@ -126,7 +125,7 @@ public class StompServer {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServer}
    */
   public StompServer listen() { 
-    this.delegate.listen();
+    delegate.listen();
     return this;
   }
 
@@ -137,15 +136,13 @@ public class StompServer {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServer}
    */
   public StompServer listen(Handler<AsyncResult<StompServer>> handler) { 
-    this.delegate.listen(new Handler<AsyncResult<io.vertx.ext.stomp.StompServer>>() {
-      public void handle(AsyncResult<io.vertx.ext.stomp.StompServer> event) {
-        AsyncResult<StompServer> f;
-        if (event.succeeded()) {
-          f = InternalHelper.<StompServer>result(new StompServer(event.result()));
+    delegate.listen(new Handler<AsyncResult<io.vertx.ext.stomp.StompServer>>() {
+      public void handle(AsyncResult<io.vertx.ext.stomp.StompServer> ar) {
+        if (ar.succeeded()) {
+          handler.handle(io.vertx.core.Future.succeededFuture(StompServer.newInstance(ar.result())));
         } else {
-          f = InternalHelper.<StompServer>failure(event.cause());
+          handler.handle(io.vertx.core.Future.failedFuture(ar.cause()));
         }
-        handler.handle(f);
       }
     });
     return this;
@@ -167,18 +164,16 @@ public class StompServer {
    * it bounds calls the given handler with the result. The result may be a failure if the socket is already used.
    * @param port the port
    * @param handler the handler to call with the result
-   * @return the current {@link io.vertx.ext.stomp.StompServer}
+   * @return the current {@link io.vertx.rxjava.ext.stomp.StompServer}
    */
   public StompServer listen(int port, Handler<AsyncResult<StompServer>> handler) { 
-    this.delegate.listen(port, new Handler<AsyncResult<io.vertx.ext.stomp.StompServer>>() {
-      public void handle(AsyncResult<io.vertx.ext.stomp.StompServer> event) {
-        AsyncResult<StompServer> f;
-        if (event.succeeded()) {
-          f = InternalHelper.<StompServer>result(new StompServer(event.result()));
+    delegate.listen(port, new Handler<AsyncResult<io.vertx.ext.stomp.StompServer>>() {
+      public void handle(AsyncResult<io.vertx.ext.stomp.StompServer> ar) {
+        if (ar.succeeded()) {
+          handler.handle(io.vertx.core.Future.succeededFuture(StompServer.newInstance(ar.result())));
         } else {
-          f = InternalHelper.<StompServer>failure(event.cause());
+          handler.handle(io.vertx.core.Future.failedFuture(ar.cause()));
         }
-        handler.handle(f);
       }
     });
     return this;
@@ -202,18 +197,16 @@ public class StompServer {
    * @param port the port
    * @param host the host / interface
    * @param handler the handler to call with the result
-   * @return the current {@link io.vertx.ext.stomp.StompServer}
+   * @return the current {@link io.vertx.rxjava.ext.stomp.StompServer}
    */
   public StompServer listen(int port, String host, Handler<AsyncResult<StompServer>> handler) { 
-    this.delegate.listen(port, host, new Handler<AsyncResult<io.vertx.ext.stomp.StompServer>>() {
-      public void handle(AsyncResult<io.vertx.ext.stomp.StompServer> event) {
-        AsyncResult<StompServer> f;
-        if (event.succeeded()) {
-          f = InternalHelper.<StompServer>result(new StompServer(event.result()));
+    delegate.listen(port, host, new Handler<AsyncResult<io.vertx.ext.stomp.StompServer>>() {
+      public void handle(AsyncResult<io.vertx.ext.stomp.StompServer> ar) {
+        if (ar.succeeded()) {
+          handler.handle(io.vertx.core.Future.succeededFuture(StompServer.newInstance(ar.result())));
         } else {
-          f = InternalHelper.<StompServer>failure(event.cause());
+          handler.handle(io.vertx.core.Future.failedFuture(ar.cause()));
         }
-        handler.handle(f);
       }
     });
     return this;
@@ -237,7 +230,15 @@ public class StompServer {
    * @param completionHandler handler called once the server has been stopped
    */
   public void close(Handler<AsyncResult<Void>> completionHandler) { 
-    this.delegate.close(completionHandler);
+    delegate.close(new Handler<AsyncResult<java.lang.Void>>() {
+      public void handle(AsyncResult<java.lang.Void> ar) {
+        if (ar.succeeded()) {
+          completionHandler.handle(io.vertx.core.Future.succeededFuture(ar.result()));
+        } else {
+          completionHandler.handle(io.vertx.core.Future.failedFuture(ar.cause()));
+        }
+      }
+    });
   }
 
   /**
@@ -254,7 +255,7 @@ public class StompServer {
    * Closes the server.
    */
   public void close() { 
-    this.delegate.close();
+    delegate.close();
   }
 
   /**
@@ -262,7 +263,7 @@ public class StompServer {
    * @return <code>true</code> if the server is listening, <code>false</code> otherwise
    */
   public boolean isListening() { 
-    boolean ret = this.delegate.isListening();
+    boolean ret = delegate.isListening();
     return ret;
   }
 
@@ -273,7 +274,7 @@ public class StompServer {
    * @return the port
    */
   public int actualPort() { 
-    int ret = this.delegate.actualPort();
+    int ret = delegate.actualPort();
     return ret;
   }
 
@@ -282,7 +283,7 @@ public class StompServer {
    * @return 
    */
   public StompServerOptions options() { 
-    StompServerOptions ret = this.delegate.options();
+    StompServerOptions ret = delegate.options();
     return ret;
   }
 
@@ -291,7 +292,7 @@ public class StompServer {
    * @return 
    */
   public Vertx vertx() { 
-    Vertx ret= Vertx.newInstance(this.delegate.vertx());
+    Vertx ret = Vertx.newInstance(delegate.vertx());
     return ret;
   }
 
@@ -300,7 +301,7 @@ public class StompServer {
    * @return 
    */
   public StompServerHandler stompHandler() { 
-    StompServerHandler ret= StompServerHandler.newInstance(this.delegate.stompHandler());
+    StompServerHandler ret = StompServerHandler.newInstance(delegate.stompHandler());
     return ret;
   }
 
@@ -310,9 +311,10 @@ public class StompServer {
    * @return the handler that can be passed to {@link io.vertx.rxjava.core.http.HttpServer#websocketHandler}.
    */
   public Handler<ServerWebSocket> webSocketHandler() { 
-    io.vertx.core.Handler<io.vertx.core.http.ServerWebSocket> handlerDelegate = this.delegate.webSocketHandler();
-    Handler<ServerWebSocket> ret = event -> {
-      handlerDelegate.handle((io.vertx.core.http.ServerWebSocket) event.getDelegate());
+    Handler<ServerWebSocket> ret = new Handler<ServerWebSocket>() {
+      public void handle(ServerWebSocket event) {
+          delegate.webSocketHandler().handle((io.vertx.core.http.ServerWebSocket)event.getDelegate());
+      }
     };
     return ret;
   }
@@ -321,12 +323,12 @@ public class StompServer {
    * Configures the handler that is invoked every time a frame is going to be written to the "wire". It lets you log
    * the frames, but also adapt the frame if needed.
    * @param handler the handler, must not be <code>null</code>
-   * @return the current {@link io.vertx.ext.stomp.StompServer}
+   * @return the current {@link io.vertx.rxjava.ext.stomp.StompServer}
    */
   public StompServer writingFrameHandler(Handler<ServerFrame> handler) { 
-    this.delegate.writingFrameHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+    delegate.writingFrameHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
       public void handle(io.vertx.ext.stomp.ServerFrame event) {
-        handler.handle(new ServerFrame(event));
+        handler.handle(ServerFrame.newInstance(event));
       }
     });
     return this;

@@ -40,7 +40,7 @@ public class StompClientConnection {
    * @return 
    */
   public String session() {
-    def ret = this.delegate.session();
+    def ret = delegate.session();
     return ret;
   }
   /**
@@ -48,21 +48,21 @@ public class StompClientConnection {
    * @return 
    */
   public String version() {
-    def ret = this.delegate.version();
+    def ret = delegate.version();
     return ret;
   }
   /**
    * Closes the connection without sending the <code>DISCONNECT</code> frame.
    */
   public void close() {
-    this.delegate.close();
+    delegate.close();
   }
   /**
    * @return the server name.
    * @return 
    */
   public String server() {
-    def ret = this.delegate.server();
+    def ret = delegate.server();
     return ret;
   }
   /**
@@ -71,8 +71,8 @@ public class StompClientConnection {
    * @param body the body, may be <code>null</code>
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
-  public StompClientConnection send(Map<String,String> headers, Buffer body) {
-    this.delegate.send(headers, (io.vertx.core.buffer.Buffer)body.getDelegate());
+  public StompClientConnection send(Map<String, String> headers, Buffer body) {
+    delegate.send(headers != null ? (Map)headers.collectEntries({[it.key,it.value]}) : null, body != null ? (io.vertx.core.buffer.Buffer)body.getDelegate() : null);
     return this;
   }
   /**
@@ -82,12 +82,12 @@ public class StompClientConnection {
    * @param receiptHandler the handler invoked when the <code>RECEIPT</code> frame associated with the sent frame has been received. The handler receives the sent frame.
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
-  public StompClientConnection send(Map<String,String> headers, Buffer body, Handler<Map<String, Object>> receiptHandler) {
-    this.delegate.send(headers, (io.vertx.core.buffer.Buffer)body.getDelegate(), new Handler<Frame>() {
-      public void handle(Frame event) {
+  public StompClientConnection send(Map<String, String> headers, Buffer body, Handler<Map<String, Object>> receiptHandler) {
+    delegate.send(headers != null ? (Map)headers.collectEntries({[it.key,it.value]}) : null, body != null ? (io.vertx.core.buffer.Buffer)body.getDelegate() : null, receiptHandler != null ? new Handler<io.vertx.ext.stomp.Frame>(){
+      public void handle(io.vertx.ext.stomp.Frame event) {
         receiptHandler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -97,7 +97,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
   public StompClientConnection send(String destination, Buffer body) {
-    this.delegate.send(destination, (io.vertx.core.buffer.Buffer)body.getDelegate());
+    delegate.send(destination, body != null ? (io.vertx.core.buffer.Buffer)body.getDelegate() : null);
     return this;
   }
   /**
@@ -108,11 +108,11 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
   public StompClientConnection send(String destination, Buffer body, Handler<Map<String, Object>> receiptHandler) {
-    this.delegate.send(destination, (io.vertx.core.buffer.Buffer)body.getDelegate(), new Handler<Frame>() {
-      public void handle(Frame event) {
+    delegate.send(destination, body != null ? (io.vertx.core.buffer.Buffer)body.getDelegate() : null, receiptHandler != null ? new Handler<io.vertx.ext.stomp.Frame>(){
+      public void handle(io.vertx.ext.stomp.Frame event) {
         receiptHandler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -121,7 +121,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
   public StompClientConnection send(Map<String, Object> frame = [:]) {
-    this.delegate.send(frame != null ? new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(frame)) : null);
+    delegate.send(frame != null ? new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(frame)) : null);
     return this;
   }
   /**
@@ -131,11 +131,11 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
   public StompClientConnection send(Map<String, Object> frame = [:], Handler<Map<String, Object>> receiptHandler) {
-    this.delegate.send(frame != null ? new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(frame)) : null, new Handler<Frame>() {
-      public void handle(Frame event) {
+    delegate.send(frame != null ? new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(frame)) : null, receiptHandler != null ? new Handler<io.vertx.ext.stomp.Frame>(){
+      public void handle(io.vertx.ext.stomp.Frame event) {
         receiptHandler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -145,8 +145,8 @@ public class StompClientConnection {
    * @param body the body, may be <code>null</code>
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
-  public StompClientConnection send(String destination, Map<String,String> headers, Buffer body) {
-    this.delegate.send(destination, headers, (io.vertx.core.buffer.Buffer)body.getDelegate());
+  public StompClientConnection send(String destination, Map<String, String> headers, Buffer body) {
+    delegate.send(destination, headers != null ? (Map)headers.collectEntries({[it.key,it.value]}) : null, body != null ? (io.vertx.core.buffer.Buffer)body.getDelegate() : null);
     return this;
   }
   /**
@@ -157,12 +157,12 @@ public class StompClientConnection {
    * @param receiptHandler the handler invoked when the <code>RECEIPT</code> frame associated with the sent frame has been received. The handler receives the sent frame.
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
-  public StompClientConnection send(String destination, Map<String,String> headers, Buffer body, Handler<Map<String, Object>> receiptHandler) {
-    this.delegate.send(destination, headers, (io.vertx.core.buffer.Buffer)body.getDelegate(), new Handler<Frame>() {
-      public void handle(Frame event) {
+  public StompClientConnection send(String destination, Map<String, String> headers, Buffer body, Handler<Map<String, Object>> receiptHandler) {
+    delegate.send(destination, headers != null ? (Map)headers.collectEntries({[it.key,it.value]}) : null, body != null ? (io.vertx.core.buffer.Buffer)body.getDelegate() : null, receiptHandler != null ? new Handler<io.vertx.ext.stomp.Frame>(){
+      public void handle(io.vertx.ext.stomp.Frame event) {
         receiptHandler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -172,11 +172,11 @@ public class StompClientConnection {
    * @return the subscription id.
    */
   public String subscribe(String destination, Handler<Map<String, Object>> handler) {
-    def ret = this.delegate.subscribe(destination, new Handler<Frame>() {
-      public void handle(Frame event) {
+    def ret = delegate.subscribe(destination, handler != null ? new Handler<io.vertx.ext.stomp.Frame>(){
+      public void handle(io.vertx.ext.stomp.Frame event) {
         handler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }
-    });
+    } : null);
     return ret;
   }
   /**
@@ -187,15 +187,15 @@ public class StompClientConnection {
    * @return the subscription id.
    */
   public String subscribe(String destination, Handler<Map<String, Object>> handler, Handler<Map<String, Object>> receiptHandler) {
-    def ret = this.delegate.subscribe(destination, new Handler<Frame>() {
-      public void handle(Frame event) {
+    def ret = delegate.subscribe(destination, handler != null ? new Handler<io.vertx.ext.stomp.Frame>(){
+      public void handle(io.vertx.ext.stomp.Frame event) {
         handler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }
-    }, new Handler<Frame>() {
-      public void handle(Frame event) {
+    } : null, receiptHandler != null ? new Handler<io.vertx.ext.stomp.Frame>(){
+      public void handle(io.vertx.ext.stomp.Frame event) {
         receiptHandler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }
-    });
+    } : null);
     return ret;
   }
   /**
@@ -205,12 +205,12 @@ public class StompClientConnection {
    * @param handler the handler invoked when a message is received on the given destination. Must not be <code>null</code>.
    * @return the subscription id, which can either be the destination or the id set in the headers.
    */
-  public String subscribe(String destination, Map<String,String> headers, Handler<Map<String, Object>> handler) {
-    def ret = this.delegate.subscribe(destination, headers, new Handler<Frame>() {
-      public void handle(Frame event) {
+  public String subscribe(String destination, Map<String, String> headers, Handler<Map<String, Object>> handler) {
+    def ret = delegate.subscribe(destination, headers != null ? (Map)headers.collectEntries({[it.key,it.value]}) : null, handler != null ? new Handler<io.vertx.ext.stomp.Frame>(){
+      public void handle(io.vertx.ext.stomp.Frame event) {
         handler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }
-    });
+    } : null);
     return ret;
   }
   /**
@@ -221,16 +221,16 @@ public class StompClientConnection {
    * @param receiptHandler the handler invoked when the <code>RECEIPT</code> frame associated with the subscription has been received. The handler receives the sent frame (<code>SUBSCRIBE</code>).
    * @return the subscription id, which can either be the destination or the id set in the headers.
    */
-  public String subscribe(String destination, Map<String,String> headers, Handler<Map<String, Object>> handler, Handler<Map<String, Object>> receiptHandler) {
-    def ret = this.delegate.subscribe(destination, headers, new Handler<Frame>() {
-      public void handle(Frame event) {
+  public String subscribe(String destination, Map<String, String> headers, Handler<Map<String, Object>> handler, Handler<Map<String, Object>> receiptHandler) {
+    def ret = delegate.subscribe(destination, headers != null ? (Map)headers.collectEntries({[it.key,it.value]}) : null, handler != null ? new Handler<io.vertx.ext.stomp.Frame>(){
+      public void handle(io.vertx.ext.stomp.Frame event) {
         handler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }
-    }, new Handler<Frame>() {
-      public void handle(Frame event) {
+    } : null, receiptHandler != null ? new Handler<io.vertx.ext.stomp.Frame>(){
+      public void handle(io.vertx.ext.stomp.Frame event) {
         receiptHandler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }
-    });
+    } : null);
     return ret;
   }
   /**
@@ -240,7 +240,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
   public StompClientConnection unsubscribe(String destination) {
-    this.delegate.unsubscribe(destination);
+    delegate.unsubscribe(destination);
     return this;
   }
   /**
@@ -251,11 +251,11 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
   public StompClientConnection unsubscribe(String destination, Handler<Map<String, Object>> receiptHandler) {
-    this.delegate.unsubscribe(destination, new Handler<Frame>() {
-      public void handle(Frame event) {
+    delegate.unsubscribe(destination, receiptHandler != null ? new Handler<io.vertx.ext.stomp.Frame>(){
+      public void handle(io.vertx.ext.stomp.Frame event) {
         receiptHandler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -265,8 +265,8 @@ public class StompClientConnection {
    * @param headers the headers
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
-  public StompClientConnection unsubscribe(String destination, Map<String,String> headers) {
-    this.delegate.unsubscribe(destination, headers);
+  public StompClientConnection unsubscribe(String destination, Map<String, String> headers) {
+    delegate.unsubscribe(destination, headers != null ? (Map)headers.collectEntries({[it.key,it.value]}) : null);
     return this;
   }
   /**
@@ -277,12 +277,12 @@ public class StompClientConnection {
    * @param receiptHandler the handler invoked when the <code>RECEIPT</code> frame associated with the un-subscription has been received. The handler receives the sent frame (<code>UNSUBSCRIBE</code>).
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
-  public StompClientConnection unsubscribe(String destination, Map<String,String> headers, Handler<Map<String, Object>> receiptHandler) {
-    this.delegate.unsubscribe(destination, headers, new Handler<Frame>() {
-      public void handle(Frame event) {
+  public StompClientConnection unsubscribe(String destination, Map<String, String> headers, Handler<Map<String, Object>> receiptHandler) {
+    delegate.unsubscribe(destination, headers != null ? (Map)headers.collectEntries({[it.key,it.value]}) : null, receiptHandler != null ? new Handler<io.vertx.ext.stomp.Frame>(){
+      public void handle(io.vertx.ext.stomp.Frame event) {
         receiptHandler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -291,11 +291,11 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
   public StompClientConnection errorHandler(Handler<Map<String, Object>> handler) {
-    this.delegate.errorHandler(new Handler<Frame>() {
-      public void handle(Frame event) {
+    delegate.errorHandler(handler != null ? new Handler<io.vertx.ext.stomp.Frame>(){
+      public void handle(io.vertx.ext.stomp.Frame event) {
         handler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -304,11 +304,11 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
   public StompClientConnection closeHandler(Handler<StompClientConnection> handler) {
-    this.delegate.closeHandler(new Handler<io.vertx.ext.stomp.StompClientConnection>() {
+    delegate.closeHandler(handler != null ? new Handler<io.vertx.ext.stomp.StompClientConnection>(){
       public void handle(io.vertx.ext.stomp.StompClientConnection event) {
-        handler.handle(new io.vertx.groovy.ext.stomp.StompClientConnection(event));
+        handler.handle(InternalHelper.safeCreate(event, io.vertx.groovy.ext.stomp.StompClientConnection.class));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -319,11 +319,11 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection} receiving the dropped connection.
    */
   public StompClientConnection connectionDroppedHandler(Handler<StompClientConnection> handler) {
-    this.delegate.connectionDroppedHandler(new Handler<io.vertx.ext.stomp.StompClientConnection>() {
+    delegate.connectionDroppedHandler(handler != null ? new Handler<io.vertx.ext.stomp.StompClientConnection>(){
       public void handle(io.vertx.ext.stomp.StompClientConnection event) {
-        handler.handle(new io.vertx.groovy.ext.stomp.StompClientConnection(event));
+        handler.handle(InternalHelper.safeCreate(event, io.vertx.groovy.ext.stomp.StompClientConnection.class));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -333,11 +333,11 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
   public StompClientConnection pingHandler(Handler<StompClientConnection> handler) {
-    this.delegate.pingHandler(new Handler<io.vertx.ext.stomp.StompClientConnection>() {
+    delegate.pingHandler(handler != null ? new Handler<io.vertx.ext.stomp.StompClientConnection>(){
       public void handle(io.vertx.ext.stomp.StompClientConnection event) {
-        handler.handle(new io.vertx.groovy.ext.stomp.StompClientConnection(event));
+        handler.handle(InternalHelper.safeCreate(event, io.vertx.groovy.ext.stomp.StompClientConnection.class));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -347,11 +347,11 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
   public StompClientConnection beginTX(String id, Handler<Map<String, Object>> receiptHandler) {
-    this.delegate.beginTX(id, new Handler<Frame>() {
-      public void handle(Frame event) {
+    delegate.beginTX(id, receiptHandler != null ? new Handler<io.vertx.ext.stomp.Frame>(){
+      public void handle(io.vertx.ext.stomp.Frame event) {
         receiptHandler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -360,7 +360,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
   public StompClientConnection beginTX(String id) {
-    this.delegate.beginTX(id);
+    delegate.beginTX(id);
     return this;
   }
   /**
@@ -369,8 +369,8 @@ public class StompClientConnection {
    * @param headers additional headers to send to the server. The <code>transaction</code> header is replaced by the value passed in the @{code id} parameter
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
-  public StompClientConnection beginTX(String id, Map<String,String> headers) {
-    this.delegate.beginTX(id, headers);
+  public StompClientConnection beginTX(String id, Map<String, String> headers) {
+    delegate.beginTX(id, headers != null ? (Map)headers.collectEntries({[it.key,it.value]}) : null);
     return this;
   }
   /**
@@ -380,12 +380,12 @@ public class StompClientConnection {
    * @param receiptHandler the handler invoked when the <code>RECEIPT</code> frame associated with the transaction begin has been processed by the server. The handler receives the sent frame (<code>BEGIN</code>).
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
-  public StompClientConnection beginTX(String id, Map<String,String> headers, Handler<Map<String, Object>> receiptHandler) {
-    this.delegate.beginTX(id, headers, new Handler<Frame>() {
-      public void handle(Frame event) {
+  public StompClientConnection beginTX(String id, Map<String, String> headers, Handler<Map<String, Object>> receiptHandler) {
+    delegate.beginTX(id, headers != null ? (Map)headers.collectEntries({[it.key,it.value]}) : null, receiptHandler != null ? new Handler<io.vertx.ext.stomp.Frame>(){
+      public void handle(io.vertx.ext.stomp.Frame event) {
         receiptHandler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -394,7 +394,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
   public StompClientConnection commit(String id) {
-    this.delegate.commit(id);
+    delegate.commit(id);
     return this;
   }
   /**
@@ -404,11 +404,11 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
   public StompClientConnection commit(String id, Handler<Map<String, Object>> receiptHandler) {
-    this.delegate.commit(id, new Handler<Frame>() {
-      public void handle(Frame event) {
+    delegate.commit(id, receiptHandler != null ? new Handler<io.vertx.ext.stomp.Frame>(){
+      public void handle(io.vertx.ext.stomp.Frame event) {
         receiptHandler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -417,8 +417,8 @@ public class StompClientConnection {
    * @param headers additional headers to send to the server. The <code>transaction</code> header is replaced by the value passed in the @{code id} parameter
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
-  public StompClientConnection commit(String id, Map<String,String> headers) {
-    this.delegate.commit(id, headers);
+  public StompClientConnection commit(String id, Map<String, String> headers) {
+    delegate.commit(id, headers != null ? (Map)headers.collectEntries({[it.key,it.value]}) : null);
     return this;
   }
   /**
@@ -428,12 +428,12 @@ public class StompClientConnection {
    * @param receiptHandler the handler invoked when the <code>RECEIPT</code> frame associated with the transaction commit has been processed by the server. The handler receives the sent frame (<code>COMMIT</code>).
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
-  public StompClientConnection commit(String id, Map<String,String> headers, Handler<Map<String, Object>> receiptHandler) {
-    this.delegate.commit(id, headers, new Handler<Frame>() {
-      public void handle(Frame event) {
+  public StompClientConnection commit(String id, Map<String, String> headers, Handler<Map<String, Object>> receiptHandler) {
+    delegate.commit(id, headers != null ? (Map)headers.collectEntries({[it.key,it.value]}) : null, receiptHandler != null ? new Handler<io.vertx.ext.stomp.Frame>(){
+      public void handle(io.vertx.ext.stomp.Frame event) {
         receiptHandler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -442,7 +442,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
   public StompClientConnection abort(String id) {
-    this.delegate.abort(id);
+    delegate.abort(id);
     return this;
   }
   /**
@@ -452,11 +452,11 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
   public StompClientConnection abort(String id, Handler<Map<String, Object>> receiptHandler) {
-    this.delegate.abort(id, new Handler<Frame>() {
-      public void handle(Frame event) {
+    delegate.abort(id, receiptHandler != null ? new Handler<io.vertx.ext.stomp.Frame>(){
+      public void handle(io.vertx.ext.stomp.Frame event) {
         receiptHandler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -465,8 +465,8 @@ public class StompClientConnection {
    * @param headers additional headers to send to the server. The <code>transaction</code> header is replaced by the value passed in the @{code id} parameter
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
-  public StompClientConnection abort(String id, Map<String,String> headers) {
-    this.delegate.abort(id, headers);
+  public StompClientConnection abort(String id, Map<String, String> headers) {
+    delegate.abort(id, headers != null ? (Map)headers.collectEntries({[it.key,it.value]}) : null);
     return this;
   }
   /**
@@ -476,12 +476,12 @@ public class StompClientConnection {
    * @param receiptHandler the handler invoked when the <code>RECEIPT</code> frame associated with the transaction cancellation has been processed by the server. The handler receives the sent frame (<code>ABORT</code>).
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
-  public StompClientConnection abort(String id, Map<String,String> headers, Handler<Map<String, Object>> receiptHandler) {
-    this.delegate.abort(id, headers, new Handler<Frame>() {
-      public void handle(Frame event) {
+  public StompClientConnection abort(String id, Map<String, String> headers, Handler<Map<String, Object>> receiptHandler) {
+    delegate.abort(id, headers != null ? (Map)headers.collectEntries({[it.key,it.value]}) : null, receiptHandler != null ? new Handler<io.vertx.ext.stomp.Frame>(){
+      public void handle(io.vertx.ext.stomp.Frame event) {
         receiptHandler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -490,7 +490,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
   public StompClientConnection disconnect() {
-    this.delegate.disconnect();
+    delegate.disconnect();
     return this;
   }
   /**
@@ -500,11 +500,11 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
   public StompClientConnection disconnect(Handler<Map<String, Object>> receiptHandler) {
-    this.delegate.disconnect(new Handler<Frame>() {
-      public void handle(Frame event) {
+    delegate.disconnect(receiptHandler != null ? new Handler<io.vertx.ext.stomp.Frame>(){
+      public void handle(io.vertx.ext.stomp.Frame event) {
         receiptHandler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -514,7 +514,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
   public StompClientConnection disconnect(Map<String, Object> frame) {
-    this.delegate.disconnect(frame != null ? new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(frame)) : null);
+    delegate.disconnect(frame != null ? new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(frame)) : null);
     return this;
   }
   /**
@@ -525,11 +525,11 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
   public StompClientConnection disconnect(Map<String, Object> frame, Handler<Map<String, Object>> receiptHandler) {
-    this.delegate.disconnect(frame != null ? new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(frame)) : null, new Handler<Frame>() {
-      public void handle(Frame event) {
+    delegate.disconnect(frame != null ? new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(frame)) : null, receiptHandler != null ? new Handler<io.vertx.ext.stomp.Frame>(){
+      public void handle(io.vertx.ext.stomp.Frame event) {
         receiptHandler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -539,7 +539,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
   public StompClientConnection ack(String id) {
-    this.delegate.ack(id);
+    delegate.ack(id);
     return this;
   }
   /**
@@ -550,11 +550,11 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
   public StompClientConnection ack(String id, Handler<Map<String, Object>> receiptHandler) {
-    this.delegate.ack(id, new Handler<Frame>() {
-      public void handle(Frame event) {
+    delegate.ack(id, receiptHandler != null ? new Handler<io.vertx.ext.stomp.Frame>(){
+      public void handle(io.vertx.ext.stomp.Frame event) {
         receiptHandler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -564,7 +564,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
   public StompClientConnection nack(String id) {
-    this.delegate.nack(id);
+    delegate.nack(id);
     return this;
   }
   /**
@@ -575,11 +575,11 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
   public StompClientConnection nack(String id, Handler<Map<String, Object>> receiptHandler) {
-    this.delegate.nack(id, new Handler<Frame>() {
-      public void handle(Frame event) {
+    delegate.nack(id, receiptHandler != null ? new Handler<io.vertx.ext.stomp.Frame>(){
+      public void handle(io.vertx.ext.stomp.Frame event) {
         receiptHandler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -590,7 +590,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
   public StompClientConnection ack(String id, String txId) {
-    this.delegate.ack(id, txId);
+    delegate.ack(id, txId);
     return this;
   }
   /**
@@ -602,11 +602,11 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
   public StompClientConnection ack(String id, String txId, Handler<Map<String, Object>> receiptHandler) {
-    this.delegate.ack(id, txId, new Handler<Frame>() {
-      public void handle(Frame event) {
+    delegate.ack(id, txId, receiptHandler != null ? new Handler<io.vertx.ext.stomp.Frame>(){
+      public void handle(io.vertx.ext.stomp.Frame event) {
         receiptHandler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -617,7 +617,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
   public StompClientConnection nack(String id, String txId) {
-    this.delegate.nack(id, txId);
+    delegate.nack(id, txId);
     return this;
   }
   /**
@@ -629,11 +629,11 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
   public StompClientConnection nack(String id, String txId, Handler<Map<String, Object>> receiptHandler) {
-    this.delegate.nack(id, txId, new Handler<Frame>() {
-      public void handle(Frame event) {
+    delegate.nack(id, txId, receiptHandler != null ? new Handler<io.vertx.ext.stomp.Frame>(){
+      public void handle(io.vertx.ext.stomp.Frame event) {
         receiptHandler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -646,11 +646,11 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
   public StompClientConnection receivedFrameHandler(Handler<Map<String, Object>> handler) {
-    this.delegate.receivedFrameHandler(new Handler<Frame>() {
-      public void handle(Frame event) {
+    delegate.receivedFrameHandler(handler != null ? new Handler<io.vertx.ext.stomp.Frame>(){
+      public void handle(io.vertx.ext.stomp.Frame event) {
         handler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -663,11 +663,11 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompClientConnection}
    */
   public StompClientConnection writingFrameHandler(Handler<Map<String, Object>> handler) {
-    this.delegate.writingFrameHandler(new Handler<Frame>() {
-      public void handle(Frame event) {
+    delegate.writingFrameHandler(handler != null ? new Handler<io.vertx.ext.stomp.Frame>(){
+      public void handle(io.vertx.ext.stomp.Frame event) {
         handler.handle((Map<String, Object>)InternalHelper.wrapObject(event?.toJson()));
       }
-    });
+    } : null);
     return this;
   }
 }

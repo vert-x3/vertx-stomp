@@ -17,7 +17,6 @@
 package io.vertx.rxjava.ext.stomp;
 
 import java.util.Map;
-import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
 import io.vertx.ext.stomp.Frame;
 
@@ -46,7 +45,7 @@ public class ServerFrame {
    * @return 
    */
   public Frame frame() { 
-    Frame ret = this.delegate.frame();
+    Frame ret = delegate.frame();
     return ret;
   }
 
@@ -55,7 +54,7 @@ public class ServerFrame {
    * @return 
    */
   public StompServerConnection connection() { 
-    StompServerConnection ret= StompServerConnection.newInstance(this.delegate.connection());
+    StompServerConnection ret = StompServerConnection.newInstance(delegate.connection());
     return ret;
   }
 

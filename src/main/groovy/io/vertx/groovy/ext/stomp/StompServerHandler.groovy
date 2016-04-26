@@ -41,7 +41,7 @@ public class StompServerHandler implements Handler<ServerFrame> {
     return delegate;
   }
   public void handle(ServerFrame arg0) {
-    ((io.vertx.core.Handler) this.delegate).handle((io.vertx.ext.stomp.ServerFrame)arg0.getDelegate());
+    ((io.vertx.core.Handler) delegate).handle(arg0 != null ? (io.vertx.ext.stomp.ServerFrame)arg0.getDelegate() : null);
   }
   /**
    * Creates an instance of {@link io.vertx.groovy.ext.stomp.StompServerHandler} using the default (compliant) implementation.
@@ -49,7 +49,7 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the created {@link io.vertx.groovy.ext.stomp.StompServerHandler}
    */
   public static StompServerHandler create(Vertx vertx) {
-    def ret= InternalHelper.safeCreate(io.vertx.ext.stomp.StompServerHandler.create((io.vertx.core.Vertx)vertx.getDelegate()), io.vertx.groovy.ext.stomp.StompServerHandler.class);
+    def ret = InternalHelper.safeCreate(io.vertx.ext.stomp.StompServerHandler.create(vertx != null ? (io.vertx.core.Vertx)vertx.getDelegate() : null), io.vertx.groovy.ext.stomp.StompServerHandler.class);
     return ret;
   }
   /**
@@ -59,11 +59,11 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServerHandler}
    */
   public StompServerHandler receivedFrameHandler(Handler<ServerFrame> handler) {
-    this.delegate.receivedFrameHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+    delegate.receivedFrameHandler(handler != null ? new Handler<io.vertx.ext.stomp.ServerFrame>(){
       public void handle(io.vertx.ext.stomp.ServerFrame event) {
-        handler.handle(new io.vertx.groovy.ext.stomp.ServerFrame(event));
+        handler.handle(InternalHelper.safeCreate(event, io.vertx.groovy.ext.stomp.ServerFrame.class));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -72,11 +72,11 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServerHandler}
    */
   public StompServerHandler connectHandler(Handler<ServerFrame> handler) {
-    this.delegate.connectHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+    delegate.connectHandler(handler != null ? new Handler<io.vertx.ext.stomp.ServerFrame>(){
       public void handle(io.vertx.ext.stomp.ServerFrame event) {
-        handler.handle(new io.vertx.groovy.ext.stomp.ServerFrame(event));
+        handler.handle(InternalHelper.safeCreate(event, io.vertx.groovy.ext.stomp.ServerFrame.class));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -85,11 +85,11 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServerHandler}
    */
   public StompServerHandler stompHandler(Handler<ServerFrame> handler) {
-    this.delegate.stompHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+    delegate.stompHandler(handler != null ? new Handler<io.vertx.ext.stomp.ServerFrame>(){
       public void handle(io.vertx.ext.stomp.ServerFrame event) {
-        handler.handle(new io.vertx.groovy.ext.stomp.ServerFrame(event));
+        handler.handle(InternalHelper.safeCreate(event, io.vertx.groovy.ext.stomp.ServerFrame.class));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -98,11 +98,11 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServerHandler}
    */
   public StompServerHandler subscribeHandler(Handler<ServerFrame> handler) {
-    this.delegate.subscribeHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+    delegate.subscribeHandler(handler != null ? new Handler<io.vertx.ext.stomp.ServerFrame>(){
       public void handle(io.vertx.ext.stomp.ServerFrame event) {
-        handler.handle(new io.vertx.groovy.ext.stomp.ServerFrame(event));
+        handler.handle(InternalHelper.safeCreate(event, io.vertx.groovy.ext.stomp.ServerFrame.class));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -111,11 +111,11 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServerHandler}
    */
   public StompServerHandler unsubscribeHandler(Handler<ServerFrame> handler) {
-    this.delegate.unsubscribeHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+    delegate.unsubscribeHandler(handler != null ? new Handler<io.vertx.ext.stomp.ServerFrame>(){
       public void handle(io.vertx.ext.stomp.ServerFrame event) {
-        handler.handle(new io.vertx.groovy.ext.stomp.ServerFrame(event));
+        handler.handle(InternalHelper.safeCreate(event, io.vertx.groovy.ext.stomp.ServerFrame.class));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -124,11 +124,11 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServerHandler}
    */
   public StompServerHandler sendHandler(Handler<ServerFrame> handler) {
-    this.delegate.sendHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+    delegate.sendHandler(handler != null ? new Handler<io.vertx.ext.stomp.ServerFrame>(){
       public void handle(io.vertx.ext.stomp.ServerFrame event) {
-        handler.handle(new io.vertx.groovy.ext.stomp.ServerFrame(event));
+        handler.handle(InternalHelper.safeCreate(event, io.vertx.groovy.ext.stomp.ServerFrame.class));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -137,11 +137,11 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServerHandler}
    */
   public StompServerHandler closeHandler(Handler<StompServerConnection> handler) {
-    this.delegate.closeHandler(new Handler<io.vertx.ext.stomp.StompServerConnection>() {
+    delegate.closeHandler(handler != null ? new Handler<io.vertx.ext.stomp.StompServerConnection>(){
       public void handle(io.vertx.ext.stomp.StompServerConnection event) {
-        handler.handle(new io.vertx.groovy.ext.stomp.StompServerConnection(event));
+        handler.handle(InternalHelper.safeCreate(event, io.vertx.groovy.ext.stomp.StompServerConnection.class));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -150,7 +150,7 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @param connection the connection
    */
   public void onClose(StompServerConnection connection) {
-    this.delegate.onClose((io.vertx.ext.stomp.StompServerConnection)connection.getDelegate());
+    delegate.onClose(connection != null ? (io.vertx.ext.stomp.StompServerConnection)connection.getDelegate() : null);
   }
   /**
    * Configures the action to execute when a <code>COMMIT</code> frame is received.
@@ -158,11 +158,11 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServerHandler}
    */
   public StompServerHandler commitHandler(Handler<ServerFrame> handler) {
-    this.delegate.commitHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+    delegate.commitHandler(handler != null ? new Handler<io.vertx.ext.stomp.ServerFrame>(){
       public void handle(io.vertx.ext.stomp.ServerFrame event) {
-        handler.handle(new io.vertx.groovy.ext.stomp.ServerFrame(event));
+        handler.handle(InternalHelper.safeCreate(event, io.vertx.groovy.ext.stomp.ServerFrame.class));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -171,11 +171,11 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServerHandler}
    */
   public StompServerHandler abortHandler(Handler<ServerFrame> handler) {
-    this.delegate.abortHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+    delegate.abortHandler(handler != null ? new Handler<io.vertx.ext.stomp.ServerFrame>(){
       public void handle(io.vertx.ext.stomp.ServerFrame event) {
-        handler.handle(new io.vertx.groovy.ext.stomp.ServerFrame(event));
+        handler.handle(InternalHelper.safeCreate(event, io.vertx.groovy.ext.stomp.ServerFrame.class));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -184,11 +184,11 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServerHandler}
    */
   public StompServerHandler beginHandler(Handler<ServerFrame> handler) {
-    this.delegate.beginHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+    delegate.beginHandler(handler != null ? new Handler<io.vertx.ext.stomp.ServerFrame>(){
       public void handle(io.vertx.ext.stomp.ServerFrame event) {
-        handler.handle(new io.vertx.groovy.ext.stomp.ServerFrame(event));
+        handler.handle(InternalHelper.safeCreate(event, io.vertx.groovy.ext.stomp.ServerFrame.class));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -197,11 +197,11 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServerHandler}
    */
   public StompServerHandler disconnectHandler(Handler<ServerFrame> handler) {
-    this.delegate.disconnectHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+    delegate.disconnectHandler(handler != null ? new Handler<io.vertx.ext.stomp.ServerFrame>(){
       public void handle(io.vertx.ext.stomp.ServerFrame event) {
-        handler.handle(new io.vertx.groovy.ext.stomp.ServerFrame(event));
+        handler.handle(InternalHelper.safeCreate(event, io.vertx.groovy.ext.stomp.ServerFrame.class));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -210,11 +210,11 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServerHandler}
    */
   public StompServerHandler ackHandler(Handler<ServerFrame> handler) {
-    this.delegate.ackHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+    delegate.ackHandler(handler != null ? new Handler<io.vertx.ext.stomp.ServerFrame>(){
       public void handle(io.vertx.ext.stomp.ServerFrame event) {
-        handler.handle(new io.vertx.groovy.ext.stomp.ServerFrame(event));
+        handler.handle(InternalHelper.safeCreate(event, io.vertx.groovy.ext.stomp.ServerFrame.class));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -223,11 +223,11 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServerHandler}
    */
   public StompServerHandler nackHandler(Handler<ServerFrame> handler) {
-    this.delegate.nackHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+    delegate.nackHandler(handler != null ? new Handler<io.vertx.ext.stomp.ServerFrame>(){
       public void handle(io.vertx.ext.stomp.ServerFrame event) {
-        handler.handle(new io.vertx.groovy.ext.stomp.ServerFrame(event));
+        handler.handle(InternalHelper.safeCreate(event, io.vertx.groovy.ext.stomp.ServerFrame.class));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -240,7 +240,7 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServerHandler}
    */
   public StompServerHandler onAuthenticationRequest(StompServer server, String login, String passcode, Handler<AsyncResult<Boolean>> handler) {
-    this.delegate.onAuthenticationRequest((io.vertx.ext.stomp.StompServer)server.getDelegate(), login, passcode, handler);
+    delegate.onAuthenticationRequest(server != null ? (io.vertx.ext.stomp.StompServer)server.getDelegate() : null, login, passcode, handler);
     return this;
   }
   /**
@@ -249,7 +249,7 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServerHandler}
    */
   public StompServerHandler authProvider(AuthProvider handler) {
-    this.delegate.authProvider((io.vertx.ext.auth.AuthProvider)handler.getDelegate());
+    delegate.authProvider(handler != null ? (io.vertx.ext.auth.AuthProvider)handler.getDelegate() : null);
     return this;
   }
   /**
@@ -258,8 +258,8 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return 
    */
   public List<Destination> getDestinations() {
-    def ret = this.delegate.getDestinations()?.collect({underpants -> new io.vertx.groovy.ext.stomp.Destination(underpants)});
-      return ret;
+    def ret = (List)delegate.getDestinations()?.collect({InternalHelper.safeCreate(it, io.vertx.groovy.ext.stomp.Destination.class)});
+    return ret;
   }
   /**
    * Gets the destination with the given name.
@@ -267,7 +267,7 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the {@link io.vertx.groovy.ext.stomp.Destination}, <code>null</code> if not existing.
    */
   public Destination getDestination(String destination) {
-    def ret= InternalHelper.safeCreate(this.delegate.getDestination(destination), io.vertx.groovy.ext.stomp.Destination.class);
+    def ret = InternalHelper.safeCreate(delegate.getDestination(destination), io.vertx.groovy.ext.stomp.Destination.class);
     return ret;
   }
   /**
@@ -279,7 +279,7 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServerHandler}
    */
   public StompServerHandler onAck(StompServerConnection connection, Map<String, Object> subscribe, List<Map<String, Object>> messages) {
-    this.delegate.onAck((io.vertx.ext.stomp.StompServerConnection)connection.getDelegate(), subscribe != null ? new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(subscribe)) : null, messages.collect({underpants -> new Frame(new JsonObject(underpants))}));
+    delegate.onAck(connection != null ? (io.vertx.ext.stomp.StompServerConnection)connection.getDelegate() : null, subscribe != null ? new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(subscribe)) : null, messages != null ? (List)messages.collect({new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(it))}) : null);
     return this;
   }
   /**
@@ -293,7 +293,7 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServerHandler}
    */
   public StompServerHandler onNack(StompServerConnection connection, Map<String, Object> subscribe, List<Map<String, Object>> messages) {
-    this.delegate.onNack((io.vertx.ext.stomp.StompServerConnection)connection.getDelegate(), subscribe != null ? new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(subscribe)) : null, messages.collect({underpants -> new Frame(new JsonObject(underpants))}));
+    delegate.onNack(connection != null ? (io.vertx.ext.stomp.StompServerConnection)connection.getDelegate() : null, subscribe != null ? new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(subscribe)) : null, messages != null ? (List)messages.collect({new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(it))}) : null);
     return this;
   }
   /**
@@ -302,11 +302,11 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServerHandler}
    */
   public StompServerHandler onAckHandler(Handler<Acknowledgement> handler) {
-    this.delegate.onAckHandler(new Handler<io.vertx.ext.stomp.Acknowledgement>() {
+    delegate.onAckHandler(handler != null ? new Handler<io.vertx.ext.stomp.Acknowledgement>(){
       public void handle(io.vertx.ext.stomp.Acknowledgement event) {
-        handler.handle(new io.vertx.groovy.ext.stomp.Acknowledgement(event));
+        handler.handle(InternalHelper.safeCreate(event, io.vertx.groovy.ext.stomp.Acknowledgement.class));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -315,11 +315,11 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServerHandler}
    */
   public StompServerHandler onNackHandler(Handler<Acknowledgement> handler) {
-    this.delegate.onNackHandler(new Handler<io.vertx.ext.stomp.Acknowledgement>() {
+    delegate.onNackHandler(handler != null ? new Handler<io.vertx.ext.stomp.Acknowledgement>(){
       public void handle(io.vertx.ext.stomp.Acknowledgement event) {
-        handler.handle(new io.vertx.groovy.ext.stomp.Acknowledgement(event));
+        handler.handle(InternalHelper.safeCreate(event, io.vertx.groovy.ext.stomp.Acknowledgement.class));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -332,11 +332,11 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServerHandler}
    */
   public StompServerHandler pingHandler(Handler<StompServerConnection> handler) {
-    this.delegate.pingHandler(new Handler<io.vertx.ext.stomp.StompServerConnection>() {
+    delegate.pingHandler(handler != null ? new Handler<io.vertx.ext.stomp.StompServerConnection>(){
       public void handle(io.vertx.ext.stomp.StompServerConnection event) {
-        handler.handle(new io.vertx.groovy.ext.stomp.StompServerConnection(event));
+        handler.handle(InternalHelper.safeCreate(event, io.vertx.groovy.ext.stomp.StompServerConnection.class));
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -346,7 +346,7 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the {@link io.vertx.groovy.ext.stomp.Destination} instance, may have been created.
    */
   public Destination getOrCreateDestination(String destination) {
-    def ret= InternalHelper.safeCreate(this.delegate.getOrCreateDestination(destination), io.vertx.groovy.ext.stomp.Destination.class);
+    def ret = InternalHelper.safeCreate(delegate.getOrCreateDestination(destination), io.vertx.groovy.ext.stomp.Destination.class);
     return ret;
   }
   /**
@@ -355,7 +355,7 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServerHandler}.
    */
   public StompServerHandler destinationFactory(DestinationFactory factory) {
-    this.delegate.destinationFactory((io.vertx.ext.stomp.DestinationFactory)factory.getDelegate());
+    delegate.destinationFactory(factory != null ? (io.vertx.ext.stomp.DestinationFactory)factory.getDelegate() : null);
     return this;
   }
   /**
@@ -364,7 +364,7 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServerHandler}.
    */
   public StompServerHandler bridge(Map<String, Object> options = [:]) {
-    this.delegate.bridge(options != null ? new io.vertx.ext.stomp.BridgeOptions(new io.vertx.core.json.JsonObject(options)) : null);
+    delegate.bridge(options != null ? new io.vertx.ext.stomp.BridgeOptions(new io.vertx.core.json.JsonObject(options)) : null);
     return this;
   }
 }

@@ -17,7 +17,6 @@
 package io.vertx.rxjava.ext.stomp;
 
 import java.util.Map;
-import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
 import io.vertx.rxjava.core.buffer.Buffer;
 import io.vertx.ext.stomp.Frame;
@@ -49,7 +48,7 @@ public class StompServerConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerConnection}
    */
   public StompServerConnection write(Frame frame) { 
-    this.delegate.write(frame);
+    delegate.write(frame);
     return this;
   }
 
@@ -59,7 +58,7 @@ public class StompServerConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerConnection}
    */
   public StompServerConnection write(Buffer buffer) { 
-    this.delegate.write((io.vertx.core.buffer.Buffer) buffer.getDelegate());
+    delegate.write((io.vertx.core.buffer.Buffer)buffer.getDelegate());
     return this;
   }
 
@@ -68,7 +67,7 @@ public class StompServerConnection {
    * @return 
    */
   public StompServer server() { 
-    StompServer ret= StompServer.newInstance(this.delegate.server());
+    StompServer ret = StompServer.newInstance(delegate.server());
     return ret;
   }
 
@@ -77,7 +76,7 @@ public class StompServerConnection {
    * @return 
    */
   public StompServerHandler handler() { 
-    StompServerHandler ret= StompServerHandler.newInstance(this.delegate.handler());
+    StompServerHandler ret = StompServerHandler.newInstance(delegate.handler());
     return ret;
   }
 
@@ -86,7 +85,7 @@ public class StompServerConnection {
    * @return 
    */
   public String session() { 
-    String ret = this.delegate.session();
+    String ret = delegate.session();
     return ret;
   }
 
@@ -94,14 +93,14 @@ public class StompServerConnection {
    * Closes the connection with the client.
    */
   public void close() { 
-    this.delegate.close();
+    delegate.close();
   }
 
   /**
    * Sends a `PING` frame to the client. A `PING` frame is a frame containing only <code>EOL</code>.
    */
   public void ping() { 
-    this.delegate.ping();
+    delegate.ping();
   }
 
   /**
@@ -109,7 +108,7 @@ public class StompServerConnection {
    * heartbeat.
    */
   public void onServerActivity() { 
-    this.delegate.onServerActivity();
+    delegate.onServerActivity();
   }
 
   /**
@@ -119,9 +118,9 @@ public class StompServerConnection {
    * @param pingHandler the ping handler
    */
   public void configureHeartbeat(long ping, long pong, Handler<StompServerConnection> pingHandler) { 
-    this.delegate.configureHeartbeat(ping, pong, new Handler<io.vertx.ext.stomp.StompServerConnection>() {
+    delegate.configureHeartbeat(ping, pong, new Handler<io.vertx.ext.stomp.StompServerConnection>() {
       public void handle(io.vertx.ext.stomp.StompServerConnection event) {
-        pingHandler.handle(new StompServerConnection(event));
+        pingHandler.handle(StompServerConnection.newInstance(event));
       }
     });
   }

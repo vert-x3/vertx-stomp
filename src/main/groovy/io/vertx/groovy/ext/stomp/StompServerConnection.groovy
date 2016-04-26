@@ -40,7 +40,7 @@ public class StompServerConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServerConnection}
    */
   public StompServerConnection write(Map<String, Object> frame = [:]) {
-    this.delegate.write(frame != null ? new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(frame)) : null);
+    delegate.write(frame != null ? new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(frame)) : null);
     return this;
   }
   /**
@@ -49,7 +49,7 @@ public class StompServerConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServerConnection}
    */
   public StompServerConnection write(Buffer buffer) {
-    this.delegate.write((io.vertx.core.buffer.Buffer)buffer.getDelegate());
+    delegate.write(buffer != null ? (io.vertx.core.buffer.Buffer)buffer.getDelegate() : null);
     return this;
   }
   /**
@@ -57,7 +57,7 @@ public class StompServerConnection {
    * @return 
    */
   public StompServer server() {
-    def ret= InternalHelper.safeCreate(this.delegate.server(), io.vertx.groovy.ext.stomp.StompServer.class);
+    def ret = InternalHelper.safeCreate(delegate.server(), io.vertx.groovy.ext.stomp.StompServer.class);
     return ret;
   }
   /**
@@ -65,7 +65,7 @@ public class StompServerConnection {
    * @return 
    */
   public StompServerHandler handler() {
-    def ret= InternalHelper.safeCreate(this.delegate.handler(), io.vertx.groovy.ext.stomp.StompServerHandler.class);
+    def ret = InternalHelper.safeCreate(delegate.handler(), io.vertx.groovy.ext.stomp.StompServerHandler.class);
     return ret;
   }
   /**
@@ -73,27 +73,27 @@ public class StompServerConnection {
    * @return 
    */
   public String session() {
-    def ret = this.delegate.session();
+    def ret = delegate.session();
     return ret;
   }
   /**
    * Closes the connection with the client.
    */
   public void close() {
-    this.delegate.close();
+    delegate.close();
   }
   /**
    * Sends a `PING` frame to the client. A `PING` frame is a frame containing only <code>EOL</code>.
    */
   public void ping() {
-    this.delegate.ping();
+    delegate.ping();
   }
   /**
    * Notifies the connection about server activity (the server has sent a frame). This method is used to handle the
    * heartbeat.
    */
   public void onServerActivity() {
-    this.delegate.onServerActivity();
+    delegate.onServerActivity();
   }
   /**
    * Configures the heartbeat.
@@ -102,10 +102,10 @@ public class StompServerConnection {
    * @param pingHandler the ping handler
    */
   public void configureHeartbeat(long ping, long pong, Handler<StompServerConnection> pingHandler) {
-    this.delegate.configureHeartbeat(ping, pong, new Handler<io.vertx.ext.stomp.StompServerConnection>() {
+    delegate.configureHeartbeat(ping, pong, pingHandler != null ? new Handler<io.vertx.ext.stomp.StompServerConnection>(){
       public void handle(io.vertx.ext.stomp.StompServerConnection event) {
-        pingHandler.handle(new io.vertx.groovy.ext.stomp.StompServerConnection(event));
+        pingHandler.handle(InternalHelper.safeCreate(event, io.vertx.groovy.ext.stomp.StompServerConnection.class));
       }
-    });
+    } : null);
   }
 }

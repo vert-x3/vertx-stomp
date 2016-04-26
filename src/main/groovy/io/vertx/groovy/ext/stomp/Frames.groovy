@@ -35,16 +35,16 @@ public class Frames {
   public Object getDelegate() {
     return delegate;
   }
-  public static Map<String, Object> createErrorFrame(String message, Map<String,String> headers, String body) {
-    def ret = (Map<String, Object>)InternalHelper.wrapObject(io.vertx.ext.stomp.Frames.createErrorFrame(message, headers, body)?.toJson());
+  public static Map<String, Object> createErrorFrame(String message, Map<String, String> headers, String body) {
+    def ret = (Map<String, Object>)InternalHelper.wrapObject(io.vertx.ext.stomp.Frames.createErrorFrame(message, headers != null ? (Map)headers.collectEntries({[it.key,it.value]}) : null, body)?.toJson());
     return ret;
   }
-  public static Map<String, Object> createReceiptFrame(String receiptId, Map<String,String> headers) {
-    def ret = (Map<String, Object>)InternalHelper.wrapObject(io.vertx.ext.stomp.Frames.createReceiptFrame(receiptId, headers)?.toJson());
+  public static Map<String, Object> createReceiptFrame(String receiptId, Map<String, String> headers) {
+    def ret = (Map<String, Object>)InternalHelper.wrapObject(io.vertx.ext.stomp.Frames.createReceiptFrame(receiptId, headers != null ? (Map)headers.collectEntries({[it.key,it.value]}) : null)?.toJson());
     return ret;
   }
   public static void handleReceipt(Map<String, Object> frame = [:], StompServerConnection connection) {
-    io.vertx.ext.stomp.Frames.handleReceipt(frame != null ? new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(frame)) : null, (io.vertx.ext.stomp.StompServerConnection)connection.getDelegate());
+    io.vertx.ext.stomp.Frames.handleReceipt(frame != null ? new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(frame)) : null, connection != null ? (io.vertx.ext.stomp.StompServerConnection)connection.getDelegate() : null);
   }
   public static Map<String, Object> ping() {
     def ret = (Map<String, Object>)InternalHelper.wrapObject(io.vertx.ext.stomp.Frames.ping()?.toJson());

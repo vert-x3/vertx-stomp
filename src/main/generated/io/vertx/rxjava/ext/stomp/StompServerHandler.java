@@ -17,7 +17,6 @@
 package io.vertx.rxjava.ext.stomp;
 
 import java.util.Map;
-import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
 import io.vertx.rxjava.core.Vertx;
 import io.vertx.rxjava.ext.auth.AuthProvider;
@@ -50,16 +49,16 @@ public class StompServerHandler implements Handler<ServerFrame> {
   }
 
   public void handle(ServerFrame arg0) { 
-    this.delegate.handle((io.vertx.ext.stomp.ServerFrame) arg0.getDelegate());
+    delegate.handle((io.vertx.ext.stomp.ServerFrame)arg0.getDelegate());
   }
 
   /**
-   * Creates an instance of {@link io.vertx.ext.stomp.StompServerHandler} using the default (compliant) implementation.
+   * Creates an instance of {@link io.vertx.rxjava.ext.stomp.StompServerHandler} using the default (compliant) implementation.
    * @param vertx the vert.x instance to use
-   * @return the created {@link io.vertx.ext.stomp.StompServerHandler}
+   * @return the created {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
   public static StompServerHandler create(Vertx vertx) { 
-    StompServerHandler ret= StompServerHandler.newInstance(io.vertx.ext.stomp.StompServerHandler.create((io.vertx.core.Vertx) vertx.getDelegate()));
+    StompServerHandler ret = StompServerHandler.newInstance(io.vertx.ext.stomp.StompServerHandler.create((io.vertx.core.Vertx)vertx.getDelegate()));
     return ret;
   }
 
@@ -70,9 +69,9 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
   public StompServerHandler receivedFrameHandler(Handler<ServerFrame> handler) { 
-    this.delegate.receivedFrameHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+    delegate.receivedFrameHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
       public void handle(io.vertx.ext.stomp.ServerFrame event) {
-        handler.handle(new ServerFrame(event));
+        handler.handle(ServerFrame.newInstance(event));
       }
     });
     return this;
@@ -84,9 +83,9 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
   public StompServerHandler connectHandler(Handler<ServerFrame> handler) { 
-    this.delegate.connectHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+    delegate.connectHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
       public void handle(io.vertx.ext.stomp.ServerFrame event) {
-        handler.handle(new ServerFrame(event));
+        handler.handle(ServerFrame.newInstance(event));
       }
     });
     return this;
@@ -98,9 +97,9 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
   public StompServerHandler stompHandler(Handler<ServerFrame> handler) { 
-    this.delegate.stompHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+    delegate.stompHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
       public void handle(io.vertx.ext.stomp.ServerFrame event) {
-        handler.handle(new ServerFrame(event));
+        handler.handle(ServerFrame.newInstance(event));
       }
     });
     return this;
@@ -112,9 +111,9 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
   public StompServerHandler subscribeHandler(Handler<ServerFrame> handler) { 
-    this.delegate.subscribeHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+    delegate.subscribeHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
       public void handle(io.vertx.ext.stomp.ServerFrame event) {
-        handler.handle(new ServerFrame(event));
+        handler.handle(ServerFrame.newInstance(event));
       }
     });
     return this;
@@ -126,9 +125,9 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
   public StompServerHandler unsubscribeHandler(Handler<ServerFrame> handler) { 
-    this.delegate.unsubscribeHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+    delegate.unsubscribeHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
       public void handle(io.vertx.ext.stomp.ServerFrame event) {
-        handler.handle(new ServerFrame(event));
+        handler.handle(ServerFrame.newInstance(event));
       }
     });
     return this;
@@ -140,9 +139,9 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
   public StompServerHandler sendHandler(Handler<ServerFrame> handler) { 
-    this.delegate.sendHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+    delegate.sendHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
       public void handle(io.vertx.ext.stomp.ServerFrame event) {
-        handler.handle(new ServerFrame(event));
+        handler.handle(ServerFrame.newInstance(event));
       }
     });
     return this;
@@ -154,9 +153,9 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
   public StompServerHandler closeHandler(Handler<StompServerConnection> handler) { 
-    this.delegate.closeHandler(new Handler<io.vertx.ext.stomp.StompServerConnection>() {
+    delegate.closeHandler(new Handler<io.vertx.ext.stomp.StompServerConnection>() {
       public void handle(io.vertx.ext.stomp.StompServerConnection event) {
-        handler.handle(new StompServerConnection(event));
+        handler.handle(StompServerConnection.newInstance(event));
       }
     });
     return this;
@@ -168,18 +167,18 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @param connection the connection
    */
   public void onClose(StompServerConnection connection) { 
-    this.delegate.onClose((io.vertx.ext.stomp.StompServerConnection) connection.getDelegate());
+    delegate.onClose((io.vertx.ext.stomp.StompServerConnection)connection.getDelegate());
   }
 
   /**
    * Configures the action to execute when a <code>COMMIT</code> frame is received.
    * @param handler the handler
-   * @return the current {@link io.vertx.ext.stomp.StompServerHandler}
+   * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
   public StompServerHandler commitHandler(Handler<ServerFrame> handler) { 
-    this.delegate.commitHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+    delegate.commitHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
       public void handle(io.vertx.ext.stomp.ServerFrame event) {
-        handler.handle(new ServerFrame(event));
+        handler.handle(ServerFrame.newInstance(event));
       }
     });
     return this;
@@ -191,9 +190,9 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
   public StompServerHandler abortHandler(Handler<ServerFrame> handler) { 
-    this.delegate.abortHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+    delegate.abortHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
       public void handle(io.vertx.ext.stomp.ServerFrame event) {
-        handler.handle(new ServerFrame(event));
+        handler.handle(ServerFrame.newInstance(event));
       }
     });
     return this;
@@ -205,9 +204,9 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
   public StompServerHandler beginHandler(Handler<ServerFrame> handler) { 
-    this.delegate.beginHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+    delegate.beginHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
       public void handle(io.vertx.ext.stomp.ServerFrame event) {
-        handler.handle(new ServerFrame(event));
+        handler.handle(ServerFrame.newInstance(event));
       }
     });
     return this;
@@ -219,9 +218,9 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
   public StompServerHandler disconnectHandler(Handler<ServerFrame> handler) { 
-    this.delegate.disconnectHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+    delegate.disconnectHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
       public void handle(io.vertx.ext.stomp.ServerFrame event) {
-        handler.handle(new ServerFrame(event));
+        handler.handle(ServerFrame.newInstance(event));
       }
     });
     return this;
@@ -233,9 +232,9 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
   public StompServerHandler ackHandler(Handler<ServerFrame> handler) { 
-    this.delegate.ackHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+    delegate.ackHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
       public void handle(io.vertx.ext.stomp.ServerFrame event) {
-        handler.handle(new ServerFrame(event));
+        handler.handle(ServerFrame.newInstance(event));
       }
     });
     return this;
@@ -247,9 +246,9 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
   public StompServerHandler nackHandler(Handler<ServerFrame> handler) { 
-    this.delegate.nackHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+    delegate.nackHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
       public void handle(io.vertx.ext.stomp.ServerFrame event) {
-        handler.handle(new ServerFrame(event));
+        handler.handle(ServerFrame.newInstance(event));
       }
     });
     return this;
@@ -265,7 +264,15 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
   public StompServerHandler onAuthenticationRequest(StompServer server, String login, String passcode, Handler<AsyncResult<Boolean>> handler) { 
-    this.delegate.onAuthenticationRequest((io.vertx.ext.stomp.StompServer) server.getDelegate(), login, passcode, handler);
+    delegate.onAuthenticationRequest((io.vertx.ext.stomp.StompServer)server.getDelegate(), login, passcode, new Handler<AsyncResult<java.lang.Boolean>>() {
+      public void handle(AsyncResult<java.lang.Boolean> ar) {
+        if (ar.succeeded()) {
+          handler.handle(io.vertx.core.Future.succeededFuture(ar.result()));
+        } else {
+          handler.handle(io.vertx.core.Future.failedFuture(ar.cause()));
+        }
+      }
+    });
     return this;
   }
 
@@ -286,10 +293,10 @@ public class StompServerHandler implements Handler<ServerFrame> {
   /**
    * Configures the  to be used to authenticate the user.
    * @param handler the handler
-   * @return the current {@link io.vertx.ext.stomp.StompServerHandler}
+   * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
   public StompServerHandler authProvider(AuthProvider handler) { 
-    this.delegate.authProvider((io.vertx.ext.auth.AuthProvider) handler.getDelegate());
+    delegate.authProvider((io.vertx.ext.auth.AuthProvider)handler.getDelegate());
     return this;
   }
 
@@ -299,17 +306,17 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return 
    */
   public List<Destination> getDestinations() { 
-    List<Destination> ret = this.delegate.getDestinations().stream().map(Destination::newInstance).collect(java.util.stream.Collectors.toList());
+    List<Destination> ret = delegate.getDestinations().stream().map(elt -> Destination.newInstance(elt)).collect(java.util.stream.Collectors.toList());
     return ret;
   }
 
   /**
    * Gets the destination with the given name.
    * @param destination the destination
-   * @return the {@link io.vertx.ext.stomp.Destination}, <code>null</code> if not existing.
+   * @return the {@link io.vertx.rxjava.ext.stomp.Destination}, <code>null</code> if not existing.
    */
   public Destination getDestination(String destination) { 
-    Destination ret= Destination.newInstance(this.delegate.getDestination(destination));
+    Destination ret = Destination.newInstance(delegate.getDestination(destination));
     return ret;
   }
 
@@ -322,7 +329,7 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
   public StompServerHandler onAck(StompServerConnection connection, Frame subscribe, List<Frame> messages) { 
-    this.delegate.onAck((io.vertx.ext.stomp.StompServerConnection) connection.getDelegate(), subscribe, messages);
+    delegate.onAck((io.vertx.ext.stomp.StompServerConnection)connection.getDelegate(), subscribe, messages);
     return this;
   }
 
@@ -337,7 +344,7 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
   public StompServerHandler onNack(StompServerConnection connection, Frame subscribe, List<Frame> messages) { 
-    this.delegate.onNack((io.vertx.ext.stomp.StompServerConnection) connection.getDelegate(), subscribe, messages);
+    delegate.onNack((io.vertx.ext.stomp.StompServerConnection)connection.getDelegate(), subscribe, messages);
     return this;
   }
 
@@ -347,9 +354,9 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
   public StompServerHandler onAckHandler(Handler<Acknowledgement> handler) { 
-    this.delegate.onAckHandler(new Handler<io.vertx.ext.stomp.Acknowledgement>() {
+    delegate.onAckHandler(new Handler<io.vertx.ext.stomp.Acknowledgement>() {
       public void handle(io.vertx.ext.stomp.Acknowledgement event) {
-        handler.handle(new Acknowledgement(event));
+        handler.handle(Acknowledgement.newInstance(event));
       }
     });
     return this;
@@ -361,9 +368,9 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
   public StompServerHandler onNackHandler(Handler<Acknowledgement> handler) { 
-    this.delegate.onNackHandler(new Handler<io.vertx.ext.stomp.Acknowledgement>() {
+    delegate.onNackHandler(new Handler<io.vertx.ext.stomp.Acknowledgement>() {
       public void handle(io.vertx.ext.stomp.Acknowledgement event) {
-        handler.handle(new Acknowledgement(event));
+        handler.handle(Acknowledgement.newInstance(event));
       }
     });
     return this;
@@ -379,9 +386,9 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
   public StompServerHandler pingHandler(Handler<StompServerConnection> handler) { 
-    this.delegate.pingHandler(new Handler<io.vertx.ext.stomp.StompServerConnection>() {
+    delegate.pingHandler(new Handler<io.vertx.ext.stomp.StompServerConnection>() {
       public void handle(io.vertx.ext.stomp.StompServerConnection event) {
-        handler.handle(new StompServerConnection(event));
+        handler.handle(StompServerConnection.newInstance(event));
       }
     });
     return this;
@@ -394,7 +401,7 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the {@link io.vertx.rxjava.ext.stomp.Destination} instance, may have been created.
    */
   public Destination getOrCreateDestination(String destination) { 
-    Destination ret= Destination.newInstance(this.delegate.getOrCreateDestination(destination));
+    Destination ret = Destination.newInstance(delegate.getOrCreateDestination(destination));
     return ret;
   }
 
@@ -404,7 +411,7 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}.
    */
   public StompServerHandler destinationFactory(DestinationFactory factory) { 
-    this.delegate.destinationFactory((io.vertx.ext.stomp.DestinationFactory) factory.getDelegate());
+    delegate.destinationFactory((io.vertx.ext.stomp.DestinationFactory)factory.getDelegate());
     return this;
   }
 
@@ -414,7 +421,7 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}.
    */
   public StompServerHandler bridge(BridgeOptions options) { 
-    this.delegate.bridge(options);
+    delegate.bridge(options);
     return this;
   }
 

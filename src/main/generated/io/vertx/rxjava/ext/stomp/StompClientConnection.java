@@ -17,7 +17,6 @@
 package io.vertx.rxjava.ext.stomp;
 
 import java.util.Map;
-import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
 import io.vertx.rxjava.core.buffer.Buffer;
 import io.vertx.ext.stomp.Frame;
@@ -49,7 +48,7 @@ public class StompClientConnection {
    * @return 
    */
   public String session() { 
-    String ret = this.delegate.session();
+    String ret = delegate.session();
     return ret;
   }
 
@@ -58,7 +57,7 @@ public class StompClientConnection {
    * @return 
    */
   public String version() { 
-    String ret = this.delegate.version();
+    String ret = delegate.version();
     return ret;
   }
 
@@ -66,7 +65,7 @@ public class StompClientConnection {
    * Closes the connection without sending the <code>DISCONNECT</code> frame.
    */
   public void close() { 
-    this.delegate.close();
+    delegate.close();
   }
 
   /**
@@ -74,7 +73,7 @@ public class StompClientConnection {
    * @return 
    */
   public String server() { 
-    String ret = this.delegate.server();
+    String ret = delegate.server();
     return ret;
   }
 
@@ -82,10 +81,10 @@ public class StompClientConnection {
    * Sends a <code>SEND</code> frame to the server.
    * @param headers the headers, must not be <code>null</code>
    * @param body the body, may be <code>null</code>
-   * @return the current {@link io.vertx.ext.stomp.StompClientConnection}
+   * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection send(Map<String,String> headers, Buffer body) { 
-    this.delegate.send(headers, (io.vertx.core.buffer.Buffer) body.getDelegate());
+    delegate.send(headers, (io.vertx.core.buffer.Buffer)body.getDelegate());
     return this;
   }
 
@@ -97,7 +96,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection send(Map<String,String> headers, Buffer body, Handler<Frame> receiptHandler) { 
-    this.delegate.send(headers, (io.vertx.core.buffer.Buffer) body.getDelegate(), receiptHandler);
+    delegate.send(headers, (io.vertx.core.buffer.Buffer)body.getDelegate(), receiptHandler);
     return this;
   }
 
@@ -108,7 +107,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection send(String destination, Buffer body) { 
-    this.delegate.send(destination, (io.vertx.core.buffer.Buffer) body.getDelegate());
+    delegate.send(destination, (io.vertx.core.buffer.Buffer)body.getDelegate());
     return this;
   }
 
@@ -120,7 +119,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection send(String destination, Buffer body, Handler<Frame> receiptHandler) { 
-    this.delegate.send(destination, (io.vertx.core.buffer.Buffer) body.getDelegate(), receiptHandler);
+    delegate.send(destination, (io.vertx.core.buffer.Buffer)body.getDelegate(), receiptHandler);
     return this;
   }
 
@@ -130,7 +129,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection send(Frame frame) { 
-    this.delegate.send(frame);
+    delegate.send(frame);
     return this;
   }
 
@@ -141,7 +140,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection send(Frame frame, Handler<Frame> receiptHandler) { 
-    this.delegate.send(frame, receiptHandler);
+    delegate.send(frame, receiptHandler);
     return this;
   }
 
@@ -153,7 +152,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection send(String destination, Map<String,String> headers, Buffer body) { 
-    this.delegate.send(destination, headers, (io.vertx.core.buffer.Buffer) body.getDelegate());
+    delegate.send(destination, headers, (io.vertx.core.buffer.Buffer)body.getDelegate());
     return this;
   }
 
@@ -166,7 +165,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection send(String destination, Map<String,String> headers, Buffer body, Handler<Frame> receiptHandler) { 
-    this.delegate.send(destination, headers, (io.vertx.core.buffer.Buffer) body.getDelegate(), receiptHandler);
+    delegate.send(destination, headers, (io.vertx.core.buffer.Buffer)body.getDelegate(), receiptHandler);
     return this;
   }
 
@@ -177,7 +176,7 @@ public class StompClientConnection {
    * @return the subscription id.
    */
   public String subscribe(String destination, Handler<Frame> handler) { 
-    String ret = this.delegate.subscribe(destination, handler);
+    String ret = delegate.subscribe(destination, handler);
     return ret;
   }
 
@@ -189,7 +188,7 @@ public class StompClientConnection {
    * @return the subscription id.
    */
   public String subscribe(String destination, Handler<Frame> handler, Handler<Frame> receiptHandler) { 
-    String ret = this.delegate.subscribe(destination, handler, receiptHandler);
+    String ret = delegate.subscribe(destination, handler, receiptHandler);
     return ret;
   }
 
@@ -201,7 +200,7 @@ public class StompClientConnection {
    * @return the subscription id, which can either be the destination or the id set in the headers.
    */
   public String subscribe(String destination, Map<String,String> headers, Handler<Frame> handler) { 
-    String ret = this.delegate.subscribe(destination, headers, handler);
+    String ret = delegate.subscribe(destination, headers, handler);
     return ret;
   }
 
@@ -214,7 +213,7 @@ public class StompClientConnection {
    * @return the subscription id, which can either be the destination or the id set in the headers.
    */
   public String subscribe(String destination, Map<String,String> headers, Handler<Frame> handler, Handler<Frame> receiptHandler) { 
-    String ret = this.delegate.subscribe(destination, headers, handler, receiptHandler);
+    String ret = delegate.subscribe(destination, headers, handler, receiptHandler);
     return ret;
   }
 
@@ -222,10 +221,10 @@ public class StompClientConnection {
    * Un-subscribes from the given destination. This method only works if the subscription did not specifies a
    * subscription id (using the <code>id</code> header).
    * @param destination the destination
-   * @return the current {@link io.vertx.ext.stomp.StompClientConnection}
+   * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection unsubscribe(String destination) { 
-    this.delegate.unsubscribe(destination);
+    delegate.unsubscribe(destination);
     return this;
   }
 
@@ -237,7 +236,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection unsubscribe(String destination, Handler<Frame> receiptHandler) { 
-    this.delegate.unsubscribe(destination, receiptHandler);
+    delegate.unsubscribe(destination, receiptHandler);
     return this;
   }
 
@@ -249,7 +248,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection unsubscribe(String destination, Map<String,String> headers) { 
-    this.delegate.unsubscribe(destination, headers);
+    delegate.unsubscribe(destination, headers);
     return this;
   }
 
@@ -262,7 +261,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection unsubscribe(String destination, Map<String,String> headers, Handler<Frame> receiptHandler) { 
-    this.delegate.unsubscribe(destination, headers, receiptHandler);
+    delegate.unsubscribe(destination, headers, receiptHandler);
     return this;
   }
 
@@ -272,7 +271,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection errorHandler(Handler<Frame> handler) { 
-    this.delegate.errorHandler(handler);
+    delegate.errorHandler(handler);
     return this;
   }
 
@@ -282,9 +281,9 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection closeHandler(Handler<StompClientConnection> handler) { 
-    this.delegate.closeHandler(new Handler<io.vertx.ext.stomp.StompClientConnection>() {
+    delegate.closeHandler(new Handler<io.vertx.ext.stomp.StompClientConnection>() {
       public void handle(io.vertx.ext.stomp.StompClientConnection event) {
-        handler.handle(new StompClientConnection(event));
+        handler.handle(StompClientConnection.newInstance(event));
       }
     });
     return this;
@@ -298,9 +297,9 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection} receiving the dropped connection.
    */
   public StompClientConnection connectionDroppedHandler(Handler<StompClientConnection> handler) { 
-    this.delegate.connectionDroppedHandler(new Handler<io.vertx.ext.stomp.StompClientConnection>() {
+    delegate.connectionDroppedHandler(new Handler<io.vertx.ext.stomp.StompClientConnection>() {
       public void handle(io.vertx.ext.stomp.StompClientConnection event) {
-        handler.handle(new StompClientConnection(event));
+        handler.handle(StompClientConnection.newInstance(event));
       }
     });
     return this;
@@ -313,9 +312,9 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection pingHandler(Handler<StompClientConnection> handler) { 
-    this.delegate.pingHandler(new Handler<io.vertx.ext.stomp.StompClientConnection>() {
+    delegate.pingHandler(new Handler<io.vertx.ext.stomp.StompClientConnection>() {
       public void handle(io.vertx.ext.stomp.StompClientConnection event) {
-        handler.handle(new StompClientConnection(event));
+        handler.handle(StompClientConnection.newInstance(event));
       }
     });
     return this;
@@ -328,7 +327,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection beginTX(String id, Handler<Frame> receiptHandler) { 
-    this.delegate.beginTX(id, receiptHandler);
+    delegate.beginTX(id, receiptHandler);
     return this;
   }
 
@@ -338,7 +337,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection beginTX(String id) { 
-    this.delegate.beginTX(id);
+    delegate.beginTX(id);
     return this;
   }
 
@@ -349,7 +348,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection beginTX(String id, Map<String,String> headers) { 
-    this.delegate.beginTX(id, headers);
+    delegate.beginTX(id, headers);
     return this;
   }
 
@@ -361,7 +360,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection beginTX(String id, Map<String,String> headers, Handler<Frame> receiptHandler) { 
-    this.delegate.beginTX(id, headers, receiptHandler);
+    delegate.beginTX(id, headers, receiptHandler);
     return this;
   }
 
@@ -371,7 +370,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection commit(String id) { 
-    this.delegate.commit(id);
+    delegate.commit(id);
     return this;
   }
 
@@ -382,7 +381,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection commit(String id, Handler<Frame> receiptHandler) { 
-    this.delegate.commit(id, receiptHandler);
+    delegate.commit(id, receiptHandler);
     return this;
   }
 
@@ -393,7 +392,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection commit(String id, Map<String,String> headers) { 
-    this.delegate.commit(id, headers);
+    delegate.commit(id, headers);
     return this;
   }
 
@@ -405,7 +404,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection commit(String id, Map<String,String> headers, Handler<Frame> receiptHandler) { 
-    this.delegate.commit(id, headers, receiptHandler);
+    delegate.commit(id, headers, receiptHandler);
     return this;
   }
 
@@ -415,7 +414,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection abort(String id) { 
-    this.delegate.abort(id);
+    delegate.abort(id);
     return this;
   }
 
@@ -426,7 +425,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection abort(String id, Handler<Frame> receiptHandler) { 
-    this.delegate.abort(id, receiptHandler);
+    delegate.abort(id, receiptHandler);
     return this;
   }
 
@@ -437,7 +436,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection abort(String id, Map<String,String> headers) { 
-    this.delegate.abort(id, headers);
+    delegate.abort(id, headers);
     return this;
   }
 
@@ -449,7 +448,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection abort(String id, Map<String,String> headers, Handler<Frame> receiptHandler) { 
-    this.delegate.abort(id, headers, receiptHandler);
+    delegate.abort(id, headers, receiptHandler);
     return this;
   }
 
@@ -459,7 +458,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection disconnect() { 
-    this.delegate.disconnect();
+    delegate.disconnect();
     return this;
   }
 
@@ -470,7 +469,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection disconnect(Handler<Frame> receiptHandler) { 
-    this.delegate.disconnect(receiptHandler);
+    delegate.disconnect(receiptHandler);
     return this;
   }
 
@@ -481,7 +480,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection disconnect(Frame frame) { 
-    this.delegate.disconnect(frame);
+    delegate.disconnect(frame);
     return this;
   }
 
@@ -493,7 +492,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection disconnect(Frame frame, Handler<Frame> receiptHandler) { 
-    this.delegate.disconnect(frame, receiptHandler);
+    delegate.disconnect(frame, receiptHandler);
     return this;
   }
 
@@ -504,7 +503,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection ack(String id) { 
-    this.delegate.ack(id);
+    delegate.ack(id);
     return this;
   }
 
@@ -516,7 +515,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection ack(String id, Handler<Frame> receiptHandler) { 
-    this.delegate.ack(id, receiptHandler);
+    delegate.ack(id, receiptHandler);
     return this;
   }
 
@@ -527,7 +526,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection nack(String id) { 
-    this.delegate.nack(id);
+    delegate.nack(id);
     return this;
   }
 
@@ -539,7 +538,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection nack(String id, Handler<Frame> receiptHandler) { 
-    this.delegate.nack(id, receiptHandler);
+    delegate.nack(id, receiptHandler);
     return this;
   }
 
@@ -551,7 +550,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection ack(String id, String txId) { 
-    this.delegate.ack(id, txId);
+    delegate.ack(id, txId);
     return this;
   }
 
@@ -564,7 +563,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection ack(String id, String txId, Handler<Frame> receiptHandler) { 
-    this.delegate.ack(id, txId, receiptHandler);
+    delegate.ack(id, txId, receiptHandler);
     return this;
   }
 
@@ -576,7 +575,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection nack(String id, String txId) { 
-    this.delegate.nack(id, txId);
+    delegate.nack(id, txId);
     return this;
   }
 
@@ -589,7 +588,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection nack(String id, String txId, Handler<Frame> receiptHandler) { 
-    this.delegate.nack(id, txId, receiptHandler);
+    delegate.nack(id, txId, receiptHandler);
     return this;
   }
 
@@ -603,7 +602,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection receivedFrameHandler(Handler<Frame> handler) { 
-    this.delegate.receivedFrameHandler(handler);
+    delegate.receivedFrameHandler(handler);
     return this;
   }
 
@@ -617,7 +616,7 @@ public class StompClientConnection {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClientConnection}
    */
   public StompClientConnection writingFrameHandler(Handler<Frame> handler) { 
-    this.delegate.writingFrameHandler(handler);
+    delegate.writingFrameHandler(handler);
     return this;
   }
 

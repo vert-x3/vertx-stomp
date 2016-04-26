@@ -17,7 +17,6 @@
 package io.vertx.rxjava.ext.stomp;
 
 import java.util.Map;
-import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
 import io.vertx.ext.stomp.Frame;
 import io.vertx.rxjava.core.Vertx;
@@ -51,7 +50,7 @@ public class StompClient {
    * @return the created {@link io.vertx.rxjava.ext.stomp.StompClient}
    */
   public static StompClient create(Vertx vertx) { 
-    StompClient ret= StompClient.newInstance(io.vertx.ext.stomp.StompClient.create((io.vertx.core.Vertx) vertx.getDelegate()));
+    StompClient ret = StompClient.newInstance(io.vertx.ext.stomp.StompClient.create((io.vertx.core.Vertx)vertx.getDelegate()));
     return ret;
   }
 
@@ -62,7 +61,7 @@ public class StompClient {
    * @return the created {@link io.vertx.rxjava.ext.stomp.StompClient}
    */
   public static StompClient create(Vertx vertx, StompClientOptions options) { 
-    StompClient ret= StompClient.newInstance(io.vertx.ext.stomp.StompClient.create((io.vertx.core.Vertx) vertx.getDelegate(), options));
+    StompClient ret = StompClient.newInstance(io.vertx.ext.stomp.StompClient.create((io.vertx.core.Vertx)vertx.getDelegate(), options));
     return ret;
   }
 
@@ -74,15 +73,13 @@ public class StompClient {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClient}
    */
   public StompClient connect(int port, String host, Handler<AsyncResult<StompClientConnection>> resultHandler) { 
-    this.delegate.connect(port, host, new Handler<AsyncResult<io.vertx.ext.stomp.StompClientConnection>>() {
-      public void handle(AsyncResult<io.vertx.ext.stomp.StompClientConnection> event) {
-        AsyncResult<StompClientConnection> f;
-        if (event.succeeded()) {
-          f = InternalHelper.<StompClientConnection>result(new StompClientConnection(event.result()));
+    delegate.connect(port, host, new Handler<AsyncResult<io.vertx.ext.stomp.StompClientConnection>>() {
+      public void handle(AsyncResult<io.vertx.ext.stomp.StompClientConnection> ar) {
+        if (ar.succeeded()) {
+          resultHandler.handle(io.vertx.core.Future.succeededFuture(StompClientConnection.newInstance(ar.result())));
         } else {
-          f = InternalHelper.<StompClientConnection>failure(event.cause());
+          resultHandler.handle(io.vertx.core.Future.failedFuture(ar.cause()));
         }
-        resultHandler.handle(f);
       }
     });
     return this;
@@ -104,18 +101,16 @@ public class StompClient {
    * Connects to the server.
    * @param net the NET client to use
    * @param resultHandler handler called with the connection result
-   * @return the current {@link io.vertx.ext.stomp.StompClient}
+   * @return the current {@link io.vertx.rxjava.ext.stomp.StompClient}
    */
   public StompClient connect(NetClient net, Handler<AsyncResult<StompClientConnection>> resultHandler) { 
-    this.delegate.connect((io.vertx.core.net.NetClient) net.getDelegate(), new Handler<AsyncResult<io.vertx.ext.stomp.StompClientConnection>>() {
-      public void handle(AsyncResult<io.vertx.ext.stomp.StompClientConnection> event) {
-        AsyncResult<StompClientConnection> f;
-        if (event.succeeded()) {
-          f = InternalHelper.<StompClientConnection>result(new StompClientConnection(event.result()));
+    delegate.connect((io.vertx.core.net.NetClient)net.getDelegate(), new Handler<AsyncResult<io.vertx.ext.stomp.StompClientConnection>>() {
+      public void handle(AsyncResult<io.vertx.ext.stomp.StompClientConnection> ar) {
+        if (ar.succeeded()) {
+          resultHandler.handle(io.vertx.core.Future.succeededFuture(StompClientConnection.newInstance(ar.result())));
         } else {
-          f = InternalHelper.<StompClientConnection>failure(event.cause());
+          resultHandler.handle(io.vertx.core.Future.failedFuture(ar.cause()));
         }
-        resultHandler.handle(f);
       }
     });
     return this;
@@ -138,18 +133,16 @@ public class StompClient {
    * @param host the server host
    * @param net the NET client to use
    * @param resultHandler handler called with the connection result
-   * @return the current {@link io.vertx.ext.stomp.StompClient}
+   * @return the current {@link io.vertx.rxjava.ext.stomp.StompClient}
    */
   public StompClient connect(int port, String host, NetClient net, Handler<AsyncResult<StompClientConnection>> resultHandler) { 
-    this.delegate.connect(port, host, (io.vertx.core.net.NetClient) net.getDelegate(), new Handler<AsyncResult<io.vertx.ext.stomp.StompClientConnection>>() {
-      public void handle(AsyncResult<io.vertx.ext.stomp.StompClientConnection> event) {
-        AsyncResult<StompClientConnection> f;
-        if (event.succeeded()) {
-          f = InternalHelper.<StompClientConnection>result(new StompClientConnection(event.result()));
+    delegate.connect(port, host, (io.vertx.core.net.NetClient)net.getDelegate(), new Handler<AsyncResult<io.vertx.ext.stomp.StompClientConnection>>() {
+      public void handle(AsyncResult<io.vertx.ext.stomp.StompClientConnection> ar) {
+        if (ar.succeeded()) {
+          resultHandler.handle(io.vertx.core.Future.succeededFuture(StompClientConnection.newInstance(ar.result())));
         } else {
-          f = InternalHelper.<StompClientConnection>failure(event.cause());
+          resultHandler.handle(io.vertx.core.Future.failedFuture(ar.cause()));
         }
-        resultHandler.handle(f);
       }
     });
     return this;
@@ -171,18 +164,16 @@ public class StompClient {
   /**
    * Connects to the server using the host and port configured in the client's options.
    * @param resultHandler handler called with the connection result
-   * @return the current {@link io.vertx.ext.stomp.StompClient}
+   * @return the current {@link io.vertx.rxjava.ext.stomp.StompClient}
    */
   public StompClient connect(Handler<AsyncResult<StompClientConnection>> resultHandler) { 
-    this.delegate.connect(new Handler<AsyncResult<io.vertx.ext.stomp.StompClientConnection>>() {
-      public void handle(AsyncResult<io.vertx.ext.stomp.StompClientConnection> event) {
-        AsyncResult<StompClientConnection> f;
-        if (event.succeeded()) {
-          f = InternalHelper.<StompClientConnection>result(new StompClientConnection(event.result()));
+    delegate.connect(new Handler<AsyncResult<io.vertx.ext.stomp.StompClientConnection>>() {
+      public void handle(AsyncResult<io.vertx.ext.stomp.StompClientConnection> ar) {
+        if (ar.succeeded()) {
+          resultHandler.handle(io.vertx.core.Future.succeededFuture(StompClientConnection.newInstance(ar.result())));
         } else {
-          f = InternalHelper.<StompClientConnection>failure(event.cause());
+          resultHandler.handle(io.vertx.core.Future.failedFuture(ar.cause()));
         }
-        resultHandler.handle(f);
       }
     });
     return this;
@@ -203,12 +194,12 @@ public class StompClient {
    * This handler can be used for logging, debugging or ad-hoc behavior. The frame can still be modified at the time.
    * <p>
    * When a connection is created, the handler is used as
-   * {@link io.vertx.ext.stomp.StompClientConnection}.
+   * {@link io.vertx.rxjava.ext.stomp.StompClientConnection#receivedFrameHandler}.
    * @param handler the handler
-   * @return the current {@link io.vertx.ext.stomp.StompClient}
+   * @return the current {@link io.vertx.rxjava.ext.stomp.StompClient}
    */
   public StompClient receivedFrameHandler(Handler<Frame> handler) { 
-    this.delegate.receivedFrameHandler(handler);
+    delegate.receivedFrameHandler(handler);
     return this;
   }
 
@@ -222,7 +213,7 @@ public class StompClient {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClient}
    */
   public StompClient writingFrameHandler(Handler<Frame> handler) { 
-    this.delegate.writingFrameHandler(handler);
+    delegate.writingFrameHandler(handler);
     return this;
   }
 
@@ -234,7 +225,7 @@ public class StompClient {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompClient}
    */
   public StompClient errorFrameHandler(Handler<Frame> handler) { 
-    this.delegate.errorFrameHandler(handler);
+    delegate.errorFrameHandler(handler);
     return this;
   }
 
@@ -242,7 +233,7 @@ public class StompClient {
    * Closes the client.
    */
   public void close() { 
-    this.delegate.close();
+    delegate.close();
   }
 
   /**
@@ -250,7 +241,7 @@ public class StompClient {
    * @return 
    */
   public StompClientOptions options() { 
-    StompClientOptions ret = this.delegate.options();
+    StompClientOptions ret = delegate.options();
     return ret;
   }
 
@@ -259,7 +250,7 @@ public class StompClient {
    * @return 
    */
   public Vertx vertx() { 
-    Vertx ret= Vertx.newInstance(this.delegate.vertx());
+    Vertx ret = Vertx.newInstance(delegate.vertx());
     return ret;
   }
 

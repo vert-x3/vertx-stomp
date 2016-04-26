@@ -17,7 +17,6 @@
 package io.vertx.rxjava.ext.stomp;
 
 import java.util.Map;
-import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
 import java.util.List;
 import io.vertx.ext.stomp.Frame;
@@ -53,7 +52,7 @@ public class Acknowledgement {
    * @return 
    */
   public Frame subscription() { 
-    Frame ret = this.delegate.subscription();
+    Frame ret = delegate.subscription();
     return ret;
   }
 
@@ -63,8 +62,7 @@ public class Acknowledgement {
    * @return 
    */
   public List<Frame> frames() { 
-    List<Frame> ret = this.delegate.frames();
-;
+    List<Frame> ret = delegate.frames();
     return ret;
   }
 

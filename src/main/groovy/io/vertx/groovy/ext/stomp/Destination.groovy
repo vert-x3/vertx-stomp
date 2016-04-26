@@ -40,15 +40,15 @@ public class Destination {
     return delegate;
   }
   public static Destination topic(Vertx vertx, String destination) {
-    def ret= InternalHelper.safeCreate(io.vertx.ext.stomp.Destination.topic((io.vertx.core.Vertx)vertx.getDelegate(), destination), io.vertx.groovy.ext.stomp.Destination.class);
+    def ret = InternalHelper.safeCreate(io.vertx.ext.stomp.Destination.topic(vertx != null ? (io.vertx.core.Vertx)vertx.getDelegate() : null, destination), io.vertx.groovy.ext.stomp.Destination.class);
     return ret;
   }
   public static Destination queue(Vertx vertx, String destination) {
-    def ret= InternalHelper.safeCreate(io.vertx.ext.stomp.Destination.queue((io.vertx.core.Vertx)vertx.getDelegate(), destination), io.vertx.groovy.ext.stomp.Destination.class);
+    def ret = InternalHelper.safeCreate(io.vertx.ext.stomp.Destination.queue(vertx != null ? (io.vertx.core.Vertx)vertx.getDelegate() : null, destination), io.vertx.groovy.ext.stomp.Destination.class);
     return ret;
   }
   public static Destination bridge(Vertx vertx, Map<String, Object> options) {
-    def ret= InternalHelper.safeCreate(io.vertx.ext.stomp.Destination.bridge((io.vertx.core.Vertx)vertx.getDelegate(), options != null ? new io.vertx.ext.stomp.BridgeOptions(new io.vertx.core.json.JsonObject(options)) : null), io.vertx.groovy.ext.stomp.Destination.class);
+    def ret = InternalHelper.safeCreate(io.vertx.ext.stomp.Destination.bridge(vertx != null ? (io.vertx.core.Vertx)vertx.getDelegate() : null, options != null ? new io.vertx.ext.stomp.BridgeOptions(new io.vertx.core.json.JsonObject(options)) : null), io.vertx.groovy.ext.stomp.Destination.class);
     return ret;
   }
   /**
@@ -56,7 +56,7 @@ public class Destination {
    * @return 
    */
   public String destination() {
-    def ret = this.delegate.destination();
+    def ret = delegate.destination();
     return ret;
   }
   /**
@@ -66,7 +66,7 @@ public class Destination {
    * @return the current instance of {@link io.vertx.groovy.ext.stomp.Destination}
    */
   public Destination dispatch(StompServerConnection connection, Map<String, Object> frame) {
-    this.delegate.dispatch((io.vertx.ext.stomp.StompServerConnection)connection.getDelegate(), frame != null ? new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(frame)) : null);
+    delegate.dispatch(connection != null ? (io.vertx.ext.stomp.StompServerConnection)connection.getDelegate() : null, frame != null ? new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(frame)) : null);
     return this;
   }
   /**
@@ -76,7 +76,7 @@ public class Destination {
    * @return the current instance of {@link io.vertx.groovy.ext.stomp.Destination}
    */
   public Destination subscribe(StompServerConnection connection, Map<String, Object> frame) {
-    this.delegate.subscribe((io.vertx.ext.stomp.StompServerConnection)connection.getDelegate(), frame != null ? new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(frame)) : null);
+    delegate.subscribe(connection != null ? (io.vertx.ext.stomp.StompServerConnection)connection.getDelegate() : null, frame != null ? new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(frame)) : null);
     return this;
   }
   /**
@@ -86,7 +86,7 @@ public class Destination {
    * @return <code>true</code> if the un-subscription has been handled, <code>false</code> otherwise.
    */
   public boolean unsubscribe(StompServerConnection connection, Map<String, Object> frame) {
-    def ret = this.delegate.unsubscribe((io.vertx.ext.stomp.StompServerConnection)connection.getDelegate(), frame != null ? new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(frame)) : null);
+    def ret = delegate.unsubscribe(connection != null ? (io.vertx.ext.stomp.StompServerConnection)connection.getDelegate() : null, frame != null ? new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(frame)) : null);
     return ret;
   }
   /**
@@ -95,7 +95,7 @@ public class Destination {
    * @return the current instance of {@link io.vertx.groovy.ext.stomp.Destination}
    */
   public Destination unsubscribeConnection(StompServerConnection connection) {
-    this.delegate.unsubscribeConnection((io.vertx.ext.stomp.StompServerConnection)connection.getDelegate());
+    delegate.unsubscribeConnection(connection != null ? (io.vertx.ext.stomp.StompServerConnection)connection.getDelegate() : null);
     return this;
   }
   /**
@@ -105,7 +105,7 @@ public class Destination {
    * @return <code>true</code> if the destination has handled the frame (meaning it has sent the message with id)
    */
   public boolean ack(StompServerConnection connection, Map<String, Object> frame) {
-    def ret = this.delegate.ack((io.vertx.ext.stomp.StompServerConnection)connection.getDelegate(), frame != null ? new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(frame)) : null);
+    def ret = delegate.ack(connection != null ? (io.vertx.ext.stomp.StompServerConnection)connection.getDelegate() : null, frame != null ? new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(frame)) : null);
     return ret;
   }
   /**
@@ -115,7 +115,7 @@ public class Destination {
    * @return <code>true</code> if the destination has handled the frame (meaning it has sent the message with id)
    */
   public boolean nack(StompServerConnection connection, Map<String, Object> frame) {
-    def ret = this.delegate.nack((io.vertx.ext.stomp.StompServerConnection)connection.getDelegate(), frame != null ? new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(frame)) : null);
+    def ret = delegate.nack(connection != null ? (io.vertx.ext.stomp.StompServerConnection)connection.getDelegate() : null, frame != null ? new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(frame)) : null);
     return ret;
   }
   /**
@@ -124,7 +124,7 @@ public class Destination {
    * @return the list of subscription id, empty if none
    */
   public List<String> getSubscriptions(StompServerConnection connection) {
-    def ret = this.delegate.getSubscriptions((io.vertx.ext.stomp.StompServerConnection)connection.getDelegate());
+    def ret = delegate.getSubscriptions(connection != null ? (io.vertx.ext.stomp.StompServerConnection)connection.getDelegate() : null);
     return ret;
   }
   /**
@@ -132,7 +132,7 @@ public class Destination {
    * @return the number of subscriptions.
    */
   public int numberOfSubscriptions() {
-    def ret = this.delegate.numberOfSubscriptions();
+    def ret = delegate.numberOfSubscriptions();
     return ret;
   }
   /**
@@ -141,7 +141,7 @@ public class Destination {
    * @return <code>true</code> if it matches, <code>false</code> otherwise.
    */
   public boolean matches(String address) {
-    def ret = this.delegate.matches(address);
+    def ret = delegate.matches(address);
     return ret;
   }
 }

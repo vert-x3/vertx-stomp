@@ -44,7 +44,7 @@ public class Acknowledgement {
    * @return  (see <a href="../../../../../../../cheatsheet/Frame.html">Frame</a>)
    */
   public Map<String, Object> subscription() {
-    def ret = (Map<String, Object>)InternalHelper.wrapObject(this.delegate.subscription()?.toJson());
+    def ret = (Map<String, Object>)InternalHelper.wrapObject(delegate.subscription()?.toJson());
     return ret;
   }
   /**
@@ -53,7 +53,7 @@ public class Acknowledgement {
    * @return 
    */
   public List<Map<String, Object>> frames() {
-    def ret = this.delegate.frames()?.collect({underpants -> (Map<String, Object>)InternalHelper.wrapObject(underpants?.toJson())}) as List;
+    def ret = (List)delegate.frames()?.collect({(Map<String, Object>)InternalHelper.wrapObject(it?.toJson())});
     return ret;
   }
 }

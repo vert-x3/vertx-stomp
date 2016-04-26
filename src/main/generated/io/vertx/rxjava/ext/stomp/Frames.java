@@ -17,7 +17,6 @@
 package io.vertx.rxjava.ext.stomp;
 
 import java.util.Map;
-import io.vertx.lang.rxjava.InternalHelper;
 import rx.Observable;
 import io.vertx.ext.stomp.Frame;
 import java.util.Map;
@@ -55,7 +54,7 @@ public class Frames {
   }
 
   public static void handleReceipt(Frame frame, StompServerConnection connection) { 
-    io.vertx.ext.stomp.Frames.handleReceipt(frame, (io.vertx.ext.stomp.StompServerConnection) connection.getDelegate());
+    io.vertx.ext.stomp.Frames.handleReceipt(frame, (io.vertx.ext.stomp.StompServerConnection)connection.getDelegate());
   }
 
   public static Frame ping() { 

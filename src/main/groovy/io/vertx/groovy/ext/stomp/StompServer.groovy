@@ -44,7 +44,7 @@ public class StompServer {
    * @return the created {@link io.vertx.groovy.ext.stomp.StompServer}
    */
   public static StompServer create(Vertx vertx, Map<String, Object> options) {
-    def ret= InternalHelper.safeCreate(io.vertx.ext.stomp.StompServer.create((io.vertx.core.Vertx)vertx.getDelegate(), options != null ? new io.vertx.ext.stomp.StompServerOptions(new io.vertx.core.json.JsonObject(options)) : null), io.vertx.groovy.ext.stomp.StompServer.class);
+    def ret = InternalHelper.safeCreate(io.vertx.ext.stomp.StompServer.create(vertx != null ? (io.vertx.core.Vertx)vertx.getDelegate() : null, options != null ? new io.vertx.ext.stomp.StompServerOptions(new io.vertx.core.json.JsonObject(options)) : null), io.vertx.groovy.ext.stomp.StompServer.class);
     return ret;
   }
   /**
@@ -54,7 +54,7 @@ public class StompServer {
    * @return the created {@link io.vertx.groovy.ext.stomp.StompServer}
    */
   public static StompServer create(Vertx vertx, NetServer netServer) {
-    def ret= InternalHelper.safeCreate(io.vertx.ext.stomp.StompServer.create((io.vertx.core.Vertx)vertx.getDelegate(), (io.vertx.core.net.NetServer)netServer.getDelegate()), io.vertx.groovy.ext.stomp.StompServer.class);
+    def ret = InternalHelper.safeCreate(io.vertx.ext.stomp.StompServer.create(vertx != null ? (io.vertx.core.Vertx)vertx.getDelegate() : null, netServer != null ? (io.vertx.core.net.NetServer)netServer.getDelegate() : null), io.vertx.groovy.ext.stomp.StompServer.class);
     return ret;
   }
   /**
@@ -65,7 +65,7 @@ public class StompServer {
    * @return the created {@link io.vertx.groovy.ext.stomp.StompServer}
    */
   public static StompServer create(Vertx vertx, NetServer net, Map<String, Object> options) {
-    def ret= InternalHelper.safeCreate(io.vertx.ext.stomp.StompServer.create((io.vertx.core.Vertx)vertx.getDelegate(), (io.vertx.core.net.NetServer)net.getDelegate(), options != null ? new io.vertx.ext.stomp.StompServerOptions(new io.vertx.core.json.JsonObject(options)) : null), io.vertx.groovy.ext.stomp.StompServer.class);
+    def ret = InternalHelper.safeCreate(io.vertx.ext.stomp.StompServer.create(vertx != null ? (io.vertx.core.Vertx)vertx.getDelegate() : null, net != null ? (io.vertx.core.net.NetServer)net.getDelegate() : null, options != null ? new io.vertx.ext.stomp.StompServerOptions(new io.vertx.core.json.JsonObject(options)) : null), io.vertx.groovy.ext.stomp.StompServer.class);
     return ret;
   }
   /**
@@ -74,7 +74,7 @@ public class StompServer {
    * @return the created {@link io.vertx.groovy.ext.stomp.StompServer}
    */
   public static StompServer create(Vertx vertx) {
-    def ret= InternalHelper.safeCreate(io.vertx.ext.stomp.StompServer.create((io.vertx.core.Vertx)vertx.getDelegate()), io.vertx.groovy.ext.stomp.StompServer.class);
+    def ret = InternalHelper.safeCreate(io.vertx.ext.stomp.StompServer.create(vertx != null ? (io.vertx.core.Vertx)vertx.getDelegate() : null), io.vertx.groovy.ext.stomp.StompServer.class);
     return ret;
   }
   /**
@@ -83,7 +83,7 @@ public class StompServer {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServer}
    */
   public StompServer handler(StompServerHandler handler) {
-    this.delegate.handler((io.vertx.ext.stomp.StompServerHandler)handler.getDelegate());
+    delegate.handler(handler != null ? (io.vertx.ext.stomp.StompServerHandler)handler.getDelegate() : null);
     return this;
   }
   /**
@@ -92,7 +92,7 @@ public class StompServer {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServer}
    */
   public StompServer listen(int port) {
-    this.delegate.listen(port);
+    delegate.listen(port);
     return this;
   }
   /**
@@ -102,7 +102,7 @@ public class StompServer {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServer}
    */
   public StompServer listen(int port, String host) {
-    this.delegate.listen(port, host);
+    delegate.listen(port, host);
     return this;
   }
   /**
@@ -110,7 +110,7 @@ public class StompServer {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServer}
    */
   public StompServer listen() {
-    this.delegate.listen();
+    delegate.listen();
     return this;
   }
   /**
@@ -120,17 +120,15 @@ public class StompServer {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServer}
    */
   public StompServer listen(Handler<AsyncResult<StompServer>> handler) {
-    this.delegate.listen(new Handler<AsyncResult<io.vertx.ext.stomp.StompServer>>() {
-      public void handle(AsyncResult<io.vertx.ext.stomp.StompServer> event) {
-        AsyncResult<StompServer> f
-        if (event.succeeded()) {
-          f = InternalHelper.<StompServer>result(new StompServer(event.result()))
+    delegate.listen(handler != null ? new Handler<AsyncResult<io.vertx.ext.stomp.StompServer>>() {
+      public void handle(AsyncResult<io.vertx.ext.stomp.StompServer> ar) {
+        if (ar.succeeded()) {
+          handler.handle(io.vertx.core.Future.succeededFuture(InternalHelper.safeCreate(ar.result(), io.vertx.groovy.ext.stomp.StompServer.class)));
         } else {
-          f = InternalHelper.<StompServer>failure(event.cause())
+          handler.handle(io.vertx.core.Future.failedFuture(ar.cause()));
         }
-        handler.handle(f)
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -141,17 +139,15 @@ public class StompServer {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServer}
    */
   public StompServer listen(int port, Handler<AsyncResult<StompServer>> handler) {
-    this.delegate.listen(port, new Handler<AsyncResult<io.vertx.ext.stomp.StompServer>>() {
-      public void handle(AsyncResult<io.vertx.ext.stomp.StompServer> event) {
-        AsyncResult<StompServer> f
-        if (event.succeeded()) {
-          f = InternalHelper.<StompServer>result(new StompServer(event.result()))
+    delegate.listen(port, handler != null ? new Handler<AsyncResult<io.vertx.ext.stomp.StompServer>>() {
+      public void handle(AsyncResult<io.vertx.ext.stomp.StompServer> ar) {
+        if (ar.succeeded()) {
+          handler.handle(io.vertx.core.Future.succeededFuture(InternalHelper.safeCreate(ar.result(), io.vertx.groovy.ext.stomp.StompServer.class)));
         } else {
-          f = InternalHelper.<StompServer>failure(event.cause())
+          handler.handle(io.vertx.core.Future.failedFuture(ar.cause()));
         }
-        handler.handle(f)
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -163,17 +159,15 @@ public class StompServer {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServer}
    */
   public StompServer listen(int port, String host, Handler<AsyncResult<StompServer>> handler) {
-    this.delegate.listen(port, host, new Handler<AsyncResult<io.vertx.ext.stomp.StompServer>>() {
-      public void handle(AsyncResult<io.vertx.ext.stomp.StompServer> event) {
-        AsyncResult<StompServer> f
-        if (event.succeeded()) {
-          f = InternalHelper.<StompServer>result(new StompServer(event.result()))
+    delegate.listen(port, host, handler != null ? new Handler<AsyncResult<io.vertx.ext.stomp.StompServer>>() {
+      public void handle(AsyncResult<io.vertx.ext.stomp.StompServer> ar) {
+        if (ar.succeeded()) {
+          handler.handle(io.vertx.core.Future.succeededFuture(InternalHelper.safeCreate(ar.result(), io.vertx.groovy.ext.stomp.StompServer.class)));
         } else {
-          f = InternalHelper.<StompServer>failure(event.cause())
+          handler.handle(io.vertx.core.Future.failedFuture(ar.cause()));
         }
-        handler.handle(f)
       }
-    });
+    } : null);
     return this;
   }
   /**
@@ -181,20 +175,20 @@ public class StompServer {
    * @param completionHandler handler called once the server has been stopped
    */
   public void close(Handler<AsyncResult<Void>> completionHandler) {
-    this.delegate.close(completionHandler);
+    delegate.close(completionHandler);
   }
   /**
    * Closes the server.
    */
   public void close() {
-    this.delegate.close();
+    delegate.close();
   }
   /**
    * Checks whether or not the server is listening.
    * @return <code>true</code> if the server is listening, <code>false</code> otherwise
    */
   public boolean isListening() {
-    def ret = this.delegate.isListening();
+    def ret = delegate.isListening();
     return ret;
   }
   /**
@@ -204,7 +198,7 @@ public class StompServer {
    * @return the port
    */
   public int actualPort() {
-    def ret = this.delegate.actualPort();
+    def ret = delegate.actualPort();
     return ret;
   }
   /**
@@ -212,7 +206,7 @@ public class StompServer {
    * @return  (see <a href="../../../../../../../cheatsheet/StompServerOptions.html">StompServerOptions</a>)
    */
   public Map<String, Object> options() {
-    def ret = (Map<String, Object>)InternalHelper.wrapObject(this.delegate.options()?.toJson());
+    def ret = (Map<String, Object>)InternalHelper.wrapObject(delegate.options()?.toJson());
     return ret;
   }
   /**
@@ -220,7 +214,7 @@ public class StompServer {
    * @return 
    */
   public Vertx vertx() {
-    def ret= InternalHelper.safeCreate(this.delegate.vertx(), io.vertx.groovy.core.Vertx.class);
+    def ret = InternalHelper.safeCreate(delegate.vertx(), io.vertx.groovy.core.Vertx.class);
     return ret;
   }
   /**
@@ -228,7 +222,7 @@ public class StompServer {
    * @return 
    */
   public StompServerHandler stompHandler() {
-    def ret= InternalHelper.safeCreate(this.delegate.stompHandler(), io.vertx.groovy.ext.stomp.StompServerHandler.class);
+    def ret = InternalHelper.safeCreate(delegate.stompHandler(), io.vertx.groovy.ext.stomp.StompServerHandler.class);
     return ret;
   }
   /**
@@ -237,10 +231,9 @@ public class StompServer {
    * @return the handler that can be passed to {@link io.vertx.groovy.core.http.HttpServer#websocketHandler}.
    */
   public Handler<ServerWebSocket> webSocketHandler() {
-    def handlerDelegate = this.delegate.webSocketHandler();
-    Handler<ServerWebSocket> ret = new Handler<ServerWebSocket>() {
-      public void handle(ServerWebSocket event) {
-        handlerDelegate.handle((io.vertx.core.http.ServerWebSocket)event.getDelegate());
+    def ret = new Handler<ServerWebSocket>() {
+      public void handle(ServerWebSocket event_) {
+        delegate.webSocketHandler().handle((io.vertx.core.http.ServerWebSocket)event_.getDelegate());
       }
     };
     return ret;
@@ -252,11 +245,11 @@ public class StompServer {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServer}
    */
   public StompServer writingFrameHandler(Handler<ServerFrame> handler) {
-    this.delegate.writingFrameHandler(new Handler<io.vertx.ext.stomp.ServerFrame>() {
+    delegate.writingFrameHandler(handler != null ? new Handler<io.vertx.ext.stomp.ServerFrame>(){
       public void handle(io.vertx.ext.stomp.ServerFrame event) {
-        handler.handle(new io.vertx.groovy.ext.stomp.ServerFrame(event));
+        handler.handle(InternalHelper.safeCreate(event, io.vertx.groovy.ext.stomp.ServerFrame.class));
       }
-    });
+    } : null);
     return this;
   }
 }

@@ -38,7 +38,7 @@ public class DestinationFactory {
    * @return the destination, <code>null</code> to reject the creation.
    */
   public Destination create(Vertx vertx, String name) {
-    def ret= InternalHelper.safeCreate(this.delegate.create((io.vertx.core.Vertx)vertx.getDelegate(), name), io.vertx.groovy.ext.stomp.Destination.class);
+    def ret = InternalHelper.safeCreate(delegate.create(vertx != null ? (io.vertx.core.Vertx)vertx.getDelegate() : null, name), io.vertx.groovy.ext.stomp.Destination.class);
     return ret;
   }
 }
