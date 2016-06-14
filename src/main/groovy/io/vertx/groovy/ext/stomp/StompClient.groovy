@@ -52,7 +52,7 @@ public class StompClient {
    * @return the created {@link io.vertx.groovy.ext.stomp.StompClient}
    */
   public static StompClient create(Vertx vertx, Map<String, Object> options) {
-    def ret = InternalHelper.safeCreate(io.vertx.ext.stomp.StompClient.create(vertx != null ? (io.vertx.core.Vertx)vertx.getDelegate() : null, options != null ? new io.vertx.ext.stomp.StompClientOptions(new io.vertx.core.json.JsonObject(options)) : null), io.vertx.groovy.ext.stomp.StompClient.class);
+    def ret = InternalHelper.safeCreate(io.vertx.ext.stomp.StompClient.create(vertx != null ? (io.vertx.core.Vertx)vertx.getDelegate() : null, options != null ? new io.vertx.ext.stomp.StompClientOptions(io.vertx.lang.groovy.InternalHelper.toJsonObject(options)) : null), io.vertx.groovy.ext.stomp.StompClient.class);
     return ret;
   }
   /**

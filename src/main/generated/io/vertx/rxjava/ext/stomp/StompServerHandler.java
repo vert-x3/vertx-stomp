@@ -264,15 +264,7 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.rxjava.ext.stomp.StompServerHandler}
    */
   public StompServerHandler onAuthenticationRequest(StompServer server, String login, String passcode, Handler<AsyncResult<Boolean>> handler) { 
-    delegate.onAuthenticationRequest((io.vertx.ext.stomp.StompServer)server.getDelegate(), login, passcode, new Handler<AsyncResult<java.lang.Boolean>>() {
-      public void handle(AsyncResult<java.lang.Boolean> ar) {
-        if (ar.succeeded()) {
-          handler.handle(io.vertx.core.Future.succeededFuture(ar.result()));
-        } else {
-          handler.handle(io.vertx.core.Future.failedFuture(ar.cause()));
-        }
-      }
-    });
+    delegate.onAuthenticationRequest((io.vertx.ext.stomp.StompServer)server.getDelegate(), login, passcode, handler);
     return this;
   }
 

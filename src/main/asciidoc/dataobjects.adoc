@@ -103,11 +103,15 @@ Sets the STOMP server host. <code>0.0.0.0</code> by default.
 +++
 |[[hostnameVerificationAlgorithm]]`hostnameVerificationAlgorithm`|`String`|-
 |[[idleTimeout]]`idleTimeout`|`Number (int)`|-
+|[[jdkSslEngineOptions]]`jdkSslEngineOptions`|`link:dataobjects.html#JdkSSLEngineOptions[JdkSSLEngineOptions]`|-
 |[[keyStoreOptions]]`keyStoreOptions`|`link:dataobjects.html#JksOptions[JksOptions]`|-
+|[[logActivity]]`logActivity`|`Boolean`|-
 |[[login]]`login`|`String`|
 +++
 Sets the login to use if the STOMP server is secured.
 +++
+|[[metricsName]]`metricsName`|`String`|-
+|[[openSslEngineOptions]]`openSslEngineOptions`|`link:dataobjects.html#OpenSSLEngineOptions[OpenSSLEngineOptions]`|-
 |[[passcode]]`passcode`|`String`|
 +++
 Sets the passcode to use if the STOMP server is secured.
@@ -120,6 +124,7 @@ Sets the passcode to use if the STOMP server is secured.
 +++
 Sets the STOMP server port. <code>61613</code> by default.
 +++
+|[[proxyOptions]]`proxyOptions`|`link:dataobjects.html#ProxyOptions[ProxyOptions]`|-
 |[[receiveBufferSize]]`receiveBufferSize`|`Number (int)`|-
 |[[reconnectAttempts]]`reconnectAttempts`|`Number (int)`|-
 |[[reconnectInterval]]`reconnectInterval`|`Number (long)`|-
@@ -127,7 +132,6 @@ Sets the STOMP server port. <code>61613</code> by default.
 |[[sendBufferSize]]`sendBufferSize`|`Number (int)`|-
 |[[soLinger]]`soLinger`|`Number (int)`|-
 |[[ssl]]`ssl`|`Boolean`|-
-|[[sslEngine]]`sslEngine`|`link:enums.html#SSLEngine[SSLEngine]`|-
 |[[tcpKeepAlive]]`tcpKeepAlive`|`Boolean`|-
 |[[tcpNoDelay]]`tcpNoDelay`|`Boolean`|-
 |[[trafficClass]]`trafficClass`|`Number (int)`|-
@@ -178,7 +182,9 @@ Sets the heartbeat configuration.
 +++
 |[[host]]`host`|`String`|-
 |[[idleTimeout]]`idleTimeout`|`Number (int)`|-
+|[[jdkSslEngineOptions]]`jdkSslEngineOptions`|`link:dataobjects.html#JdkSSLEngineOptions[JdkSSLEngineOptions]`|-
 |[[keyStoreOptions]]`keyStoreOptions`|`link:dataobjects.html#JksOptions[JksOptions]`|-
+|[[logActivity]]`logActivity`|`Boolean`|-
 |[[maxBodyLength]]`maxBodyLength`|`Number (int)`|
 +++
 Sets the max body length accepted by the server. 10 Mb by default.
@@ -202,6 +208,7 @@ Sets the maximum number of headers. 1000 by default.
 Sets the maximum of subscriptions a client is allowed to register. If a client exceeds this number, it receives
  an error and the connection is closed.
 +++
+|[[openSslEngineOptions]]`openSslEngineOptions`|`link:dataobjects.html#OpenSSLEngineOptions[OpenSSLEngineOptions]`|-
 |[[pemKeyCertOptions]]`pemKeyCertOptions`|`link:dataobjects.html#PemKeyCertOptions[PemKeyCertOptions]`|-
 |[[pemTrustOptions]]`pemTrustOptions`|`link:dataobjects.html#PemTrustOptions[PemTrustOptions]`|-
 |[[pfxKeyCertOptions]]`pfxKeyCertOptions`|`link:dataobjects.html#PfxOptions[PfxOptions]`|-
@@ -224,7 +231,6 @@ Sets whether or not an error is sent to the client when this client sends a mess
 +++
 |[[soLinger]]`soLinger`|`Number (int)`|-
 |[[ssl]]`ssl`|`Boolean`|-
-|[[sslEngine]]`sslEngine`|`link:enums.html#SSLEngine[SSLEngine]`|-
 |[[supportedVersions]]`supportedVersions`|`Array of String`|
 +++
 Sets the STOMP protocol versions supported by the server. Versions must be given in the decreasing order.

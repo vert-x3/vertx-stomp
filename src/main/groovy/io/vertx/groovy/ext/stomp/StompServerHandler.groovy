@@ -279,7 +279,7 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServerHandler}
    */
   public StompServerHandler onAck(StompServerConnection connection, Map<String, Object> subscribe, List<Map<String, Object>> messages) {
-    delegate.onAck(connection != null ? (io.vertx.ext.stomp.StompServerConnection)connection.getDelegate() : null, subscribe != null ? new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(subscribe)) : null, messages != null ? (List)messages.collect({new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(it))}) : null);
+    delegate.onAck(connection != null ? (io.vertx.ext.stomp.StompServerConnection)connection.getDelegate() : null, subscribe != null ? new io.vertx.ext.stomp.Frame(io.vertx.lang.groovy.InternalHelper.toJsonObject(subscribe)) : null, messages != null ? (List)messages.collect({new io.vertx.ext.stomp.Frame(io.vertx.lang.groovy.InternalHelper.toJsonObject(it))}) : null);
     return this;
   }
   /**
@@ -293,7 +293,7 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServerHandler}
    */
   public StompServerHandler onNack(StompServerConnection connection, Map<String, Object> subscribe, List<Map<String, Object>> messages) {
-    delegate.onNack(connection != null ? (io.vertx.ext.stomp.StompServerConnection)connection.getDelegate() : null, subscribe != null ? new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(subscribe)) : null, messages != null ? (List)messages.collect({new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(it))}) : null);
+    delegate.onNack(connection != null ? (io.vertx.ext.stomp.StompServerConnection)connection.getDelegate() : null, subscribe != null ? new io.vertx.ext.stomp.Frame(io.vertx.lang.groovy.InternalHelper.toJsonObject(subscribe)) : null, messages != null ? (List)messages.collect({new io.vertx.ext.stomp.Frame(io.vertx.lang.groovy.InternalHelper.toJsonObject(it))}) : null);
     return this;
   }
   /**
@@ -364,7 +364,7 @@ public class StompServerHandler implements Handler<ServerFrame> {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServerHandler}.
    */
   public StompServerHandler bridge(Map<String, Object> options = [:]) {
-    delegate.bridge(options != null ? new io.vertx.ext.stomp.BridgeOptions(new io.vertx.core.json.JsonObject(options)) : null);
+    delegate.bridge(options != null ? new io.vertx.ext.stomp.BridgeOptions(io.vertx.lang.groovy.InternalHelper.toJsonObject(options)) : null);
     return this;
   }
 }

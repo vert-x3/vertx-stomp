@@ -40,7 +40,7 @@ public class StompServerConnection {
    * @return the current {@link io.vertx.groovy.ext.stomp.StompServerConnection}
    */
   public StompServerConnection write(Map<String, Object> frame = [:]) {
-    delegate.write(frame != null ? new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(frame)) : null);
+    delegate.write(frame != null ? new io.vertx.ext.stomp.Frame(io.vertx.lang.groovy.InternalHelper.toJsonObject(frame)) : null);
     return this;
   }
   /**

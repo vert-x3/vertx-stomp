@@ -44,7 +44,7 @@ public class Frames {
     return ret;
   }
   public static void handleReceipt(Map<String, Object> frame = [:], StompServerConnection connection) {
-    io.vertx.ext.stomp.Frames.handleReceipt(frame != null ? new io.vertx.ext.stomp.Frame(new io.vertx.core.json.JsonObject(frame)) : null, connection != null ? (io.vertx.ext.stomp.StompServerConnection)connection.getDelegate() : null);
+    io.vertx.ext.stomp.Frames.handleReceipt(frame != null ? new io.vertx.ext.stomp.Frame(io.vertx.lang.groovy.InternalHelper.toJsonObject(frame)) : null, connection != null ? (io.vertx.ext.stomp.StompServerConnection)connection.getDelegate() : null);
   }
   public static Map<String, Object> ping() {
     def ret = (Map<String, Object>)InternalHelper.wrapObject(io.vertx.ext.stomp.Frames.ping()?.toJson());

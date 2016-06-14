@@ -44,7 +44,7 @@ public class StompServer {
    * @return the created {@link io.vertx.groovy.ext.stomp.StompServer}
    */
   public static StompServer create(Vertx vertx, Map<String, Object> options) {
-    def ret = InternalHelper.safeCreate(io.vertx.ext.stomp.StompServer.create(vertx != null ? (io.vertx.core.Vertx)vertx.getDelegate() : null, options != null ? new io.vertx.ext.stomp.StompServerOptions(new io.vertx.core.json.JsonObject(options)) : null), io.vertx.groovy.ext.stomp.StompServer.class);
+    def ret = InternalHelper.safeCreate(io.vertx.ext.stomp.StompServer.create(vertx != null ? (io.vertx.core.Vertx)vertx.getDelegate() : null, options != null ? new io.vertx.ext.stomp.StompServerOptions(io.vertx.lang.groovy.InternalHelper.toJsonObject(options)) : null), io.vertx.groovy.ext.stomp.StompServer.class);
     return ret;
   }
   /**
@@ -65,7 +65,7 @@ public class StompServer {
    * @return the created {@link io.vertx.groovy.ext.stomp.StompServer}
    */
   public static StompServer create(Vertx vertx, NetServer net, Map<String, Object> options) {
-    def ret = InternalHelper.safeCreate(io.vertx.ext.stomp.StompServer.create(vertx != null ? (io.vertx.core.Vertx)vertx.getDelegate() : null, net != null ? (io.vertx.core.net.NetServer)net.getDelegate() : null, options != null ? new io.vertx.ext.stomp.StompServerOptions(new io.vertx.core.json.JsonObject(options)) : null), io.vertx.groovy.ext.stomp.StompServer.class);
+    def ret = InternalHelper.safeCreate(io.vertx.ext.stomp.StompServer.create(vertx != null ? (io.vertx.core.Vertx)vertx.getDelegate() : null, net != null ? (io.vertx.core.net.NetServer)net.getDelegate() : null, options != null ? new io.vertx.ext.stomp.StompServerOptions(io.vertx.lang.groovy.InternalHelper.toJsonObject(options)) : null), io.vertx.groovy.ext.stomp.StompServer.class);
     return ret;
   }
   /**
