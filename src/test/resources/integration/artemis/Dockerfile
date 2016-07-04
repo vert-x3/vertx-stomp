@@ -1,2 +1,2 @@
-FROM vromero/activemq-artemis
+FROM vromero/activemq-artemis:latest
 
