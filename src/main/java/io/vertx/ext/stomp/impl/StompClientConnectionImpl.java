@@ -21,7 +21,10 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.core.net.NetSocket;
-import io.vertx.ext.stomp.*;
+import io.vertx.ext.stomp.Frame;
+import io.vertx.ext.stomp.Frames;
+import io.vertx.ext.stomp.StompClient;
+import io.vertx.ext.stomp.StompClientConnection;
 import io.vertx.ext.stomp.utils.Headers;
 
 import java.util.*;
@@ -65,6 +68,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   private Handler<Frame> writingHandler;
 
   private Handler<Frame> errorHandler;
+  private volatile boolean closed;
 
   private static class Subscription {
     final String destination;
@@ -100,8 +104,14 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
       lastServerActivity = System.nanoTime();
       parser.handle(buffer);
     })
-        .closeHandler(v -> close());
-
+        .closeHandler(v -> {
+          if (!closed) {
+            close();
+            if (droppedHandler != null) {
+              droppedHandler.handle(this);
+            }
+          }
+        });
   }
 
   @Override
@@ -116,6 +126,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
 
   @Override
   public synchronized void close() {
+    closed = true;
 
     if (closeHandler != null) {
       context.runOnContext(v -> closeHandler.handle(this));
@@ -407,7 +418,9 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
         receiptHandler.handle(f);
       }
       // Close once the receipt have been received.
-      close();
+      if (!closed) {
+        close();
+      }
     });
     return this;
   }
@@ -548,13 +561,14 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
         if (deltaInMs > pong * 2) {
           LOGGER.error("Disconnecting client " + client + " - no server activity detected in the last " + deltaInMs + " ms.");
           client.vertx().cancelTimer(ponger);
-          disconnect();
 
           // Stack confinement, guarded by the parent class monitor lock.
           Handler<StompClientConnection> handler;
           synchronized (StompClientConnectionImpl.this) {
             handler = droppedHandler;
           }
+
+          disconnect();
 
           if (handler != null) {
             handler.handle(this);
