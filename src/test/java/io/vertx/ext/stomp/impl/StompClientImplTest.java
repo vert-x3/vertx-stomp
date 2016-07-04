@@ -446,4 +446,44 @@ public class StompClientImplTest {
     };
   }
 
+  @Test
+  public void testThatDroppedHandlerIsNotCalledWhenTheClientIsClosing() {
+    AsyncLock lock = new AsyncLock<>();
+    server.close(lock.handler());
+    lock.waitForSuccess();
+    lock = new AsyncLock();
+    server = StompServer.create(vertx,
+        new StompServerOptions()
+            .setHeartbeat(new JsonObject().put("x", 1000).put("y", 1000)))
+        .handler(StompServerHandler.create(vertx))
+        .listen(lock.handler());
+    lock.waitForSuccess();
+
+    StompClient client = StompClient.create(vertx, new StompClientOptions().setHeartbeat(new JsonObject()
+        .put("x", 1000).put("y", 1000)));
+
+
+    AtomicBoolean dropped = new AtomicBoolean();
+    AtomicBoolean connected = new AtomicBoolean();
+    client.connect(connection -> {
+       connection.result().connectionDroppedHandler(conn -> {
+         dropped.set(true);
+       });
+      connected.set(connection.succeeded());
+    });
+
+    Awaitility.await().atMost(10, TimeUnit.SECONDS).until(connected::get);
+
+    client.close();
+    AtomicBoolean done = new AtomicBoolean();
+    vertx.setTimer(1000, l -> {
+      done.set(true);
+    });
+
+    Awaitility.await().atMost(10, TimeUnit.SECONDS).until(done::get);
+
+    assertThat(dropped.get()).isFalse();
+
+  }
+
 }

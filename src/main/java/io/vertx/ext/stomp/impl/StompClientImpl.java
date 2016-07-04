@@ -130,18 +130,29 @@ public class StompClientImpl implements StompClient {
   }
 
   @Override
+  public boolean isClosed() {
+    return client == null;
+  }
+
+  @Override
   public synchronized StompClient connect(int port, String host, NetClient net, Handler<AsyncResult<StompClientConnection>>
       resultHandler) {
+    if (client != null) {
+      client.close();
+    }
+
     Handler<Frame> r = receivedFrameHandler;
     Handler<Frame> w = writingFrameHandler;
-    client = net.connect(port, host, ar -> {
+    net.connect(port, host, ar -> {
       if (ar.failed()) {
+        client = null;
         if (resultHandler != null) {
           resultHandler.handle(Future.failedFuture(ar.cause()));
         } else {
           log.error(ar.cause());
         }
       } else {
+        client = net;
         // Create the connection, the connection attach a handler on the socket.
         new StompClientConnectionImpl(vertx, ar.result(), this, resultHandler)
             .receivedFrameHandler(r)
@@ -184,7 +195,7 @@ public class StompClientImpl implements StompClient {
       return null;
     }
     StringBuilder builder = new StringBuilder();
-    options.getAcceptedVersions().stream().forEach(
+    options.getAcceptedVersions().forEach(
         version -> builder.append(builder.length() == 0 ? version : FrameParser.COMMA + version)
     );
     return builder.toString();

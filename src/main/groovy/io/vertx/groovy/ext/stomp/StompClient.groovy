@@ -200,4 +200,12 @@ public class StompClient {
     def ret = InternalHelper.safeCreate(delegate.vertx(), io.vertx.groovy.core.Vertx.class);
     return ret;
   }
+  /**
+   * @return whether or not the client is connected to the server.
+   * @return 
+   */
+  public boolean isClosed() {
+    def ret = delegate.isClosed();
+    return ret;
+  }
 }

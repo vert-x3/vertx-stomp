@@ -105,7 +105,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
       parser.handle(buffer);
     })
         .closeHandler(v -> {
-          if (!closed) {
+          if (!closed  && ! client.isClosed()) {
             close();
             if (droppedHandler != null) {
               droppedHandler.handle(this);
@@ -562,13 +562,15 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
           LOGGER.error("Disconnecting client " + client + " - no server activity detected in the last " + deltaInMs + " ms.");
           client.vertx().cancelTimer(ponger);
 
+          // Do not send disconnect here, just close the connection.
+          // The server will detect the disconnection using its own heartbeat.
+          close();
+
           // Stack confinement, guarded by the parent class monitor lock.
           Handler<StompClientConnection> handler;
           synchronized (StompClientConnectionImpl.this) {
             handler = droppedHandler;
           }
-
-          disconnect();
 
           if (handler != null) {
             handler.handle(this);
