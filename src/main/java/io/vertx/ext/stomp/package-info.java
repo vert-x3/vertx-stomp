@@ -286,7 +286,12 @@
  * STOMP heartbeat mechanism. When the server has not sent a message in the heartbeat time window, the connection is
  * closed and the `connectionDroppedHandler` is called (if set). To configure a `connectionDroppedHandler`, call
  * {@link io.vertx.ext.stomp.StompClientConnection#connectionDroppedHandler(io.vertx.core.Handler)}. The handler can
- * for instance tries to reconnect to the server.
+ * for instance tries to reconnect to the server:
+ *
+ * [source,$lang]
+ * ----
+ * {@link examples.StompClientExamples#example14(io.vertx.core.Vertx)}
+ * ----
  *
  * === Configuration
  *

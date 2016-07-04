@@ -437,7 +437,29 @@ The client can also be notified when a connection drop has been detected. Connec
 STOMP heartbeat mechanism. When the server has not sent a message in the heartbeat time window, the connection is
 closed and the `connectionDroppedHandler` is called (if set). To configure a `connectionDroppedHandler`, call
 `link:../../yardoc/VertxStomp/StompClientConnection.html#connection_dropped_handler-instance_method[connectionDroppedHandler]`. The handler can
-for instance tries to reconnect to the server.
+for instance tries to reconnect to the server:
+
+[source,ruby]
+----
+require 'vertx/buffer'
+require 'vertx-stomp/stomp_client'
+client = VertxStomp::StompClient.create(vertx).connect() { |ar_err,ar|
+  if (ar_err == nil)
+    connection = ar
+    connection.connection_dropped_handler() { |con|
+      # The connection has been lost
+      # You can reconnect or switch to another server.
+    }
+
+    connection.send("/queue", Vertx::Buffer.buffer("Hello")) { |frame|
+      puts "Message processed by the server"
+    }
+  else
+    puts "Failed to connect to the STOMP server: #{ar_err.to_string()}"
+  end
+}
+
+----
 
 === Configuration
 
@@ -751,7 +773,17 @@ frames, and _illegal / unknown_ frames:
 
 [source,ruby]
 ----
-Code not translatable
+require 'vertx-stomp/stomp_server_handler'
+require 'vertx-stomp/stomp_server'
+require 'vertx-stomp/stomp_client'
+server = VertxStomp::StompServer.create(vertx).handler(VertxStomp::StompServerHandler.create(vertx).received_frame_handler() { |sf|
+  puts sf.frame()
+}).listen()
+
+client = VertxStomp::StompClient.create(vertx).received_frame_handler() { |frame|
+  puts frame
+}
+
 ----
 
 The handler is called before the frame is processed, so you can also _modify_ the frame.
@@ -763,5 +795,15 @@ You can also register a handler to be notified when a frame is going to be sent 
 
 [source,ruby]
 ----
-Code not translatable
+require 'vertx-stomp/stomp_server_handler'
+require 'vertx-stomp/stomp_server'
+require 'vertx-stomp/stomp_client'
+server = VertxStomp::StompServer.create(vertx).handler(VertxStomp::StompServerHandler.create(vertx)).writing_frame_handler() { |sf|
+  puts sf.frame()
+}.listen()
+
+client = VertxStomp::StompClient.create(vertx).writing_frame_handler() { |frame|
+  puts frame
+}
+
 ----

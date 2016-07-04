@@ -403,7 +403,29 @@ The client can also be notified when a connection drop has been detected. Connec
 STOMP heartbeat mechanism. When the server has not sent a message in the heartbeat time window, the connection is
 closed and the `connectionDroppedHandler` is called (if set). To configure a `connectionDroppedHandler`, call
 `link:../../apidocs/io/vertx/ext/stomp/StompClientConnection.html#connectionDroppedHandler-io.vertx.core.Handler-[connectionDroppedHandler]`. The handler can
-for instance tries to reconnect to the server.
+for instance tries to reconnect to the server:
+
+[source,java]
+----
+StompClient client = StompClient.create(vertx)
+    .connect(ar -> {
+      if (ar.succeeded()) {
+        StompClientConnection connection = ar.result();
+        connection.connectionDroppedHandler(con -> {
+          // The connection has been lost
+          // You can reconnect or switch to another server.
+        });
+
+        connection.send("/queue", Buffer.buffer("Hello"),
+            frame -> {
+              System.out.println("Message processed by the server");
+            }
+        );
+      } else {
+        System.out.println("Failed to connect to the STOMP server: " + ar.cause().toString());
+      }
+    });
+----
 
 === Configuration
 
@@ -683,10 +705,12 @@ frames, and _illegal / unknown_ frames:
 [source,java]
 ----
 StompServer server = StompServer.create(vertx)
-    .handler(StompServerHandler.create(vertx).receivedFrameHandler(System.out::println))
+    .handler(StompServerHandler.create(vertx).receivedFrameHandler(sf -> {
+      System.out.println(sf.frame());
+    }))
     .listen();
 
-StompClient client = StompClient.create(vertx).receivedFrameHandler(System.out::println);
+StompClient client = StompClient.create(vertx).receivedFrameHandler(frame -> System.out.println(frame));
 ----
 
 The handler is called before the frame is processed, so you can also _modify_ the frame.
@@ -700,8 +724,12 @@ You can also register a handler to be notified when a frame is going to be sent 
 ----
 StompServer server = StompServer.create(vertx)
     .handler(StompServerHandler.create(vertx))
-    .writingFrameHandler(System.out::println)
+    .writingFrameHandler(sf -> {
+      System.out.println(sf.frame());
+    })
     .listen();
 
-StompClient client = StompClient.create(vertx).writingFrameHandler(System.out::println);
+StompClient client = StompClient.create(vertx).writingFrameHandler(frame -> {
+  System.out.println(frame);
+});
 ----
