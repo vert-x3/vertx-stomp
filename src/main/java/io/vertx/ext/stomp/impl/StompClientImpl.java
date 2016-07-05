@@ -130,7 +130,7 @@ public class StompClientImpl implements StompClient {
   }
 
   @Override
-  public boolean isClosed() {
+  public synchronized boolean isClosed() {
     return client == null;
   }
 
@@ -139,20 +139,22 @@ public class StompClientImpl implements StompClient {
       resultHandler) {
     if (client != null) {
       client.close();
+      client = null;
     }
 
     Handler<Frame> r = receivedFrameHandler;
     Handler<Frame> w = writingFrameHandler;
     net.connect(port, host, ar -> {
+      synchronized (StompClientImpl.this) {
+        client = ar.failed() ? null : net;
+      }
       if (ar.failed()) {
-        client = null;
         if (resultHandler != null) {
           resultHandler.handle(Future.failedFuture(ar.cause()));
         } else {
           log.error(ar.cause());
         }
       } else {
-        client = net;
         // Create the connection, the connection attach a handler on the socket.
         new StompClientConnectionImpl(vertx, ar.result(), this, resultHandler)
             .receivedFrameHandler(r)
