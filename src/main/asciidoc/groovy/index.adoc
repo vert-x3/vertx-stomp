@@ -24,7 +24,7 @@ descriptor:
 <dependency>
   <groupId>io.vertx</groupId>
   <artifactId>vertx-stomp</artifactId>
-  <version>3.3.0</version>
+  <version>3.3.1-SNAPSHOT</version>
 </dependency>
 ----
 
@@ -32,7 +32,7 @@ descriptor:
 
 [source,groovy,subs="+attributes"]
 ----
-compile 'io.vertx:vertx-stomp:3.3.0'
+compile 'io.vertx:vertx-stomp:3.3.1-SNAPSHOT'
 ----
 
 == STOMP server
@@ -437,7 +437,29 @@ The client can also be notified when a connection drop has been detected. Connec
 STOMP heartbeat mechanism. When the server has not sent a message in the heartbeat time window, the connection is
 closed and the `connectionDroppedHandler` is called (if set). To configure a `connectionDroppedHandler`, call
 `link:../../groovydoc/io/vertx/groovy/ext/stomp/StompClientConnection.html#connectionDroppedHandler(io.vertx.core.Handler)[connectionDroppedHandler]`. The handler can
-for instance tries to reconnect to the server.
+for instance tries to reconnect to the server:
+
+[source,groovy]
+----
+import io.vertx.groovy.core.buffer.Buffer
+import io.vertx.groovy.ext.stomp.StompClient
+def client = StompClient.create(vertx).connect({ ar ->
+  if (ar.succeeded()) {
+    def connection = ar.result()
+    connection.connectionDroppedHandler({ con ->
+      // The connection has been lost
+      // You can reconnect or switch to another server.
+    })
+
+    connection.send("/queue", Buffer.buffer("Hello"), { frame ->
+      println("Message processed by the server")
+    })
+  } else {
+    println("Failed to connect to the STOMP server: ${ar.cause().toString()}")
+  }
+})
+
+----
 
 === Configuration
 
@@ -752,7 +774,17 @@ frames, and _illegal / unknown_ frames:
 
 [source,groovy]
 ----
-Code not translatable
+import io.vertx.groovy.ext.stomp.StompServerHandler
+import io.vertx.groovy.ext.stomp.StompServer
+import io.vertx.groovy.ext.stomp.StompClient
+def server = StompServer.create(vertx).handler(StompServerHandler.create(vertx).receivedFrameHandler({ sf ->
+  println(sf.frame())
+})).listen()
+
+def client = StompClient.create(vertx).receivedFrameHandler({ frame ->
+  println(frame)
+})
+
 ----
 
 The handler is called before the frame is processed, so you can also _modify_ the frame.
@@ -764,5 +796,15 @@ You can also register a handler to be notified when a frame is going to be sent 
 
 [source,groovy]
 ----
-Code not translatable
+import io.vertx.groovy.ext.stomp.StompServerHandler
+import io.vertx.groovy.ext.stomp.StompServer
+import io.vertx.groovy.ext.stomp.StompClient
+def server = StompServer.create(vertx).handler(StompServerHandler.create(vertx)).writingFrameHandler({ sf ->
+  println(sf.frame())
+}).listen()
+
+def client = StompClient.create(vertx).writingFrameHandler({ frame ->
+  println(frame)
+})
+
 ----

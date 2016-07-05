@@ -124,5 +124,13 @@ module VertxStomp
       end
       raise ArgumentError, "Invalid arguments when calling vertx()"
     end
+    #  @return whether or not the client is connected to the server.
+    # @return [true,false]
+    def closed?
+      if !block_given?
+        return @j_del.java_method(:isClosed, []).call()
+      end
+      raise ArgumentError, "Invalid arguments when calling closed?()"
+    end
   end
 end

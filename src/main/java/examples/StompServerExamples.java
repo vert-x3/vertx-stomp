@@ -201,19 +201,25 @@ public class StompServerExamples {
 
   public void example17(Vertx vertx) {
     StompServer server = StompServer.create(vertx)
-        .handler(StompServerHandler.create(vertx).receivedFrameHandler(System.out::println))
+        .handler(StompServerHandler.create(vertx).receivedFrameHandler(sf -> {
+          System.out.println(sf.frame());
+        }))
         .listen();
 
-    StompClient client = StompClient.create(vertx).receivedFrameHandler(System.out::println);
+    StompClient client = StompClient.create(vertx).receivedFrameHandler(frame -> System.out.println(frame));
   }
 
   public void example18(Vertx vertx) {
     StompServer server = StompServer.create(vertx)
         .handler(StompServerHandler.create(vertx))
-        .writingFrameHandler(System.out::println)
+        .writingFrameHandler(sf -> {
+          System.out.println(sf.frame());
+        })
         .listen();
 
-    StompClient client = StompClient.create(vertx).writingFrameHandler(System.out::println);
+    StompClient client = StompClient.create(vertx).writingFrameHandler(frame -> {
+      System.out.println(frame);
+    });
   }
 
 }

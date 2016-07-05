@@ -17,6 +17,8 @@
 package io.vertx.ext.stomp.impl;
 
 import com.jayway.awaitility.Awaitility;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
@@ -27,9 +29,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -335,6 +340,150 @@ public class StompClientImplTest {
     });
 
     Awaitility.await().atMost(10, TimeUnit.SECONDS).until(dropped::get);
+  }
+
+
+  @Test
+  public void testReconnection() throws InterruptedException {
+    AtomicBoolean flag = new AtomicBoolean(true);
+    AtomicInteger dropped = new AtomicInteger(0);
+    AtomicInteger connectionCounter = new AtomicInteger();
+    List<ServerFrame> frames = new ArrayList<>();
+    AsyncLock lock = new AsyncLock<>();
+    server.close(lock.handler());
+    lock.waitForSuccess();
+    lock = new AsyncLock();
+    server = StompServer.create(vertx,
+        new StompServerOptions()
+            .setHeartbeat(new JsonObject().put("x", 1000).put("y", 1000)))
+        .handler(StompServerHandler.create(vertx).pingHandler(connection -> {
+          if (flag.get()) {
+            connection.ping();
+          }
+          // When the flag is set to false, the ping are not sent anymore. We use this mechanism to mimic a
+          // server not sending ping anymore.
+        }).receivedFrameHandler(frames::add))
+        .listen(lock.handler());
+    lock.waitForSuccess();
+
+    StompClient client = StompClient.create(vertx, new StompClientOptions().setHeartbeat(new JsonObject()
+        .put("x", 1000).put("y", 1000)));
+    Handler<AsyncResult<StompClientConnection>> connectionHandler = getConnectionHandler(client, flag, dropped,
+        connectionCounter);
+
+    client.connect(connectionHandler);
+
+
+    Awaitility.await().atMost(10, TimeUnit.SECONDS).until(() -> dropped.get() == 1);
+    Awaitility.await().atMost(10, TimeUnit.SECONDS).until(() -> connectionCounter.get() == 2);
+    Awaitility.await().atMost(10, TimeUnit.SECONDS).until(() -> containsClientFrame(frames, 1)
+        &&  containsClientFrame(frames, 2));
+  }
+
+  @Test
+  public void testReconnectionWithDeadServer() throws InterruptedException {
+    AtomicBoolean flag = new AtomicBoolean(true);
+    AtomicInteger dropped = new AtomicInteger(0);
+    AtomicInteger connectionCounter = new AtomicInteger();
+    List<ServerFrame> frames = new ArrayList<>();
+    AsyncLock lock = new AsyncLock<>();
+    server.close(lock.handler());
+    lock.waitForSuccess();
+    lock = new AsyncLock();
+    server = StompServer.create(vertx,
+        new StompServerOptions()
+            .setHeartbeat(new JsonObject().put("x", 1000).put("y", 1000)))
+        .handler(StompServerHandler.create(vertx).pingHandler(connection -> {
+          if (flag.get()) {
+            connection.ping();
+          } else {
+            server.close();
+          }
+          // When the flag is set to false, the ping are not sent anymore. We use this mechanism to mimic a
+          // server not sending ping anymore.
+        }).receivedFrameHandler(frames::add))
+        .listen(lock.handler());
+    lock.waitForSuccess();
+
+    StompClient client = StompClient.create(vertx, new StompClientOptions().setHeartbeat(new JsonObject()
+        .put("x", 1000).put("y", 1000)));
+    Handler<AsyncResult<StompClientConnection>> connectionHandler = getConnectionHandler(client, flag, dropped,
+        connectionCounter);
+
+    client.connect(connectionHandler);
+
+
+    Awaitility.await().atMost(10, TimeUnit.SECONDS).until(() -> dropped.get() == 1);
+    Awaitility.await().atMost(10, TimeUnit.SECONDS).until(() -> connectionCounter.get() == 1);
+    Awaitility.await().atMost(10, TimeUnit.SECONDS).until(() -> containsClientFrame(frames, 1)
+        &&  ! containsClientFrame(frames, 2));
+  }
+
+  private boolean containsClientFrame(List<ServerFrame> frames, int count) {
+    for (ServerFrame frame : frames) {
+      if (frame.frame().getBody() != null  && frame.frame().getBodyAsString().contains("some body " + count)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private Handler<AsyncResult<StompClientConnection>> getConnectionHandler(StompClient client, AtomicBoolean flag,
+                                                                           AtomicInteger dropped,
+                                                                           AtomicInteger connection) {
+    return ar -> {
+      if (ar.succeeded()) {
+        ar.result().connectionDroppedHandler(v -> {
+          dropped.incrementAndGet();
+          client.connect(getConnectionHandler(client, flag, dropped, connection));
+        });
+        int count = connection.incrementAndGet();
+        flag.set(false); // Disable the ping.
+        ar.result().send("some-address", Buffer.buffer("some body " + count));
+      } else {
+        // Connection failed.
+      }
+    };
+  }
+
+  @Test
+  public void testThatDroppedHandlerIsNotCalledWhenTheClientIsClosing() {
+    AsyncLock lock = new AsyncLock<>();
+    server.close(lock.handler());
+    lock.waitForSuccess();
+    lock = new AsyncLock();
+    server = StompServer.create(vertx,
+        new StompServerOptions()
+            .setHeartbeat(new JsonObject().put("x", 1000).put("y", 1000)))
+        .handler(StompServerHandler.create(vertx))
+        .listen(lock.handler());
+    lock.waitForSuccess();
+
+    StompClient client = StompClient.create(vertx, new StompClientOptions().setHeartbeat(new JsonObject()
+        .put("x", 1000).put("y", 1000)));
+
+
+    AtomicBoolean dropped = new AtomicBoolean();
+    AtomicBoolean connected = new AtomicBoolean();
+    client.connect(connection -> {
+       connection.result().connectionDroppedHandler(conn -> {
+         dropped.set(true);
+       });
+      connected.set(connection.succeeded());
+    });
+
+    Awaitility.await().atMost(10, TimeUnit.SECONDS).until(connected::get);
+
+    client.close();
+    AtomicBoolean done = new AtomicBoolean();
+    vertx.setTimer(1000, l -> {
+      done.set(true);
+    });
+
+    Awaitility.await().atMost(10, TimeUnit.SECONDS).until(done::get);
+
+    assertThat(dropped.get()).isFalse();
+
   }
 
 }

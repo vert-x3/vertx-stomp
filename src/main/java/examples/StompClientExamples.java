@@ -232,5 +232,26 @@ public class StompClientExamples {
         });
   }
 
+  public void example14(Vertx vertx) {
+    StompClient client = StompClient.create(vertx)
+        .connect(ar -> {
+          if (ar.succeeded()) {
+            StompClientConnection connection = ar.result();
+            connection.connectionDroppedHandler(con -> {
+              // The connection has been lost
+              // You can reconnect or switch to another server.
+            });
+
+            connection.send("/queue", Buffer.buffer("Hello"),
+                frame -> {
+                  System.out.println("Message processed by the server");
+                }
+            );
+          } else {
+            System.out.println("Failed to connect to the STOMP server: " + ar.cause().toString());
+          }
+        });
+  }
+
 
 }

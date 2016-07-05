@@ -147,4 +147,9 @@ public interface StompClient {
    * @return the vert.x instance used by the client.
    */
   Vertx vertx();
+
+  /**
+   * @return whether or not the client is connected to the server.
+   */
+  boolean isClosed();
 }

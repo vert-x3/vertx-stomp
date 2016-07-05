@@ -254,6 +254,15 @@ public class StompClient {
     return ret;
   }
 
+  /**
+   * @return whether or not the client is connected to the server.
+   * @return 
+   */
+  public boolean isClosed() { 
+    boolean ret = delegate.isClosed();
+    return ret;
+  }
+
 
   public static StompClient newInstance(io.vertx.ext.stomp.StompClient arg) {
     return arg != null ? new StompClient(arg) : null;
