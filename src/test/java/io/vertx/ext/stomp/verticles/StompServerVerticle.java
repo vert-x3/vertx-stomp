@@ -34,8 +34,8 @@ public class StompServerVerticle extends AbstractVerticle {
 
   @Override
   public void start(Future<Void> future) throws Exception {
-    server = StompServer.create(vertx).handler(StompServerHandler.create(vertx).destinationFactory(
-        (vertx, name) -> {
+    server = StompServer.create(vertx).handler(StompServerHandler.create(vertx)
+        .destinationFactory((vertx, name) -> {
           if (config().getBoolean("useQueue", false)) {
             return Destination.queue(vertx, name);
           } else {
@@ -49,5 +49,10 @@ public class StompServerVerticle extends AbstractVerticle {
             future.complete(null);
           }
         });
+  }
+
+  @Override
+  public void stop() throws Exception {
+    server.close();
   }
 }

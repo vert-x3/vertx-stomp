@@ -39,13 +39,16 @@ public class ReceiverStompClient extends AbstractVerticle {
     StompClient.create(vertx).connect(ar -> {
       if (ar.failed()) {
         future.fail(ar.cause());
+        return;
       }
       final StompClientConnection connection = ar.result();
       connection
           .receivedFrameHandler(frame -> System.out.println("Client receiving:\n" + frame))
           .writingFrameHandler(frame -> System.out.println("Client sending:\n" + frame))
           .subscribe("/queue", FRAMES::add, frame -> {
-        future.complete();
+            if (! future.isComplete()) {
+              future.complete();
+            }
       });
     });
 
