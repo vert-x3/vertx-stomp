@@ -186,6 +186,37 @@ public class WebSocketBridgeTest {
   }
 
   @Test
+  public void testPingFromServer() {
+    AtomicReference<Throwable> error = new AtomicReference<>();
+    AtomicReference<WebSocket> socket = new AtomicReference<>();
+    AtomicReference<Boolean> flag = new AtomicReference<>();
+
+    AtomicReference<StompClientConnection> client = new AtomicReference<>();
+
+    clients.add(StompClient.create(vertx).connect(61613, "localhost", connection -> {
+      client.set(connection.result());
+    }));
+
+    await().atMost(10, TimeUnit.SECONDS).until(() -> client.get() != null);
+
+    vertx.createHttpClient().websocket(8080, "localhost", "/stomp", MultiMap.caseInsensitiveMultiMap().add
+            ("Sec-WebSocket-Protocol", "v10.stomp, v11.stomp, v12.stomp"), ws -> {
+      socket.set(ws);
+      ws.exceptionHandler(error::set)
+              .handler(buffer -> {
+                vertx.setTimer(1000, id -> {
+                  flag.set(true);
+                });
+              })
+              .write(new Frame(Frame.Command.CONNECT, Headers.create("accept-version", "1.2,1.1,1.0",
+                      "heart-beat", "100,0"), null).toBuffer());
+    });
+
+    await().atMost(10, TimeUnit.SECONDS).until(() -> error.get() == null && flag.get() != null);
+    socket.get().close();
+  }
+
+  @Test
   public void testWebSocketsWhenTCPDisabled() {
     AsyncLock<Void> lock = new AsyncLock<>();
     server.close(lock.handler());

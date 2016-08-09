@@ -39,7 +39,7 @@ public class StompServerTCPConnectionImpl implements StompServerConnection {
   private final StompServer server;
   private final NetSocket socket;
   private final String sessionId;
-  private final Handler<ServerFrame> handler;
+  protected final Handler<ServerFrame> handler;
 
   private volatile long lastClientActivity;
   private long pinger = -1;

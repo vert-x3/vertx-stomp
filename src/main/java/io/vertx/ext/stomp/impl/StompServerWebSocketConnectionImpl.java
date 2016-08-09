@@ -50,6 +50,14 @@ public class StompServerWebSocketConnectionImpl extends  StompServerTCPConnectio
   }
 
   @Override
+  public void ping() {
+    if (handler != null) {
+      handler.handle(new ServerFrameImpl(Frames.PING, this));
+    }
+    socket.write(Buffer.buffer(FrameParser.EOL));
+  }
+
+  @Override
   public void close() {
     cancelHeartbeat();
     handler().onClose(this);
