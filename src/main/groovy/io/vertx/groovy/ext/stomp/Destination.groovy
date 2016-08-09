@@ -53,7 +53,6 @@ public class Destination {
   }
   /**
    * @return the destination address.
-   * @return 
    */
   public String destination() {
     def ret = delegate.destination();

@@ -49,7 +49,6 @@ public class Acknowledgement {
 
   /**
    * @return the subscription frame
-   * @return 
    */
   public Frame subscription() { 
     Frame ret = delegate.subscription();
@@ -57,9 +56,7 @@ public class Acknowledgement {
   }
 
   /**
-   * @return the list of frames that have been acknowledged / not-acknowledged. The content of the list depends on
-   * the type of subscription.
-   * @return 
+   * @return the list of frames that have been acknowledged / not-acknowledged. The content of the list depends on the type of subscription.
    */
   public List<Frame> frames() { 
     List<Frame> ret = delegate.frames();

@@ -32,11 +32,10 @@ var Acknowledgement = function(j_val) {
   var that = this;
 
   /**
-   @return the subscription frame
 
    @public
 
-   @return {Object}
+   @return {Object} the subscription frame
    */
   this.subscription = function() {
     var __args = arguments;
@@ -46,12 +45,10 @@ var Acknowledgement = function(j_val) {
   };
 
   /**
-   @return the list of frames that have been acknowledged / not-acknowledged. The content of the list depends on
-   the type of subscription.
 
    @public
 
-   @return {Array.<Object>}
+   @return {Array.<Object>} the list of frames that have been acknowledged / not-acknowledged. The content of the list depends on the type of subscription.
    */
   this.frames = function() {
     var __args = arguments;

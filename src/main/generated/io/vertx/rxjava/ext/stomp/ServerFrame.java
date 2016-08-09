@@ -42,7 +42,6 @@ public class ServerFrame {
 
   /**
    * @return the received frame
-   * @return 
    */
   public Frame frame() { 
     Frame ret = delegate.frame();
@@ -51,7 +50,6 @@ public class ServerFrame {
 
   /**
    * @return the connection
-   * @return 
    */
   public StompServerConnection connection() { 
     StompServerConnection ret = StompServerConnection.newInstance(delegate.connection());

@@ -33,11 +33,10 @@ var ServerFrame = function(j_val) {
   var that = this;
 
   /**
-   @return the received frame
 
    @public
 
-   @return {Object}
+   @return {Object} the received frame
    */
   this.frame = function() {
     var __args = arguments;
@@ -47,11 +46,10 @@ var ServerFrame = function(j_val) {
   };
 
   /**
-   @return the connection
 
    @public
 
-   @return {StompServerConnection}
+   @return {StompServerConnection} the connection
    */
   this.connection = function() {
     var __args = arguments;

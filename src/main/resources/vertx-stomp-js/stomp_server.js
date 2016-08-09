@@ -154,11 +154,10 @@ var StompServer = function(j_val) {
   };
 
   /**
-   @return the server options
 
    @public
 
-   @return {Object}
+   @return {Object} the server options
    */
   this.options = function() {
     var __args = arguments;
@@ -168,11 +167,10 @@ var StompServer = function(j_val) {
   };
 
   /**
-   @return the instance of vert.x used by the server.
 
    @public
 
-   @return {Vertx}
+   @return {Vertx} the instance of vert.x used by the server.
    */
   this.vertx = function() {
     var __args = arguments;
@@ -182,11 +180,10 @@ var StompServer = function(j_val) {
   };
 
   /**
-   @return the {@link StompServerHandler} used by this server.
 
    @public
 
-   @return {StompServerHandler}
+   @return {StompServerHandler} the {@link StompServerHandler} used by this server.
    */
   this.stompHandler = function() {
     var __args = arguments;

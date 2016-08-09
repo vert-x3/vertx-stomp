@@ -162,11 +162,10 @@ var StompClient = function(j_val) {
   };
 
   /**
-   @return the client's options.
 
    @public
 
-   @return {Object}
+   @return {Object} the client's options.
    */
   this.options = function() {
     var __args = arguments;
@@ -176,11 +175,10 @@ var StompClient = function(j_val) {
   };
 
   /**
-   @return the vert.x instance used by the client.
 
    @public
 
-   @return {Vertx}
+   @return {Vertx} the vert.x instance used by the client.
    */
   this.vertx = function() {
     var __args = arguments;
@@ -190,11 +188,10 @@ var StompClient = function(j_val) {
   };
 
   /**
-   @return whether or not the client is connected to the server.
 
    @public
 
-   @return {boolean}
+   @return {boolean} whether or not the client is connected to the server.
    */
   this.isClosed = function() {
     var __args = arguments;

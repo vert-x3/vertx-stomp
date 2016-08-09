@@ -185,8 +185,7 @@ public class StompClient {
     delegate.close();
   }
   /**
-   * @return the client's options.
-   * @return  (see <a href="../../../../../../../cheatsheet/StompClientOptions.html">StompClientOptions</a>)
+   * @return the client's options. (see <a href="../../../../../../../cheatsheet/StompClientOptions.html">StompClientOptions</a>)
    */
   public Map<String, Object> options() {
     def ret = (Map<String, Object>)InternalHelper.wrapObject(delegate.options()?.toJson());
@@ -194,7 +193,6 @@ public class StompClient {
   }
   /**
    * @return the vert.x instance used by the client.
-   * @return 
    */
   public Vertx vertx() {
     def ret = InternalHelper.safeCreate(delegate.vertx(), io.vertx.groovy.core.Vertx.class);
@@ -202,7 +200,6 @@ public class StompClient {
   }
   /**
    * @return whether or not the client is connected to the server.
-   * @return 
    */
   public boolean isClosed() {
     def ret = delegate.isClosed();

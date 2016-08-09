@@ -33,24 +33,21 @@ module VertxStomp
       end
       raise ArgumentError, "Invalid arguments when calling write(param_1)"
     end
-    #  @return the STOMP server serving this connection.
-    # @return [::VertxStomp::StompServer]
+    # @return [::VertxStomp::StompServer] the STOMP server serving this connection.
     def server
       if !block_given?
         return ::Vertx::Util::Utils.safe_create(@j_del.java_method(:server, []).call(),::VertxStomp::StompServer)
       end
       raise ArgumentError, "Invalid arguments when calling server()"
     end
-    #  @return the STOMP server handler dealing with this connection
-    # @return [::VertxStomp::StompServerHandler]
+    # @return [::VertxStomp::StompServerHandler] the STOMP server handler dealing with this connection
     def handler
       if !block_given?
         return ::Vertx::Util::Utils.safe_create(@j_del.java_method(:handler, []).call(),::VertxStomp::StompServerHandler)
       end
       raise ArgumentError, "Invalid arguments when calling handler()"
     end
-    #  @return the STOMP session id computed when the client has established the connection to the server
-    # @return [String]
+    # @return [String] the STOMP session id computed when the client has established the connection to the server
     def session
       if !block_given?
         return @j_del.java_method(:session, []).call()

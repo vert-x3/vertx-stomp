@@ -238,7 +238,6 @@ public class StompClient {
 
   /**
    * @return the client's options.
-   * @return 
    */
   public StompClientOptions options() { 
     StompClientOptions ret = delegate.options();
@@ -247,7 +246,6 @@ public class StompClient {
 
   /**
    * @return the vert.x instance used by the client.
-   * @return 
    */
   public Vertx vertx() { 
     Vertx ret = Vertx.newInstance(delegate.vertx());
@@ -256,7 +254,6 @@ public class StompClient {
 
   /**
    * @return whether or not the client is connected to the server.
-   * @return 
    */
   public boolean isClosed() { 
     boolean ret = delegate.isClosed();

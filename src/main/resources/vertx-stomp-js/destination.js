@@ -40,11 +40,10 @@ var Destination = function(j_val) {
   var that = this;
 
   /**
-   @return the destination address.
 
    @public
 
-   @return {string}
+   @return {string} the destination address.
    */
   this.destination = function() {
     var __args = arguments;

@@ -45,7 +45,6 @@ public class StompClientConnection {
 
   /**
    * @return the session id.
-   * @return 
    */
   public String session() { 
     String ret = delegate.session();
@@ -54,7 +53,6 @@ public class StompClientConnection {
 
   /**
    * @return the STOMP protocol version negotiated with the server.
-   * @return 
    */
   public String version() { 
     String ret = delegate.version();
@@ -70,7 +68,6 @@ public class StompClientConnection {
 
   /**
    * @return the server name.
-   * @return 
    */
   public String server() { 
     String ret = delegate.server();

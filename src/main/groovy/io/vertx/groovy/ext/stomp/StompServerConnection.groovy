@@ -54,7 +54,6 @@ public class StompServerConnection {
   }
   /**
    * @return the STOMP server serving this connection.
-   * @return 
    */
   public StompServer server() {
     def ret = InternalHelper.safeCreate(delegate.server(), io.vertx.groovy.ext.stomp.StompServer.class);
@@ -62,7 +61,6 @@ public class StompServerConnection {
   }
   /**
    * @return the STOMP server handler dealing with this connection
-   * @return 
    */
   public StompServerHandler handler() {
     def ret = InternalHelper.safeCreate(delegate.handler(), io.vertx.groovy.ext.stomp.StompServerHandler.class);
@@ -70,7 +68,6 @@ public class StompServerConnection {
   }
   /**
    * @return the STOMP session id computed when the client has established the connection to the server
-   * @return 
    */
   public String session() {
     def ret = delegate.session();

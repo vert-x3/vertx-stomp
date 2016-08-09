@@ -333,12 +333,10 @@ var StompServerHandler = function(j_val) {
   };
 
   /**
-   @return the list of destination managed by the STOMP server. Don't forget the STOMP interprets destination as
-   opaque Strings.
 
    @public
 
-   @return {Array.<Destination>}
+   @return {Array.<Destination>} the list of destination managed by the STOMP server. Don't forget the STOMP interprets destination as opaque Strings.
    */
   this.getDestinations = function() {
     var __args = arguments;

@@ -20,17 +20,14 @@ module VertxStomp
     def j_del
       @j_del
     end
-    #  @return the subscription frame
-    # @return [Hash]
+    # @return [Hash] the subscription frame
     def subscription
       if !block_given?
         return @j_del.java_method(:subscription, []).call() != nil ? JSON.parse(@j_del.java_method(:subscription, []).call().toJson.encode) : nil
       end
       raise ArgumentError, "Invalid arguments when calling subscription()"
     end
-    #  @return the list of frames that have been acknowledged / not-acknowledged. The content of the list depends on
-    #  the type of subscription.
-    # @return [Array<Hash>]
+    # @return [Array<Hash>] the list of frames that have been acknowledged / not-acknowledged. The content of the list depends on the type of subscription.
     def frames
       if !block_given?
         return @j_del.java_method(:frames, []).call().to_a.map { |elt| elt != nil ? JSON.parse(elt.toJson.encode) : nil }

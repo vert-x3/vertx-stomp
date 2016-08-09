@@ -15,16 +15,14 @@ module VertxStomp
     def j_del
       @j_del
     end
-    #  @return the session id.
-    # @return [String]
+    # @return [String] the session id.
     def session
       if !block_given?
         return @j_del.java_method(:session, []).call()
       end
       raise ArgumentError, "Invalid arguments when calling session()"
     end
-    #  @return the STOMP protocol version negotiated with the server.
-    # @return [String]
+    # @return [String] the STOMP protocol version negotiated with the server.
     def version
       if !block_given?
         return @j_del.java_method(:version, []).call()
@@ -39,8 +37,7 @@ module VertxStomp
       end
       raise ArgumentError, "Invalid arguments when calling close()"
     end
-    #  @return the server name.
-    # @return [String]
+    # @return [String] the server name.
     def server
       if !block_given?
         return @j_del.java_method(:server, []).call()

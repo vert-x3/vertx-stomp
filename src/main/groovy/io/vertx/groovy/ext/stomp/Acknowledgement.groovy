@@ -40,17 +40,14 @@ public class Acknowledgement {
     return delegate;
   }
   /**
-   * @return the subscription frame
-   * @return  (see <a href="../../../../../../../cheatsheet/Frame.html">Frame</a>)
+   * @return the subscription frame (see <a href="../../../../../../../cheatsheet/Frame.html">Frame</a>)
    */
   public Map<String, Object> subscription() {
     def ret = (Map<String, Object>)InternalHelper.wrapObject(delegate.subscription()?.toJson());
     return ret;
   }
   /**
-   * @return the list of frames that have been acknowledged / not-acknowledged. The content of the list depends on
-   * the type of subscription.
-   * @return 
+   * @return the list of frames that have been acknowledged / not-acknowledged. The content of the list depends on the type of subscription.
    */
   public List<Map<String, Object>> frames() {
     def ret = (List)delegate.frames()?.collect({(Map<String, Object>)InternalHelper.wrapObject(it?.toJson())});

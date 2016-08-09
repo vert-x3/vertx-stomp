@@ -112,24 +112,21 @@ module VertxStomp
       end
       raise ArgumentError, "Invalid arguments when calling actual_port()"
     end
-    #  @return the server options
-    # @return [Hash]
+    # @return [Hash] the server options
     def options
       if !block_given?
         return @j_del.java_method(:options, []).call() != nil ? JSON.parse(@j_del.java_method(:options, []).call().toJson.encode) : nil
       end
       raise ArgumentError, "Invalid arguments when calling options()"
     end
-    #  @return the instance of vert.x used by the server.
-    # @return [::Vertx::Vertx]
+    # @return [::Vertx::Vertx] the instance of vert.x used by the server.
     def vertx
       if !block_given?
         return ::Vertx::Util::Utils.safe_create(@j_del.java_method(:vertx, []).call(),::Vertx::Vertx)
       end
       raise ArgumentError, "Invalid arguments when calling vertx()"
     end
-    #  @return the {::VertxStomp::StompServerHandler} used by this server.
-    # @return [::VertxStomp::StompServerHandler]
+    # @return [::VertxStomp::StompServerHandler] the {::VertxStomp::StompServerHandler} used by this server.
     def stomp_handler
       if !block_given?
         return ::Vertx::Util::Utils.safe_create(@j_del.java_method(:stompHandler, []).call(),::VertxStomp::StompServerHandler)

@@ -206,9 +206,7 @@ module VertxStomp
       end
       raise ArgumentError, "Invalid arguments when calling auth_provider(handler)"
     end
-    #  @return the list of destination managed by the STOMP server. Don't forget the STOMP interprets destination as
-    #  opaque Strings.
-    # @return [Array<::VertxStomp::Destination>]
+    # @return [Array<::VertxStomp::Destination>] the list of destination managed by the STOMP server. Don't forget the STOMP interprets destination as opaque Strings.
     def get_destinations
       if !block_given?
         return @j_del.java_method(:getDestinations, []).call().to_a.map { |elt| ::Vertx::Util::Utils.safe_create(elt,::VertxStomp::Destination) }

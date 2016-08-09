@@ -33,8 +33,7 @@ public class ServerFrame {
     return delegate;
   }
   /**
-   * @return the received frame
-   * @return  (see <a href="../../../../../../../cheatsheet/Frame.html">Frame</a>)
+   * @return the received frame (see <a href="../../../../../../../cheatsheet/Frame.html">Frame</a>)
    */
   public Map<String, Object> frame() {
     def ret = (Map<String, Object>)InternalHelper.wrapObject(delegate.frame()?.toJson());
@@ -42,7 +41,6 @@ public class ServerFrame {
   }
   /**
    * @return the connection
-   * @return 
    */
   public StompServerConnection connection() {
     def ret = InternalHelper.safeCreate(delegate.connection(), io.vertx.groovy.ext.stomp.StompServerConnection.class);

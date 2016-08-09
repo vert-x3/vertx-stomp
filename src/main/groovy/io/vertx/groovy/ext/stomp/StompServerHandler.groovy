@@ -253,9 +253,7 @@ public class StompServerHandler implements Handler<ServerFrame> {
     return this;
   }
   /**
-   * @return the list of destination managed by the STOMP server. Don't forget the STOMP interprets destination as
-   * opaque Strings.
-   * @return 
+   * @return the list of destination managed by the STOMP server. Don't forget the STOMP interprets destination as opaque Strings.
    */
   public List<Destination> getDestinations() {
     def ret = (List)delegate.getDestinations()?.collect({InternalHelper.safeCreate(it, io.vertx.groovy.ext.stomp.Destination.class)});

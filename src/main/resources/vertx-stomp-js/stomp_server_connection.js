@@ -55,11 +55,10 @@ var StompServerConnection = function(j_val) {
   };
 
   /**
-   @return the STOMP server serving this connection.
 
    @public
 
-   @return {StompServer}
+   @return {StompServer} the STOMP server serving this connection.
    */
   this.server = function() {
     var __args = arguments;
@@ -69,11 +68,10 @@ var StompServerConnection = function(j_val) {
   };
 
   /**
-   @return the STOMP server handler dealing with this connection
 
    @public
 
-   @return {StompServerHandler}
+   @return {StompServerHandler} the STOMP server handler dealing with this connection
    */
   this.handler = function() {
     var __args = arguments;
@@ -83,11 +81,10 @@ var StompServerConnection = function(j_val) {
   };
 
   /**
-   @return the STOMP session id computed when the client has established the connection to the server
 
    @public
 
-   @return {string}
+   @return {string} the STOMP session id computed when the client has established the connection to the server
    */
   this.session = function() {
     var __args = arguments;

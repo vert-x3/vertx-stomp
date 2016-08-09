@@ -202,8 +202,7 @@ public class StompServer {
     return ret;
   }
   /**
-   * @return the server options
-   * @return  (see <a href="../../../../../../../cheatsheet/StompServerOptions.html">StompServerOptions</a>)
+   * @return the server options (see <a href="../../../../../../../cheatsheet/StompServerOptions.html">StompServerOptions</a>)
    */
   public Map<String, Object> options() {
     def ret = (Map<String, Object>)InternalHelper.wrapObject(delegate.options()?.toJson());
@@ -211,7 +210,6 @@ public class StompServer {
   }
   /**
    * @return the instance of vert.x used by the server.
-   * @return 
    */
   public Vertx vertx() {
     def ret = InternalHelper.safeCreate(delegate.vertx(), io.vertx.groovy.core.Vertx.class);
@@ -219,7 +217,6 @@ public class StompServer {
   }
   /**
    * @return the {@link io.vertx.groovy.ext.stomp.StompServerHandler} used by this server.
-   * @return 
    */
   public StompServerHandler stompHandler() {
     def ret = InternalHelper.safeCreate(delegate.stompHandler(), io.vertx.groovy.ext.stomp.StompServerHandler.class);

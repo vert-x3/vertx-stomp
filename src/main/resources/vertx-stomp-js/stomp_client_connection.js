@@ -33,11 +33,10 @@ var StompClientConnection = function(j_val) {
   var that = this;
 
   /**
-   @return the session id.
 
    @public
 
-   @return {string}
+   @return {string} the session id.
    */
   this.session = function() {
     var __args = arguments;
@@ -47,11 +46,10 @@ var StompClientConnection = function(j_val) {
   };
 
   /**
-   @return the STOMP protocol version negotiated with the server.
 
    @public
 
-   @return {string}
+   @return {string} the STOMP protocol version negotiated with the server.
    */
   this.version = function() {
     var __args = arguments;
@@ -74,11 +72,10 @@ var StompClientConnection = function(j_val) {
   };
 
   /**
-   @return the server name.
 
    @public
 
-   @return {string}
+   @return {string} the server name.
    */
   this.server = function() {
     var __args = arguments;

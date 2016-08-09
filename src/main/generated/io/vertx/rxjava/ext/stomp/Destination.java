@@ -64,7 +64,6 @@ public class Destination {
 
   /**
    * @return the destination address.
-   * @return 
    */
   public String destination() { 
     String ret = delegate.destination();

@@ -64,7 +64,6 @@ public class StompServerConnection {
 
   /**
    * @return the STOMP server serving this connection.
-   * @return 
    */
   public StompServer server() { 
     StompServer ret = StompServer.newInstance(delegate.server());
@@ -73,7 +72,6 @@ public class StompServerConnection {
 
   /**
    * @return the STOMP server handler dealing with this connection
-   * @return 
    */
   public StompServerHandler handler() { 
     StompServerHandler ret = StompServerHandler.newInstance(delegate.handler());
@@ -82,7 +80,6 @@ public class StompServerConnection {
 
   /**
    * @return the STOMP session id computed when the client has established the connection to the server
-   * @return 
    */
   public String session() { 
     String ret = delegate.session();

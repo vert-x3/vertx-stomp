@@ -15,16 +15,14 @@ module VertxStomp
     def j_del
       @j_del
     end
-    #  @return the received frame
-    # @return [Hash]
+    # @return [Hash] the received frame
     def frame
       if !block_given?
         return @j_del.java_method(:frame, []).call() != nil ? JSON.parse(@j_del.java_method(:frame, []).call().toJson.encode) : nil
       end
       raise ArgumentError, "Invalid arguments when calling frame()"
     end
-    #  @return the connection
-    # @return [::VertxStomp::StompServerConnection]
+    # @return [::VertxStomp::StompServerConnection] the connection
     def connection
       if !block_given?
         return ::Vertx::Util::Utils.safe_create(@j_del.java_method(:connection, []).call(),::VertxStomp::StompServerConnection)

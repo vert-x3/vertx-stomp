@@ -108,24 +108,21 @@ module VertxStomp
       end
       raise ArgumentError, "Invalid arguments when calling close()"
     end
-    #  @return the client's options.
-    # @return [Hash]
+    # @return [Hash] the client's options.
     def options
       if !block_given?
         return @j_del.java_method(:options, []).call() != nil ? JSON.parse(@j_del.java_method(:options, []).call().toJson.encode) : nil
       end
       raise ArgumentError, "Invalid arguments when calling options()"
     end
-    #  @return the vert.x instance used by the client.
-    # @return [::Vertx::Vertx]
+    # @return [::Vertx::Vertx] the vert.x instance used by the client.
     def vertx
       if !block_given?
         return ::Vertx::Util::Utils.safe_create(@j_del.java_method(:vertx, []).call(),::Vertx::Vertx)
       end
       raise ArgumentError, "Invalid arguments when calling vertx()"
     end
-    #  @return whether or not the client is connected to the server.
-    # @return [true,false]
+    # @return [true,false] whether or not the client is connected to the server.
     def closed?
       if !block_given?
         return @j_del.java_method(:isClosed, []).call()

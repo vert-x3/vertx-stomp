@@ -46,8 +46,7 @@ module VertxStomp
       end
       raise ArgumentError, "Invalid arguments when calling bridge(vertx,options)"
     end
-    #  @return the destination address.
-    # @return [String]
+    # @return [String] the destination address.
     def destination
       if !block_given?
         return @j_del.java_method(:destination, []).call()

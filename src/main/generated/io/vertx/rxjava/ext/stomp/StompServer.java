@@ -272,7 +272,6 @@ public class StompServer {
 
   /**
    * @return the server options
-   * @return 
    */
   public StompServerOptions options() { 
     StompServerOptions ret = delegate.options();
@@ -281,7 +280,6 @@ public class StompServer {
 
   /**
    * @return the instance of vert.x used by the server.
-   * @return 
    */
   public Vertx vertx() { 
     Vertx ret = Vertx.newInstance(delegate.vertx());
@@ -290,7 +288,6 @@ public class StompServer {
 
   /**
    * @return the {@link io.vertx.rxjava.ext.stomp.StompServerHandler} used by this server.
-   * @return 
    */
   public StompServerHandler stompHandler() { 
     StompServerHandler ret = StompServerHandler.newInstance(delegate.stompHandler());

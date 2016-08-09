@@ -293,9 +293,7 @@ public class StompServerHandler implements Handler<ServerFrame> {
   }
 
   /**
-   * @return the list of destination managed by the STOMP server. Don't forget the STOMP interprets destination as
-   * opaque Strings.
-   * @return 
+   * @return the list of destination managed by the STOMP server. Don't forget the STOMP interprets destination as opaque Strings.
    */
   public List<Destination> getDestinations() { 
     List<Destination> ret = delegate.getDestinations().stream().map(elt -> Destination.newInstance(elt)).collect(java.util.stream.Collectors.toList());
