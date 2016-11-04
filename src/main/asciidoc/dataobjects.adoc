@@ -105,6 +105,7 @@ Sets the STOMP server host. <code>0.0.0.0</code> by default.
 |[[idleTimeout]]`idleTimeout`|`Number (int)`|-
 |[[jdkSslEngineOptions]]`jdkSslEngineOptions`|`link:dataobjects.html#JdkSSLEngineOptions[JdkSSLEngineOptions]`|-
 |[[keyStoreOptions]]`keyStoreOptions`|`link:dataobjects.html#JksOptions[JksOptions]`|-
+|[[localAddress]]`localAddress`|`String`|-
 |[[logActivity]]`logActivity`|`Boolean`|-
 |[[login]]`login`|`String`|
 +++
