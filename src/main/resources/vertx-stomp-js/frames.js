@@ -38,6 +38,25 @@ var Frames = function(j_val) {
   this._jdel = j_frames;
 };
 
+Frames._jclass = utils.getJavaClass("io.vertx.ext.stomp.Frames");
+Frames._jtype = {
+  accept: function(obj) {
+    return Frames._jclass.isInstance(obj._jdel);
+  },
+  wrap: function(jdel) {
+    var obj = Object.create(Frames.prototype, {});
+    Frames.apply(obj, arguments);
+    return obj;
+  },
+  unwrap: function(obj) {
+    return obj._jdel;
+  }
+};
+Frames._create = function(jdel) {
+  var obj = Object.create(Frames.prototype, {});
+  Frames.apply(obj, arguments);
+  return obj;
+}
 /**
 
  @memberof module:vertx-stomp-js/frames
@@ -93,5 +112,4 @@ Frames.ping = function() {
   } else throw new TypeError('function invoked with invalid arguments');
 };
 
-// We export the Constructor function
 module.exports = Frames;

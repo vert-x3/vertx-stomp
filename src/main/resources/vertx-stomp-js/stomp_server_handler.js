@@ -68,7 +68,7 @@ var StompServerHandler = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_stompServerHandler["receivedFrameHandler(io.vertx.core.Handler)"](function(jVal) {
-      handler(utils.convReturnVertxGen(jVal, ServerFrame));
+      handler(utils.convReturnVertxGen(ServerFrame, jVal));
     });
       return that;
     } else throw new TypeError('function invoked with invalid arguments');
@@ -85,7 +85,7 @@ var StompServerHandler = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_stompServerHandler["connectHandler(io.vertx.core.Handler)"](function(jVal) {
-      handler(utils.convReturnVertxGen(jVal, ServerFrame));
+      handler(utils.convReturnVertxGen(ServerFrame, jVal));
     });
       return that;
     } else throw new TypeError('function invoked with invalid arguments');
@@ -102,7 +102,7 @@ var StompServerHandler = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_stompServerHandler["stompHandler(io.vertx.core.Handler)"](function(jVal) {
-      handler(utils.convReturnVertxGen(jVal, ServerFrame));
+      handler(utils.convReturnVertxGen(ServerFrame, jVal));
     });
       return that;
     } else throw new TypeError('function invoked with invalid arguments');
@@ -119,7 +119,7 @@ var StompServerHandler = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_stompServerHandler["subscribeHandler(io.vertx.core.Handler)"](function(jVal) {
-      handler(utils.convReturnVertxGen(jVal, ServerFrame));
+      handler(utils.convReturnVertxGen(ServerFrame, jVal));
     });
       return that;
     } else throw new TypeError('function invoked with invalid arguments');
@@ -136,7 +136,7 @@ var StompServerHandler = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_stompServerHandler["unsubscribeHandler(io.vertx.core.Handler)"](function(jVal) {
-      handler(utils.convReturnVertxGen(jVal, ServerFrame));
+      handler(utils.convReturnVertxGen(ServerFrame, jVal));
     });
       return that;
     } else throw new TypeError('function invoked with invalid arguments');
@@ -153,7 +153,7 @@ var StompServerHandler = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_stompServerHandler["sendHandler(io.vertx.core.Handler)"](function(jVal) {
-      handler(utils.convReturnVertxGen(jVal, ServerFrame));
+      handler(utils.convReturnVertxGen(ServerFrame, jVal));
     });
       return that;
     } else throw new TypeError('function invoked with invalid arguments');
@@ -170,7 +170,7 @@ var StompServerHandler = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_stompServerHandler["closeHandler(io.vertx.core.Handler)"](function(jVal) {
-      handler(utils.convReturnVertxGen(jVal, StompServerConnection));
+      handler(utils.convReturnVertxGen(StompServerConnection, jVal));
     });
       return that;
     } else throw new TypeError('function invoked with invalid arguments');
@@ -201,7 +201,7 @@ var StompServerHandler = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_stompServerHandler["commitHandler(io.vertx.core.Handler)"](function(jVal) {
-      handler(utils.convReturnVertxGen(jVal, ServerFrame));
+      handler(utils.convReturnVertxGen(ServerFrame, jVal));
     });
       return that;
     } else throw new TypeError('function invoked with invalid arguments');
@@ -218,7 +218,7 @@ var StompServerHandler = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_stompServerHandler["abortHandler(io.vertx.core.Handler)"](function(jVal) {
-      handler(utils.convReturnVertxGen(jVal, ServerFrame));
+      handler(utils.convReturnVertxGen(ServerFrame, jVal));
     });
       return that;
     } else throw new TypeError('function invoked with invalid arguments');
@@ -235,7 +235,7 @@ var StompServerHandler = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_stompServerHandler["beginHandler(io.vertx.core.Handler)"](function(jVal) {
-      handler(utils.convReturnVertxGen(jVal, ServerFrame));
+      handler(utils.convReturnVertxGen(ServerFrame, jVal));
     });
       return that;
     } else throw new TypeError('function invoked with invalid arguments');
@@ -252,7 +252,7 @@ var StompServerHandler = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_stompServerHandler["disconnectHandler(io.vertx.core.Handler)"](function(jVal) {
-      handler(utils.convReturnVertxGen(jVal, ServerFrame));
+      handler(utils.convReturnVertxGen(ServerFrame, jVal));
     });
       return that;
     } else throw new TypeError('function invoked with invalid arguments');
@@ -269,7 +269,7 @@ var StompServerHandler = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_stompServerHandler["ackHandler(io.vertx.core.Handler)"](function(jVal) {
-      handler(utils.convReturnVertxGen(jVal, ServerFrame));
+      handler(utils.convReturnVertxGen(ServerFrame, jVal));
     });
       return that;
     } else throw new TypeError('function invoked with invalid arguments');
@@ -286,7 +286,7 @@ var StompServerHandler = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_stompServerHandler["nackHandler(io.vertx.core.Handler)"](function(jVal) {
-      handler(utils.convReturnVertxGen(jVal, ServerFrame));
+      handler(utils.convReturnVertxGen(ServerFrame, jVal));
     });
       return that;
     } else throw new TypeError('function invoked with invalid arguments');
@@ -355,7 +355,7 @@ var StompServerHandler = function(j_val) {
   this.getDestination = function(destination) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'string') {
-      return utils.convReturnVertxGen(j_stompServerHandler["getDestination(java.lang.String)"](destination), Destination);
+      return utils.convReturnVertxGen(Destination, j_stompServerHandler["getDestination(java.lang.String)"](destination));
     } else throw new TypeError('function invoked with invalid arguments');
   };
 
@@ -408,7 +408,7 @@ var StompServerHandler = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_stompServerHandler["onAckHandler(io.vertx.core.Handler)"](function(jVal) {
-      handler(utils.convReturnVertxGen(jVal, Acknowledgement));
+      handler(utils.convReturnVertxGen(Acknowledgement, jVal));
     });
       return that;
     } else throw new TypeError('function invoked with invalid arguments');
@@ -425,7 +425,7 @@ var StompServerHandler = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_stompServerHandler["onNackHandler(io.vertx.core.Handler)"](function(jVal) {
-      handler(utils.convReturnVertxGen(jVal, Acknowledgement));
+      handler(utils.convReturnVertxGen(Acknowledgement, jVal));
     });
       return that;
     } else throw new TypeError('function invoked with invalid arguments');
@@ -446,7 +446,7 @@ var StompServerHandler = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_stompServerHandler["pingHandler(io.vertx.core.Handler)"](function(jVal) {
-      handler(utils.convReturnVertxGen(jVal, StompServerConnection));
+      handler(utils.convReturnVertxGen(StompServerConnection, jVal));
     });
       return that;
     } else throw new TypeError('function invoked with invalid arguments');
@@ -463,7 +463,7 @@ var StompServerHandler = function(j_val) {
   this.getOrCreateDestination = function(destination) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'string') {
-      return utils.convReturnVertxGen(j_stompServerHandler["getOrCreateDestination(java.lang.String)"](destination), Destination);
+      return utils.convReturnVertxGen(Destination, j_stompServerHandler["getOrCreateDestination(java.lang.String)"](destination));
     } else throw new TypeError('function invoked with invalid arguments');
   };
 
@@ -503,6 +503,25 @@ var StompServerHandler = function(j_val) {
   this._jdel = j_stompServerHandler;
 };
 
+StompServerHandler._jclass = utils.getJavaClass("io.vertx.ext.stomp.StompServerHandler");
+StompServerHandler._jtype = {
+  accept: function(obj) {
+    return StompServerHandler._jclass.isInstance(obj._jdel);
+  },
+  wrap: function(jdel) {
+    var obj = Object.create(StompServerHandler.prototype, {});
+    StompServerHandler.apply(obj, arguments);
+    return obj;
+  },
+  unwrap: function(obj) {
+    return obj._jdel;
+  }
+};
+StompServerHandler._create = function(jdel) {
+  var obj = Object.create(StompServerHandler.prototype, {});
+  StompServerHandler.apply(obj, arguments);
+  return obj;
+}
 /**
  Creates an instance of {@link StompServerHandler} using the default (compliant) implementation.
 
@@ -513,9 +532,8 @@ var StompServerHandler = function(j_val) {
 StompServerHandler.create = function(vertx) {
   var __args = arguments;
   if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
-    return utils.convReturnVertxGen(JStompServerHandler["create(io.vertx.core.Vertx)"](vertx._jdel), StompServerHandler);
+    return utils.convReturnVertxGen(StompServerHandler, JStompServerHandler["create(io.vertx.core.Vertx)"](vertx._jdel));
   } else throw new TypeError('function invoked with invalid arguments');
 };
 
-// We export the Constructor function
 module.exports = StompServerHandler;

@@ -19,6 +19,22 @@ module VertxStomp
     def j_del
       @j_del
     end
+    @@j_api_type = Object.new
+    def @@j_api_type.accept?(obj)
+      obj.class == StompServer
+    end
+    def @@j_api_type.wrap(obj)
+      StompServer.new(obj)
+    end
+    def @@j_api_type.unwrap(obj)
+      obj.j_del
+    end
+    def self.j_api_type
+      @@j_api_type
+    end
+    def self.j_class
+      Java::IoVertxExtStomp::StompServer.java_class
+    end
     #  Creates a {::VertxStomp::StompServer} based on the default Stomp Server implementation.
     # @overload create(vertx)
     #   @param [::Vertx::Vertx] vertx the vert.x instance to use
@@ -43,7 +59,7 @@ module VertxStomp
       elsif param_1.class.method_defined?(:j_del) && param_2.class.method_defined?(:j_del) && param_3.class == Hash && !block_given?
         return ::Vertx::Util::Utils.safe_create(Java::IoVertxExtStomp::StompServer.java_method(:create, [Java::IoVertxCore::Vertx.java_class,Java::IoVertxCoreNet::NetServer.java_class,Java::IoVertxExtStomp::StompServerOptions.java_class]).call(param_1.j_del,param_2.j_del,Java::IoVertxExtStomp::StompServerOptions.new(::Vertx::Util::Utils.to_json_object(param_3))),::VertxStomp::StompServer)
       end
-      raise ArgumentError, "Invalid arguments when calling create(param_1,param_2,param_3)"
+      raise ArgumentError, "Invalid arguments when calling create(#{param_1},#{param_2},#{param_3})"
     end
     #  Configures the {::VertxStomp::StompServerHandler}. You must calls this method before calling the {::VertxStomp::StompServer#listen} method.
     # @param [::VertxStomp::StompServerHandler] handler the handler
@@ -53,7 +69,7 @@ module VertxStomp
         @j_del.java_method(:handler, [Java::IoVertxExtStomp::StompServerHandler.java_class]).call(handler.j_del)
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling handler(handler)"
+      raise ArgumentError, "Invalid arguments when calling handler(#{handler})"
     end
     #  Connects the STOMP server to the given port / interface. Once the socket it bounds calls the given handler with
     #  the result. The result may be a failure if the socket is already used.
@@ -81,7 +97,7 @@ module VertxStomp
         @j_del.java_method(:listen, [Java::int.java_class,Java::java.lang.String.java_class,Java::IoVertxCore::Handler.java_class]).call(port,host,(Proc.new { |ar| yield(ar.failed ? ar.cause : nil, ar.succeeded ? ::Vertx::Util::Utils.safe_create(ar.result,::VertxStomp::StompServer) : nil) }))
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling listen(port,host)"
+      raise ArgumentError, "Invalid arguments when calling listen(#{port},#{host})"
     end
     #  Closes the server.
     # @yield handler called once the server has been stopped

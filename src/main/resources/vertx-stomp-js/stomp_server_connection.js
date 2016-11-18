@@ -63,7 +63,7 @@ var StompServerConnection = function(j_val) {
   this.server = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      return utils.convReturnVertxGen(j_stompServerConnection["server()"](), StompServer);
+      return utils.convReturnVertxGen(StompServer, j_stompServerConnection["server()"]());
     } else throw new TypeError('function invoked with invalid arguments');
   };
 
@@ -76,7 +76,7 @@ var StompServerConnection = function(j_val) {
   this.handler = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      return utils.convReturnVertxGen(j_stompServerConnection["handler()"](), StompServerHandler);
+      return utils.convReturnVertxGen(StompServerHandler, j_stompServerConnection["handler()"]());
     } else throw new TypeError('function invoked with invalid arguments');
   };
 
@@ -145,7 +145,7 @@ var StompServerConnection = function(j_val) {
     var __args = arguments;
     if (__args.length === 3 && typeof __args[0] ==='number' && typeof __args[1] ==='number' && typeof __args[2] === 'function') {
       j_stompServerConnection["configureHeartbeat(long,long,io.vertx.core.Handler)"](ping, pong, function(jVal) {
-      pingHandler(utils.convReturnVertxGen(jVal, StompServerConnection));
+      pingHandler(utils.convReturnVertxGen(StompServerConnection, jVal));
     });
     } else throw new TypeError('function invoked with invalid arguments');
   };
@@ -156,5 +156,23 @@ var StompServerConnection = function(j_val) {
   this._jdel = j_stompServerConnection;
 };
 
-// We export the Constructor function
+StompServerConnection._jclass = utils.getJavaClass("io.vertx.ext.stomp.StompServerConnection");
+StompServerConnection._jtype = {
+  accept: function(obj) {
+    return StompServerConnection._jclass.isInstance(obj._jdel);
+  },
+  wrap: function(jdel) {
+    var obj = Object.create(StompServerConnection.prototype, {});
+    StompServerConnection.apply(obj, arguments);
+    return obj;
+  },
+  unwrap: function(obj) {
+    return obj._jdel;
+  }
+};
+StompServerConnection._create = function(jdel) {
+  var obj = Object.create(StompServerConnection.prototype, {});
+  StompServerConnection.apply(obj, arguments);
+  return obj;
+}
 module.exports = StompServerConnection;

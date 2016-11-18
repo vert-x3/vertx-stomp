@@ -54,7 +54,7 @@ var ServerFrame = function(j_val) {
   this.connection = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      return utils.convReturnVertxGen(j_serverFrame["connection()"](), StompServerConnection);
+      return utils.convReturnVertxGen(StompServerConnection, j_serverFrame["connection()"]());
     } else throw new TypeError('function invoked with invalid arguments');
   };
 
@@ -64,5 +64,23 @@ var ServerFrame = function(j_val) {
   this._jdel = j_serverFrame;
 };
 
-// We export the Constructor function
+ServerFrame._jclass = utils.getJavaClass("io.vertx.ext.stomp.ServerFrame");
+ServerFrame._jtype = {
+  accept: function(obj) {
+    return ServerFrame._jclass.isInstance(obj._jdel);
+  },
+  wrap: function(jdel) {
+    var obj = Object.create(ServerFrame.prototype, {});
+    ServerFrame.apply(obj, arguments);
+    return obj;
+  },
+  unwrap: function(obj) {
+    return obj._jdel;
+  }
+};
+ServerFrame._create = function(jdel) {
+  var obj = Object.create(ServerFrame.prototype, {});
+  ServerFrame.apply(obj, arguments);
+  return obj;
+}
 module.exports = ServerFrame;

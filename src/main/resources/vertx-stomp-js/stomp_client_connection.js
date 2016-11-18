@@ -225,7 +225,7 @@ var StompClientConnection = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_stompClientConnection["closeHandler(io.vertx.core.Handler)"](function(jVal) {
-      handler(utils.convReturnVertxGen(jVal, StompClientConnection));
+      handler(utils.convReturnVertxGen(StompClientConnection, jVal));
     });
       return that;
     } else throw new TypeError('function invoked with invalid arguments');
@@ -244,7 +244,7 @@ var StompClientConnection = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_stompClientConnection["connectionDroppedHandler(io.vertx.core.Handler)"](function(jVal) {
-      handler(utils.convReturnVertxGen(jVal, StompClientConnection));
+      handler(utils.convReturnVertxGen(StompClientConnection, jVal));
     });
       return that;
     } else throw new TypeError('function invoked with invalid arguments');
@@ -262,7 +262,7 @@ var StompClientConnection = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_stompClientConnection["pingHandler(io.vertx.core.Handler)"](function(jVal) {
-      handler(utils.convReturnVertxGen(jVal, StompClientConnection));
+      handler(utils.convReturnVertxGen(StompClientConnection, jVal));
     });
       return that;
     } else throw new TypeError('function invoked with invalid arguments');
@@ -498,5 +498,23 @@ var StompClientConnection = function(j_val) {
   this._jdel = j_stompClientConnection;
 };
 
-// We export the Constructor function
+StompClientConnection._jclass = utils.getJavaClass("io.vertx.ext.stomp.StompClientConnection");
+StompClientConnection._jtype = {
+  accept: function(obj) {
+    return StompClientConnection._jclass.isInstance(obj._jdel);
+  },
+  wrap: function(jdel) {
+    var obj = Object.create(StompClientConnection.prototype, {});
+    StompClientConnection.apply(obj, arguments);
+    return obj;
+  },
+  unwrap: function(obj) {
+    return obj._jdel;
+  }
+};
+StompClientConnection._create = function(jdel) {
+  var obj = Object.create(StompClientConnection.prototype, {});
+  StompClientConnection.apply(obj, arguments);
+  return obj;
+}
 module.exports = StompClientConnection;

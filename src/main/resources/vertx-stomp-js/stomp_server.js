@@ -72,7 +72,7 @@ var StompServer = function(j_val) {
     }  else if (__args.length === 1 && typeof __args[0] === 'function') {
       j_stompServer["listen(io.vertx.core.Handler)"](function(ar) {
       if (ar.succeeded()) {
-        __args[0](utils.convReturnVertxGen(ar.result(), StompServer), null);
+        __args[0](utils.convReturnVertxGen(StompServer, ar.result()), null);
       } else {
         __args[0](null, ar.cause());
       }
@@ -84,7 +84,7 @@ var StompServer = function(j_val) {
     }  else if (__args.length === 2 && typeof __args[0] ==='number' && typeof __args[1] === 'function') {
       j_stompServer["listen(int,io.vertx.core.Handler)"](__args[0], function(ar) {
       if (ar.succeeded()) {
-        __args[1](utils.convReturnVertxGen(ar.result(), StompServer), null);
+        __args[1](utils.convReturnVertxGen(StompServer, ar.result()), null);
       } else {
         __args[1](null, ar.cause());
       }
@@ -93,7 +93,7 @@ var StompServer = function(j_val) {
     }  else if (__args.length === 3 && typeof __args[0] ==='number' && typeof __args[1] === 'string' && typeof __args[2] === 'function') {
       j_stompServer["listen(int,java.lang.String,io.vertx.core.Handler)"](__args[0], __args[1], function(ar) {
       if (ar.succeeded()) {
-        __args[2](utils.convReturnVertxGen(ar.result(), StompServer), null);
+        __args[2](utils.convReturnVertxGen(StompServer, ar.result()), null);
       } else {
         __args[2](null, ar.cause());
       }
@@ -175,7 +175,7 @@ var StompServer = function(j_val) {
   this.vertx = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      return utils.convReturnVertxGen(j_stompServer["vertx()"](), Vertx);
+      return utils.convReturnVertxGen(Vertx, j_stompServer["vertx()"]());
     } else throw new TypeError('function invoked with invalid arguments');
   };
 
@@ -188,7 +188,7 @@ var StompServer = function(j_val) {
   this.stompHandler = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      return utils.convReturnVertxGen(j_stompServer["stompHandler()"](), StompServerHandler);
+      return utils.convReturnVertxGen(StompServerHandler, j_stompServer["stompHandler()"]());
     } else throw new TypeError('function invoked with invalid arguments');
   };
 
@@ -219,7 +219,7 @@ var StompServer = function(j_val) {
     var __args = arguments;
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_stompServer["writingFrameHandler(io.vertx.core.Handler)"](function(jVal) {
-      handler(utils.convReturnVertxGen(jVal, ServerFrame));
+      handler(utils.convReturnVertxGen(ServerFrame, jVal));
     });
       return that;
     } else throw new TypeError('function invoked with invalid arguments');
@@ -231,6 +231,25 @@ var StompServer = function(j_val) {
   this._jdel = j_stompServer;
 };
 
+StompServer._jclass = utils.getJavaClass("io.vertx.ext.stomp.StompServer");
+StompServer._jtype = {
+  accept: function(obj) {
+    return StompServer._jclass.isInstance(obj._jdel);
+  },
+  wrap: function(jdel) {
+    var obj = Object.create(StompServer.prototype, {});
+    StompServer.apply(obj, arguments);
+    return obj;
+  },
+  unwrap: function(obj) {
+    return obj._jdel;
+  }
+};
+StompServer._create = function(jdel) {
+  var obj = Object.create(StompServer.prototype, {});
+  StompServer.apply(obj, arguments);
+  return obj;
+}
 /**
  Creates a {@link StompServer} based on the default Stomp Server implementation.
 
@@ -243,15 +262,14 @@ var StompServer = function(j_val) {
 StompServer.create = function() {
   var __args = arguments;
   if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
-    return utils.convReturnVertxGen(JStompServer["create(io.vertx.core.Vertx)"](__args[0]._jdel), StompServer);
+    return utils.convReturnVertxGen(StompServer, JStompServer["create(io.vertx.core.Vertx)"](__args[0]._jdel));
   }else if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && (typeof __args[1] === 'object' && __args[1] != null)) {
-    return utils.convReturnVertxGen(JStompServer["create(io.vertx.core.Vertx,io.vertx.ext.stomp.StompServerOptions)"](__args[0]._jdel, __args[1] != null ? new StompServerOptions(new JsonObject(JSON.stringify(__args[1]))) : null), StompServer);
+    return utils.convReturnVertxGen(StompServer, JStompServer["create(io.vertx.core.Vertx,io.vertx.ext.stomp.StompServerOptions)"](__args[0]._jdel, __args[1] != null ? new StompServerOptions(new JsonObject(JSON.stringify(__args[1]))) : null));
   }else if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'object' && __args[1]._jdel) {
-    return utils.convReturnVertxGen(JStompServer["create(io.vertx.core.Vertx,io.vertx.core.net.NetServer)"](__args[0]._jdel, __args[1]._jdel), StompServer);
+    return utils.convReturnVertxGen(StompServer, JStompServer["create(io.vertx.core.Vertx,io.vertx.core.net.NetServer)"](__args[0]._jdel, __args[1]._jdel));
   }else if (__args.length === 3 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'object' && __args[1]._jdel && (typeof __args[2] === 'object' && __args[2] != null)) {
-    return utils.convReturnVertxGen(JStompServer["create(io.vertx.core.Vertx,io.vertx.core.net.NetServer,io.vertx.ext.stomp.StompServerOptions)"](__args[0]._jdel, __args[1]._jdel, __args[2] != null ? new StompServerOptions(new JsonObject(JSON.stringify(__args[2]))) : null), StompServer);
+    return utils.convReturnVertxGen(StompServer, JStompServer["create(io.vertx.core.Vertx,io.vertx.core.net.NetServer,io.vertx.ext.stomp.StompServerOptions)"](__args[0]._jdel, __args[1]._jdel, __args[2] != null ? new StompServerOptions(new JsonObject(JSON.stringify(__args[2]))) : null));
   } else throw new TypeError('function invoked with invalid arguments');
 };
 
-// We export the Constructor function
 module.exports = StompServer;

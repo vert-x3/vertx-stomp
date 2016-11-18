@@ -16,6 +16,22 @@ module VertxStomp
     def j_del
       @j_del
     end
+    @@j_api_type = Object.new
+    def @@j_api_type.accept?(obj)
+      obj.class == StompClient
+    end
+    def @@j_api_type.wrap(obj)
+      StompClient.new(obj)
+    end
+    def @@j_api_type.unwrap(obj)
+      obj.j_del
+    end
+    def self.j_api_type
+      @@j_api_type
+    end
+    def self.j_class
+      Java::IoVertxExtStomp::StompClient.java_class
+    end
     #  Creates a {::VertxStomp::StompClient} using the default implementation.
     # @param [::Vertx::Vertx] vertx the vert.x instance to use
     # @param [Hash] options the options
@@ -26,7 +42,7 @@ module VertxStomp
       elsif vertx.class.method_defined?(:j_del) && options.class == Hash && !block_given?
         return ::Vertx::Util::Utils.safe_create(Java::IoVertxExtStomp::StompClient.java_method(:create, [Java::IoVertxCore::Vertx.java_class,Java::IoVertxExtStomp::StompClientOptions.java_class]).call(vertx.j_del,Java::IoVertxExtStomp::StompClientOptions.new(::Vertx::Util::Utils.to_json_object(options))),::VertxStomp::StompClient)
       end
-      raise ArgumentError, "Invalid arguments when calling create(vertx,options)"
+      raise ArgumentError, "Invalid arguments when calling create(#{vertx},#{options})"
     end
     #  Connects to the server.
     # @overload connect(resultHandler)
@@ -58,7 +74,7 @@ module VertxStomp
         @j_del.java_method(:connect, [Java::int.java_class,Java::java.lang.String.java_class,Java::IoVertxCoreNet::NetClient.java_class,Java::IoVertxCore::Handler.java_class]).call(param_1,param_2,param_3.j_del,(Proc.new { |ar| yield(ar.failed ? ar.cause : nil, ar.succeeded ? ::Vertx::Util::Utils.safe_create(ar.result,::VertxStomp::StompClientConnection) : nil) }))
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling connect(param_1,param_2,param_3)"
+      raise ArgumentError, "Invalid arguments when calling connect(#{param_1},#{param_2},#{param_3})"
     end
     #  Configures a received handler that gets notified when a STOMP frame is received by the client.
     #  This handler can be used for logging, debugging or ad-hoc behavior. The frame can still be modified at the time.

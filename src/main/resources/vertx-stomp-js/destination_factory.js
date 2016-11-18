@@ -44,7 +44,7 @@ var DestinationFactory = function(j_val) {
   this.create = function(vertx, name) {
     var __args = arguments;
     if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'string') {
-      return utils.convReturnVertxGen(j_destinationFactory["create(io.vertx.core.Vertx,java.lang.String)"](vertx._jdel, name), Destination);
+      return utils.convReturnVertxGen(Destination, j_destinationFactory["create(io.vertx.core.Vertx,java.lang.String)"](vertx._jdel, name));
     } else throw new TypeError('function invoked with invalid arguments');
   };
 
@@ -54,5 +54,23 @@ var DestinationFactory = function(j_val) {
   this._jdel = j_destinationFactory;
 };
 
-// We export the Constructor function
+DestinationFactory._jclass = utils.getJavaClass("io.vertx.ext.stomp.DestinationFactory");
+DestinationFactory._jtype = {
+  accept: function(obj) {
+    return DestinationFactory._jclass.isInstance(obj._jdel);
+  },
+  wrap: function(jdel) {
+    var obj = Object.create(DestinationFactory.prototype, {});
+    DestinationFactory.apply(obj, arguments);
+    return obj;
+  },
+  unwrap: function(obj) {
+    return obj._jdel;
+  }
+};
+DestinationFactory._create = function(jdel) {
+  var obj = Object.create(DestinationFactory.prototype, {});
+  DestinationFactory.apply(obj, arguments);
+  return obj;
+}
 module.exports = DestinationFactory;

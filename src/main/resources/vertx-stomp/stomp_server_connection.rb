@@ -17,6 +17,22 @@ module VertxStomp
     def j_del
       @j_del
     end
+    @@j_api_type = Object.new
+    def @@j_api_type.accept?(obj)
+      obj.class == StompServerConnection
+    end
+    def @@j_api_type.wrap(obj)
+      StompServerConnection.new(obj)
+    end
+    def @@j_api_type.unwrap(obj)
+      obj.j_del
+    end
+    def self.j_api_type
+      @@j_api_type
+    end
+    def self.j_class
+      Java::IoVertxExtStomp::StompServerConnection.java_class
+    end
     #  Writes the given buffer to the socket. This is a low level API that should be used carefully.
     # @overload write(frame)
     #   @param [Hash] frame the frame, must not be <code>null</code>.
@@ -31,7 +47,7 @@ module VertxStomp
         @j_del.java_method(:write, [Java::IoVertxCoreBuffer::Buffer.java_class]).call(param_1.j_del)
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling write(param_1)"
+      raise ArgumentError, "Invalid arguments when calling write(#{param_1})"
     end
     # @return [::VertxStomp::StompServer] the STOMP server serving this connection.
     def server
@@ -88,7 +104,7 @@ module VertxStomp
       if ping.class == Fixnum && pong.class == Fixnum && block_given?
         return @j_del.java_method(:configureHeartbeat, [Java::long.java_class,Java::long.java_class,Java::IoVertxCore::Handler.java_class]).call(ping,pong,(Proc.new { |event| yield(::Vertx::Util::Utils.safe_create(event,::VertxStomp::StompServerConnection)) }))
       end
-      raise ArgumentError, "Invalid arguments when calling configure_heartbeat(ping,pong)"
+      raise ArgumentError, "Invalid arguments when calling configure_heartbeat(#{ping},#{pong})"
     end
   end
 end

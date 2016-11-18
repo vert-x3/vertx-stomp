@@ -19,6 +19,22 @@ module VertxStomp
     def j_del
       @j_del
     end
+    @@j_api_type = Object.new
+    def @@j_api_type.accept?(obj)
+      obj.class == Destination
+    end
+    def @@j_api_type.wrap(obj)
+      Destination.new(obj)
+    end
+    def @@j_api_type.unwrap(obj)
+      obj.j_del
+    end
+    def self.j_api_type
+      @@j_api_type
+    end
+    def self.j_class
+      Java::IoVertxExtStomp::Destination.java_class
+    end
     # @param [::Vertx::Vertx] vertx 
     # @param [String] destination 
     # @return [::VertxStomp::Destination]
@@ -26,7 +42,7 @@ module VertxStomp
       if vertx.class.method_defined?(:j_del) && destination.class == String && !block_given?
         return ::Vertx::Util::Utils.safe_create(Java::IoVertxExtStomp::Destination.java_method(:topic, [Java::IoVertxCore::Vertx.java_class,Java::java.lang.String.java_class]).call(vertx.j_del,destination),::VertxStomp::Destination)
       end
-      raise ArgumentError, "Invalid arguments when calling topic(vertx,destination)"
+      raise ArgumentError, "Invalid arguments when calling topic(#{vertx},#{destination})"
     end
     # @param [::Vertx::Vertx] vertx 
     # @param [String] destination 
@@ -35,7 +51,7 @@ module VertxStomp
       if vertx.class.method_defined?(:j_del) && destination.class == String && !block_given?
         return ::Vertx::Util::Utils.safe_create(Java::IoVertxExtStomp::Destination.java_method(:queue, [Java::IoVertxCore::Vertx.java_class,Java::java.lang.String.java_class]).call(vertx.j_del,destination),::VertxStomp::Destination)
       end
-      raise ArgumentError, "Invalid arguments when calling queue(vertx,destination)"
+      raise ArgumentError, "Invalid arguments when calling queue(#{vertx},#{destination})"
     end
     # @param [::Vertx::Vertx] vertx 
     # @param [Hash] options 
@@ -44,7 +60,7 @@ module VertxStomp
       if vertx.class.method_defined?(:j_del) && options.class == Hash && !block_given?
         return ::Vertx::Util::Utils.safe_create(Java::IoVertxExtStomp::Destination.java_method(:bridge, [Java::IoVertxCore::Vertx.java_class,Java::IoVertxExtStomp::BridgeOptions.java_class]).call(vertx.j_del,Java::IoVertxExtStomp::BridgeOptions.new(::Vertx::Util::Utils.to_json_object(options))),::VertxStomp::Destination)
       end
-      raise ArgumentError, "Invalid arguments when calling bridge(vertx,options)"
+      raise ArgumentError, "Invalid arguments when calling bridge(#{vertx},#{options})"
     end
     # @return [String] the destination address.
     def destination
@@ -62,7 +78,7 @@ module VertxStomp
         @j_del.java_method(:dispatch, [Java::IoVertxExtStomp::StompServerConnection.java_class,Java::IoVertxExtStomp::Frame.java_class]).call(connection.j_del,Java::IoVertxExtStomp::Frame.new(::Vertx::Util::Utils.to_json_object(frame)))
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling dispatch(connection,frame)"
+      raise ArgumentError, "Invalid arguments when calling dispatch(#{connection},#{frame})"
     end
     #  Handles a subscription request to the current {::VertxStomp::Destination}.
     # @param [::VertxStomp::StompServerConnection] connection the connection
@@ -73,7 +89,7 @@ module VertxStomp
         @j_del.java_method(:subscribe, [Java::IoVertxExtStomp::StompServerConnection.java_class,Java::IoVertxExtStomp::Frame.java_class]).call(connection.j_del,Java::IoVertxExtStomp::Frame.new(::Vertx::Util::Utils.to_json_object(frame)))
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling subscribe(connection,frame)"
+      raise ArgumentError, "Invalid arguments when calling subscribe(#{connection},#{frame})"
     end
     #  Handles a un-subscription request to the current {::VertxStomp::Destination}.
     # @param [::VertxStomp::StompServerConnection] connection the connection
@@ -83,7 +99,7 @@ module VertxStomp
       if connection.class.method_defined?(:j_del) && frame.class == Hash && !block_given?
         return @j_del.java_method(:unsubscribe, [Java::IoVertxExtStomp::StompServerConnection.java_class,Java::IoVertxExtStomp::Frame.java_class]).call(connection.j_del,Java::IoVertxExtStomp::Frame.new(::Vertx::Util::Utils.to_json_object(frame)))
       end
-      raise ArgumentError, "Invalid arguments when calling unsubscribe?(connection,frame)"
+      raise ArgumentError, "Invalid arguments when calling unsubscribe?(#{connection},#{frame})"
     end
     #  Removes all subscriptions of the given connection
     # @param [::VertxStomp::StompServerConnection] connection the connection
@@ -93,7 +109,7 @@ module VertxStomp
         @j_del.java_method(:unsubscribeConnection, [Java::IoVertxExtStomp::StompServerConnection.java_class]).call(connection.j_del)
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling unsubscribe_connection(connection)"
+      raise ArgumentError, "Invalid arguments when calling unsubscribe_connection(#{connection})"
     end
     #  Handles a <code>ACK</code> frame.
     # @param [::VertxStomp::StompServerConnection] connection the connection
@@ -103,7 +119,7 @@ module VertxStomp
       if connection.class.method_defined?(:j_del) && frame.class == Hash && !block_given?
         return @j_del.java_method(:ack, [Java::IoVertxExtStomp::StompServerConnection.java_class,Java::IoVertxExtStomp::Frame.java_class]).call(connection.j_del,Java::IoVertxExtStomp::Frame.new(::Vertx::Util::Utils.to_json_object(frame)))
       end
-      raise ArgumentError, "Invalid arguments when calling ack?(connection,frame)"
+      raise ArgumentError, "Invalid arguments when calling ack?(#{connection},#{frame})"
     end
     #  Handles a <code>NACK</code> frame.
     # @param [::VertxStomp::StompServerConnection] connection the connection
@@ -113,7 +129,7 @@ module VertxStomp
       if connection.class.method_defined?(:j_del) && frame.class == Hash && !block_given?
         return @j_del.java_method(:nack, [Java::IoVertxExtStomp::StompServerConnection.java_class,Java::IoVertxExtStomp::Frame.java_class]).call(connection.j_del,Java::IoVertxExtStomp::Frame.new(::Vertx::Util::Utils.to_json_object(frame)))
       end
-      raise ArgumentError, "Invalid arguments when calling nack?(connection,frame)"
+      raise ArgumentError, "Invalid arguments when calling nack?(#{connection},#{frame})"
     end
     #  Gets all subscription ids for the given destination hold by the given client
     # @param [::VertxStomp::StompServerConnection] connection the connection (client)
@@ -122,7 +138,7 @@ module VertxStomp
       if connection.class.method_defined?(:j_del) && !block_given?
         return @j_del.java_method(:getSubscriptions, [Java::IoVertxExtStomp::StompServerConnection.java_class]).call(connection.j_del).to_a.map { |elt| elt }
       end
-      raise ArgumentError, "Invalid arguments when calling get_subscriptions(connection)"
+      raise ArgumentError, "Invalid arguments when calling get_subscriptions(#{connection})"
     end
     #  Gets the number of subscriptions attached to the current {::VertxStomp::Destination}.
     # @return [Fixnum] the number of subscriptions.
@@ -139,7 +155,7 @@ module VertxStomp
       if address.class == String && !block_given?
         return @j_del.java_method(:matches, [Java::java.lang.String.java_class]).call(address)
       end
-      raise ArgumentError, "Invalid arguments when calling matches?(address)"
+      raise ArgumentError, "Invalid arguments when calling matches?(#{address})"
     end
   end
 end

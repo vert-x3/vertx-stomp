@@ -51,7 +51,7 @@ var StompClient = function(j_val) {
     if (__args.length === 1 && typeof __args[0] === 'function') {
       j_stompClient["connect(io.vertx.core.Handler)"](function(ar) {
       if (ar.succeeded()) {
-        __args[0](utils.convReturnVertxGen(ar.result(), StompClientConnection), null);
+        __args[0](utils.convReturnVertxGen(StompClientConnection, ar.result()), null);
       } else {
         __args[0](null, ar.cause());
       }
@@ -60,7 +60,7 @@ var StompClient = function(j_val) {
     }  else if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'function') {
       j_stompClient["connect(io.vertx.core.net.NetClient,io.vertx.core.Handler)"](__args[0]._jdel, function(ar) {
       if (ar.succeeded()) {
-        __args[1](utils.convReturnVertxGen(ar.result(), StompClientConnection), null);
+        __args[1](utils.convReturnVertxGen(StompClientConnection, ar.result()), null);
       } else {
         __args[1](null, ar.cause());
       }
@@ -69,7 +69,7 @@ var StompClient = function(j_val) {
     }  else if (__args.length === 3 && typeof __args[0] ==='number' && typeof __args[1] === 'string' && typeof __args[2] === 'function') {
       j_stompClient["connect(int,java.lang.String,io.vertx.core.Handler)"](__args[0], __args[1], function(ar) {
       if (ar.succeeded()) {
-        __args[2](utils.convReturnVertxGen(ar.result(), StompClientConnection), null);
+        __args[2](utils.convReturnVertxGen(StompClientConnection, ar.result()), null);
       } else {
         __args[2](null, ar.cause());
       }
@@ -78,7 +78,7 @@ var StompClient = function(j_val) {
     }  else if (__args.length === 4 && typeof __args[0] ==='number' && typeof __args[1] === 'string' && typeof __args[2] === 'object' && __args[2]._jdel && typeof __args[3] === 'function') {
       j_stompClient["connect(int,java.lang.String,io.vertx.core.net.NetClient,io.vertx.core.Handler)"](__args[0], __args[1], __args[2]._jdel, function(ar) {
       if (ar.succeeded()) {
-        __args[3](utils.convReturnVertxGen(ar.result(), StompClientConnection), null);
+        __args[3](utils.convReturnVertxGen(StompClientConnection, ar.result()), null);
       } else {
         __args[3](null, ar.cause());
       }
@@ -183,7 +183,7 @@ var StompClient = function(j_val) {
   this.vertx = function() {
     var __args = arguments;
     if (__args.length === 0) {
-      return utils.convReturnVertxGen(j_stompClient["vertx()"](), Vertx);
+      return utils.convReturnVertxGen(Vertx, j_stompClient["vertx()"]());
     } else throw new TypeError('function invoked with invalid arguments');
   };
 
@@ -206,6 +206,25 @@ var StompClient = function(j_val) {
   this._jdel = j_stompClient;
 };
 
+StompClient._jclass = utils.getJavaClass("io.vertx.ext.stomp.StompClient");
+StompClient._jtype = {
+  accept: function(obj) {
+    return StompClient._jclass.isInstance(obj._jdel);
+  },
+  wrap: function(jdel) {
+    var obj = Object.create(StompClient.prototype, {});
+    StompClient.apply(obj, arguments);
+    return obj;
+  },
+  unwrap: function(obj) {
+    return obj._jdel;
+  }
+};
+StompClient._create = function(jdel) {
+  var obj = Object.create(StompClient.prototype, {});
+  StompClient.apply(obj, arguments);
+  return obj;
+}
 /**
  Creates a {@link StompClient} using the default implementation.
 
@@ -217,11 +236,10 @@ var StompClient = function(j_val) {
 StompClient.create = function() {
   var __args = arguments;
   if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
-    return utils.convReturnVertxGen(JStompClient["create(io.vertx.core.Vertx)"](__args[0]._jdel), StompClient);
+    return utils.convReturnVertxGen(StompClient, JStompClient["create(io.vertx.core.Vertx)"](__args[0]._jdel));
   }else if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && (typeof __args[1] === 'object' && __args[1] != null)) {
-    return utils.convReturnVertxGen(JStompClient["create(io.vertx.core.Vertx,io.vertx.ext.stomp.StompClientOptions)"](__args[0]._jdel, __args[1] != null ? new StompClientOptions(new JsonObject(JSON.stringify(__args[1]))) : null), StompClient);
+    return utils.convReturnVertxGen(StompClient, JStompClient["create(io.vertx.core.Vertx,io.vertx.ext.stomp.StompClientOptions)"](__args[0]._jdel, __args[1] != null ? new StompClientOptions(new JsonObject(JSON.stringify(__args[1]))) : null));
   } else throw new TypeError('function invoked with invalid arguments');
 };
 
-// We export the Constructor function
 module.exports = StompClient;

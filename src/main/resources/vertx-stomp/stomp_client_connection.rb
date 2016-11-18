@@ -15,6 +15,22 @@ module VertxStomp
     def j_del
       @j_del
     end
+    @@j_api_type = Object.new
+    def @@j_api_type.accept?(obj)
+      obj.class == StompClientConnection
+    end
+    def @@j_api_type.wrap(obj)
+      StompClientConnection.new(obj)
+    end
+    def @@j_api_type.unwrap(obj)
+      obj.j_del
+    end
+    def self.j_api_type
+      @@j_api_type
+    end
+    def self.j_class
+      Java::IoVertxExtStomp::StompClientConnection.java_class
+    end
     # @return [String] the session id.
     def session
       if !block_given?
@@ -100,7 +116,7 @@ module VertxStomp
         @j_del.java_method(:send, [Java::java.lang.String.java_class,Java::JavaUtil::Map.java_class,Java::IoVertxCoreBuffer::Buffer.java_class,Java::IoVertxCore::Handler.java_class]).call(param_1,Hash[param_2.map { |k,v| [k,v] }],param_3.j_del,(Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling send(param_1,param_2,param_3)"
+      raise ArgumentError, "Invalid arguments when calling send(#{param_1},#{param_2},#{param_3})"
     end
     #  Subscribes to the given destination.
     # @overload subscribe(destination,handler)
@@ -130,7 +146,7 @@ module VertxStomp
       elsif param_1.class == String && param_2.class == Hash && param_3.class == Proc && block_given?
         return @j_del.java_method(:subscribe, [Java::java.lang.String.java_class,Java::JavaUtil::Map.java_class,Java::IoVertxCore::Handler.java_class,Java::IoVertxCore::Handler.java_class]).call(param_1,Hash[param_2.map { |k,v| [k,v] }],(Proc.new { |event| param_3.call(event != nil ? JSON.parse(event.toJson.encode) : nil) }),(Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
       end
-      raise ArgumentError, "Invalid arguments when calling subscribe(param_1,param_2,param_3)"
+      raise ArgumentError, "Invalid arguments when calling subscribe(#{param_1},#{param_2},#{param_3})"
     end
     #  Un-subscribes from the given destination. This method computes the subscription id as follows. If the given
     #  headers contains the <code>id</code> header, the header value is used. Otherwise the destination is used.
@@ -152,7 +168,7 @@ module VertxStomp
         @j_del.java_method(:unsubscribe, [Java::java.lang.String.java_class,Java::JavaUtil::Map.java_class,Java::IoVertxCore::Handler.java_class]).call(destination,Hash[headers.map { |k,v| [k,v] }],(Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling unsubscribe(destination,headers)"
+      raise ArgumentError, "Invalid arguments when calling unsubscribe(#{destination},#{headers})"
     end
     #  Sets a handler notified when an <code>ERROR</code> frame is received by the client. The handler receives the <code>ERROR</code> frame and a reference on the {::VertxStomp::StompClientConnection}.
     # @yield the handler
@@ -216,7 +232,7 @@ module VertxStomp
         @j_del.java_method(:beginTX, [Java::java.lang.String.java_class,Java::JavaUtil::Map.java_class,Java::IoVertxCore::Handler.java_class]).call(id,Hash[headers.map { |k,v| [k,v] }],(Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling begin_tx(id,headers)"
+      raise ArgumentError, "Invalid arguments when calling begin_tx(#{id},#{headers})"
     end
     #  Commits a transaction.
     # @param [String] id the transaction id, must not be <code>null</code>
@@ -237,7 +253,7 @@ module VertxStomp
         @j_del.java_method(:commit, [Java::java.lang.String.java_class,Java::JavaUtil::Map.java_class,Java::IoVertxCore::Handler.java_class]).call(id,Hash[headers.map { |k,v| [k,v] }],(Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling commit(id,headers)"
+      raise ArgumentError, "Invalid arguments when calling commit(#{id},#{headers})"
     end
     #  Aborts a transaction.
     # @param [String] id the transaction id, must not be <code>null</code>
@@ -258,7 +274,7 @@ module VertxStomp
         @j_del.java_method(:abort, [Java::java.lang.String.java_class,Java::JavaUtil::Map.java_class,Java::IoVertxCore::Handler.java_class]).call(id,Hash[headers.map { |k,v| [k,v] }],(Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling abort(id,headers)"
+      raise ArgumentError, "Invalid arguments when calling abort(#{id},#{headers})"
     end
     #  Disconnects the client. Unlike the {::VertxStomp::StompClientConnection#close} method, this method send the <code>DISCONNECT</code> frame to the
     #  server. This method lets you customize the <code>DISCONNECT</code> frame.
@@ -279,7 +295,7 @@ module VertxStomp
         @j_del.java_method(:disconnect, [Java::IoVertxExtStomp::Frame.java_class,Java::IoVertxCore::Handler.java_class]).call(Java::IoVertxExtStomp::Frame.new(::Vertx::Util::Utils.to_json_object(frame)),(Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling disconnect(frame)"
+      raise ArgumentError, "Invalid arguments when calling disconnect(#{frame})"
     end
     #  Sends an acknowledgement for the given frame. It means that the frame has been handled and processed by the
     #  client. The sent acknowledgement is part of the transaction identified by the given id.
@@ -301,7 +317,7 @@ module VertxStomp
         @j_del.java_method(:ack, [Java::java.lang.String.java_class,Java::java.lang.String.java_class,Java::IoVertxCore::Handler.java_class]).call(id,txId,(Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling ack(id,txId)"
+      raise ArgumentError, "Invalid arguments when calling ack(#{id},#{txId})"
     end
     #  Sends a non-acknowledgement for the given frame. It means that the frame has not been handled by the client.
     #  The sent non-acknowledgement is part of the transaction identified by the given id.
@@ -323,7 +339,7 @@ module VertxStomp
         @j_del.java_method(:nack, [Java::java.lang.String.java_class,Java::java.lang.String.java_class,Java::IoVertxCore::Handler.java_class]).call(id,txId,(Proc.new { |event| yield(event != nil ? JSON.parse(event.toJson.encode) : nil) }))
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling nack(id,txId)"
+      raise ArgumentError, "Invalid arguments when calling nack(#{id},#{txId})"
     end
     #  Configures a received handler that get notified when a STOMP frame is received by the client.
     #  This handler can be used for logging, debugging or ad-hoc behavior. The frame can still be modified by the handler.

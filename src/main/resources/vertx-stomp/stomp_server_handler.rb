@@ -24,13 +24,29 @@ module VertxStomp
     def j_del
       @j_del
     end
+    @@j_api_type = Object.new
+    def @@j_api_type.accept?(obj)
+      obj.class == StompServerHandler
+    end
+    def @@j_api_type.wrap(obj)
+      StompServerHandler.new(obj)
+    end
+    def @@j_api_type.unwrap(obj)
+      obj.j_del
+    end
+    def self.j_api_type
+      @@j_api_type
+    end
+    def self.j_class
+      Java::IoVertxExtStomp::StompServerHandler.java_class
+    end
     # @param [::VertxStomp::ServerFrame] arg0 
     # @return [void]
     def handle(arg0=nil)
       if arg0.class.method_defined?(:j_del) && !block_given?
         return @j_del.java_method(:handle, [Java::IoVertxExtStomp::ServerFrame.java_class]).call(arg0.j_del)
       end
-      raise ArgumentError, "Invalid arguments when calling handle(arg0)"
+      raise ArgumentError, "Invalid arguments when calling handle(#{arg0})"
     end
     #  Creates an instance of {::VertxStomp::StompServerHandler} using the default (compliant) implementation.
     # @param [::Vertx::Vertx] vertx the vert.x instance to use
@@ -39,7 +55,7 @@ module VertxStomp
       if vertx.class.method_defined?(:j_del) && !block_given?
         return ::Vertx::Util::Utils.safe_create(Java::IoVertxExtStomp::StompServerHandler.java_method(:create, [Java::IoVertxCore::Vertx.java_class]).call(vertx.j_del),::VertxStomp::StompServerHandler)
       end
-      raise ArgumentError, "Invalid arguments when calling create(vertx)"
+      raise ArgumentError, "Invalid arguments when calling create(#{vertx})"
     end
     #  Configures a handler that get notified when a STOMP frame is received by the server.
     #  This handler can be used for logging, debugging or ad-hoc behavior.
@@ -120,7 +136,7 @@ module VertxStomp
       if connection.class.method_defined?(:j_del) && !block_given?
         return @j_del.java_method(:onClose, [Java::IoVertxExtStomp::StompServerConnection.java_class]).call(connection.j_del)
       end
-      raise ArgumentError, "Invalid arguments when calling on_close(connection)"
+      raise ArgumentError, "Invalid arguments when calling on_close(#{connection})"
     end
     #  Configures the action to execute when a <code>COMMIT</code> frame is received.
     # @yield the handler
@@ -194,7 +210,7 @@ module VertxStomp
         @j_del.java_method(:onAuthenticationRequest, [Java::IoVertxExtStomp::StompServer.java_class,Java::java.lang.String.java_class,Java::java.lang.String.java_class,Java::IoVertxCore::Handler.java_class]).call(server.j_del,login,passcode,(Proc.new { |ar| yield(ar.failed ? ar.cause : nil, ar.succeeded ? ar.result : nil) }))
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling on_authentication_request(server,login,passcode)"
+      raise ArgumentError, "Invalid arguments when calling on_authentication_request(#{server},#{login},#{passcode})"
     end
     #  Configures the  to be used to authenticate the user.
     # @param [::VertxAuthCommon::AuthProvider] handler the handler
@@ -204,7 +220,7 @@ module VertxStomp
         @j_del.java_method(:authProvider, [Java::IoVertxExtAuth::AuthProvider.java_class]).call(handler.j_del)
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling auth_provider(handler)"
+      raise ArgumentError, "Invalid arguments when calling auth_provider(#{handler})"
     end
     # @return [Array<::VertxStomp::Destination>] the list of destination managed by the STOMP server. Don't forget the STOMP interprets destination as opaque Strings.
     def get_destinations
@@ -220,7 +236,7 @@ module VertxStomp
       if destination.class == String && !block_given?
         return ::Vertx::Util::Utils.safe_create(@j_del.java_method(:getDestination, [Java::java.lang.String.java_class]).call(destination),::VertxStomp::Destination)
       end
-      raise ArgumentError, "Invalid arguments when calling get_destination(destination)"
+      raise ArgumentError, "Invalid arguments when calling get_destination(#{destination})"
     end
     #  Method called by single message (client-individual policy) or a set of message (client policy) are acknowledged.
     #  Implementations must call the handler configured using {::VertxStomp::StompServerHandler#on_ack_handler}.
@@ -233,7 +249,7 @@ module VertxStomp
         @j_del.java_method(:onAck, [Java::IoVertxExtStomp::StompServerConnection.java_class,Java::IoVertxExtStomp::Frame.java_class,Java::JavaUtil::List.java_class]).call(connection.j_del,Java::IoVertxExtStomp::Frame.new(::Vertx::Util::Utils.to_json_object(subscribe)),messages.map { |element| Java::IoVertxExtStomp::Frame.new(::Vertx::Util::Utils.to_json_object(element)) })
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling on_ack(connection,subscribe,messages)"
+      raise ArgumentError, "Invalid arguments when calling on_ack(#{connection},#{subscribe},#{messages})"
     end
     #  Method called by single message (client-individual policy) or a set of message (client policy) are
     #  <strong>not</strong> acknowledged. Not acknowledgment can result from a <code>NACK</code> frame or from a timeout (no
@@ -248,7 +264,7 @@ module VertxStomp
         @j_del.java_method(:onNack, [Java::IoVertxExtStomp::StompServerConnection.java_class,Java::IoVertxExtStomp::Frame.java_class,Java::JavaUtil::List.java_class]).call(connection.j_del,Java::IoVertxExtStomp::Frame.new(::Vertx::Util::Utils.to_json_object(subscribe)),messages.map { |element| Java::IoVertxExtStomp::Frame.new(::Vertx::Util::Utils.to_json_object(element)) })
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling on_nack(connection,subscribe,messages)"
+      raise ArgumentError, "Invalid arguments when calling on_nack(#{connection},#{subscribe},#{messages})"
     end
     #  Configures the action to execute when messages are acknowledged.
     # @yield the handler
@@ -292,7 +308,7 @@ module VertxStomp
       if destination.class == String && !block_given?
         return ::Vertx::Util::Utils.safe_create(@j_del.java_method(:getOrCreateDestination, [Java::java.lang.String.java_class]).call(destination),::VertxStomp::Destination)
       end
-      raise ArgumentError, "Invalid arguments when calling get_or_create_destination(destination)"
+      raise ArgumentError, "Invalid arguments when calling get_or_create_destination(#{destination})"
     end
     #  Configures the {::VertxStomp::DestinationFactory} used to create {::VertxStomp::Destination} objects.
     # @param [::VertxStomp::DestinationFactory] factory the factory
@@ -302,7 +318,7 @@ module VertxStomp
         @j_del.java_method(:destinationFactory, [Java::IoVertxExtStomp::DestinationFactory.java_class]).call(factory.j_del)
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling destination_factory(factory)"
+      raise ArgumentError, "Invalid arguments when calling destination_factory(#{factory})"
     end
     #  Configures the STOMP server to act as a bridge with the Vert.x event bus.
     # @param [Hash] options the configuration options
@@ -312,7 +328,7 @@ module VertxStomp
         @j_del.java_method(:bridge, [Java::IoVertxExtStomp::BridgeOptions.java_class]).call(Java::IoVertxExtStomp::BridgeOptions.new(::Vertx::Util::Utils.to_json_object(options)))
         return self
       end
-      raise ArgumentError, "Invalid arguments when calling bridge(options)"
+      raise ArgumentError, "Invalid arguments when calling bridge(#{options})"
     end
   end
 end

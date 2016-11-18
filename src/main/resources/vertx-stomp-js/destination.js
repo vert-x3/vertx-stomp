@@ -192,6 +192,25 @@ var Destination = function(j_val) {
   this._jdel = j_destination;
 };
 
+Destination._jclass = utils.getJavaClass("io.vertx.ext.stomp.Destination");
+Destination._jtype = {
+  accept: function(obj) {
+    return Destination._jclass.isInstance(obj._jdel);
+  },
+  wrap: function(jdel) {
+    var obj = Object.create(Destination.prototype, {});
+    Destination.apply(obj, arguments);
+    return obj;
+  },
+  unwrap: function(obj) {
+    return obj._jdel;
+  }
+};
+Destination._create = function(jdel) {
+  var obj = Object.create(Destination.prototype, {});
+  Destination.apply(obj, arguments);
+  return obj;
+}
 /**
 
  @memberof module:vertx-stomp-js/destination
@@ -202,7 +221,7 @@ var Destination = function(j_val) {
 Destination.topic = function(vertx, destination) {
   var __args = arguments;
   if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'string') {
-    return utils.convReturnVertxGen(JDestination["topic(io.vertx.core.Vertx,java.lang.String)"](vertx._jdel, destination), Destination);
+    return utils.convReturnVertxGen(Destination, JDestination["topic(io.vertx.core.Vertx,java.lang.String)"](vertx._jdel, destination));
   } else throw new TypeError('function invoked with invalid arguments');
 };
 
@@ -216,7 +235,7 @@ Destination.topic = function(vertx, destination) {
 Destination.queue = function(vertx, destination) {
   var __args = arguments;
   if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'string') {
-    return utils.convReturnVertxGen(JDestination["queue(io.vertx.core.Vertx,java.lang.String)"](vertx._jdel, destination), Destination);
+    return utils.convReturnVertxGen(Destination, JDestination["queue(io.vertx.core.Vertx,java.lang.String)"](vertx._jdel, destination));
   } else throw new TypeError('function invoked with invalid arguments');
 };
 
@@ -230,9 +249,8 @@ Destination.queue = function(vertx, destination) {
 Destination.bridge = function(vertx, options) {
   var __args = arguments;
   if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && (typeof __args[1] === 'object' && __args[1] != null)) {
-    return utils.convReturnVertxGen(JDestination["bridge(io.vertx.core.Vertx,io.vertx.ext.stomp.BridgeOptions)"](vertx._jdel, options != null ? new BridgeOptions(new JsonObject(JSON.stringify(options))) : null), Destination);
+    return utils.convReturnVertxGen(Destination, JDestination["bridge(io.vertx.core.Vertx,io.vertx.ext.stomp.BridgeOptions)"](vertx._jdel, options != null ? new BridgeOptions(new JsonObject(JSON.stringify(options))) : null));
   } else throw new TypeError('function invoked with invalid arguments');
 };
 
-// We export the Constructor function
 module.exports = Destination;
