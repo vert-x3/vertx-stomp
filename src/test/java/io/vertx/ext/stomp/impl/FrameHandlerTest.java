@@ -210,4 +210,40 @@ public class FrameHandlerTest {
     return null;
   }
 
+  @Test
+  public void testThatWeReceiveConnectAndDisconnectFrames() throws InterruptedException {
+    List<Frame> received = new ArrayList<>();
+    List<Frame> sent = new ArrayList<>();
+    StompClient stompClient = StompClient.create(vertx);
+    AtomicReference<StompClientConnection> ref = new AtomicReference<>();
+    stompClient
+      .receivedFrameHandler(frame -> {
+        if (frame.getCommand() != Frame.Command.PING) {
+          received.add(frame);
+        }
+
+      })
+      .writingFrameHandler(frame -> {
+        if (frame.getCommand() != Frame.Command.PING) {
+          sent.add(frame);
+        }
+      })
+      .connect(ar -> {
+        ref.set(ar.result());
+        if (ar.succeeded()) {
+          ref.set(ar.result());
+        } else {
+          ar.cause().printStackTrace();
+        }
+      });
+
+    await().until(() -> sent.stream().anyMatch(f -> f.getCommand() == Frame.Command.CONNECT));
+    await().until(() -> received.stream().anyMatch(f -> f.getCommand() == Frame.Command.CONNECTED));
+
+    ref.get().disconnect();
+
+    await().until(() -> sent.stream().anyMatch(f -> f.getCommand() == Frame.Command.DISCONNECT));
+
+  }
+
 }

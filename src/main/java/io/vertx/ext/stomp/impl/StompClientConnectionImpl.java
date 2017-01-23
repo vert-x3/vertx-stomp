@@ -104,14 +104,14 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
       lastServerActivity = System.nanoTime();
       parser.handle(buffer);
     })
-        .closeHandler(v -> {
-          if (!closed  && ! client.isClosed()) {
-            close();
-            if (droppedHandler != null) {
-              droppedHandler.handle(this);
-            }
+      .closeHandler(v -> {
+        if (!closed && !client.isClosed()) {
+          close();
+          if (droppedHandler != null) {
+            droppedHandler.handle(this);
           }
-        });
+        }
+      });
   }
 
   @Override
@@ -132,14 +132,14 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
       context.runOnContext(v -> closeHandler.handle(this));
     }
 
-    if (pinger != 0) {
+    if (pinger != -1) {
       client.vertx().cancelTimer(pinger);
-      pinger = 0;
+      pinger = -1;
     }
 
-    if (ponger != 0) {
+    if (ponger != -1) {
       client.vertx().cancelTimer(ponger);
-      ponger = 0;
+      ponger = -1;
     }
 
     socket.close();
@@ -216,8 +216,8 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     }
 
     if (body != null
-        && client.options().isAutoComputeContentLength()
-        && !headers.containsKey(Frame.CONTENT_LENGTH)) {
+      && client.options().isAutoComputeContentLength()
+      && !headers.containsKey(Frame.CONTENT_LENGTH)) {
       headers.put(Frame.CONTENT_LENGTH, Integer.toString(body.length()));
     }
 
@@ -242,7 +242,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
 
   @Override
   public synchronized String subscribe(String destination, Map<String, String> headers, Handler<Frame> handler, Handler<Frame>
-      receiptHandler) {
+    receiptHandler) {
     Objects.requireNonNull(destination);
     Objects.requireNonNull(handler);
 
@@ -253,7 +253,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     String id = headers.containsKey(Frame.ID) ? headers.get(Frame.ID) : destination;
 
     final Optional<Subscription> maybeSubscription = subscriptions.stream()
-        .filter(s -> s.id.equals(id)).findFirst();
+      .filter(s -> s.id.equals(id)).findFirst();
 
     if (maybeSubscription.isPresent()) {
       throw new IllegalArgumentException("The client is already registered  to " + destination);
@@ -289,7 +289,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
 
   @Override
   public synchronized StompClientConnection unsubscribe(String destination, Map<String, String> headers, Handler<Frame>
-      receiptHandler) {
+    receiptHandler) {
     Objects.requireNonNull(destination);
     if (headers == null) {
       headers = Headers.create();
@@ -298,7 +298,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     headers.put(Frame.ID, id);
 
     final Optional<Subscription> maybeSubscription = subscriptions.stream()
-        .filter(s -> s.id.equals(id)).findFirst();
+      .filter(s -> s.id.equals(id)).findFirst();
 
     if (maybeSubscription.isPresent()) {
       final Subscription subscription = maybeSubscription.get();
@@ -514,7 +514,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
       case MESSAGE:
         String id = frame.getHeader(Frame.SUBSCRIPTION);
         subscriptions.stream()
-            .filter(s -> s.id.equals(id)).forEach(s -> s.handler.handle(frame));
+          .filter(s -> s.id.equals(id)).forEach(s -> s.handler.handle(frame));
         break;
       case ERROR:
         if (errorHandler != null) {
@@ -545,11 +545,11 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
 
     // Compute the heartbeat.
     long ping = Frame.Heartbeat.computePingPeriod(
-        Frame.Heartbeat.parse(frame.getHeader(Frame.HEARTBEAT)),
-        Frame.Heartbeat.create(client.options().getHeartbeat()));
+      Frame.Heartbeat.parse(frame.getHeader(Frame.HEARTBEAT)),
+      Frame.Heartbeat.create(client.options().getHeartbeat()));
     long pong = Frame.Heartbeat.computePongPeriod(
-        Frame.Heartbeat.parse(frame.getHeader(Frame.HEARTBEAT)),
-        Frame.Heartbeat.create(client.options().getHeartbeat()));
+      Frame.Heartbeat.parse(frame.getHeader(Frame.HEARTBEAT)),
+      Frame.Heartbeat.create(client.options().getHeartbeat()));
 
     if (ping > 0) {
       pinger = client.vertx().setPeriodic(ping, l -> pingHandler.handle(this));

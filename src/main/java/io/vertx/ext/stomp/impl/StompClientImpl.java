@@ -161,13 +161,17 @@ public class StompClientImpl implements StompClient {
             .writingFrameHandler(w)
             .errorHandler(errorFrameHandler);
         // Socket connected - send "CONNECT" Frame
-        ar.result().write(getConnectFrame(host));
+        Frame frame = getConnectFrame(host);
+        if (w != null) {
+          w.handle(frame);
+        }
+        ar.result().write(frame.toBuffer(options.isTrailingLine()));
       }
     });
     return this;
   }
 
-  private Buffer getConnectFrame(String host) {
+  private Frame getConnectFrame(String host) {
     Headers headers = Headers.create();
     String accepted = getAcceptedVersions();
     if (accepted != null) {
@@ -188,8 +192,7 @@ public class StompClientImpl implements StompClient {
     headers.put(Frame.HEARTBEAT, Frame.Heartbeat.create(options.getHeartbeat()).toString());
 
     Frame.Command cmd = options.isUseStompFrame() ? Frame.Command.STOMP : Frame.Command.CONNECT;
-    final Frame frame = new Frame(cmd, headers, null);
-    return frame.toBuffer(options.isTrailingLine());
+    return new Frame(cmd, headers, null);
   }
 
   private String getAcceptedVersions() {
