@@ -171,6 +171,9 @@
               <excludes>
                 <exclude>**/*DockerIT.java</exclude>
               </excludes>
+              <systemProperties>
+                <vertx.disableDnsResolver>true</vertx.disableDnsResolver>
+              </systemProperties>
             </configuration>
           </execution>
         </executions>
