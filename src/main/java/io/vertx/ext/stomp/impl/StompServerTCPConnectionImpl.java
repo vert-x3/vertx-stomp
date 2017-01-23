@@ -110,14 +110,14 @@ public class StompServerTCPConnectionImpl implements StompServerConnection {
   }
 
   public synchronized void cancelHeartbeat() {
-    if (pinger > 0) {
+    if (pinger >= 0) {
       server.vertx().cancelTimer(pinger);
-      pinger = 0;
+      pinger = -1;
     }
 
-    if (ponger > 0) {
+    if (ponger >= 0) {
       server.vertx().cancelTimer(ponger);
-      ponger = 0;
+      ponger = -1;
     }
   }
 
