@@ -21,7 +21,7 @@ var Vertx = require('vertx-js/vertx');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
-var JDestinationFactory = io.vertx.ext.stomp.DestinationFactory;
+var JDestinationFactory = Java.type('io.vertx.ext.stomp.DestinationFactory');
 
 /**
  Interface implemented to customize the destination creation.

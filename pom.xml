@@ -44,15 +44,11 @@
       <artifactId>vertx-lang-groovy</artifactId>
       <optional>true</optional>
     </dependency>
-    <!-- Does not seem to work for now -->
-    <!--
-    [ERROR] /Users/julien/java/vertx-stomp/src/main/kotlin/io/vertx/kotlin/ext/stomp/Frame.kt: (27, 24) Type mismatch: inferred type is String? but (Mutable)Map<String!, String!>! was expected
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-lang-kotlin</artifactId>
       <optional>true</optional>
     </dependency>
--->
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-lang-ruby</artifactId>

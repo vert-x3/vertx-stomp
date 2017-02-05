@@ -27,9 +27,9 @@ var AuthProvider = require('vertx-auth-common-js/auth_provider');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
-var JStompServerHandler = io.vertx.ext.stomp.StompServerHandler;
-var BridgeOptions = io.vertx.ext.stomp.BridgeOptions;
-var Frame = io.vertx.ext.stomp.Frame;
+var JStompServerHandler = Java.type('io.vertx.ext.stomp.StompServerHandler');
+var BridgeOptions = Java.type('io.vertx.ext.stomp.BridgeOptions');
+var Frame = Java.type('io.vertx.ext.stomp.Frame');
 
 /**
  STOMP server handler implements the behavior of the STOMP server when a specific event occurs. For instance, if
@@ -372,7 +372,7 @@ var StompServerHandler = function(j_val) {
   this.onAck = function(connection, subscribe, messages) {
     var __args = arguments;
     if (__args.length === 3 && typeof __args[0] === 'object' && __args[0]._jdel && (typeof __args[1] === 'object' && __args[1] != null) && typeof __args[2] === 'object' && __args[2] instanceof Array) {
-      j_stompServerHandler["onAck(io.vertx.ext.stomp.StompServerConnection,io.vertx.ext.stomp.Frame,java.util.List)"](connection._jdel, subscribe != null ? new Frame(new JsonObject(JSON.stringify(subscribe))) : null, utils.convParamListDataObject(messages, function(json) { return new Frame(json); }));
+      j_stompServerHandler["onAck(io.vertx.ext.stomp.StompServerConnection,io.vertx.ext.stomp.Frame,java.util.List)"](connection._jdel, subscribe != null ? new Frame(new JsonObject(Java.asJSONCompatible(subscribe))) : null, utils.convParamListDataObject(messages, function(json) { return new Frame(json); }));
       return that;
     } else throw new TypeError('function invoked with invalid arguments');
   };
@@ -392,7 +392,7 @@ var StompServerHandler = function(j_val) {
   this.onNack = function(connection, subscribe, messages) {
     var __args = arguments;
     if (__args.length === 3 && typeof __args[0] === 'object' && __args[0]._jdel && (typeof __args[1] === 'object' && __args[1] != null) && typeof __args[2] === 'object' && __args[2] instanceof Array) {
-      j_stompServerHandler["onNack(io.vertx.ext.stomp.StompServerConnection,io.vertx.ext.stomp.Frame,java.util.List)"](connection._jdel, subscribe != null ? new Frame(new JsonObject(JSON.stringify(subscribe))) : null, utils.convParamListDataObject(messages, function(json) { return new Frame(json); }));
+      j_stompServerHandler["onNack(io.vertx.ext.stomp.StompServerConnection,io.vertx.ext.stomp.Frame,java.util.List)"](connection._jdel, subscribe != null ? new Frame(new JsonObject(Java.asJSONCompatible(subscribe))) : null, utils.convParamListDataObject(messages, function(json) { return new Frame(json); }));
       return that;
     } else throw new TypeError('function invoked with invalid arguments');
   };
@@ -492,7 +492,7 @@ var StompServerHandler = function(j_val) {
   this.bridge = function(options) {
     var __args = arguments;
     if (__args.length === 1 && (typeof __args[0] === 'object' && __args[0] != null)) {
-      j_stompServerHandler["bridge(io.vertx.ext.stomp.BridgeOptions)"](options != null ? new BridgeOptions(new JsonObject(JSON.stringify(options))) : null);
+      j_stompServerHandler["bridge(io.vertx.ext.stomp.BridgeOptions)"](options != null ? new BridgeOptions(new JsonObject(Java.asJSONCompatible(options))) : null);
       return that;
     } else throw new TypeError('function invoked with invalid arguments');
   };

@@ -24,8 +24,8 @@ var ServerFrame = require('vertx-stomp-js/server_frame');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
-var JStompServer = io.vertx.ext.stomp.StompServer;
-var StompServerOptions = io.vertx.ext.stomp.StompServerOptions;
+var JStompServer = Java.type('io.vertx.ext.stomp.StompServer');
+var StompServerOptions = Java.type('io.vertx.ext.stomp.StompServerOptions');
 
 /**
 
@@ -264,11 +264,11 @@ StompServer.create = function() {
   if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
     return utils.convReturnVertxGen(StompServer, JStompServer["create(io.vertx.core.Vertx)"](__args[0]._jdel));
   }else if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && (typeof __args[1] === 'object' && __args[1] != null)) {
-    return utils.convReturnVertxGen(StompServer, JStompServer["create(io.vertx.core.Vertx,io.vertx.ext.stomp.StompServerOptions)"](__args[0]._jdel, __args[1] != null ? new StompServerOptions(new JsonObject(JSON.stringify(__args[1]))) : null));
+    return utils.convReturnVertxGen(StompServer, JStompServer["create(io.vertx.core.Vertx,io.vertx.ext.stomp.StompServerOptions)"](__args[0]._jdel, __args[1] != null ? new StompServerOptions(new JsonObject(Java.asJSONCompatible(__args[1]))) : null));
   }else if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'object' && __args[1]._jdel) {
     return utils.convReturnVertxGen(StompServer, JStompServer["create(io.vertx.core.Vertx,io.vertx.core.net.NetServer)"](__args[0]._jdel, __args[1]._jdel));
   }else if (__args.length === 3 && typeof __args[0] === 'object' && __args[0]._jdel && typeof __args[1] === 'object' && __args[1]._jdel && (typeof __args[2] === 'object' && __args[2] != null)) {
-    return utils.convReturnVertxGen(StompServer, JStompServer["create(io.vertx.core.Vertx,io.vertx.core.net.NetServer,io.vertx.ext.stomp.StompServerOptions)"](__args[0]._jdel, __args[1]._jdel, __args[2] != null ? new StompServerOptions(new JsonObject(JSON.stringify(__args[2]))) : null));
+    return utils.convReturnVertxGen(StompServer, JStompServer["create(io.vertx.core.Vertx,io.vertx.core.net.NetServer,io.vertx.ext.stomp.StompServerOptions)"](__args[0]._jdel, __args[1]._jdel, __args[2] != null ? new StompServerOptions(new JsonObject(Java.asJSONCompatible(__args[2]))) : null));
   } else throw new TypeError('function invoked with invalid arguments');
 };
 

@@ -19,8 +19,8 @@ var utils = require('vertx-js/util/utils');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
-var JAcknowledgement = io.vertx.ext.stomp.Acknowledgement;
-var Frame = io.vertx.ext.stomp.Frame;
+var JAcknowledgement = Java.type('io.vertx.ext.stomp.Acknowledgement');
+var Frame = Java.type('io.vertx.ext.stomp.Frame');
 
 /**
 

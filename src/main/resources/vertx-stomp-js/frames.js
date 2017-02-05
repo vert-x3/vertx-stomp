@@ -20,8 +20,8 @@ var StompServerConnection = require('vertx-stomp-js/stomp_server_connection');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
-var JFrames = io.vertx.ext.stomp.Frames;
-var Frame = io.vertx.ext.stomp.Frame;
+var JFrames = Java.type('io.vertx.ext.stomp.Frames');
+var Frame = Java.type('io.vertx.ext.stomp.Frame');
 
 /**
 
@@ -95,7 +95,7 @@ Frames.createReceiptFrame = function(receiptId, headers) {
 Frames.handleReceipt = function(frame, connection) {
   var __args = arguments;
   if (__args.length === 2 && (typeof __args[0] === 'object' && __args[0] != null) && typeof __args[1] === 'object' && __args[1]._jdel) {
-    JFrames["handleReceipt(io.vertx.ext.stomp.Frame,io.vertx.ext.stomp.StompServerConnection)"](frame != null ? new Frame(new JsonObject(JSON.stringify(frame))) : null, connection._jdel);
+    JFrames["handleReceipt(io.vertx.ext.stomp.Frame,io.vertx.ext.stomp.StompServerConnection)"](frame != null ? new Frame(new JsonObject(Java.asJSONCompatible(frame))) : null, connection._jdel);
   } else throw new TypeError('function invoked with invalid arguments');
 };
 

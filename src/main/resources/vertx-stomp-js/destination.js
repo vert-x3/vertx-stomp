@@ -21,9 +21,9 @@ var StompServerConnection = require('vertx-stomp-js/stomp_server_connection');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
-var JDestination = io.vertx.ext.stomp.Destination;
-var BridgeOptions = io.vertx.ext.stomp.BridgeOptions;
-var Frame = io.vertx.ext.stomp.Frame;
+var JDestination = Java.type('io.vertx.ext.stomp.Destination');
+var BridgeOptions = Java.type('io.vertx.ext.stomp.BridgeOptions');
+var Frame = Java.type('io.vertx.ext.stomp.Frame');
 
 /**
  Represents a STOMP destination.
@@ -63,7 +63,7 @@ var Destination = function(j_val) {
   this.dispatch = function(connection, frame) {
     var __args = arguments;
     if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && (typeof __args[1] === 'object' && __args[1] != null)) {
-      j_destination["dispatch(io.vertx.ext.stomp.StompServerConnection,io.vertx.ext.stomp.Frame)"](connection._jdel, frame != null ? new Frame(new JsonObject(JSON.stringify(frame))) : null);
+      j_destination["dispatch(io.vertx.ext.stomp.StompServerConnection,io.vertx.ext.stomp.Frame)"](connection._jdel, frame != null ? new Frame(new JsonObject(Java.asJSONCompatible(frame))) : null);
       return that;
     } else throw new TypeError('function invoked with invalid arguments');
   };
@@ -79,7 +79,7 @@ var Destination = function(j_val) {
   this.subscribe = function(connection, frame) {
     var __args = arguments;
     if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && (typeof __args[1] === 'object' && __args[1] != null)) {
-      j_destination["subscribe(io.vertx.ext.stomp.StompServerConnection,io.vertx.ext.stomp.Frame)"](connection._jdel, frame != null ? new Frame(new JsonObject(JSON.stringify(frame))) : null);
+      j_destination["subscribe(io.vertx.ext.stomp.StompServerConnection,io.vertx.ext.stomp.Frame)"](connection._jdel, frame != null ? new Frame(new JsonObject(Java.asJSONCompatible(frame))) : null);
       return that;
     } else throw new TypeError('function invoked with invalid arguments');
   };
@@ -95,7 +95,7 @@ var Destination = function(j_val) {
   this.unsubscribe = function(connection, frame) {
     var __args = arguments;
     if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && (typeof __args[1] === 'object' && __args[1] != null)) {
-      return j_destination["unsubscribe(io.vertx.ext.stomp.StompServerConnection,io.vertx.ext.stomp.Frame)"](connection._jdel, frame != null ? new Frame(new JsonObject(JSON.stringify(frame))) : null);
+      return j_destination["unsubscribe(io.vertx.ext.stomp.StompServerConnection,io.vertx.ext.stomp.Frame)"](connection._jdel, frame != null ? new Frame(new JsonObject(Java.asJSONCompatible(frame))) : null);
     } else throw new TypeError('function invoked with invalid arguments');
   };
 
@@ -125,7 +125,7 @@ var Destination = function(j_val) {
   this.ack = function(connection, frame) {
     var __args = arguments;
     if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && (typeof __args[1] === 'object' && __args[1] != null)) {
-      return j_destination["ack(io.vertx.ext.stomp.StompServerConnection,io.vertx.ext.stomp.Frame)"](connection._jdel, frame != null ? new Frame(new JsonObject(JSON.stringify(frame))) : null);
+      return j_destination["ack(io.vertx.ext.stomp.StompServerConnection,io.vertx.ext.stomp.Frame)"](connection._jdel, frame != null ? new Frame(new JsonObject(Java.asJSONCompatible(frame))) : null);
     } else throw new TypeError('function invoked with invalid arguments');
   };
 
@@ -140,7 +140,7 @@ var Destination = function(j_val) {
   this.nack = function(connection, frame) {
     var __args = arguments;
     if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && (typeof __args[1] === 'object' && __args[1] != null)) {
-      return j_destination["nack(io.vertx.ext.stomp.StompServerConnection,io.vertx.ext.stomp.Frame)"](connection._jdel, frame != null ? new Frame(new JsonObject(JSON.stringify(frame))) : null);
+      return j_destination["nack(io.vertx.ext.stomp.StompServerConnection,io.vertx.ext.stomp.Frame)"](connection._jdel, frame != null ? new Frame(new JsonObject(Java.asJSONCompatible(frame))) : null);
     } else throw new TypeError('function invoked with invalid arguments');
   };
 
@@ -249,7 +249,7 @@ Destination.queue = function(vertx, destination) {
 Destination.bridge = function(vertx, options) {
   var __args = arguments;
   if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && (typeof __args[1] === 'object' && __args[1] != null)) {
-    return utils.convReturnVertxGen(Destination, JDestination["bridge(io.vertx.core.Vertx,io.vertx.ext.stomp.BridgeOptions)"](vertx._jdel, options != null ? new BridgeOptions(new JsonObject(JSON.stringify(options))) : null));
+    return utils.convReturnVertxGen(Destination, JDestination["bridge(io.vertx.core.Vertx,io.vertx.ext.stomp.BridgeOptions)"](vertx._jdel, options != null ? new BridgeOptions(new JsonObject(Java.asJSONCompatible(options))) : null));
   } else throw new TypeError('function invoked with invalid arguments');
 };
 

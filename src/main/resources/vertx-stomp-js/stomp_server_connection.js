@@ -22,8 +22,8 @@ var StompServer = require('vertx-stomp-js/stomp_server');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
-var JStompServerConnection = io.vertx.ext.stomp.StompServerConnection;
-var Frame = io.vertx.ext.stomp.Frame;
+var JStompServerConnection = Java.type('io.vertx.ext.stomp.StompServerConnection');
+var Frame = Java.type('io.vertx.ext.stomp.Frame');
 
 /**
  Class representing a connection between a STOMP client a the server. It keeps a references on the client socket,
@@ -46,7 +46,7 @@ var StompServerConnection = function(j_val) {
   this.write = function() {
     var __args = arguments;
     if (__args.length === 1 && (typeof __args[0] === 'object' && __args[0] != null)) {
-      j_stompServerConnection["write(io.vertx.ext.stomp.Frame)"](__args[0] != null ? new Frame(new JsonObject(JSON.stringify(__args[0]))) : null);
+      j_stompServerConnection["write(io.vertx.ext.stomp.Frame)"](__args[0] != null ? new Frame(new JsonObject(Java.asJSONCompatible(__args[0]))) : null);
       return that;
     }  else if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
       j_stompServerConnection["write(io.vertx.core.buffer.Buffer)"](__args[0]._jdel);

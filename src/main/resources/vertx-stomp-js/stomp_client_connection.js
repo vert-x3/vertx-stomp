@@ -20,8 +20,8 @@ var Buffer = require('vertx-js/buffer');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
-var JStompClientConnection = io.vertx.ext.stomp.StompClientConnection;
-var Frame = io.vertx.ext.stomp.Frame;
+var JStompClientConnection = Java.type('io.vertx.ext.stomp.StompClientConnection');
+var Frame = Java.type('io.vertx.ext.stomp.Frame');
 
 /**
 
@@ -97,7 +97,7 @@ var StompClientConnection = function(j_val) {
   this.send = function() {
     var __args = arguments;
     if (__args.length === 1 && (typeof __args[0] === 'object' && __args[0] != null)) {
-      j_stompClientConnection["send(io.vertx.ext.stomp.Frame)"](__args[0] != null ? new Frame(new JsonObject(JSON.stringify(__args[0]))) : null);
+      j_stompClientConnection["send(io.vertx.ext.stomp.Frame)"](__args[0] != null ? new Frame(new JsonObject(Java.asJSONCompatible(__args[0]))) : null);
       return that;
     }  else if (__args.length === 2 && (typeof __args[0] === 'object' && __args[0] != null) && typeof __args[1] === 'object' && __args[1]._jdel) {
       j_stompClientConnection["send(java.util.Map,io.vertx.core.buffer.Buffer)"](__args[0], __args[1]._jdel);
@@ -106,7 +106,7 @@ var StompClientConnection = function(j_val) {
       j_stompClientConnection["send(java.lang.String,io.vertx.core.buffer.Buffer)"](__args[0], __args[1]._jdel);
       return that;
     }  else if (__args.length === 2 && (typeof __args[0] === 'object' && __args[0] != null) && typeof __args[1] === 'function') {
-      j_stompClientConnection["send(io.vertx.ext.stomp.Frame,io.vertx.core.Handler)"](__args[0] != null ? new Frame(new JsonObject(JSON.stringify(__args[0]))) : null, function(jVal) {
+      j_stompClientConnection["send(io.vertx.ext.stomp.Frame,io.vertx.core.Handler)"](__args[0] != null ? new Frame(new JsonObject(Java.asJSONCompatible(__args[0]))) : null, function(jVal) {
       __args[1](utils.convReturnDataObject(jVal));
     });
       return that;
@@ -378,10 +378,10 @@ var StompClientConnection = function(j_val) {
     });
       return that;
     }  else if (__args.length === 1 && (typeof __args[0] === 'object' && __args[0] != null)) {
-      j_stompClientConnection["disconnect(io.vertx.ext.stomp.Frame)"](__args[0] != null ? new Frame(new JsonObject(JSON.stringify(__args[0]))) : null);
+      j_stompClientConnection["disconnect(io.vertx.ext.stomp.Frame)"](__args[0] != null ? new Frame(new JsonObject(Java.asJSONCompatible(__args[0]))) : null);
       return that;
     }  else if (__args.length === 2 && (typeof __args[0] === 'object' && __args[0] != null) && typeof __args[1] === 'function') {
-      j_stompClientConnection["disconnect(io.vertx.ext.stomp.Frame,io.vertx.core.Handler)"](__args[0] != null ? new Frame(new JsonObject(JSON.stringify(__args[0]))) : null, function(jVal) {
+      j_stompClientConnection["disconnect(io.vertx.ext.stomp.Frame,io.vertx.core.Handler)"](__args[0] != null ? new Frame(new JsonObject(Java.asJSONCompatible(__args[0]))) : null, function(jVal) {
       __args[1](utils.convReturnDataObject(jVal));
     });
       return that;

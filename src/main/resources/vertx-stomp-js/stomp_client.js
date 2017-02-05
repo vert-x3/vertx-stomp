@@ -22,9 +22,9 @@ var NetClient = require('vertx-js/net_client');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
-var JStompClient = io.vertx.ext.stomp.StompClient;
-var Frame = io.vertx.ext.stomp.Frame;
-var StompClientOptions = io.vertx.ext.stomp.StompClientOptions;
+var JStompClient = Java.type('io.vertx.ext.stomp.StompClient');
+var Frame = Java.type('io.vertx.ext.stomp.Frame');
+var StompClientOptions = Java.type('io.vertx.ext.stomp.StompClientOptions');
 
 /**
  Defines a STOMP client.
@@ -238,7 +238,7 @@ StompClient.create = function() {
   if (__args.length === 1 && typeof __args[0] === 'object' && __args[0]._jdel) {
     return utils.convReturnVertxGen(StompClient, JStompClient["create(io.vertx.core.Vertx)"](__args[0]._jdel));
   }else if (__args.length === 2 && typeof __args[0] === 'object' && __args[0]._jdel && (typeof __args[1] === 'object' && __args[1] != null)) {
-    return utils.convReturnVertxGen(StompClient, JStompClient["create(io.vertx.core.Vertx,io.vertx.ext.stomp.StompClientOptions)"](__args[0]._jdel, __args[1] != null ? new StompClientOptions(new JsonObject(JSON.stringify(__args[1]))) : null));
+    return utils.convReturnVertxGen(StompClient, JStompClient["create(io.vertx.core.Vertx,io.vertx.ext.stomp.StompClientOptions)"](__args[0]._jdel, __args[1] != null ? new StompClientOptions(new JsonObject(Java.asJSONCompatible(__args[1]))) : null));
   } else throw new TypeError('function invoked with invalid arguments');
 };
 

@@ -20,8 +20,8 @@ var StompServerConnection = require('vertx-stomp-js/stomp_server_connection');
 
 var io = Packages.io;
 var JsonObject = io.vertx.core.json.JsonObject;
-var JServerFrame = io.vertx.ext.stomp.ServerFrame;
-var Frame = io.vertx.ext.stomp.Frame;
+var JServerFrame = Java.type('io.vertx.ext.stomp.ServerFrame');
+var Frame = Java.type('io.vertx.ext.stomp.Frame');
 
 /**
 
