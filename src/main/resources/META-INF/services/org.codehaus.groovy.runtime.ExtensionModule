@@ -1,4 +1,0 @@
-moduleName = io.vertx.ext.stomp.StompServerHandler-module
-moduleVersion = 1.0
-extensionClasses = io.vertx.groovy.ext.stomp.Acknowledgement_GroovyExtension, io.vertx.groovy.ext.stomp.Destination_GroovyExtension, io.vertx.groovy.ext.stomp.ServerFrame_GroovyExtension, io.vertx.groovy.ext.stomp.StompClient_GroovyExtension, io.vertx.groovy.ext.stomp.StompClientConnection_GroovyExtension, io.vertx.groovy.ext.stomp.StompServer_GroovyExtension, io.vertx.groovy.ext.stomp.StompServerConnection_GroovyExtension, io.vertx.groovy.ext.stomp.StompServerHandler_GroovyExtension
-staticExtensionClasses = io.vertx.groovy.ext.stomp.Destination_GroovyStaticExtension, io.vertx.groovy.ext.stomp.Frames_GroovyStaticExtension, io.vertx.groovy.ext.stomp.StompClient_GroovyStaticExtension, io.vertx.groovy.ext.stomp.StompServer_GroovyStaticExtension
