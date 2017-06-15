@@ -43,6 +43,7 @@ import io.vertx.core.net.PfxOptions
  * @param secured  Enables or disables the server security feature. It requires an [io.vertx.ext.auth.AuthProvider] handler.
  * @param sendBufferSize 
  * @param sendErrorOnNoSubscriptions  Sets whether or not an error is sent to the client when this client sends a message to an not subscribed destinations (no subscriptions on this destination).
+ * @param sni 
  * @param soLinger 
  * @param ssl 
  * @param supportedVersions  Sets the STOMP protocol versions supported by the server. Versions must be given in the decreasing order.
@@ -91,6 +92,7 @@ fun StompServerOptions(
   secured: Boolean? = null,
   sendBufferSize: Int? = null,
   sendErrorOnNoSubscriptions: Boolean? = null,
+  sni: Boolean? = null,
   soLinger: Int? = null,
   ssl: Boolean? = null,
   supportedVersions: Iterable<String>? = null,
@@ -200,6 +202,9 @@ fun StompServerOptions(
   }
   if (sendErrorOnNoSubscriptions != null) {
     this.setSendErrorOnNoSubscriptions(sendErrorOnNoSubscriptions)
+  }
+  if (sni != null) {
+    this.setSni(sni)
   }
   if (soLinger != null) {
     this.setSoLinger(soLinger)
