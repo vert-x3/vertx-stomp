@@ -257,7 +257,6 @@ public interface StompClientConnection {
   StompClientConnection closeHandler(Handler<StompClientConnection> handler);
 
 
-
   /**
    * Sets a handler notified when the server does not respond to a {@code ping} request in time. In other
    * words, this handler is invoked when the heartbeat has detected a connection failure with the server.
@@ -575,7 +574,7 @@ public interface StompClientConnection {
   /**
    * Configures a handler notified when a frame is going to be written on the wire. This handler can be used from
    * logging, debugging. The handler can modify the received frame.
-   *
+   * <p>
    * If a writing frame handler is set on the {@link StompClient}, it will be used by all
    * clients connection, so calling this method is useless, except if you want to use a different handler.
    *
@@ -584,4 +583,13 @@ public interface StompClientConnection {
    */
   @Fluent
   StompClientConnection writingFrameHandler(Handler<Frame> handler);
+
+  /**
+   * Configures the exception handler notified upon TCP-level errors.
+   *
+   * @param exceptionHandler the handler
+   * @return the current {@link StompClientConnection}
+   */
+  @Fluent
+  StompClientConnection exceptionHandler(Handler<Throwable> exceptionHandler);
 }

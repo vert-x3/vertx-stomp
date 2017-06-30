@@ -22,6 +22,8 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
+import io.vertx.core.net.NetServer;
+import io.vertx.core.net.NetSocket;
 import io.vertx.ext.stomp.*;
 import io.vertx.ext.stomp.utils.Headers;
 import org.hamcrest.Matchers;
@@ -37,8 +39,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static com.jayway.awaitility.Awaitility.await;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test the STOMP client.
@@ -71,6 +77,73 @@ public class StompClientImplTest {
     lock = new AsyncLock<>();
     vertx.close(lock.handler());
     lock.waitForSuccess();
+  }
+
+  @Test
+  public void testRejectedConnection() throws InterruptedException {
+    //-A INPUT -p tcp -m state --state NEW -m tcp --dport 61613 -j REJECT --reject-with tcp-reset
+    AtomicBoolean done = new AtomicBoolean();
+    NetServer server = vertx.createNetServer()
+      .connectHandler(NetSocket::close)
+      .listen(61614, ar -> done.set(true));
+
+    await().untilAtomic(done, is(true));
+
+
+    CountDownLatch latch = new CountDownLatch(1);
+    AtomicReference<StompClientConnection> reference = new AtomicReference<>();
+    StompClient client = StompClient.create(vertx, new StompClientOptions().setPort(61614));
+    AtomicBoolean failed = new AtomicBoolean();
+    client.connect(ar -> {
+      if (ar.failed()) {
+        failed.set(true);
+        reference.set(null);
+      } else {
+        reference.set(ar.result());
+      }
+      latch.countDown();
+    });
+
+    latch.await(1, TimeUnit.MINUTES);
+    assertNull(reference.get());
+    assertTrue(failed.get());
+  }
+
+  @Test
+  public void testRejectedConnectionWithExceptionHandler() throws InterruptedException {
+    //-A INPUT -p tcp -m state --state NEW -m tcp --dport 61613 -j REJECT --reject-with tcp-reset
+    AtomicBoolean done = new AtomicBoolean();
+    NetServer server = vertx.createNetServer()
+      .connectHandler(NetSocket::close)
+      .listen(61614, ar -> done.set(true));
+
+    await().untilAtomic(done, is(true));
+
+
+    CountDownLatch latch = new CountDownLatch(1);
+    AtomicReference<StompClientConnection> reference = new AtomicReference<>();
+    AtomicReference<Throwable> failure = new AtomicReference<>();
+    StompClient client = StompClient.create(vertx, new StompClientOptions().setPort(61614)).exceptionHandler(t -> {
+      System.out.println("caught: " + t.getMessage());
+      failure.set(t);
+    });
+
+    AtomicBoolean failed = new AtomicBoolean();
+    client.connect(ar -> {
+      if (ar.failed()) {
+        failed.set(true);
+        reference.set(null);
+      } else {
+        reference.set(ar.result());
+      }
+      latch.countDown();
+    });
+
+    latch.await(1, TimeUnit.MINUTES);
+    assertNull(reference.get());
+    assertTrue(failed.get());
+    // Not called as the error happen during the connection process.
+    assertThat(failure.get()).isNull();
   }
 
   @Test
@@ -171,7 +244,7 @@ public class StompClientImplTest {
       ar.result().send("/hello", Buffer.buffer("this is my content"), ref::set);
     });
 
-    Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAtomic(ref, Matchers.notNullValue(Frame.class));
+    await().atMost(5, TimeUnit.SECONDS).untilAtomic(ref, Matchers.notNullValue(Frame.class));
     assertThat(ref.get().getDestination()).isEqualTo("/hello");
   }
 
@@ -187,7 +260,7 @@ public class StompClientImplTest {
       ar.result().send("/hello", Buffer.buffer("this is my content"), ref::set);
     });
 
-    Awaitility.await().atMost(5, TimeUnit.SECONDS).untilAtomic(ref, Matchers.notNullValue(Frame.class));
+    await().atMost(5, TimeUnit.SECONDS).untilAtomic(ref, Matchers.notNullValue(Frame.class));
     assertThat(ref.get().getDestination()).isEqualTo("/hello");
   }
 
@@ -255,7 +328,7 @@ public class StompClientImplTest {
     client.connect(ar -> reference.set(ar.result()));
 
     // Wait until inactivity is detected.
-    Awaitility.await().atMost(1000, TimeUnit.MILLISECONDS).until(
+    await().atMost(1000, TimeUnit.MILLISECONDS).until(
         () -> reference.get().session() == null
     );
   }
@@ -305,7 +378,7 @@ public class StompClientImplTest {
     });
 
     // Wait until inactivity is detected.
-    Awaitility.await().atMost(1, TimeUnit.SECONDS).until(
+    await().atMost(1, TimeUnit.SECONDS).until(
         () -> reference.get().session() == null
     );
   }
@@ -339,7 +412,7 @@ public class StompClientImplTest {
       flag.set(false); // Disable the ping.
     });
 
-    Awaitility.await().atMost(10, TimeUnit.SECONDS).until(dropped::get);
+    await().atMost(10, TimeUnit.SECONDS).until(dropped::get);
   }
 
 
@@ -374,9 +447,9 @@ public class StompClientImplTest {
     client.connect(connectionHandler);
 
 
-    Awaitility.await().atMost(10, TimeUnit.SECONDS).until(() -> dropped.get() == 1);
-    Awaitility.await().atMost(10, TimeUnit.SECONDS).until(() -> connectionCounter.get() == 2);
-    Awaitility.await().atMost(10, TimeUnit.SECONDS).until(() -> containsClientFrame(frames, 1)
+    await().atMost(10, TimeUnit.SECONDS).until(() -> dropped.get() == 1);
+    await().atMost(10, TimeUnit.SECONDS).until(() -> connectionCounter.get() == 2);
+    await().atMost(10, TimeUnit.SECONDS).until(() -> containsClientFrame(frames, 1)
         &&  containsClientFrame(frames, 2));
   }
 
@@ -413,9 +486,9 @@ public class StompClientImplTest {
     client.connect(connectionHandler);
 
 
-    Awaitility.await().atMost(10, TimeUnit.SECONDS).until(() -> dropped.get() == 1);
-    Awaitility.await().atMost(10, TimeUnit.SECONDS).until(() -> connectionCounter.get() == 1);
-    Awaitility.await().atMost(10, TimeUnit.SECONDS).until(() -> containsClientFrame(frames, 1)
+    await().atMost(10, TimeUnit.SECONDS).until(() -> dropped.get() == 1);
+    await().atMost(10, TimeUnit.SECONDS).until(() -> connectionCounter.get() == 1);
+    await().atMost(10, TimeUnit.SECONDS).until(() -> containsClientFrame(frames, 1)
         &&  ! containsClientFrame(frames, 2));
   }
 
@@ -472,7 +545,7 @@ public class StompClientImplTest {
       connected.set(connection.succeeded());
     });
 
-    Awaitility.await().atMost(10, TimeUnit.SECONDS).until(connected::get);
+    await().atMost(10, TimeUnit.SECONDS).until(connected::get);
 
     client.close();
     AtomicBoolean done = new AtomicBoolean();
@@ -480,7 +553,7 @@ public class StompClientImplTest {
       done.set(true);
     });
 
-    Awaitility.await().atMost(10, TimeUnit.SECONDS).until(done::get);
+    await().atMost(10, TimeUnit.SECONDS).until(done::get);
 
     assertThat(dropped.get()).isFalse();
 

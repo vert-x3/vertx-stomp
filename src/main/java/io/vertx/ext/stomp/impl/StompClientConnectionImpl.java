@@ -69,6 +69,8 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
 
   private Handler<Frame> errorHandler;
   private volatile boolean closed;
+  private Handler<Throwable> exceptionHandler;
+  private volatile boolean connected;
 
   private static class Subscription {
     final String destination;
@@ -127,6 +129,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   @Override
   public synchronized void close() {
     closed = true;
+    connected = false;
 
     if (closeHandler != null) {
       context.runOnContext(v -> closeHandler.handle(this));
@@ -492,6 +495,15 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
+  public synchronized StompClientConnection exceptionHandler(Handler<Throwable> exceptionHandler) {
+    this.exceptionHandler = exceptionHandler;
+    if (connected) {
+      socket.exceptionHandler(exceptionHandler);
+    }
+    return this;
+  }
+
+  @Override
   public synchronized StompClientConnection connectionDroppedHandler(Handler<StompClientConnection> handler) {
     this.droppedHandler = handler;
     return this;
@@ -539,6 +551,8 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   private synchronized void handleConnected(Frame frame) {
+
+
     sessionId = frame.getHeader(Frame.SESSION);
     version = frame.getHeader(Frame.VERSION);
     server = frame.getHeader(Frame.SERVER);
@@ -578,6 +592,9 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
         }
       });
     }
+    // Switch the exception handler.
+    connected = true;
+    socket.exceptionHandler(this.exceptionHandler);
     resultHandler.handle(Future.succeededFuture(this));
   }
 

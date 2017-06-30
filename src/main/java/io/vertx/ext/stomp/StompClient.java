@@ -90,7 +90,9 @@ public interface StompClient {
   /**
    * Connects to the server using the host and port configured in the client's options.
    *
-   * @param resultHandler handler called with the connection result
+   * @param resultHandler handler called with the connection result. A failure will be sent to the handler if a TCP
+   *                      level issue happen before the `CONNECTED` frame is received. Afterwards, the
+   *                      {@link #exceptionHandler(Handler)} is called.
    * @return the current {@link StompClient}
    */
   @Fluent
@@ -132,6 +134,15 @@ public interface StompClient {
    */
   @Fluent
   StompClient errorFrameHandler(Handler<Frame> handler);
+
+  /**
+   * Sets an exception handler notified for TCP-level errors.
+   *
+   * @param handler the handler
+   * @return the current {@link StompClient}
+   */
+  @Fluent
+  StompClient exceptionHandler(Handler<Throwable> handler);
 
   /**
    * Closes the client.

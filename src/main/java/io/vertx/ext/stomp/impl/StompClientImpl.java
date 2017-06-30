@@ -20,7 +20,6 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
-import io.vertx.core.buffer.Buffer;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.core.net.NetClient;
@@ -45,6 +44,7 @@ public class StompClientImpl implements StompClient {
   private Handler<Frame> receivedFrameHandler;
   private Handler<Frame> writingFrameHandler;
   private Handler<Frame> errorFrameHandler;
+  private Handler<Throwable> exceptionHandler;
 
 
   public StompClientImpl(Vertx vertx, StompClientOptions options) {
@@ -105,6 +105,18 @@ public class StompClientImpl implements StompClient {
     return this;
   }
 
+  /**
+   * A general exception handler called when the TCP connection failed.
+   *
+   * @param handler the handler
+   * @return the current {@link StompClient}
+   */
+  @Override
+  public synchronized StompClient exceptionHandler(Handler<Throwable> handler) {
+    exceptionHandler = handler;
+    return this;
+  }
+
   @Override
   public StompClient connect(NetClient netClient, Handler<AsyncResult<StompClientConnection>> resultHandler) {
     return connect(options.getPort(), options.getHost(), netClient, resultHandler);
@@ -136,7 +148,7 @@ public class StompClientImpl implements StompClient {
 
   @Override
   public synchronized StompClient connect(int port, String host, NetClient net, Handler<AsyncResult<StompClientConnection>>
-      resultHandler) {
+    resultHandler) {
     if (client != null) {
       client.close();
       client = null;
@@ -144,10 +156,12 @@ public class StompClientImpl implements StompClient {
 
     Handler<Frame> r = receivedFrameHandler;
     Handler<Frame> w = writingFrameHandler;
+    Handler<Throwable> err = exceptionHandler;
     net.connect(port, host, ar -> {
       synchronized (StompClientImpl.this) {
         client = ar.failed() ? null : net;
       }
+
       if (ar.failed()) {
         if (resultHandler != null) {
           resultHandler.handle(Future.failedFuture(ar.cause()));
@@ -155,16 +169,19 @@ public class StompClientImpl implements StompClient {
           log.error(ar.cause());
         }
       } else {
+        ar.result().exceptionHandler(t -> resultHandler.handle(Future.failedFuture(t)));
         // Create the connection, the connection attach a handler on the socket.
         new StompClientConnectionImpl(vertx, ar.result(), this, resultHandler)
-            .receivedFrameHandler(r)
-            .writingFrameHandler(w)
-            .errorHandler(errorFrameHandler);
+          .receivedFrameHandler(r)
+          .writingFrameHandler(w)
+          .exceptionHandler(err)
+          .errorHandler(errorFrameHandler);
         // Socket connected - send "CONNECT" Frame
         Frame frame = getConnectFrame(host);
         if (w != null) {
           w.handle(frame);
         }
+
         ar.result().write(frame.toBuffer(options.isTrailingLine()));
       }
     });
@@ -201,7 +218,7 @@ public class StompClientImpl implements StompClient {
     }
     StringBuilder builder = new StringBuilder();
     options.getAcceptedVersions().forEach(
-        version -> builder.append(builder.length() == 0 ? version : FrameParser.COMMA + version)
+      version -> builder.append(builder.length() == 0 ? version : FrameParser.COMMA + version)
     );
     return builder.toString();
   }
