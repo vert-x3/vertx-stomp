@@ -92,7 +92,7 @@
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
-      <version>3.3.0</version>
+      <version>3.8.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -146,6 +146,7 @@
       <!-- Copy resources after compilation phase as we generate JS in src/main/resources -->
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
+        <version>3.0.2</version>
         <executions>
           <execution>
             <id>default-resources</id>
@@ -198,7 +199,7 @@
           <plugin>
             <groupId>org.jolokia</groupId>
             <artifactId>docker-maven-plugin</artifactId>
-            <version>0.13.8</version>
+            <version>0.13.9</version>
             <configuration>
               <images>
                 <image>
