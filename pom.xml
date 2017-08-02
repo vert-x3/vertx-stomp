@@ -180,16 +180,6 @@
 
   <profiles>
     <profile>
-      <!--
-      This profile checks the behavior of the stomp client against several stomp server started in docker
-      containers.
-
-      on mac:
-      mvn clean verify -Pit-with-docker -Ddockerhost=(docker-machine ip dev)
-      on linux:
-      mvn clean verify -Pit-with-docker -Ddockerhost=localhost
-
-       -->
       <id>it-with-docker</id>
       <properties>
         <dockerhost>localhost</dockerhost>
@@ -197,9 +187,9 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>org.jolokia</groupId>
+            <groupId>io.fabric8</groupId>
             <artifactId>docker-maven-plugin</artifactId>
-            <version>0.13.9</version>
+            <version>0.21.0</version>
             <configuration>
               <images>
                 <image>
@@ -207,9 +197,7 @@
                   <alias>activemq</alias>
                   <name>vertx-stomp/activemq-stomp</name>
                   <build>
-                    <assembly>
-                      <dockerFileDir>${project.basedir}/src/test/resources/integration/activemq</dockerFileDir>
-                    </assembly>
+                    <dockerFileDir>${project.basedir}/src/test/resources/integration/activemq</dockerFileDir>
                   </build>
                   <run>
                     <ports>
@@ -220,6 +208,8 @@
                     </ports>
                     <wait>
                       <tcp>
+                        <host>localhost</host>
+                        <mode>mapped</mode>
                         <ports>
                           <port>61612</port>
                           <port>61613</port>
@@ -234,9 +224,7 @@
                   <alias>artemis</alias>
                   <name>vertx-stomp/artemis-stomp</name>
                   <build>
-                    <assembly>
-                      <dockerFileDir>${project.basedir}/src/test/resources/integration/artemis</dockerFileDir>
-                    </assembly>
+                    <dockerFileDir>${project.basedir}/src/test/resources/integration/artemis</dockerFileDir>
                   </build>
                   <run>
                     <ports>
@@ -246,13 +234,15 @@
                     </ports>
                     <wait>
                       <tcp>
+                        <host>localhost</host>
+                        <mode>mapped</mode>
                         <ports>
-                          <port>61616</port>
                           <port>61613</port>
+                          <port>61616</port>
                           <port>5445</port>
                         </ports>
                       </tcp>
-                      <time>40000</time>
+                      <time>1000000</time>
                     </wait>
                   </run>
                 </image>
@@ -261,9 +251,7 @@
                   <alias>efrecon</alias>
                   <name>vertx-stomp/efrecon-stomp</name>
                   <build>
-                    <assembly>
-                      <dockerFileDir>${project.basedir}/src/test/resources/integration/efrecon</dockerFileDir>
-                    </assembly>
+                    <dockerFileDir>${project.basedir}/src/test/resources/integration/efrecon</dockerFileDir>
                   </build>
                   <run>
                     <ports>
@@ -271,6 +259,8 @@
                     </ports>
                     <wait>
                       <tcp>
+                        <host>localhost</host>
+                        <mode>mapped</mode>
                         <ports>
                           <port>61613</port>
                         </ports>
@@ -284,9 +274,7 @@
                   <alias>rabbitmq</alias>
                   <name>vertx-stomp/rabbitmq-stomp</name>
                   <build>
-                    <assembly>
-                      <dockerFileDir>${project.basedir}/src/test/resources/integration/rabbitmq</dockerFileDir>
-                    </assembly>
+                    <dockerFileDir>${project.basedir}/src/test/resources/integration/rabbitmq</dockerFileDir>
                   </build>
                   <run>
                     <ports>
@@ -294,16 +282,18 @@
                     </ports>
                     <wait>
                       <tcp>
+                        <host>localhost</host>
+                        <mode>mapped</mode>
                         <ports>
                           <port>61613</port>
                         </ports>
                       </tcp>
-                      <!-- rabbitmq is a bit longer to start -->
                       <time>40000</time>
                     </wait>
                   </run>
                 </image>
               </images>
+              <showLogs>true</showLogs>
             </configuration>
             <executions>
               <execution>
@@ -337,9 +327,6 @@
                   <includes>
                     <include>**/*IT.java</include>
                   </includes>
-                  <systemPropertyVariables>
-                    <dockerhost>${dockerhost}</dockerhost>
-                  </systemPropertyVariables>
                 </configuration>
               </execution>
             </executions>

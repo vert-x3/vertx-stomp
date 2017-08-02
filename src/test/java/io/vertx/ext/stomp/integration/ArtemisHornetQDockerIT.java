@@ -30,8 +30,8 @@ public class ArtemisHornetQDockerIT extends AbstractClientIT {
     return new StompClientOptions()
         .setHost(getDockerHost())
         .setPort(5445)
-        .setLogin("apollo")
-        .setPasscode("ollopaehcapa");
+        .setLogin("artemis")
+        .setPasscode("simetraehcapa");
   }
 
   @Override

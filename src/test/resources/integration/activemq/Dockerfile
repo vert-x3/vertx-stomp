@@ -1,12 +1,25 @@
-FROM java:8
+FROM openjdk:8-jre-alpine
 
-ENV VERSION 5.13.3
+ENV ACTIVEMQ_VERSION 5.14.3
+ENV ACTIVEMQ apache-activemq-$ACTIVEMQ_VERSION
+ENV ACTIVEMQ_TCP=61616 ACTIVEMQ_AMQP=5672 ACTIVEMQ_STOMP=61613 ACTIVEMQ_MQTT=1883 ACTIVEMQ_WS=61614 ACTIVEMQ_UI=8161
 
-RUN curl http://www.mirrorservice.org/sites/ftp.apache.org/activemq/$VERSION/apache-activemq-$VERSION-bin.tar.gz | tar -xz
+ENV ACTIVEMQ_HOME /opt/activemq
 
-EXPOSE 61612 61613 61616 8161
+RUN set -x && \
+    mkdir -p /opt && \
+    apk --update add --virtual build-dependencies curl && \
+    curl -s -S https://archive.apache.org/dist/activemq/$ACTIVEMQ_VERSION/$ACTIVEMQ-bin.tar.gz | tar xvz -C /opt && \
+    ln -s /opt/$ACTIVEMQ $ACTIVEMQ_HOME && \
+    addgroup -S activemq && adduser -S -H -G activemq -h $ACTIVEMQ_HOME activemq && \
+    chown -R activemq:activemq /opt/$ACTIVEMQ && \
+    chown -h activemq:activemq $ACTIVEMQ_HOME && \
+    apk del build-dependencies && \
+    rm -rf /var/cache/apk/*
 
-RUN mv apache-activemq-$VERSION/conf/activemq.xml apache-activemq-$VERSION/conf/activemq.xml.orig
-RUN awk '/.*stomp.*/{print "            <transportConnector name=\"stomp+ssl\" uri=\"stomp+ssl://0.0.0.0:61612\"/>"}1' apache-activemq-$VERSION/conf/activemq.xml.orig >> apache-activemq-$VERSION/conf/activemq.xml
+USER activemq
 
-CMD java -Xms1G -Xmx1G -Djava.util.logging.config.file=logging.properties -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote -Djava.io.tmpdir=apache-activemq-$VERSION/tmp -Dactivemq.classpath=apache-activemq-$VERSION/conf -Dactivemq.home=apache-activemq-$VERSION -Dactivemq.base=apache-activemq-$VERSION -Dactivemq.conf=apache-activemq-$VERSION/conf -Dactivemq.data=apache-activemq-$VERSION/data -jar apache-activemq-$VERSION/bin/activemq.jar start
+WORKDIR $ACTIVEMQ_HOME
+EXPOSE $ACTIVEMQ_TCP $ACTIVEMQ_AMQP $ACTIVEMQ_STOMP $ACTIVEMQ_MQTT $ACTIVEMQ_WS $ACTIVEMQ_UI
+
+CMD ["/bin/sh", "-c", "bin/activemq console"]
