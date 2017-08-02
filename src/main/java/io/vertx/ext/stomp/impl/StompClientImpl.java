@@ -147,8 +147,7 @@ public class StompClientImpl implements StompClient {
   }
 
   @Override
-  public synchronized StompClient connect(int port, String host, NetClient net, Handler<AsyncResult<StompClientConnection>>
-    resultHandler) {
+  public synchronized StompClient connect(int port, String host, NetClient net, Handler<AsyncResult<StompClientConnection>> resultHandler) {
     if (client != null) {
       client.close();
       client = null;
@@ -160,18 +159,26 @@ public class StompClientImpl implements StompClient {
     net.connect(port, host, ar -> {
       synchronized (StompClientImpl.this) {
         client = ar.failed() ? null : net;
+        if (client != null) {
+          ar.result().exceptionHandler(t -> {
+            if (resultHandler != null) {
+              resultHandler.handle(Future.failedFuture(t));
+            } else {
+              log.error("Unable to connection to the server", t);
+            }
+          });
+        }
       }
 
       if (ar.failed()) {
         if (resultHandler != null) {
           resultHandler.handle(Future.failedFuture(ar.cause()));
         } else {
-          log.error(ar.cause());
+          log.error("Unable to connection to the server", ar.cause());
         }
       } else {
-        ar.result().exceptionHandler(t -> resultHandler.handle(Future.failedFuture(t)));
         // Create the connection, the connection attach a handler on the socket.
-        new StompClientConnectionImpl(vertx, ar.result(), this, resultHandler)
+        StompClientConnection stompClientConnection = new StompClientConnectionImpl(vertx, ar.result(), this, resultHandler)
           .receivedFrameHandler(r)
           .writingFrameHandler(w)
           .exceptionHandler(err)
@@ -182,7 +189,14 @@ public class StompClientImpl implements StompClient {
           w.handle(frame);
         }
 
+        vertx.setTimer(options.getConnectTimeout(), l -> {
+          if (!stompClientConnection.isConnected()) {
+            resultHandler.handle(Future.failedFuture("CONNECTED frame not receive in time"));
+            stompClientConnection.close();
+          }
+        });
         ar.result().write(frame.toBuffer(options.isTrailingLine()));
+
       }
     });
     return this;

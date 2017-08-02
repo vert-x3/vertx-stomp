@@ -592,4 +592,11 @@ public interface StompClientConnection {
    */
   @Fluent
   StompClientConnection exceptionHandler(Handler<Throwable> exceptionHandler);
+
+  /**
+   * Returns whether or not the `CONNECTED` frame has been receive meaning that the Stomp connection is established.
+   *
+   * @return {@code true} if the connection is established, {@code false} otherwise
+   */
+  boolean isConnected();
 }

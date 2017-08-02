@@ -16,7 +16,6 @@
 
 package io.vertx.ext.stomp.impl;
 
-import com.jayway.awaitility.Awaitility;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
@@ -42,9 +41,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static com.jayway.awaitility.Awaitility.await;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Test the STOMP client.
@@ -56,6 +53,7 @@ public class StompClientImplTest {
   private Vertx vertx;
   private StompServer server;
   private StompServerOptions options;
+
 
   @Before
   public void setUp() {
@@ -81,9 +79,8 @@ public class StompClientImplTest {
 
   @Test
   public void testRejectedConnection() throws InterruptedException {
-    //-A INPUT -p tcp -m state --state NEW -m tcp --dport 61613 -j REJECT --reject-with tcp-reset
     AtomicBoolean done = new AtomicBoolean();
-    NetServer server = vertx.createNetServer()
+    vertx.createNetServer()
       .connectHandler(NetSocket::close)
       .listen(61614, ar -> done.set(true));
 
@@ -92,7 +89,9 @@ public class StompClientImplTest {
 
     CountDownLatch latch = new CountDownLatch(1);
     AtomicReference<StompClientConnection> reference = new AtomicReference<>();
-    StompClient client = StompClient.create(vertx, new StompClientOptions().setPort(61614));
+    StompClientOptions options = new StompClientOptions().setPort(61614);
+    options.setConnectTimeout(1000);
+    StompClient client = StompClient.create(vertx, options);
     AtomicBoolean failed = new AtomicBoolean();
     client.connect(ar -> {
       if (ar.failed()) {
@@ -104,7 +103,7 @@ public class StompClientImplTest {
       latch.countDown();
     });
 
-    latch.await(1, TimeUnit.MINUTES);
+    latch.await(10, TimeUnit.SECONDS);
     assertNull(reference.get());
     assertTrue(failed.get());
   }
@@ -124,7 +123,6 @@ public class StompClientImplTest {
     AtomicReference<StompClientConnection> reference = new AtomicReference<>();
     AtomicReference<Throwable> failure = new AtomicReference<>();
     StompClient client = StompClient.create(vertx, new StompClientOptions().setPort(61614)).exceptionHandler(t -> {
-      System.out.println("caught: " + t.getMessage());
       failure.set(t);
     });
 

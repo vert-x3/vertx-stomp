@@ -117,6 +117,11 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
+  public boolean isConnected() {
+    return connected;
+  }
+
+  @Override
   public synchronized String session() {
     return sessionId;
   }
@@ -551,8 +556,6 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   private synchronized void handleConnected(Frame frame) {
-
-
     sessionId = frame.getHeader(Frame.SESSION);
     version = frame.getHeader(Frame.VERSION);
     server = frame.getHeader(Frame.SERVER);
