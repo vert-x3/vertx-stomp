@@ -55,8 +55,8 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
 
   private final List<Subscription> subscriptions = new CopyOnWriteArrayList<>();
 
-  private volatile long pinger;
-  private volatile long ponger;
+  private volatile long pinger = -1L;
+  private volatile long ponger = -1L;
 
   private Handler<StompClientConnection> pingHandler = connection -> connection.send(Frames.ping());
   private Handler<StompClientConnection> closeHandler;
@@ -258,7 +258,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
       headers = Headers.create();
     }
 
-    String id = headers.containsKey(Frame.ID) ? headers.get(Frame.ID) : destination;
+    String id = headers.getOrDefault(Frame.ID, destination);
 
     final Optional<Subscription> maybeSubscription = subscriptions.stream()
       .filter(s -> s.id.equals(id)).findFirst();
@@ -596,8 +596,8 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
       });
     }
     // Switch the exception handler.
-    connected = true;
     socket.exceptionHandler(this.exceptionHandler);
+    connected = true;
     resultHandler.handle(Future.succeededFuture(this));
   }
 

@@ -164,7 +164,7 @@ public class StompClientImpl implements StompClient {
             if (resultHandler != null) {
               resultHandler.handle(Future.failedFuture(t));
             } else {
-              log.error("Unable to connection to the server", t);
+              log.error("Unable to connect to the server", t);
             }
           });
         }
@@ -174,7 +174,7 @@ public class StompClientImpl implements StompClient {
         if (resultHandler != null) {
           resultHandler.handle(Future.failedFuture(ar.cause()));
         } else {
-          log.error("Unable to connection to the server", ar.cause());
+          log.error("Unable to connect to the server", ar.cause());
         }
       } else {
         // Create the connection, the connection attach a handler on the socket.
@@ -185,18 +185,20 @@ public class StompClientImpl implements StompClient {
           .errorHandler(errorFrameHandler);
         // Socket connected - send "CONNECT" Frame
         Frame frame = getConnectFrame(host);
-        if (w != null) {
-          w.handle(frame);
-        }
 
+        // If we don't get the CONNECTED timeout in time, fail the connection.
         vertx.setTimer(options.getConnectTimeout(), l -> {
           if (!stompClientConnection.isConnected()) {
             resultHandler.handle(Future.failedFuture("CONNECTED frame not receive in time"));
             stompClientConnection.close();
           }
         });
-        ar.result().write(frame.toBuffer(options.isTrailingLine()));
 
+        if (w != null) {
+          w.handle(frame);
+        }
+
+        ar.result().write(frame.toBuffer(options.isTrailingLine()));
       }
     });
     return this;

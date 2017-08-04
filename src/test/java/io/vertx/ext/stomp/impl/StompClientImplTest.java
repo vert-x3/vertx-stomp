@@ -25,9 +25,12 @@ import io.vertx.core.net.NetServer;
 import io.vertx.core.net.NetSocket;
 import io.vertx.ext.stomp.*;
 import io.vertx.ext.stomp.utils.Headers;
+import io.vertx.ext.unit.junit.Repeat;
+import io.vertx.ext.unit.junit.RepeatRule;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -54,6 +57,10 @@ public class StompClientImplTest {
   private StompServer server;
   private StompServerOptions options;
 
+  @Rule
+  public RepeatRule rule = new RepeatRule();
+
+
 
   @Before
   public void setUp() {
@@ -78,21 +85,22 @@ public class StompClientImplTest {
   }
 
   @Test
+  @Repeat(100)
   public void testRejectedConnection() throws InterruptedException {
     AtomicBoolean done = new AtomicBoolean();
+
     vertx.createNetServer()
       .connectHandler(NetSocket::close)
       .listen(61614, ar -> done.set(true));
 
     await().untilAtomic(done, is(true));
-
-
     CountDownLatch latch = new CountDownLatch(1);
+    AtomicBoolean failed = new AtomicBoolean();
     AtomicReference<StompClientConnection> reference = new AtomicReference<>();
+
     StompClientOptions options = new StompClientOptions().setPort(61614);
     options.setConnectTimeout(1000);
     StompClient client = StompClient.create(vertx, options);
-    AtomicBoolean failed = new AtomicBoolean();
     client.connect(ar -> {
       if (ar.failed()) {
         failed.set(true);
@@ -109,10 +117,10 @@ public class StompClientImplTest {
   }
 
   @Test
+  @Repeat(100)
   public void testRejectedConnectionWithExceptionHandler() throws InterruptedException {
-    //-A INPUT -p tcp -m state --state NEW -m tcp --dport 61613 -j REJECT --reject-with tcp-reset
     AtomicBoolean done = new AtomicBoolean();
-    NetServer server = vertx.createNetServer()
+    vertx.createNetServer()
       .connectHandler(NetSocket::close)
       .listen(61614, ar -> done.set(true));
 
@@ -122,9 +130,11 @@ public class StompClientImplTest {
     CountDownLatch latch = new CountDownLatch(1);
     AtomicReference<StompClientConnection> reference = new AtomicReference<>();
     AtomicReference<Throwable> failure = new AtomicReference<>();
-    StompClient client = StompClient.create(vertx, new StompClientOptions().setPort(61614)).exceptionHandler(t -> {
-      failure.set(t);
-    });
+
+    StompClientOptions options = new StompClientOptions().setPort(61614);
+    options.setConnectTimeout(1000);
+
+    StompClient client = StompClient.create(vertx, options).exceptionHandler(failure::set);
 
     AtomicBoolean failed = new AtomicBoolean();
     client.connect(ar -> {
