@@ -457,18 +457,7 @@ public class DefaultStompHandler implements StompServerHandler {
   public User getUserBySession(String session) {
     return this.users.get(session);
   }
-
-  void accessUserBySession(String session, Handler<User> user) {
-    vertx.sharedData().getLock("user." + session, new Handler<AsyncResult<Lock>>() {
-      @Override
-      public void handle(AsyncResult<Lock> event) {
-        Lock lock = event.result();
-        if (null == lock) {
-          
-        }
-      }
-    });
-  }
+  
   @Override
   public List<Destination> getDestinations() {
     return new ArrayList<>(destinations.keySet());
