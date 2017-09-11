@@ -17,13 +17,20 @@
 package io.vertx.ext.stomp.impl;
 
 import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.NetSocket;
 import io.vertx.ext.auth.AuthProvider;
+import io.vertx.ext.auth.User;
 import io.vertx.ext.auth.shiro.ShiroAuth;
 import io.vertx.ext.auth.shiro.ShiroAuthOptions;
 import io.vertx.ext.auth.shiro.ShiroAuthRealmType;
-import io.vertx.ext.stomp.*;
+import io.vertx.ext.stomp.Frame;
+import io.vertx.ext.stomp.StompClient;
+import io.vertx.ext.stomp.StompClientOptions;
+import io.vertx.ext.stomp.StompServer;
+import io.vertx.ext.stomp.StompServerHandler;
+import io.vertx.ext.stomp.StompServerOptions;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.RunTestOnContext;
@@ -63,6 +70,13 @@ public class SecuredServerConnectionTest {
     // Do not close the vert.x instance when using the RunTestOnContext rule.
   }
 
+  static String extractSession(String data) {
+    int start = data.indexOf(Frame.SESSION) + Frame.SESSION.length() + 1;
+    int end = data.indexOf('\n', start);
+    String ret = data.substring(start, end);
+    return ret;
+  }
+
   @Test
   public void testAuthenticatedConnection(TestContext context) {
     Async async = context.async();
@@ -73,8 +87,8 @@ public class SecuredServerConnectionTest {
       }
       NetSocket socket = result.result();
       socket.handler(buffer -> {
-        context.assertTrue(buffer.toString().contains("CONNECTED"));
-        context.assertTrue(buffer.toString().contains("version:1.2"));
+        validate(context, buffer);
+
         async.complete();
       });
       socket.write("CONNECT\n" + "accept-version:1.2\nlogin:admin\npasscode:admin\n" + "\n" + FrameParser.NULL);
@@ -127,8 +141,7 @@ public class SecuredServerConnectionTest {
       }
       NetSocket socket = result.result();
       socket.handler(buffer -> {
-        context.assertTrue(buffer.toString().contains("CONNECTED"));
-        context.assertTrue(buffer.toString().contains("version:1.2"));
+        validate(context, buffer);
         async.complete();
       });
       socket.write("STOMP\n" + "accept-version:1.2\nlogin:admin\npasscode:admin\n" + "\n" + FrameParser.NULL);
@@ -148,5 +161,12 @@ public class SecuredServerConnectionTest {
     });
   }
 
+  void validate(TestContext context, Buffer buffer) {
+    context.assertTrue(buffer.toString().contains("CONNECTED"));
+    context.assertTrue(buffer.toString().contains("version:1.2"));
+
+    User user = server.stompHandler().getUserBySession(extractSession(buffer.toString()));
+    context.assertNotNull(user);
+  }
 
 }

@@ -25,6 +25,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.core.shareddata.LocalMap;
+import io.vertx.core.shareddata.Lock;
 import io.vertx.ext.auth.AuthProvider;
 import io.vertx.ext.auth.User;
 import io.vertx.ext.stomp.Acknowledgement;
@@ -49,6 +50,7 @@ import io.vertx.ext.stomp.StompServerHandler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A plug-able implementation of {@link StompServerHandler}. The default behavior is compliant with the STOMP
@@ -104,7 +106,9 @@ public class DefaultStompHandler implements StompServerHandler {
 
   private final LocalMap<Destination, String> destinations;
 
-  private final LocalMap<String, User> users;
+  // user is mutable and built from other modules so there's no guarantees
+  // about thread safety so use w/ care..
+  private final ConcurrentHashMap<String, User> users;
 
   private DestinationFactory factory = Destination::topic;
 
@@ -119,7 +123,7 @@ public class DefaultStompHandler implements StompServerHandler {
     this.vertx = vertx;
     this.context = Vertx.currentContext();
     this.destinations = vertx.sharedData().getLocalMap("stomp.destinations");
-    this.users = vertx.sharedData().getLocalMap("stomp.users");
+    this.users = new ConcurrentHashMap<>();
   }
 
   @Override
@@ -127,6 +131,9 @@ public class DefaultStompHandler implements StompServerHandler {
     // Default behavior.
     getDestinations().stream().forEach((d) -> d.unsubscribeConnection(connection));
     Transactions.instance().unregisterTransactionsFromConnection(connection);
+
+    // Remove user, if exists
+    this.users.remove(connection.session());
 
     if (closeHandler != null) {
       closeHandler.handle(connection);
@@ -451,6 +458,17 @@ public class DefaultStompHandler implements StompServerHandler {
     return this.users.get(session);
   }
 
+  void accessUserBySession(String session, Handler<User> user) {
+    vertx.sharedData().getLock("user." + session, new Handler<AsyncResult<Lock>>() {
+      @Override
+      public void handle(AsyncResult<Lock> event) {
+        Lock lock = event.result();
+        if (null == lock) {
+          
+        }
+      }
+    });
+  }
   @Override
   public List<Destination> getDestinations() {
     return new ArrayList<>(destinations.keySet());
