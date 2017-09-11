@@ -22,6 +22,7 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.ext.auth.AuthProvider;
+import io.vertx.ext.auth.User;
 import io.vertx.ext.stomp.impl.DefaultStompHandler;
 
 import java.util.List;
@@ -177,15 +178,23 @@ public interface StompServerHandler extends Handler<ServerFrame> {
    * Called when the client connects to a server requiring authentication. It invokes the {@link AuthProvider} configured
    * using {@link #authProvider(AuthProvider)}.
    *
-   * @param server   the STOMP server.
-   * @param login    the login
-   * @param passcode the password
-   * @param handler  handler receiving the authentication result
+   * @param connection server connection that contains session ID
+   * @param login      the login
+   * @param passcode   the password
+   * @param handler    handler receiving the authentication result
    * @return the current {@link StompServerHandler}
    */
   @Fluent
-  StompServerHandler onAuthenticationRequest(StompServer server, String login, String passcode,
+  StompServerHandler onAuthenticationRequest(StompServerConnection connection, String login, String passcode,
                                              Handler<AsyncResult<Boolean>> handler);
+
+  /**
+   * Provides for authorization matches on a destination level, this will return the User created by the {@link AuthProvider}.
+   *
+   * @param session session ID for the server connection.
+   * @return null if not authenticated.
+   */
+  User getUserBySession(String session);
 
   /**
    * Configures the {@link AuthProvider} to be used to authenticate the user.
