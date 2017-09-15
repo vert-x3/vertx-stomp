@@ -16,16 +16,41 @@
 
 package io.vertx.ext.stomp.impl;
 
-import io.vertx.core.*;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Context;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.core.shareddata.LocalMap;
+import io.vertx.core.shareddata.Lock;
 import io.vertx.ext.auth.AuthProvider;
-import io.vertx.ext.stomp.*;
+import io.vertx.ext.auth.User;
+import io.vertx.ext.stomp.Acknowledgement;
+import io.vertx.ext.stomp.BridgeOptions;
+import io.vertx.ext.stomp.DefaultAbortHandler;
+import io.vertx.ext.stomp.DefaultAckHandler;
+import io.vertx.ext.stomp.DefaultBeginHandler;
+import io.vertx.ext.stomp.DefaultCommitHandler;
+import io.vertx.ext.stomp.DefaultConnectHandler;
+import io.vertx.ext.stomp.DefaultNackHandler;
+import io.vertx.ext.stomp.DefaultSendHandler;
+import io.vertx.ext.stomp.DefaultSubscribeHandler;
+import io.vertx.ext.stomp.DefaultUnsubscribeHandler;
+import io.vertx.ext.stomp.Destination;
+import io.vertx.ext.stomp.DestinationFactory;
+import io.vertx.ext.stomp.Frame;
+import io.vertx.ext.stomp.Frames;
+import io.vertx.ext.stomp.ServerFrame;
+import io.vertx.ext.stomp.StompServer;
+import io.vertx.ext.stomp.StompServerConnection;
+import io.vertx.ext.stomp.StompServerHandler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A plug-able implementation of {@link StompServerHandler}. The default behavior is compliant with the STOMP
@@ -81,6 +106,10 @@ public class DefaultStompHandler implements StompServerHandler {
 
   private final LocalMap<Destination, String> destinations;
 
+  // user is mutable and built from other modules so there's no guarantees
+  // about thread safety so use w/ care..
+  private final ConcurrentHashMap<String, User> users;
+
   private DestinationFactory factory = Destination::topic;
 
   private Handler<ServerFrame> receivedFrameHandler;
@@ -94,6 +123,7 @@ public class DefaultStompHandler implements StompServerHandler {
     this.vertx = vertx;
     this.context = Vertx.currentContext();
     this.destinations = vertx.sharedData().getLocalMap("stomp.destinations");
+    this.users = new ConcurrentHashMap<>();
   }
 
   @Override
@@ -101,6 +131,9 @@ public class DefaultStompHandler implements StompServerHandler {
     // Default behavior.
     getDestinations().stream().forEach((d) -> d.unsubscribeConnection(connection));
     Transactions.instance().unregisterTransactionsFromConnection(connection);
+
+    // Remove user, if exists
+    this.users.remove(connection.session());
 
     if (closeHandler != null) {
       closeHandler.handle(connection);
@@ -377,7 +410,7 @@ public class DefaultStompHandler implements StompServerHandler {
   }
 
   @Override
-  public StompServerHandler onAuthenticationRequest(StompServer server,
+  public StompServerHandler onAuthenticationRequest(StompServerConnection connection,
                                                     String login, String passcode,
                                                     Handler<AsyncResult<Boolean>> handler) {
     final AuthProvider auth;
@@ -386,6 +419,7 @@ public class DefaultStompHandler implements StompServerHandler {
       auth = authProvider;
     }
 
+    final StompServer server = connection.server();
     if (!server.options().isSecured()) {
       if (auth != null) {
         LOGGER.warn("Authentication handler set while the server is not secured");
@@ -403,6 +437,8 @@ public class DefaultStompHandler implements StompServerHandler {
     context.runOnContext(v ->
         auth.authenticate(new JsonObject().put("username", login).put("password", passcode), ar -> {
           if (ar.succeeded()) {
+            // make the user available
+            users.put(connection.session(), ar.result());
             context.runOnContext(v2 -> handler.handle(Future.succeededFuture(true)));
           } else {
             context.runOnContext(v2 -> handler.handle(Future.succeededFuture(false)));
@@ -411,6 +447,17 @@ public class DefaultStompHandler implements StompServerHandler {
     return this;
   }
 
+  /**
+   * Return the authenticated user for this session.
+   *
+   * @param session session ID for the server connection.
+   * @return the user provided by the {@link AuthProvider} or null if not found.
+   */
+  @Override
+  public User getUserBySession(String session) {
+    return this.users.get(session);
+  }
+  
   @Override
   public List<Destination> getDestinations() {
     return new ArrayList<>(destinations.keySet());

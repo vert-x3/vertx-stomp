@@ -456,7 +456,7 @@ public class Frame {
   }
 
   /**
-   * This method does not enforce the trainling line option. It should not be used directly, except for the PING frame.
+   * This method does not enforce the trailing line option. It should not be used directly, except for the PING frame.
    *
    * @return a {@link Buffer} containing the STOMP frame. It follows strictly the STOMP specification (including
    * header encoding).
