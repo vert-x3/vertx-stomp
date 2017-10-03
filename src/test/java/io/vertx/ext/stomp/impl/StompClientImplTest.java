@@ -85,7 +85,7 @@ public class StompClientImplTest {
   }
 
   @Test
-  @Repeat(100)
+  @Repeat(10)
   public void testRejectedConnection() throws InterruptedException {
     AtomicBoolean done = new AtomicBoolean();
 
@@ -117,7 +117,7 @@ public class StompClientImplTest {
   }
 
   @Test
-  @Repeat(100)
+  @Repeat(10)
   public void testRejectedConnectionWithExceptionHandler() throws InterruptedException {
     AtomicBoolean done = new AtomicBoolean();
     vertx.createNetServer()
