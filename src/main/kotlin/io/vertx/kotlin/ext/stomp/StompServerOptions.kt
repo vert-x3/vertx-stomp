@@ -40,6 +40,7 @@ import io.vertx.core.net.PfxOptions
  * @param port  Sets the port on which the server is going to listen for TCP connection.
  * @param receiveBufferSize 
  * @param reuseAddress 
+ * @param reusePort 
  * @param secured  Enables or disables the server security feature. It requires an [io.vertx.ext.auth.AuthProvider] handler.
  * @param sendBufferSize 
  * @param sendErrorOnNoSubscriptions  Sets whether or not an error is sent to the client when this client sends a message to an not subscribed destinations (no subscriptions on this destination).
@@ -47,8 +48,11 @@ import io.vertx.core.net.PfxOptions
  * @param soLinger 
  * @param ssl 
  * @param supportedVersions  Sets the STOMP protocol versions supported by the server. Versions must be given in the decreasing order.
+ * @param tcpCork 
+ * @param tcpFastOpen 
  * @param tcpKeepAlive 
  * @param tcpNoDelay 
+ * @param tcpQuickAck 
  * @param timeFactor  Sets the time factor.
  * @param trafficClass 
  * @param trailingLine  Sets whether or not an empty line should be appended to the written STOMP frame. This option is disabled by default. This option is not compliant with the STOMP specification, and so is not documented on purpose.
@@ -89,6 +93,7 @@ fun StompServerOptions(
   port: Int? = null,
   receiveBufferSize: Int? = null,
   reuseAddress: Boolean? = null,
+  reusePort: Boolean? = null,
   secured: Boolean? = null,
   sendBufferSize: Int? = null,
   sendErrorOnNoSubscriptions: Boolean? = null,
@@ -96,8 +101,11 @@ fun StompServerOptions(
   soLinger: Int? = null,
   ssl: Boolean? = null,
   supportedVersions: Iterable<String>? = null,
+  tcpCork: Boolean? = null,
+  tcpFastOpen: Boolean? = null,
   tcpKeepAlive: Boolean? = null,
   tcpNoDelay: Boolean? = null,
+  tcpQuickAck: Boolean? = null,
   timeFactor: Int? = null,
   trafficClass: Int? = null,
   trailingLine: Boolean? = null,
@@ -194,6 +202,9 @@ fun StompServerOptions(
   if (reuseAddress != null) {
     this.setReuseAddress(reuseAddress)
   }
+  if (reusePort != null) {
+    this.setReusePort(reusePort)
+  }
   if (secured != null) {
     this.setSecured(secured)
   }
@@ -215,11 +226,20 @@ fun StompServerOptions(
   if (supportedVersions != null) {
     this.setSupportedVersions(supportedVersions.toList())
   }
+  if (tcpCork != null) {
+    this.setTcpCork(tcpCork)
+  }
+  if (tcpFastOpen != null) {
+    this.setTcpFastOpen(tcpFastOpen)
+  }
   if (tcpKeepAlive != null) {
     this.setTcpKeepAlive(tcpKeepAlive)
   }
   if (tcpNoDelay != null) {
     this.setTcpNoDelay(tcpNoDelay)
+  }
+  if (tcpQuickAck != null) {
+    this.setTcpQuickAck(tcpQuickAck)
   }
   if (timeFactor != null) {
     this.setTimeFactor(timeFactor)

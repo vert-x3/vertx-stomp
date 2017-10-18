@@ -45,11 +45,15 @@ import io.vertx.core.net.ProxyOptions
  * @param reconnectAttempts 
  * @param reconnectInterval 
  * @param reuseAddress 
+ * @param reusePort 
  * @param sendBufferSize 
  * @param soLinger 
  * @param ssl 
+ * @param tcpCork 
+ * @param tcpFastOpen 
  * @param tcpKeepAlive 
  * @param tcpNoDelay 
+ * @param tcpQuickAck 
  * @param trafficClass 
  * @param trailingLine  Sets whether or not an empty line should be appended to the written STOMP frame. This option is disabled by default. This option is not compliant with the STOMP specification, and so is not documented on purpose.
  * @param trustAll 
@@ -93,11 +97,15 @@ fun StompClientOptions(
   reconnectAttempts: Int? = null,
   reconnectInterval: Long? = null,
   reuseAddress: Boolean? = null,
+  reusePort: Boolean? = null,
   sendBufferSize: Int? = null,
   soLinger: Int? = null,
   ssl: Boolean? = null,
+  tcpCork: Boolean? = null,
+  tcpFastOpen: Boolean? = null,
   tcpKeepAlive: Boolean? = null,
   tcpNoDelay: Boolean? = null,
+  tcpQuickAck: Boolean? = null,
   trafficClass: Int? = null,
   trailingLine: Boolean? = null,
   trustAll: Boolean? = null,
@@ -205,6 +213,9 @@ fun StompClientOptions(
   if (reuseAddress != null) {
     this.setReuseAddress(reuseAddress)
   }
+  if (reusePort != null) {
+    this.setReusePort(reusePort)
+  }
   if (sendBufferSize != null) {
     this.setSendBufferSize(sendBufferSize)
   }
@@ -214,11 +225,20 @@ fun StompClientOptions(
   if (ssl != null) {
     this.setSsl(ssl)
   }
+  if (tcpCork != null) {
+    this.setTcpCork(tcpCork)
+  }
+  if (tcpFastOpen != null) {
+    this.setTcpFastOpen(tcpFastOpen)
+  }
   if (tcpKeepAlive != null) {
     this.setTcpKeepAlive(tcpKeepAlive)
   }
   if (tcpNoDelay != null) {
     this.setTcpNoDelay(tcpNoDelay)
+  }
+  if (tcpQuickAck != null) {
+    this.setTcpQuickAck(tcpQuickAck)
   }
   if (trafficClass != null) {
     this.setTrafficClass(trafficClass)
