@@ -147,4 +147,9 @@ public class FrameTest {
     assertThat(frame.toBuffer(true).toString()).endsWith(FrameParser.NULL + "\n");
   }
 
+  @Test
+  public void testErrorFrameContentType() {
+    Frame errorFrame = Frames.creatErrorFrame("Test Message", Headers.create("foo", "bar"), "hello");
+    assertThat(frame.getHeader(Frame.CONTENT_TYPE)).isEqualTo("text/plain");
+  }
 }
