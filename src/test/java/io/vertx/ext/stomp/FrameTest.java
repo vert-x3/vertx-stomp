@@ -42,7 +42,7 @@ public class FrameTest {
   @Test(expected = FrameException.class)
   public void testThatConnectFrameCannotHaveBody() {
     new Frame(Frame.Command.CONNECT, Headers.create("host", "foo"),
-        Buffer.buffer("illegal"));
+      Buffer.buffer("illegal"));
   }
 
   @Test
@@ -56,10 +56,10 @@ public class FrameTest {
   public void testEncoding() {
     final String content = "\u03B1";
     Frame frame = new Frame(Frame.Command.SEND, Headers.create("content-type",
-        "text/plain;charset=utf-16"), Buffer.buffer(content));
+      "text/plain;charset=utf-16"), Buffer.buffer(content));
     assertThat(frame.encoding()).isEqualTo("utf-16");
     frame = new Frame(Frame.Command.SEND, Headers.create("content-type",
-        "text/plain;charset=utf-8"), Buffer.buffer(content));
+      "text/plain;charset=utf-8"), Buffer.buffer(content));
     assertThat(frame.encoding()).isEqualTo("utf-8");
   }
 
@@ -67,7 +67,7 @@ public class FrameTest {
   public void testHeaderEncoding() {
     String value = "test-\r\n :\\-test";
     String expected = "test-" + (char) 92 + (char) 114 + (char) 92 + (char) 110 + " " + (char) 92 + (char) 99 +
-        (char) 92 + (char) 92 + "-test";
+      (char) 92 + (char) 92 + "-test";
 
     Frame frame = new Frame(Frame.Command.SEND, Headers.create("header", value), null);
     assertThat(frame.toBuffer().toString()).contains("header:" + expected + "\n");
@@ -145,6 +145,12 @@ public class FrameTest {
 
     frame = new Frame(Frame.Command.MESSAGE, Headers.create(), null);
     assertThat(frame.toBuffer(true).toString()).endsWith(FrameParser.NULL + "\n");
+  }
+
+  @Test
+  public void testErrorFrameContentType() {
+    Frame errorFrame = Frames.createErrorFrame("Test Message", Headers.create("foo", "bar"), "hello");
+    assertThat(errorFrame.getHeader(Frame.CONTENT_TYPE)).isEqualTo("text/plain");
   }
 
 }

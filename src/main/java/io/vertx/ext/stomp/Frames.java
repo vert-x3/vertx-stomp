@@ -53,7 +53,7 @@ public interface Frames {
         Headers.create(headers)
             .add(Frame.MESSAGE, message)
             .add(Frame.CONTENT_LENGTH, Integer.toString(body.length()))
-            .add(Frame.CONTENT_TYPE, "test/plain"),
+            .add(Frame.CONTENT_TYPE, "text/plain"),
         Buffer.buffer(body));
   }
 
