@@ -45,7 +45,7 @@ public class StompServerWebSocketConnectionImpl extends  StompServerTCPConnectio
 
   @Override
   public StompServerConnection write(Buffer buffer) {
-    socket.write(buffer);
+    socket.writeBinaryMessage(buffer);
     return this;
   }
 

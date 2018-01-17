@@ -19,10 +19,16 @@ package io.vertx.ext.stomp.impl;
 import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.http.HttpServer;
+import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.http.WebSocket;
+import io.vertx.core.http.WebSocketFrame;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.bridge.PermittedOptions;
 import io.vertx.ext.stomp.*;
 import io.vertx.ext.stomp.utils.Headers;
+import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,10 +36,12 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Checks that the server can handle web socket connection. These tests mimic the behavior of StompJS
@@ -43,6 +51,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class WebSocketBridgeTest {
 
+  public static final int MAX_WEBSOCKET_FRAME_SIZE = 1024;
   private Vertx vertx;
   private StompServer server;
   private HttpServer http;
@@ -56,12 +65,21 @@ public class WebSocketBridgeTest {
     AsyncLock<StompServer> stompLock = new AsyncLock<>();
 
     vertx = Vertx.vertx();
+
     server = StompServer.create(vertx, new StompServerOptions().setWebsocketBridge(true))
-        .handler(StompServerHandler.create(vertx))
+        .handler(StompServerHandler.create(vertx)
+         .bridge(new BridgeOptions()
+          .addInboundPermitted(new PermittedOptions().setAddressRegex(".*"))
+          .addOutboundPermitted(new PermittedOptions().setAddressRegex(".*")))
+        )
         .listen(stompLock.handler());
     stompLock.waitForSuccess();
 
-    http = vertx.createHttpServer().websocketHandler(server.webSocketHandler()).listen(8080, httpLock.handler());
+    HttpServerOptions httpOptions = new HttpServerOptions()
+      .setMaxWebsocketFrameSize(MAX_WEBSOCKET_FRAME_SIZE)
+      .setMaxWebsocketMessageSize(2048);
+
+    http = vertx.createHttpServer(httpOptions).websocketHandler(server.webSocketHandler()).listen(8080, httpLock.handler());
     httpLock.waitForSuccess();
   }
 
@@ -185,6 +203,72 @@ public class WebSocketBridgeTest {
     socket.get().close();
   }
 
+  @Test
+  /*
+      Constructs a message with size == 2*MAX_WEBSOCKET_FRAME_SIZE. The message is then sent via
+      eventBus bridge. The test then reads the message via WebSocket and makes sure that the message
+      is delivered in three WebSocketFrames.
+      Regression for #35
+   */
+  public void testSendingAMessageBiggerThanSocketFrameSize() {
+    AtomicReference<Throwable> error = new AtomicReference<>();
+    List<WebSocketFrame> wsBuffers = new ArrayList<>();
+    List<Buffer> stompBuffers = new ArrayList<>();
+
+    AtomicReference<WebSocket> socket = new AtomicReference<>();
+    AtomicReference<StompClientConnection> client = new AtomicReference<>();
+
+    clients.add(StompClient.create(vertx).connect(61613, "localhost", connection -> {
+      connection.result().subscribe("bigData", h-> {}, r -> {
+        client.set(connection.result());
+
+      });
+      connection.result().receivedFrameHandler(stompFrame -> {
+        if(stompFrame.toBuffer().toString().startsWith("MESSAGE")) {
+          stompBuffers.add(stompFrame.toBuffer());
+        }
+      });
+    }));
+
+    vertx.createHttpClient().websocket(8080, "localhost", "/stomp", MultiMap.caseInsensitiveMultiMap().add
+      ("Sec-WebSocket-Protocol", "v10.stomp, v11.stomp, v12.stomp"), ws -> {
+        ws.exceptionHandler(error::set)
+          .handler(buffer -> {
+            if (buffer.toString().startsWith("CONNECTED")) {
+              ws.write(
+                new Frame(Frame.Command.SUBSCRIBE, Headers.create("id", "myId", "destination", "bigData"), null)
+                  .toBuffer());
+              return;
+            }
+            // Start collecting the frames once we see the first real payload message
+            if (buffer.toString().startsWith("MESSAGE")) {
+              ws.frameHandler(wsBuffers::add);
+            }
+          })
+          .write(new Frame(Frame.Command.CONNECT, Headers.create("accept-version", "1.2,1.1,1.0",
+            "heart-beat", "10000,10000"), null).toBuffer());
+      socket.set(ws);
+    });
+
+    // Create content that is slightly bigger than the size of a single web socket frame
+    String bufferContent = StringUtils.repeat("*",  2 * MAX_WEBSOCKET_FRAME_SIZE);
+
+    await().atMost(10, TimeUnit.SECONDS).until(() -> client.get() != null);
+    await().atMost(10, TimeUnit.SECONDS).until(() -> socket.get() != null);
+    vertx.eventBus().publish("bigData",bufferContent);
+
+    await().atMost(10, TimeUnit.SECONDS).until(() -> error.get() == null && stompBuffers.size() == 1);
+    await().atMost(10, TimeUnit.SECONDS).until(() -> error.get() == null && wsBuffers.size() == 3);
+
+    // STOMP message has 2048 bytes of payload + headers => 2167 bytes
+    assertEquals(2167, stompBuffers.get(0).getBytes().length);
+
+    // We expect two complete frames + 1 with 116 bytes
+    assertEquals(MAX_WEBSOCKET_FRAME_SIZE, wsBuffers.get(0).binaryData().getBytes().length);
+    assertEquals(MAX_WEBSOCKET_FRAME_SIZE, wsBuffers.get(1).binaryData().getBytes().length);
+    assertEquals(116, wsBuffers.get(2).binaryData().getBytes().length);
+    socket.get().close();
+  }
   @Test
   public void testPingFromServer() {
     AtomicReference<Throwable> error = new AtomicReference<>();
