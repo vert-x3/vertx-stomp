@@ -2,3 +2,8 @@
 
 A vert.x implementation of the STOMP specification. It provides a STOMP server and client.
 
+* http://vertx.io/docs/vertx-stomp/java/[Java documentation]
+* http://vertx.io/docs/vertx-stomp/js/[JavaScript documentation]
+* http://vertx.io/docs/vertx-stomp/kotlin/[Kotlin documentation]
+* http://vertx.io/docs/vertx-stomp/groovy/[Groovy documentation]
+* http://vertx.io/docs/vertx-stomp/ruby/[Ruby documentation]
