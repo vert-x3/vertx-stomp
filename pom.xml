@@ -5,7 +5,7 @@
   <parent>
     <groupId>io.vertx</groupId>
     <artifactId>vertx-ext-parent</artifactId>
-    <version>30</version>
+    <version>33</version>
   </parent>
 
   <artifactId>vertx-stomp</artifactId>
@@ -114,18 +114,6 @@
     </testResources>
 
     <plugins>
-      <!-- Copy resources after compilation phase as we generate JS in src/main/resources -->
-      <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>3.0.2</version>
-        <executions>
-          <execution>
-            <id>default-resources</id>
-            <phase>process-classes</phase>
-          </execution>
-        </executions>
-      </plugin>
-
       <plugin>
         <artifactId>maven-failsafe-plugin</artifactId>
         <version>2.19.1</version>
