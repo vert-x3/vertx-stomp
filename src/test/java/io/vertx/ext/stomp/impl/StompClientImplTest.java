@@ -392,6 +392,49 @@ public class StompClientImplTest {
   }
 
   @Test
+  public void testAsymmetricHeartbeatTime() throws InterruptedException {
+    AtomicReference<StompClientConnection> reference = new AtomicReference<>();
+    AsyncLock lock = new AsyncLock<>();
+    server.close(lock.handler());
+    lock.waitForSuccess();
+    lock = new AsyncLock();
+
+    List<Long> serverReceivedPingTimestamps = new ArrayList<>();
+    server = StompServer.create(vertx,
+      new StompServerOptions().setHeartbeat(new JsonObject().put("x", 300).put("y", 200)))
+      .handler(StompServerHandler.create(vertx).receivedFrameHandler(frame -> {
+        if(Frame.Command.PING.equals(frame.frame().getCommand())) {
+          serverReceivedPingTimestamps.add(System.currentTimeMillis());
+        }
+      })).listen(lock.handler());
+
+
+    lock.waitForSuccess();
+
+    List<Long> clientReceivedPingTimestamps = new ArrayList<>();
+    StompClient client = StompClient.create(vertx, new StompClientOptions().setHeartbeat(new JsonObject()
+      .put("x", 100).put("y", 400)))
+      .receivedFrameHandler(frame -> {
+        if(Frame.Command.PING.equals(frame.getCommand())) {
+          clientReceivedPingTimestamps.add(System.currentTimeMillis());
+        }
+    });
+    client.connect(ar -> reference.set(ar.result()));
+
+    Thread.sleep(2000);
+
+    // The actual heartbeat of client is 200, assert it greater than 150 considering network delay
+    serverReceivedPingTimestamps.stream().reduce(0L, (x,y) -> {
+        assertTrue((y-x) > 150); return y;});
+
+    // The actual heartbeat of server is 400, assert  it greater than 350 considering network delay
+    clientReceivedPingTimestamps.stream().reduce(0L,(x,y) -> {
+        assertTrue((y-x) > 350); return y;});
+
+    assertThat(reference.get().server()).isNotNull();
+  }
+
+  @Test
   public void testConnectionDroppedHandler() throws InterruptedException {
     AtomicBoolean flag = new AtomicBoolean(true);
     AtomicBoolean dropped = new AtomicBoolean(false);
