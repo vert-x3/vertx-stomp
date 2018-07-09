@@ -363,14 +363,14 @@ public class DefaultStompHandler implements StompServerHandler {
       pingH = pingHandler;
     }
 
-
     // Compute heartbeat, and register pinger and ponger
+    // Stomp server acts as a client to call the computePingPeriod & computePongPeriod method
     long ping = Frame.Heartbeat.computePingPeriod(
-        Frame.Heartbeat.parse(frame.getHeader(Frame.HEARTBEAT)),
-        Frame.Heartbeat.create(connection.server().options().getHeartbeat()));
+      Frame.Heartbeat.create(connection.server().options().getHeartbeat()),
+      Frame.Heartbeat.parse(frame.getHeader(Frame.HEARTBEAT)));
     long pong = Frame.Heartbeat.computePongPeriod(
-        Frame.Heartbeat.parse(frame.getHeader(Frame.HEARTBEAT)),
-        Frame.Heartbeat.create(connection.server().options().getHeartbeat()));
+        Frame.Heartbeat.create(connection.server().options().getHeartbeat()),
+        Frame.Heartbeat.parse(frame.getHeader(Frame.HEARTBEAT)));
 
     connection.configureHeartbeat(ping, pong, pingH);
 
@@ -457,7 +457,7 @@ public class DefaultStompHandler implements StompServerHandler {
   public User getUserBySession(String session) {
     return this.users.get(session);
   }
-  
+
   @Override
   public List<Destination> getDestinations() {
     return new ArrayList<>(destinations.keySet());
