@@ -33,6 +33,8 @@ import java.util.List;
 @DataObject(generateConverter = true)
 public class StompClientOptions extends NetClientOptions implements StompOptions {
 
+  // The default value of reuse address for stomp client
+  private static final boolean DEFAULT_CLIENT_REUSE_ADDRESS = false;
 
   private List<String> acceptedVersions;
   private int port = DEFAULT_STOMP_PORT;
@@ -51,8 +53,9 @@ public class StompClientOptions extends NetClientOptions implements StompOptions
    */
   public StompClientOptions() {
     super();
-    acceptedVersions = new ArrayList<>(DEFAULT_SUPPORTED_VERSIONS);
-    Collections.reverse(acceptedVersions);
+    init();
+    // Override the DEFAULT_REUSE_ADDRESS value in NetworkOptions
+    setReuseAddress(DEFAULT_CLIENT_REUSE_ADDRESS);
   }
 
   /**
@@ -81,7 +84,18 @@ public class StompClientOptions extends NetClientOptions implements StompOptions
    */
   public StompClientOptions(JsonObject json) {
     super(json);
+    init();
     StompClientOptionsConverter.fromJson(json, this);
+
+    // If no valid reuseAddress value specified in the json, set it with DEFAULT_CLIENT_REUSE_ADDRESS
+    if(!(json.getValue("reuseAddress") instanceof Boolean)){
+      setReuseAddress(DEFAULT_CLIENT_REUSE_ADDRESS);
+    }
+  }
+
+  private void init() {
+    acceptedVersions = new ArrayList<>(DEFAULT_SUPPORTED_VERSIONS);
+    Collections.reverse(acceptedVersions);
   }
 
   /**
