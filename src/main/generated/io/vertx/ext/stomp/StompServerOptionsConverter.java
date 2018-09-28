@@ -1,82 +1,103 @@
-/*
- * Copyright (c) 2014 Red Hat, Inc. and others
- *
- * Red Hat licenses this file to you under the Apache License, version 2.0
- * (the "License"); you may not use this file except in compliance with the
- * License.  You may obtain a copy of the License at:
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
- * License for the specific language governing permissions and limitations
- * under the License.
- */
-
 package io.vertx.ext.stomp;
 
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.JsonArray;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Converter for {@link io.vertx.ext.stomp.StompServerOptions}.
- *
  * NOTE: This class has been automatically generated from the {@link io.vertx.ext.stomp.StompServerOptions} original class using Vert.x codegen.
  */
 public class StompServerOptionsConverter {
 
-  public static void fromJson(JsonObject json, StompServerOptions obj) {
-    if (json.getValue("heartbeat") instanceof JsonObject) {
-      obj.setHeartbeat(((JsonObject)json.getValue("heartbeat")).copy());
-    }
-    if (json.getValue("maxBodyLength") instanceof Number) {
-      obj.setMaxBodyLength(((Number)json.getValue("maxBodyLength")).intValue());
-    }
-    if (json.getValue("maxFrameInTransaction") instanceof Number) {
-      obj.setMaxFrameInTransaction(((Number)json.getValue("maxFrameInTransaction")).intValue());
-    }
-    if (json.getValue("maxHeaderLength") instanceof Number) {
-      obj.setMaxHeaderLength(((Number)json.getValue("maxHeaderLength")).intValue());
-    }
-    if (json.getValue("maxHeaders") instanceof Number) {
-      obj.setMaxHeaders(((Number)json.getValue("maxHeaders")).intValue());
-    }
-    if (json.getValue("maxSubscriptionsByClient") instanceof Number) {
-      obj.setMaxSubscriptionsByClient(((Number)json.getValue("maxSubscriptionsByClient")).intValue());
-    }
-    if (json.getValue("secured") instanceof Boolean) {
-      obj.setSecured((Boolean)json.getValue("secured"));
-    }
-    if (json.getValue("sendErrorOnNoSubscriptions") instanceof Boolean) {
-      obj.setSendErrorOnNoSubscriptions((Boolean)json.getValue("sendErrorOnNoSubscriptions"));
-    }
-    if (json.getValue("supportedVersions") instanceof JsonArray) {
-      java.util.ArrayList<java.lang.String> list = new java.util.ArrayList<>();
-      json.getJsonArray("supportedVersions").forEach( item -> {
-        if (item instanceof String)
-          list.add((String)item);
-      });
-      obj.setSupportedVersions(list);
-    }
-    if (json.getValue("timeFactor") instanceof Number) {
-      obj.setTimeFactor(((Number)json.getValue("timeFactor")).intValue());
-    }
-    if (json.getValue("trailingLine") instanceof Boolean) {
-      obj.setTrailingLine((Boolean)json.getValue("trailingLine"));
-    }
-    if (json.getValue("transactionChunkSize") instanceof Number) {
-      obj.setTransactionChunkSize(((Number)json.getValue("transactionChunkSize")).intValue());
-    }
-    if (json.getValue("websocketBridge") instanceof Boolean) {
-      obj.setWebsocketBridge((Boolean)json.getValue("websocketBridge"));
-    }
-    if (json.getValue("websocketPath") instanceof String) {
-      obj.setWebsocketPath((String)json.getValue("websocketPath"));
+  public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, StompServerOptions obj) {
+    for (java.util.Map.Entry<String, Object> member : json) {
+      switch (member.getKey()) {
+        case "heartbeat":
+          if (member.getValue() instanceof JsonObject) {
+            obj.setHeartbeat(((JsonObject)member.getValue()).copy());
+          }
+          break;
+        case "maxBodyLength":
+          if (member.getValue() instanceof Number) {
+            obj.setMaxBodyLength(((Number)member.getValue()).intValue());
+          }
+          break;
+        case "maxFrameInTransaction":
+          if (member.getValue() instanceof Number) {
+            obj.setMaxFrameInTransaction(((Number)member.getValue()).intValue());
+          }
+          break;
+        case "maxHeaderLength":
+          if (member.getValue() instanceof Number) {
+            obj.setMaxHeaderLength(((Number)member.getValue()).intValue());
+          }
+          break;
+        case "maxHeaders":
+          if (member.getValue() instanceof Number) {
+            obj.setMaxHeaders(((Number)member.getValue()).intValue());
+          }
+          break;
+        case "maxSubscriptionsByClient":
+          if (member.getValue() instanceof Number) {
+            obj.setMaxSubscriptionsByClient(((Number)member.getValue()).intValue());
+          }
+          break;
+        case "secured":
+          if (member.getValue() instanceof Boolean) {
+            obj.setSecured((Boolean)member.getValue());
+          }
+          break;
+        case "sendErrorOnNoSubscriptions":
+          if (member.getValue() instanceof Boolean) {
+            obj.setSendErrorOnNoSubscriptions((Boolean)member.getValue());
+          }
+          break;
+        case "supportedVersions":
+          if (member.getValue() instanceof JsonArray) {
+            java.util.ArrayList<java.lang.String> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
+              if (item instanceof String)
+                list.add((String)item);
+            });
+            obj.setSupportedVersions(list);
+          }
+          break;
+        case "timeFactor":
+          if (member.getValue() instanceof Number) {
+            obj.setTimeFactor(((Number)member.getValue()).intValue());
+          }
+          break;
+        case "trailingLine":
+          if (member.getValue() instanceof Boolean) {
+            obj.setTrailingLine((Boolean)member.getValue());
+          }
+          break;
+        case "transactionChunkSize":
+          if (member.getValue() instanceof Number) {
+            obj.setTransactionChunkSize(((Number)member.getValue()).intValue());
+          }
+          break;
+        case "websocketBridge":
+          if (member.getValue() instanceof Boolean) {
+            obj.setWebsocketBridge((Boolean)member.getValue());
+          }
+          break;
+        case "websocketPath":
+          if (member.getValue() instanceof String) {
+            obj.setWebsocketPath((String)member.getValue());
+          }
+          break;
+      }
     }
   }
 
   public static void toJson(StompServerOptions obj, JsonObject json) {
+    toJson(obj, json.getMap());
+  }
+
+  public static void toJson(StompServerOptions obj, java.util.Map<String, Object> json) {
     if (obj.getHeartbeat() != null) {
       json.put("heartbeat", obj.getHeartbeat());
     }

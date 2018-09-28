@@ -1,73 +1,88 @@
-/*
- * Copyright (c) 2014 Red Hat, Inc. and others
- *
- * Red Hat licenses this file to you under the Apache License, version 2.0
- * (the "License"); you may not use this file except in compliance with the
- * License.  You may obtain a copy of the License at:
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
- * License for the specific language governing permissions and limitations
- * under the License.
- */
-
 package io.vertx.ext.stomp;
 
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.JsonArray;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Converter for {@link io.vertx.ext.stomp.StompClientOptions}.
- *
  * NOTE: This class has been automatically generated from the {@link io.vertx.ext.stomp.StompClientOptions} original class using Vert.x codegen.
  */
 public class StompClientOptionsConverter {
 
-  public static void fromJson(JsonObject json, StompClientOptions obj) {
-    if (json.getValue("acceptedVersions") instanceof JsonArray) {
-      java.util.ArrayList<java.lang.String> list = new java.util.ArrayList<>();
-      json.getJsonArray("acceptedVersions").forEach( item -> {
-        if (item instanceof String)
-          list.add((String)item);
-      });
-      obj.setAcceptedVersions(list);
-    }
-    if (json.getValue("autoComputeContentLength") instanceof Boolean) {
-      obj.setAutoComputeContentLength((Boolean)json.getValue("autoComputeContentLength"));
-    }
-    if (json.getValue("bypassHostHeader") instanceof Boolean) {
-      obj.setBypassHostHeader((Boolean)json.getValue("bypassHostHeader"));
-    }
-    if (json.getValue("heartbeat") instanceof JsonObject) {
-      obj.setHeartbeat(((JsonObject)json.getValue("heartbeat")).copy());
-    }
-    if (json.getValue("host") instanceof String) {
-      obj.setHost((String)json.getValue("host"));
-    }
-    if (json.getValue("login") instanceof String) {
-      obj.setLogin((String)json.getValue("login"));
-    }
-    if (json.getValue("passcode") instanceof String) {
-      obj.setPasscode((String)json.getValue("passcode"));
-    }
-    if (json.getValue("port") instanceof Number) {
-      obj.setPort(((Number)json.getValue("port")).intValue());
-    }
-    if (json.getValue("trailingLine") instanceof Boolean) {
-      obj.setTrailingLine((Boolean)json.getValue("trailingLine"));
-    }
-    if (json.getValue("useStompFrame") instanceof Boolean) {
-      obj.setUseStompFrame((Boolean)json.getValue("useStompFrame"));
-    }
-    if (json.getValue("virtualHost") instanceof String) {
-      obj.setVirtualHost((String)json.getValue("virtualHost"));
+  public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, StompClientOptions obj) {
+    for (java.util.Map.Entry<String, Object> member : json) {
+      switch (member.getKey()) {
+        case "acceptedVersions":
+          if (member.getValue() instanceof JsonArray) {
+            java.util.ArrayList<java.lang.String> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
+              if (item instanceof String)
+                list.add((String)item);
+            });
+            obj.setAcceptedVersions(list);
+          }
+          break;
+        case "autoComputeContentLength":
+          if (member.getValue() instanceof Boolean) {
+            obj.setAutoComputeContentLength((Boolean)member.getValue());
+          }
+          break;
+        case "bypassHostHeader":
+          if (member.getValue() instanceof Boolean) {
+            obj.setBypassHostHeader((Boolean)member.getValue());
+          }
+          break;
+        case "heartbeat":
+          if (member.getValue() instanceof JsonObject) {
+            obj.setHeartbeat(((JsonObject)member.getValue()).copy());
+          }
+          break;
+        case "host":
+          if (member.getValue() instanceof String) {
+            obj.setHost((String)member.getValue());
+          }
+          break;
+        case "login":
+          if (member.getValue() instanceof String) {
+            obj.setLogin((String)member.getValue());
+          }
+          break;
+        case "passcode":
+          if (member.getValue() instanceof String) {
+            obj.setPasscode((String)member.getValue());
+          }
+          break;
+        case "port":
+          if (member.getValue() instanceof Number) {
+            obj.setPort(((Number)member.getValue()).intValue());
+          }
+          break;
+        case "trailingLine":
+          if (member.getValue() instanceof Boolean) {
+            obj.setTrailingLine((Boolean)member.getValue());
+          }
+          break;
+        case "useStompFrame":
+          if (member.getValue() instanceof Boolean) {
+            obj.setUseStompFrame((Boolean)member.getValue());
+          }
+          break;
+        case "virtualHost":
+          if (member.getValue() instanceof String) {
+            obj.setVirtualHost((String)member.getValue());
+          }
+          break;
+      }
     }
   }
 
   public static void toJson(StompClientOptions obj, JsonObject json) {
+    toJson(obj, json.getMap());
+  }
+
+  public static void toJson(StompClientOptions obj, java.util.Map<String, Object> json) {
     if (obj.getAcceptedVersions() != null) {
       JsonArray array = new JsonArray();
       obj.getAcceptedVersions().forEach(item -> array.add(item));
