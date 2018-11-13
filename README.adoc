@@ -1,5 +1,7 @@
 = vert.x-stomp
 
+image:https://travis-ci.org/vert-x3/vertx-stomp.svg?branch=master["Build Status", link="https://travis-ci.org/vert-x3/vertx-stomp"]
+
 A vert.x implementation of the STOMP specification. It provides a STOMP server and client.
 
 * http://vertx.io/docs/vertx-stomp/java/[Java documentation]
