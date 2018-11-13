@@ -54,7 +54,7 @@ method:
 {@link examples.StompServerExamples#example2}
 ----
 
-If you pass {@code -1} as port, the TCP server would not be started. This is useful when using the websocket
+If you pass `-1` as port, the TCP server would not be started. This is useful when using the websocket
 bridge. To be notified when the server is ready, use a handler as follows:
 
 [source,$lang]
@@ -397,7 +397,7 @@ STOMP frames on the web socket. It also receives the STOMP frame directly on the
 
 To configure the server to use StompJS, you need to:
 
-1. Enable the web socket bridge and configure the path of the listening web socket ({@code /stomp} by default).
+1. Enable the web socket bridge and configure the path of the listening web socket (`/stomp` by default).
 2. Import http://jmesnil.net/stomp-websocket/doc/#download[StompJS] in your application (as a script on an
 HTML page, or as an npm module (https://www.npmjs.com/package/stompjs).
 3. Connect to the server
@@ -433,7 +433,7 @@ client.connect({}, function() {
 
 STOMP clients, client's connections and server handlers support registering a received
 {@link io.vertx.ext.stomp.Frame} handler that would be notified every time a frame is received from the wire. It lets
-you log the frames, or implement custom behavior. The handler is already called for {@code PING}
+you log the frames, or implement custom behavior. The handler is already called for `PING`
 frames, and _illegal / unknown_ frames:
 
 [source,$lang]
@@ -443,7 +443,7 @@ frames, and _illegal / unknown_ frames:
 
 The handler is called before the frame is processed, so you can also _modify_ the frame.
 
-Frames not using a valid STOMP command use the {@code UNKNOWN} command. The original command is written
+Frames not using a valid STOMP command use the `UNKNOWN` command. The original command is written
 in the headers using the {@link io.vertx.ext.stomp.Frame#STOMP_FRAME_COMMAND} key.
 
 You can also register a handler to be notified when a frame is going to be sent (written to the wire):
