@@ -162,7 +162,7 @@
                     <ports>
                       <port>61622:61612</port>
                       <port>61623:61613</port>
-                      <port>61626:61616</port>
+                      <port>61696:61616</port>
                       <port>8161:8161</port>
                     </ports>
                     <wait>
@@ -224,7 +224,6 @@
                           <port>61613</port>
                         </ports>
                       </tcp>
-                      <time>40000</time>
                     </wait>
                   </run>
                 </image>
@@ -240,14 +239,8 @@
                       <port>61643:61613</port>
                     </ports>
                     <wait>
-                      <tcp>
-                        <host>localhost</host>
-                        <mode>mapped</mode>
-                        <ports>
-                          <port>61613</port>
-                        </ports>
-                      </tcp>
-                      <time>40000</time>
+                      <log>.*rabbitmq_management_agent.*</log>
+                      <time>90000</time>
                     </wait>
                   </run>
                 </image>
