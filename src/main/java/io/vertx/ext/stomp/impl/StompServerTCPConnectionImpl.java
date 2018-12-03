@@ -37,11 +37,11 @@ public class StompServerTCPConnectionImpl implements StompServerConnection {
   private static final Logger log = LoggerFactory.getLogger(StompServerTCPConnectionImpl.class);
 
   private final StompServer server;
-  private final NetSocket socket;
+  public final NetSocket socket;
   private final String sessionId;
   protected final Handler<ServerFrame> handler;
 
-  private volatile long lastClientActivity;
+  public volatile long lastClientActivity;
   private long pinger = -1;
   private long ponger = -1;
 
