@@ -16,6 +16,8 @@
 
 package io.vertx.ext.stomp.impl;
 
+import javax.net.ssl.SSLSession;
+
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.ServerWebSocket;
@@ -41,6 +43,11 @@ public class StompServerWebSocketConnectionImpl extends  StompServerTCPConnectio
     super(server, writtenFrameHandler);
     Objects.requireNonNull(socket);
     this.socket = socket;
+  }
+
+  @Override
+  public SSLSession sslSession() {
+    return this.socket.sslSession();
   }
 
   @Override

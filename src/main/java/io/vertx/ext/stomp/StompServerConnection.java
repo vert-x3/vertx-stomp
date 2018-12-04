@@ -16,6 +16,8 @@
 
 package io.vertx.ext.stomp;
 
+import javax.net.ssl.SSLSession;
+
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.Handler;
@@ -52,6 +54,13 @@ public interface StompServerConnection {
    * @return the STOMP server serving this connection.
    */
   StompServer server();
+
+  /**
+   * @return SSLSession associated with the underlying socket. Returns null if connection is
+   *         not SSL.
+   * @see javax.net.ssl.SSLSession
+   */
+  SSLSession sslSession();
 
   /**
    * @return the STOMP server handler dealing with this connection

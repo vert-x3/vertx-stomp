@@ -16,6 +16,8 @@
 
 package io.vertx.ext.stomp.impl;
 
+import javax.net.ssl.SSLSession;
+
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.logging.Logger;
@@ -37,7 +39,7 @@ public class StompServerTCPConnectionImpl implements StompServerConnection {
   private static final Logger log = LoggerFactory.getLogger(StompServerTCPConnectionImpl.class);
 
   private final StompServer server;
-  public final NetSocket socket;
+  private final NetSocket socket;
   private final String sessionId;
   protected final Handler<ServerFrame> handler;
 
@@ -89,6 +91,11 @@ public class StompServerTCPConnectionImpl implements StompServerConnection {
   @Override
   public String session() {
     return sessionId;
+  }
+
+  @Override
+  public SSLSession sslSession() {
+    return this.socket.sslSession();
   }
 
   @Override
