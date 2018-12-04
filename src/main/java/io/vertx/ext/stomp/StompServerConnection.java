@@ -19,6 +19,7 @@ package io.vertx.ext.stomp;
 import javax.net.ssl.SSLSession;
 
 import io.vertx.codegen.annotations.Fluent;
+import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
@@ -59,6 +60,7 @@ public interface StompServerConnection {
    * @return SSLSession associated with the underlying socket. Returns null if connection is
    *         not SSL.
    */
+  @GenIgnore({"permitted-type"})
   SSLSession sslSession();
 
   /**
