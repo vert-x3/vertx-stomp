@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -16,6 +17,8 @@
 
   <properties>
     <stack.version>4.0.0-SNAPSHOT</stack.version>
+
+    <dockerhost>localhost</dockerhost>
   </properties>
 
   <dependencyManagement>
@@ -94,6 +97,19 @@
       <version>0.1.40</version>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers</artifactId>
+      <version>1.10.5</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>1.7.25</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -124,9 +140,6 @@
               <goal>verify</goal>
             </goals>
             <configuration>
-              <excludes>
-                <exclude>**/*DockerIT.java</exclude>
-              </excludes>
               <systemProperties>
                 <vertx.disableDnsResolver>true</vertx.disableDnsResolver>
               </systemProperties>
@@ -137,155 +150,4 @@
     </plugins>
   </build>
 
-  <profiles>
-    <profile>
-      <id>it-with-docker</id>
-      <properties>
-        <dockerhost>localhost</dockerhost>
-      </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>io.fabric8</groupId>
-            <artifactId>docker-maven-plugin</artifactId>
-            <version>0.21.0</version>
-            <configuration>
-              <images>
-                <image>
-                  <!-- ActiveMQ -->
-                  <alias>activemq</alias>
-                  <name>vertx-stomp/activemq-stomp</name>
-                  <build>
-                    <dockerFileDir>${project.basedir}/src/test/resources/integration/activemq</dockerFileDir>
-                  </build>
-                  <run>
-                    <ports>
-                      <port>61622:61612</port>
-                      <port>61623:61613</port>
-                      <port>61696:61616</port>
-                      <port>8161:8161</port>
-                    </ports>
-                    <wait>
-                      <tcp>
-                        <host>localhost</host>
-                        <mode>mapped</mode>
-                        <ports>
-                          <port>61612</port>
-                          <port>61613</port>
-                        </ports>
-                      </tcp>
-                      <time>40000</time>
-                    </wait>
-                  </run>
-                </image>
-                <image>
-                  <!-- Artemis -->
-                  <alias>artemis</alias>
-                  <name>vertx-stomp/artemis-stomp</name>
-                  <build>
-                    <dockerFileDir>${project.basedir}/src/test/resources/integration/artemis</dockerFileDir>
-                  </build>
-                  <run>
-                    <ports>
-                      <port>61653:61613</port>
-                      <port>61656:61616</port>
-                      <port>5445:5445</port>
-                    </ports>
-                    <wait>
-                      <tcp>
-                        <host>localhost</host>
-                        <mode>mapped</mode>
-                        <ports>
-                          <port>61613</port>
-                          <port>61616</port>
-                          <port>5445</port>
-                        </ports>
-                      </tcp>
-                      <time>1000000</time>
-                    </wait>
-                  </run>
-                </image>
-                <image>
-                  <!-- Efrecon -->
-                  <alias>efrecon</alias>
-                  <name>vertx-stomp/efrecon-stomp</name>
-                  <build>
-                    <dockerFileDir>${project.basedir}/src/test/resources/integration/efrecon</dockerFileDir>
-                  </build>
-                  <run>
-                    <ports>
-                      <port>61633:61613</port>
-                    </ports>
-                    <wait>
-                      <tcp>
-                        <host>localhost</host>
-                        <mode>mapped</mode>
-                        <ports>
-                          <port>61613</port>
-                        </ports>
-                      </tcp>
-                    </wait>
-                  </run>
-                </image>
-                <image>
-                  <!-- RabbitMQ -->
-                  <alias>rabbitmq</alias>
-                  <name>vertx-stomp/rabbitmq-stomp</name>
-                  <build>
-                    <dockerFileDir>${project.basedir}/src/test/resources/integration/rabbitmq</dockerFileDir>
-                  </build>
-                  <run>
-                    <ports>
-                      <port>61643:61613</port>
-                    </ports>
-                    <wait>
-                      <log>.*rabbitmq_management_agent.*</log>
-                      <time>90000</time>
-                    </wait>
-                  </run>
-                </image>
-              </images>
-              <showLogs>true</showLogs>
-            </configuration>
-            <executions>
-              <execution>
-                <id>start</id>
-                <phase>pre-integration-test</phase>
-                <goals>
-                  <goal>build</goal>
-                  <goal>start</goal>
-                </goals>
-              </execution>
-              <execution>
-                <id>stop</id>
-                <phase>post-integration-test</phase>
-                <goals>
-                  <goal>stop</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <artifactId>maven-failsafe-plugin</artifactId>
-            <version>2.19.1</version>
-            <executions>
-              <execution>
-                <id>docker-its</id>
-                <goals>
-                  <goal>integration-test</goal>
-                  <goal>verify</goal>
-                </goals>
-                <configuration>
-                  <includes>
-                    <include>**/*IT.java</include>
-                  </includes>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-
-    </profile>
-  </profiles>
 </project>

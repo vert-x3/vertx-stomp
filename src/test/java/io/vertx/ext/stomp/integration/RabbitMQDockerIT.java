@@ -17,20 +17,32 @@
 package io.vertx.ext.stomp.integration;
 
 import io.vertx.ext.stomp.StompClientOptions;
+import org.junit.ClassRule;
+import org.testcontainers.containers.BindMode;
+import org.testcontainers.containers.GenericContainer;
 
 /**
  * Checks that our clients can connect and interact with ActiveMQ.
  *
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
-public class RabbitmqDockerIT extends AbstractClientIT {
+public class RabbitMQDockerIT extends AbstractClientIT {
+
+  ///etc/rabbitmq/enabled_plugins
+
+  @ClassRule
+  public static final GenericContainer rabbitmq
+    = new GenericContainer("rabbitmq:latest")
+            .withClasspathResourceMapping("integration/rabbitmq/enabled_plugins",
+              "/etc/rabbitmq/enabled_plugins", BindMode.READ_ONLY)
+            .withExposedPorts(61613);
 
   @Override
   public StompClientOptions getOptions() {
     return new StompClientOptions()
-        .setHost(getDockerHost())
-        .setPort(61643)
-        .setBypassHostHeader(true);
+      .setHost(getDockerHost())
+      .setPort(rabbitmq.getMappedPort(61613))
+      .setBypassHostHeader(true);
   }
 
   @Override

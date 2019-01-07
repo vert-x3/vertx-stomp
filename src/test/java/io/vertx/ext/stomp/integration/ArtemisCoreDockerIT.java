@@ -17,6 +17,8 @@
 package io.vertx.ext.stomp.integration;
 
 import io.vertx.ext.stomp.StompClientOptions;
+import org.junit.ClassRule;
+import org.testcontainers.containers.GenericContainer;
 
 /**
  * Checks that our clients can connect and interact with ActiveMQ. This test use the core port (61616).
@@ -25,11 +27,17 @@ import io.vertx.ext.stomp.StompClientOptions;
  */
 public class ArtemisCoreDockerIT extends AbstractClientIT {
 
+  @ClassRule
+  public static final GenericContainer artemis
+    = new GenericContainer("vromero/activemq-artemis:2.6.3-alpine")
+    .withExposedPorts(61613)
+    .withExposedPorts(5445);
+
   @Override
   public StompClientOptions getOptions() {
     return new StompClientOptions()
         .setHost(getDockerHost())
-        .setPort(61656)
+        .setPort(artemis.getMappedPort(61613))
         .setLogin("artemis")
         .setPasscode("simetraehcapa");
   }
