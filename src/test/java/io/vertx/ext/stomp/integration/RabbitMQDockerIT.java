@@ -28,8 +28,6 @@ import org.testcontainers.containers.GenericContainer;
  */
 public class RabbitMQDockerIT extends AbstractClientIT {
 
-  ///etc/rabbitmq/enabled_plugins
-
   @ClassRule
   public static final GenericContainer rabbitmq
     = new GenericContainer("rabbitmq:latest")
