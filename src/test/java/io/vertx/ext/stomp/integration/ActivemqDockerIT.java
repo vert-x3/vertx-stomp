@@ -17,6 +17,8 @@
 package io.vertx.ext.stomp.integration;
 
 import io.vertx.ext.stomp.StompClientOptions;
+import org.junit.ClassRule;
+import org.testcontainers.containers.GenericContainer;
 
 /**
  * Checks that our clients can connect and interact with ActiveMQ.
@@ -25,11 +27,17 @@ import io.vertx.ext.stomp.StompClientOptions;
  */
 public class ActivemqDockerIT extends AbstractClientIT {
 
+
+  @ClassRule
+  public static final GenericContainer activemq
+    = new GenericContainer("rmohr/activemq:5.15.6-alpine")
+    .withExposedPorts(61613);
+
   @Override
   public StompClientOptions getOptions() {
     return new StompClientOptions()
         .setHost(getDockerHost())
-        .setPort(61623);
+        .setPort(activemq.getMappedPort(61613));
   }
 
   @Override
