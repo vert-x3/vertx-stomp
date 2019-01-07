@@ -28,7 +28,7 @@ import org.testcontainers.containers.GenericContainer;
 public class ArtemisCoreDockerIT extends AbstractClientIT {
 
   @ClassRule
-  public static final GenericContainer artemis
+  public static final GenericContainer container
     = new GenericContainer("vromero/activemq-artemis:2.6.3-alpine")
     .withExposedPorts(61613)
     .withExposedPorts(5445);
@@ -36,8 +36,8 @@ public class ArtemisCoreDockerIT extends AbstractClientIT {
   @Override
   public StompClientOptions getOptions() {
     return new StompClientOptions()
-        .setHost(getDockerHost())
-        .setPort(artemis.getMappedPort(61613))
+        .setHost(container.getContainerIpAddress())
+        .setPort(container.getMappedPort(61613))
         .setLogin("artemis")
         .setPasscode("simetraehcapa");
   }

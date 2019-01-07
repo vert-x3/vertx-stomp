@@ -17,8 +17,6 @@
 
   <properties>
     <stack.version>4.0.0-SNAPSHOT</stack.version>
-
-    <dockerhost>localhost</dockerhost>
   </properties>
 
   <dependencyManagement>

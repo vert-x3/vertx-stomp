@@ -53,16 +53,11 @@ public abstract class AbstractClientIT {
 
   @After
   public void tearDown() {
-    clients.stream().forEach(StompClient::close);
+    clients.forEach(StompClient::close);
     AsyncLock<Void> lock = new AsyncLock<>();
     vertx.close(lock.handler());
     lock.waitForSuccess();
   }
-
-  public String getDockerHost() {
-    return System.getProperty("dockerhost", "localhost");
-  }
-
 
   public abstract StompClientOptions getOptions();
 
