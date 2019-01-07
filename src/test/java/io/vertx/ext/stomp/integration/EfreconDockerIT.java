@@ -35,7 +35,7 @@ public class EfreconDockerIT extends AbstractClientIT {
   @Override
   public StompClientOptions getOptions() {
     return new StompClientOptions()
-        .setHost(getDockerHost())
+        .setHost(container.getContainerIpAddress())
         .setPort(container.getMappedPort(61613));
   }
 

@@ -29,15 +29,15 @@ public class ActivemqDockerIT extends AbstractClientIT {
 
 
   @ClassRule
-  public static final GenericContainer activemq
+  public static final GenericContainer container
     = new GenericContainer("rmohr/activemq:5.15.6-alpine")
     .withExposedPorts(61613);
 
   @Override
   public StompClientOptions getOptions() {
     return new StompClientOptions()
-        .setHost(getDockerHost())
-        .setPort(activemq.getMappedPort(61613));
+        .setHost(container.getContainerIpAddress())
+        .setPort(container.getMappedPort(61613));
   }
 
   @Override

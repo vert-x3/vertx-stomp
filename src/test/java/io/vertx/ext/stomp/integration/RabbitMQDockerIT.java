@@ -29,7 +29,7 @@ import org.testcontainers.containers.GenericContainer;
 public class RabbitMQDockerIT extends AbstractClientIT {
 
   @ClassRule
-  public static final GenericContainer rabbitmq
+  public static final GenericContainer container
     = new GenericContainer("rabbitmq:latest")
             .withClasspathResourceMapping("integration/rabbitmq/enabled_plugins",
               "/etc/rabbitmq/enabled_plugins", BindMode.READ_ONLY)
@@ -38,8 +38,8 @@ public class RabbitMQDockerIT extends AbstractClientIT {
   @Override
   public StompClientOptions getOptions() {
     return new StompClientOptions()
-      .setHost(getDockerHost())
-      .setPort(rabbitmq.getMappedPort(61613))
+      .setHost(container.getContainerIpAddress())
+      .setPort(container.getMappedPort(61613))
       .setBypassHostHeader(true);
   }
 

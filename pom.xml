@@ -17,7 +17,6 @@
 
   <properties>
     <stack.version>3.9.0-SNAPSHOT</stack.version>
-    <dockerhost>localhost</dockerhost>
   </properties>
 
   <dependencyManagement>
