@@ -18,8 +18,8 @@ package io.vertx.ext.stomp.impl;
 
 import io.vertx.core.*;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
+import io.vertx.core.impl.logging.Logger;
+import io.vertx.core.impl.logging.LoggerFactory;
 import io.vertx.core.net.NetSocket;
 import io.vertx.ext.stomp.Frame;
 import io.vertx.ext.stomp.Frames;
