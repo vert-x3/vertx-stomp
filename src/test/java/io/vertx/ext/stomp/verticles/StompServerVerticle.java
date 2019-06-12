@@ -17,7 +17,7 @@
 package io.vertx.ext.stomp.verticles;
 
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.ext.stomp.Destination;
 import io.vertx.ext.stomp.StompServer;
 import io.vertx.ext.stomp.StompServerHandler;
@@ -33,7 +33,7 @@ public class StompServerVerticle extends AbstractVerticle {
   private StompServer server;
 
   @Override
-  public void start(Future<Void> future) throws Exception {
+  public void start(Promise<Void> future) throws Exception {
     server = StompServer.create(vertx).handler(StompServerHandler.create(vertx)
         .destinationFactory((vertx, name) -> {
           if (config().getBoolean("useQueue", false)) {

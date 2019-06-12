@@ -17,7 +17,7 @@
 package io.vertx.ext.stomp.verticles;
 
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.ext.stomp.Frame;
 import io.vertx.ext.stomp.StompClient;
 import io.vertx.ext.stomp.StompClientConnection;
@@ -35,7 +35,7 @@ public class ReceiverStompClient extends AbstractVerticle {
   public static final List<Frame> FRAMES = new CopyOnWriteArrayList<>();
 
   @Override
-  public void start(Future<Void> future) throws Exception {
+  public void start(Promise<Void> future) throws Exception {
     StompClient.create(vertx).connect(ar -> {
       if (ar.failed()) {
         future.fail(ar.cause());
@@ -46,9 +46,7 @@ public class ReceiverStompClient extends AbstractVerticle {
           .receivedFrameHandler(frame -> System.out.println("Client receiving:\n" + frame))
           .writingFrameHandler(frame -> System.out.println("Client sending:\n" + frame))
           .subscribe("/queue", FRAMES::add, frame -> {
-            if (! future.isComplete()) {
-              future.complete();
-            }
+            future.tryComplete();
       });
     });
 
