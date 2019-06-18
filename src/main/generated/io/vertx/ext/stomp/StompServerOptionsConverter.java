@@ -4,12 +4,21 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.JsonArray;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import io.vertx.core.spi.json.JsonCodec;
 
 /**
- * Converter for {@link io.vertx.ext.stomp.StompServerOptions}.
+ * Converter and Codec for {@link io.vertx.ext.stomp.StompServerOptions}.
  * NOTE: This class has been automatically generated from the {@link io.vertx.ext.stomp.StompServerOptions} original class using Vert.x codegen.
  */
-public class StompServerOptionsConverter {
+public class StompServerOptionsConverter implements JsonCodec<StompServerOptions, JsonObject> {
+
+  public static final StompServerOptionsConverter INSTANCE = new StompServerOptionsConverter();
+
+  @Override public JsonObject encode(StompServerOptions value) { return (value != null) ? value.toJson() : null; }
+
+  @Override public StompServerOptions decode(JsonObject value) { return (value != null) ? new StompServerOptions(value) : null; }
+
+  @Override public Class<StompServerOptions> getTargetClass() { return StompServerOptions.class; }
 
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, StompServerOptions obj) {
     for (java.util.Map.Entry<String, Object> member : json) {

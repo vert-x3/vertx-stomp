@@ -16,6 +16,7 @@
 
 package examples;
 
+import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
@@ -192,7 +193,7 @@ public class StompServerExamples {
         .setWebsocketPath("/stomp")) // Configure the web socket path, /stomp by default
         .handler(StompServerHandler.create(vertx));
 
-    HttpServer http = vertx.createHttpServer(
+    Future<HttpServer> http = vertx.createHttpServer(
         new HttpServerOptions().setWebsocketSubProtocols("v10.stomp, v11.stomp")
     )
         .websocketHandler(server.webSocketHandler())

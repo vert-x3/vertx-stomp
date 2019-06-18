@@ -4,12 +4,21 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.JsonArray;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import io.vertx.core.spi.json.JsonCodec;
 
 /**
- * Converter for {@link io.vertx.ext.stomp.Frame}.
+ * Converter and Codec for {@link io.vertx.ext.stomp.Frame}.
  * NOTE: This class has been automatically generated from the {@link io.vertx.ext.stomp.Frame} original class using Vert.x codegen.
  */
-public class FrameConverter {
+public class FrameConverter implements JsonCodec<Frame, JsonObject> {
+
+  public static final FrameConverter INSTANCE = new FrameConverter();
+
+  @Override public JsonObject encode(Frame value) { return (value != null) ? value.toJson() : null; }
+
+  @Override public Frame decode(JsonObject value) { return (value != null) ? new Frame(value) : null; }
+
+  @Override public Class<Frame> getTargetClass() { return Frame.class; }
 
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, Frame obj) {
     for (java.util.Map.Entry<String, Object> member : json) {
