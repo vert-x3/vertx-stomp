@@ -19,6 +19,7 @@ package io.vertx.ext.stomp.impl;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
@@ -60,6 +61,13 @@ public class StompClientImpl implements StompClient {
   @Override
   public StompClient connect(Handler<AsyncResult<StompClientConnection>> resultHandler) {
     return connect(options.getPort(), options.getHost(), vertx.createNetClient(options), resultHandler);
+  }
+
+  @Override
+  public Future<StompClientConnection> connect() {
+    Promise<StompClientConnection> promise = Promise.promise();
+    connect(promise);
+    return promise.future();
   }
 
   /**
@@ -120,6 +128,20 @@ public class StompClientImpl implements StompClient {
   @Override
   public StompClient connect(NetClient netClient, Handler<AsyncResult<StompClientConnection>> resultHandler) {
     return connect(options.getPort(), options.getHost(), netClient, resultHandler);
+  }
+
+  @Override
+  public Future<StompClientConnection> connect(NetClient net) {
+    Promise<StompClientConnection> promise = Promise.promise();
+    connect(net, promise);
+    return promise.future();
+  }
+
+  @Override
+  public Future<StompClientConnection> connect(int port, String host) {
+    Promise<StompClientConnection> promise = Promise.promise();
+    connect(port, host, promise);
+    return promise.future();
   }
 
   @Override
@@ -202,6 +224,13 @@ public class StompClientImpl implements StompClient {
       }
     });
     return this;
+  }
+
+  @Override
+  public Future<StompClientConnection> connect(int port, String host, NetClient net) {
+    Promise<StompClientConnection> promise = Promise.promise();
+    connect(port, host, net, promise);
+    return promise.future();
   }
 
   private Frame getConnectFrame(String host) {

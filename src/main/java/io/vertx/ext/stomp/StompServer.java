@@ -19,6 +19,7 @@ package io.vertx.ext.stomp;
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.ServerWebSocket;
@@ -91,28 +92,25 @@ public interface StompServer {
    * Connects the STOMP server to the given port.
    *
    * @param port the port
-   * @return the current {@link StompServer}
+   * @return a future resolved with the listen result
    */
-  @Fluent
-  StompServer listen(int port);
+  Future<StompServer> listen(int port);
 
   /**
    * Connects the STOMP server to the given port / interface.
    *
    * @param port the port
    * @param host the interface
-   * @return the current {@link StompServer}
+   * @return a future resolved with the listen result
    */
-  @Fluent
-  StompServer listen(int port, String host);
+  Future<StompServer> listen(int port, String host);
 
   /**
    * Connects the STOMP server to the port / host configured in the server options.
    *
-   * @return the current {@link StompServer}
+   * @return a future resolved with the listen result
    */
-  @Fluent
-  StompServer listen();
+  Future<StompServer> listen();
 
 
   /**
@@ -158,7 +156,7 @@ public interface StompServer {
   /**
    * Closes the server.
    */
-  void close();
+  Future<Void> close();
 
   /**
    * Checks whether or not the server is listening.

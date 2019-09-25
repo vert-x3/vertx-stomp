@@ -19,6 +19,7 @@ package io.vertx.ext.stomp;
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.net.NetClient;
@@ -65,6 +66,11 @@ public interface StompClient {
   StompClient connect(int port, String host, Handler<AsyncResult<StompClientConnection>> resultHandler);
 
   /**
+   * Like {@link #connect(int, String, Handler)} but returns a {@code Future} of the asynchronous result
+   */
+  Future<StompClientConnection> connect(int port, String host);
+
+  /**
    * Connects to the server.
    *
    * @param net           the NET client to use
@@ -73,6 +79,11 @@ public interface StompClient {
    */
   @Fluent
   StompClient connect(NetClient net, Handler<AsyncResult<StompClientConnection>> resultHandler);
+
+  /**
+   * Like {@link #connect(NetClient, Handler)} but returns a {@code Future} of the asynchronous result
+   */
+  Future<StompClientConnection> connect(NetClient net);
 
   /**
    * Connects to the server.
@@ -88,6 +99,11 @@ public interface StompClient {
                       Handler<AsyncResult<StompClientConnection>> resultHandler);
 
   /**
+   * Like {@link #connect(int, String, NetClient, Handler)} but returns a {@code Future} of the asynchronous result
+   */
+  Future<StompClientConnection>  connect(int port, String host, NetClient net);
+
+  /**
    * Connects to the server using the host and port configured in the client's options.
    *
    * @param resultHandler handler called with the connection result. A failure will be sent to the handler if a TCP
@@ -97,6 +113,11 @@ public interface StompClient {
    */
   @Fluent
   StompClient connect(Handler<AsyncResult<StompClientConnection>> resultHandler);
+
+  /**
+   * Like {@link #connect(Handler)} but returns a {@code Future} of the asynchronous result
+   */
+  Future<StompClientConnection> connect();
 
   /**
    * Configures a received handler that gets notified when a STOMP frame is received by the client.

@@ -171,7 +171,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection send(Map<String, String> headers, Buffer body) {
+  public Future<Frame> send(Map<String, String> headers, Buffer body) {
     return send(null, headers, body);
   }
 
@@ -181,7 +181,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection send(String destination, Buffer body) {
+  public Future<Frame> send(String destination, Buffer body) {
     return send(destination, null, body);
   }
 
@@ -191,8 +191,10 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection send(Frame frame) {
-    return send(frame, null);
+  public Future<Frame> send(Frame frame) {
+    Promise<Frame> promise = Promise.promise();
+    send(frame, promise);
+    return promise.future();
   }
 
   @Override
@@ -212,8 +214,10 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection send(String destination, Map<String, String> headers, Buffer body) {
-    return send(destination, headers, body, null);
+  public Future<Frame> send(String destination, Map<String, String> headers, Buffer body) {
+    Promise<Frame> promise = Promise.promise();
+    send(destination, headers, body, promise);
+    return promise.future();
   }
 
   @Override
@@ -242,8 +246,10 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection subscribe(String destination, Handler<Frame> handler) {
-    return subscribe(destination, (Map<String, String>) null, handler);
+  public Future<String> subscribe(String destination, Handler<Frame> handler) {
+    Promise<String> promise = Promise.promise();
+    subscribe(destination, (Map<String, String>) null, handler, promise);
+    return promise.future();
   }
 
   @Override
@@ -252,8 +258,10 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection subscribe(String destination, Map<String, String> headers, Handler<Frame> handler) {
-    return subscribe(destination, headers, handler, null);
+  public Future<String> subscribe(String destination, Map<String, String> headers, Handler<Frame> handler) {
+    Promise<String> promise = Promise.promise();
+    subscribe(destination, headers, handler, promise);
+    return promise.future();
   }
 
   @Override
@@ -293,8 +301,10 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection unsubscribe(String destination) {
-    return unsubscribe(destination, null, null);
+  public Future<Frame> unsubscribe(String destination) {
+    Promise<Frame> promise = Promise.promise();
+    unsubscribe(destination, null, promise);
+    return promise.future();
   }
 
   @Override
@@ -303,8 +313,10 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection unsubscribe(String destination, Map<String, String> headers) {
-    return unsubscribe(destination, headers, null);
+  public Future<Frame> unsubscribe(String destination, Map<String, String> headers) {
+    Promise<Frame> promise = Promise.promise();
+    unsubscribe(destination, headers, promise);
+    return promise.future();
   }
 
   @Override
@@ -354,13 +366,15 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection beginTX(String id) {
+  public Future<Frame> beginTX(String id) {
     return beginTX(id, new Headers());
   }
 
   @Override
-  public StompClientConnection beginTX(String id, Map<String, String> headers) {
-    return beginTX(id, headers, null);
+  public Future<Frame> beginTX(String id, Map<String, String> headers) {
+    Promise<Frame> promise = Promise.promise();
+    beginTX(id, headers, promise);
+    return promise.future();
   }
 
   @Override
@@ -372,7 +386,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection commit(String id) {
+  public Future<Frame> commit(String id) {
     return commit(id, new Headers());
   }
 
@@ -382,8 +396,10 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection commit(String id, Map<String, String> headers) {
-    return commit(id, headers, null);
+  public Future<Frame> commit(String id, Map<String, String> headers) {
+    Promise<Frame> promise = Promise.promise();
+    commit(id, headers, promise);
+    return promise.future();
   }
 
   @Override
@@ -394,7 +410,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection abort(String id) {
+  public Future<Frame> abort(String id) {
     return abort(id, new Headers());
   }
 
@@ -404,8 +420,10 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection abort(String id, Map<String, String> headers) {
-    return abort(id, headers, null);
+  public Future<Frame> abort(String id, Map<String, String> headers) {
+    Promise<Frame> promise = Promise.promise();
+    abort(id, headers, promise);
+    return promise.future();
   }
 
   @Override
@@ -416,13 +434,17 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection disconnect() {
-    return disconnect(new Frame().setCommand(Frame.Command.DISCONNECT), null);
+  public Future<Frame> disconnect() {
+    Promise<Frame> promise = Promise.promise();
+    disconnect(new Frame().setCommand(Frame.Command.DISCONNECT), promise);
+    return promise.future();
   }
 
   @Override
-  public StompClientConnection disconnect(Frame frame) {
-    return disconnect(frame, null);
+  public Future<Frame> disconnect(Frame frame) {
+    Promise<Frame> promise = Promise.promise();
+    disconnect(frame, promise);
+    return promise.future();
   }
 
   @Override
@@ -446,8 +468,10 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection ack(String id) {
-    return ack(id, (Handler<AsyncResult<Frame>>) null);
+  public Future<Frame> ack(String id) {
+    Promise<Frame> promise = Promise.promise();
+    ack(id, promise);
+    return promise.future();
   }
 
   @Override
@@ -458,8 +482,10 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection nack(String id) {
-    return nack(id, (Handler<AsyncResult<Frame>>) null);
+  public Future<Frame> nack(String id) {
+    Promise<Frame> promise = Promise.promise();
+    nack(id, promise);
+    return promise.future();
   }
 
   @Override
@@ -470,8 +496,10 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection ack(String id, String txId) {
-    return ack(id, txId, null);
+  public Future<Frame> ack(String id, String txId) {
+    Promise<Frame> promise = Promise.promise();
+    ack(id, txId, promise);
+    return promise.future();
   }
 
   @Override
@@ -485,8 +513,10 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection nack(String id, String txId) {
-    return nack(id, txId, null);
+  public Future<Frame> nack(String id, String txId) {
+    Promise<Frame> promise = Promise.promise();
+    nack(id, txId, promise);
+    return promise.future();
   }
 
   @Override

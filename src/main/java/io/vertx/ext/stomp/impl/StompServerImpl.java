@@ -19,6 +19,7 @@ package io.vertx.ext.stomp.impl;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.ServerWebSocket;
 import io.vertx.core.impl.logging.Logger;
@@ -72,8 +73,10 @@ public class StompServerImpl implements StompServer {
   }
 
   @Override
-  public StompServer listen() {
-    return listen(null);
+  public Future<StompServer> listen() {
+    Promise<StompServer> promise = Promise.promise();
+    listen(promise);
+    return promise.future();
   }
 
   @Override
@@ -82,13 +85,15 @@ public class StompServerImpl implements StompServer {
   }
 
   @Override
-  public StompServer listen(int port) {
+  public Future<StompServer> listen(int port) {
     return listen(port, StompServerOptions.DEFAULT_STOMP_HOST);
   }
 
   @Override
-  public StompServer listen(int port, String host) {
-    return listen(port, host, null);
+  public Future<StompServer> listen(int port, String host) {
+    Promise<StompServer> promise = Promise.promise();
+    listen(port, host, promise);
+    return promise.future();
   }
 
   @Override
@@ -147,8 +152,10 @@ public class StompServerImpl implements StompServer {
   }
 
   @Override
-  public void close() {
-    close(null);
+  public Future<Void> close() {
+    Promise<Void> promise = Promise.promise();
+    close(promise);
+    return promise.future();
   }
 
   @Override

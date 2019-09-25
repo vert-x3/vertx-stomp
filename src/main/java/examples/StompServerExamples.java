@@ -32,14 +32,14 @@ import io.vertx.ext.stomp.*;
 public class StompServerExamples {
 
   public void example1(Vertx vertx) {
-    StompServer server = StompServer.create(vertx)
+    Future<StompServer> server = StompServer.create(vertx)
         .handler(StompServerHandler.create(vertx))
         .listen();
   }
 
 
   public void example2(Vertx vertx) {
-    StompServer server = StompServer.create(vertx)
+    Future<StompServer> server = StompServer.create(vertx)
         .handler(StompServerHandler.create(vertx))
         .listen(1234, "0.0.0.0");
   }
@@ -57,32 +57,32 @@ public class StompServerExamples {
   }
 
   public void example4(Vertx vertx) {
-    StompServer server = StompServer.create(vertx, new StompServerOptions().setPort(1234).setHost("0.0.0.0"))
+    Future<StompServer> server = StompServer.create(vertx, new StompServerOptions().setPort(1234).setHost("0.0.0.0"))
         .handler(StompServerHandler.create(vertx))
         .listen();
   }
 
   public void example5(Vertx vertx, NetServer netServer) {
-    StompServer server = StompServer.create(vertx, netServer)
+    Future<StompServer> server = StompServer.create(vertx, netServer)
         .handler(StompServerHandler.create(vertx))
         .listen();
   }
 
   public void example6(Vertx vertx) {
-    StompServer server = StompServer.create(vertx, new StompServerOptions().setHeartbeat(
+    Future<StompServer> server = StompServer.create(vertx, new StompServerOptions().setHeartbeat(
         new JsonObject().put("x", 1000).put("y", 1000)))
         .handler(StompServerHandler.create(vertx))
         .listen();
   }
 
   public void example7(Vertx vertx, AuthProvider provider) {
-    StompServer server = StompServer.create(vertx, new StompServerOptions().setSecured(true))
+    Future<StompServer> server = StompServer.create(vertx, new StompServerOptions().setSecured(true))
         .handler(StompServerHandler.create(vertx).authProvider(provider))
         .listen();
   }
 
   public void example8(Vertx vertx) {
-    StompServer server = StompServer.create(vertx)
+    Future<StompServer> server = StompServer.create(vertx)
         .handler(StompServerHandler.create(vertx)
             .onAckHandler(acknowledgement -> {
               // Action to execute when the frames (one in `client-individual` mode, several
@@ -96,7 +96,7 @@ public class StompServerExamples {
   }
 
   public void example9(Vertx vertx) {
-    StompServer server = StompServer.create(vertx)
+    Future<StompServer> server = StompServer.create(vertx)
         .handler(StompServerHandler.create(vertx)
                 .closeHandler(connection -> {
                   // client connection closed
@@ -123,7 +123,7 @@ public class StompServerExamples {
   }
 
   public void example11(Vertx vertx) {
-    StompServer server = StompServer.create(vertx)
+    Future<StompServer> server = StompServer.create(vertx)
         .handler(StompServerHandler.create(vertx)
             .destinationFactory((v, name) -> {
               if (name.startsWith("/queue")) {
@@ -136,7 +136,7 @@ public class StompServerExamples {
   }
 
   public void example12(Vertx vertx) {
-    StompServer server = StompServer.create(vertx)
+    Future<StompServer> server = StompServer.create(vertx)
         .handler(StompServerHandler.create(vertx)
             .destinationFactory((v, name) -> {
               if (name.startsWith("/forbidden")) {
@@ -151,7 +151,7 @@ public class StompServerExamples {
   }
 
   public void example13(Vertx vertx) {
-    StompServer server = StompServer.create(vertx)
+    Future<StompServer> server = StompServer.create(vertx)
         .handler(StompServerHandler.create(vertx)
             .bridge(new BridgeOptions()
                 .addInboundPermitted(new PermittedOptions().setAddress("/toBus"))
@@ -162,7 +162,7 @@ public class StompServerExamples {
   }
 
   public void example14(Vertx vertx) {
-    StompServer server = StompServer.create(vertx)
+    Future<StompServer> server = StompServer.create(vertx)
         .handler(StompServerHandler.create(vertx)
                 .bridge(new BridgeOptions()
                         .addInboundPermitted(new PermittedOptions().setAddress("/toBus"))
@@ -174,7 +174,7 @@ public class StompServerExamples {
   }
 
   public void example15(Vertx vertx) {
-    StompServer server = StompServer.create(vertx)
+    Future<StompServer> server = StompServer.create(vertx)
         .handler(StompServerHandler.create(vertx)
             .bridge(new BridgeOptions()
                 .addInboundPermitted(new PermittedOptions().setAddress("/toBus")
@@ -201,7 +201,7 @@ public class StompServerExamples {
   }
 
   public void example17(Vertx vertx) {
-    StompServer server = StompServer.create(vertx)
+    Future<StompServer> server = StompServer.create(vertx)
         .handler(StompServerHandler.create(vertx).receivedFrameHandler(sf -> {
           System.out.println(sf.frame());
         }))
@@ -211,7 +211,7 @@ public class StompServerExamples {
   }
 
   public void example18(Vertx vertx) {
-    StompServer server = StompServer.create(vertx)
+    Future<StompServer> server = StompServer.create(vertx)
         .handler(StompServerHandler.create(vertx))
         .writingFrameHandler(sf -> {
           System.out.println(sf.frame());
