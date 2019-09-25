@@ -242,23 +242,22 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public String subscribe(String destination, Handler<Frame> handler) {
+  public StompClientConnection subscribe(String destination, Handler<Frame> handler) {
     return subscribe(destination, (Map<String, String>) null, handler);
   }
 
   @Override
-  public String subscribe(String destination, Handler<Frame> handler, Handler<AsyncResult<Frame>> receiptHandler) {
+  public StompClientConnection subscribe(String destination, Handler<Frame> handler, Handler<AsyncResult<String>> receiptHandler) {
     return subscribe(destination, null, handler, receiptHandler);
   }
 
   @Override
-  public String subscribe(String destination, Map<String, String> headers, Handler<Frame> handler) {
+  public StompClientConnection subscribe(String destination, Map<String, String> headers, Handler<Frame> handler) {
     return subscribe(destination, headers, handler, null);
   }
 
   @Override
-  public synchronized String subscribe(String destination, Map<String, String> headers, Handler<Frame> handler, Handler<AsyncResult<Frame>>
-    receiptHandler) {
+  public synchronized StompClientConnection subscribe(String destination, Map<String, String> headers, Handler<Frame> handler, Handler<AsyncResult<String>> receiptHandler) {
     Objects.requireNonNull(destination);
     Objects.requireNonNull(handler);
 
@@ -284,8 +283,13 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     }
 
     Frame frame = new Frame(Frame.Command.SUBSCRIBE, headers, null);
-    send(frame, receiptHandler);
-    return id;
+    send(frame, ar -> {
+      if (receiptHandler != null) {
+        receiptHandler.handle(ar.map(id));
+      }
+    });
+
+    return this;
   }
 
   @Override

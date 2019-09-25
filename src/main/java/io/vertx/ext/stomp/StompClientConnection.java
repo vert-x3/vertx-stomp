@@ -153,7 +153,7 @@ public interface StompClientConnection {
    * @param handler     the handler invoked when a message is received on the given destination. Must not be {@code null}.
    * @return the subscription id.
    */
-  String subscribe(String destination, Handler<Frame> handler);
+  StompClientConnection subscribe(String destination, Handler<Frame> handler);
 
   /**
    * Subscribes to the given destination. This destination is used as subscription id.
@@ -164,7 +164,8 @@ public interface StompClientConnection {
    *                       subscription has been received. The handler receives the sent frame ({@code SUBSCRIBE}).
    * @return the subscription id.
    */
-  String subscribe(String destination, Handler<Frame> handler, Handler<AsyncResult<Frame>> receiptHandler);
+  @Fluent
+  StompClientConnection subscribe(String destination, Handler<Frame> handler, Handler<AsyncResult<String>> receiptHandler);
 
   /**
    * Subscribes to the given destination.
@@ -176,7 +177,7 @@ public interface StompClientConnection {
    * @param handler     the handler invoked when a message is received on the given destination. Must not be {@code null}.
    * @return the subscription id, which can either be the destination or the id set in the headers.
    */
-  String subscribe(String destination, Map<String, String> headers, Handler<Frame> handler);
+  StompClientConnection subscribe(String destination, Map<String, String> headers, Handler<Frame> handler);
 
   /**
    * Subscribes to the given destination.
@@ -190,7 +191,8 @@ public interface StompClientConnection {
    *                       subscription has been received. The handler receives the sent frame ({@code SUBSCRIBE}).
    * @return the subscription id, which can either be the destination or the id set in the headers.
    */
-  String subscribe(String destination, Map<String, String> headers, Handler<Frame> handler, Handler<AsyncResult<Frame>> receiptHandler);
+  @Fluent
+  StompClientConnection subscribe(String destination, Map<String, String> headers, Handler<Frame> handler, Handler<AsyncResult<String>> receiptHandler);
 
   /**
    * Un-subscribes from the given destination. This method only works if the subscription did not specifies a
