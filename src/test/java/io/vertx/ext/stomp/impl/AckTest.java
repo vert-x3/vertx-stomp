@@ -342,7 +342,7 @@ public class AckTest {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(frame -> async.complete());
       connection.ack("id",
-          "unknown", frame -> context.fail("unexpected receipt"));
+          "unknown", frame -> context.assertTrue(frame.failed(), "unexpected receipt"));
     }));
 
     Async async2 = context.async();
@@ -350,7 +350,7 @@ public class AckTest {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(frame -> async2.complete());
       connection.ack("id",
-          "unknown", frame -> context.fail("unexpected receipt"));
+          "unknown", frame -> context.assertTrue(frame.failed(), "unexpected receipt"));
     }));
   }
 

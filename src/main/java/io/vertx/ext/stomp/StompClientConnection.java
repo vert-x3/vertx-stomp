@@ -18,6 +18,7 @@ package io.vertx.ext.stomp;
 
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.VertxGen;
+import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 
@@ -75,7 +76,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
-  StompClientConnection send(Map<String, String> headers, Buffer body, Handler<Frame> receiptHandler);
+  StompClientConnection send(Map<String, String> headers, Buffer body, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
    * Sends a {@code SEND} frame to the server to the given destination. The message does not have any other header.
@@ -97,7 +98,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
-  StompClientConnection send(String destination, Buffer body, Handler<Frame> receiptHandler);
+  StompClientConnection send(String destination, Buffer body, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
    * Sends the given frame to the server.
@@ -117,7 +118,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
-  StompClientConnection send(Frame frame, Handler<Frame> receiptHandler);
+  StompClientConnection send(Frame frame, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
    * Sends a {@code SEND} frame to the server to the given destination.
@@ -143,7 +144,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
-  StompClientConnection send(String destination, Map<String, String> headers, Buffer body, Handler<Frame> receiptHandler);
+  StompClientConnection send(String destination, Map<String, String> headers, Buffer body, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
    * Subscribes to the given destination. This destination is used as subscription id.
@@ -163,7 +164,7 @@ public interface StompClientConnection {
    *                       subscription has been received. The handler receives the sent frame ({@code SUBSCRIBE}).
    * @return the subscription id.
    */
-  String subscribe(String destination, Handler<Frame> handler, Handler<Frame> receiptHandler);
+  String subscribe(String destination, Handler<Frame> handler, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
    * Subscribes to the given destination.
@@ -189,7 +190,7 @@ public interface StompClientConnection {
    *                       subscription has been received. The handler receives the sent frame ({@code SUBSCRIBE}).
    * @return the subscription id, which can either be the destination or the id set in the headers.
    */
-  String subscribe(String destination, Map<String, String> headers, Handler<Frame> handler, Handler<Frame> receiptHandler);
+  String subscribe(String destination, Map<String, String> headers, Handler<Frame> handler, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
    * Un-subscribes from the given destination. This method only works if the subscription did not specifies a
@@ -211,7 +212,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
-  StompClientConnection unsubscribe(String destination, Handler<Frame> receiptHandler);
+  StompClientConnection unsubscribe(String destination, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
    * Un-subscribes from the given destination. This method computes the subscription id as follows. If the given
@@ -235,7 +236,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
-  StompClientConnection unsubscribe(String destination, Map<String, String> headers, Handler<Frame> receiptHandler);
+  StompClientConnection unsubscribe(String destination, Map<String, String> headers, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
    * Sets a handler notified when an {@code ERROR} frame is received by the client. The handler receives the {@code
@@ -288,7 +289,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
-  StompClientConnection beginTX(String id, Handler<Frame> receiptHandler);
+  StompClientConnection beginTX(String id, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
    * Begins a transaction.
@@ -322,7 +323,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
-  StompClientConnection beginTX(String id, Map<String, String> headers, Handler<Frame> receiptHandler);
+  StompClientConnection beginTX(String id, Map<String, String> headers, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
    * Commits a transaction.
@@ -343,7 +344,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
-  StompClientConnection commit(String id, Handler<Frame> receiptHandler);
+  StompClientConnection commit(String id, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
    * Commits a transaction.
@@ -368,7 +369,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
-  StompClientConnection commit(String id, Map<String, String> headers, Handler<Frame> receiptHandler);
+  StompClientConnection commit(String id, Map<String, String> headers, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
    * Aborts a transaction.
@@ -389,7 +390,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
-  StompClientConnection abort(String id, Handler<Frame> receiptHandler);
+  StompClientConnection abort(String id, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
    * Aborts a transaction.
@@ -414,7 +415,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
-  StompClientConnection abort(String id, Map<String, String> headers, Handler<Frame> receiptHandler);
+  StompClientConnection abort(String id, Map<String, String> headers, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
    * Disconnects the client. Unlike the {@link #close()} method, this method send the {@code DISCONNECT} frame to the
@@ -435,7 +436,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
-  StompClientConnection disconnect(Handler<Frame> receiptHandler);
+  StompClientConnection disconnect(Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
    * Disconnects the client. Unlike the {@link #close()} method, this method send the {@code DISCONNECT} frame to the
@@ -458,7 +459,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
-  StompClientConnection disconnect(Frame frame, Handler<Frame> receiptHandler);
+  StompClientConnection disconnect(Frame frame, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
    * Sends an acknowledgement for a specific message. It means that the message has been handled and processed by the
@@ -481,7 +482,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
-  StompClientConnection ack(String id, Handler<Frame> receiptHandler);
+  StompClientConnection ack(String id, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
    * Sends a non-acknowledgement for the given message. It means that the message has not been handled by the client.
@@ -504,7 +505,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
-  StompClientConnection nack(String id, Handler<Frame> receiptHandler);
+  StompClientConnection nack(String id, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
    * Sends an acknowledgement for the given frame. It means that the frame has been handled and processed by the
@@ -529,7 +530,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
-  StompClientConnection ack(String id, String txId, Handler<Frame> receiptHandler);
+  StompClientConnection ack(String id, String txId, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
    * Sends a non-acknowledgement for the given frame. It means that the frame has not been handled by the client.
@@ -554,7 +555,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
-  StompClientConnection nack(String id, String txId, Handler<Frame> receiptHandler);
+  StompClientConnection nack(String id, String txId, Handler<AsyncResult<Frame>> receiptHandler);
 
 
   /**

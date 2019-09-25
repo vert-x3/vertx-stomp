@@ -17,6 +17,7 @@
 package io.vertx.ext.stomp.impl;
 
 import com.jayway.awaitility.Awaitility;
+import io.vertx.core.AsyncResult;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.stomp.*;
@@ -73,7 +74,7 @@ public class ReceiptTest {
   @Test
   public void testReceiptsOnSend() {
     List<Frame> frames = new CopyOnWriteArrayList<>();
-    List<Frame> receipts = new CopyOnWriteArrayList<>();
+    List<AsyncResult<Frame>> receipts = new CopyOnWriteArrayList<>();
     clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", frames::add, receipts::add);
@@ -96,7 +97,7 @@ public class ReceiptTest {
   @Test
   public void testReceiptsOnSubscribeAndUnsubscribe() {
     List<Frame> frames = new CopyOnWriteArrayList<>();
-    List<Frame> receipts = new CopyOnWriteArrayList<>();
+    List<AsyncResult<Frame>> receipts = new CopyOnWriteArrayList<>();
     AtomicReference<StompClientConnection> client = new AtomicReference<>();
     clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
@@ -124,7 +125,7 @@ public class ReceiptTest {
 
   @Test
   public void testReceiptsWithAck() {
-    List<Frame> receipts = new CopyOnWriteArrayList<>();
+    List<AsyncResult<Frame>> receipts = new CopyOnWriteArrayList<>();
     clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", Headers.create(Frame.ACK, "client"),
@@ -144,7 +145,7 @@ public class ReceiptTest {
 
   @Test
   public void testReceiptsWithNack() {
-    List<Frame> receipts = new CopyOnWriteArrayList<>();
+    List<AsyncResult<Frame>> receipts = new CopyOnWriteArrayList<>();
     clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", Headers.create(Frame.ACK, "client"),
@@ -164,7 +165,7 @@ public class ReceiptTest {
 
   @Test
   public void testReceiptsInCommittedTransactions() {
-    List<Frame> receipts = new CopyOnWriteArrayList<>();
+    List<AsyncResult<Frame>> receipts = new CopyOnWriteArrayList<>();
     List<Frame> frames = new CopyOnWriteArrayList<>();
     List<Frame> errors = new CopyOnWriteArrayList<>();
     clients.add(StompClient.create(vertx).connect(ar -> {
@@ -195,7 +196,7 @@ public class ReceiptTest {
   public void testReceiptsInAbortedTransactions() throws InterruptedException {
     List<Frame> frames = new CopyOnWriteArrayList<>();
     List<Frame> errors = new CopyOnWriteArrayList<>();
-    List<Frame> receipts = new CopyOnWriteArrayList<>();
+    List<AsyncResult<Frame>> receipts = new CopyOnWriteArrayList<>();
 
     clients.add(StompClient.create(vertx).connect(ar -> {
       final StompClientConnection connection = ar.result();

@@ -21,7 +21,6 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
-import io.vertx.core.net.NetServer;
 import io.vertx.core.net.NetSocket;
 import io.vertx.ext.stomp.*;
 import io.vertx.ext.stomp.utils.Headers;
@@ -243,7 +242,7 @@ public class StompClientImplTest {
 
   @Test
   public void testSendingMessages() {
-    AtomicReference<Frame> ref = new AtomicReference<>();
+    AtomicReference<AsyncResult<Frame>> ref = new AtomicReference<>();
     StompClient client = StompClient.create(vertx);
     client.connect(ar -> {
       if (ar.failed()) {
@@ -252,14 +251,15 @@ public class StompClientImplTest {
       ar.result().send("/hello", Buffer.buffer("this is my content"), ref::set);
     });
 
-    await().atMost(5, TimeUnit.SECONDS).untilAtomic(ref, Matchers.notNullValue(Frame.class));
-    assertThat(ref.get().getDestination()).isEqualTo("/hello");
+    await().atMost(5, TimeUnit.SECONDS).untilAtomic(ref, Matchers.notNullValue(AsyncResult.class));
+    assertThat(ref.get().succeeded()).isTrue();
+    assertThat(ref.get().result().getDestination()).isEqualTo("/hello");
   }
 
   @Test
   public void testSendingMessagesWithTrailingLine() {
     options.setTrailingLine(true);
-    AtomicReference<Frame> ref = new AtomicReference<>();
+    AtomicReference<AsyncResult<Frame>> ref = new AtomicReference<>();
     StompClient client = StompClient.create(vertx, new StompClientOptions().setTrailingLine(true));
     client.connect(ar -> {
       if (ar.failed()) {
@@ -268,14 +268,15 @@ public class StompClientImplTest {
       ar.result().send("/hello", Buffer.buffer("this is my content"), ref::set);
     });
 
-    await().atMost(5, TimeUnit.SECONDS).untilAtomic(ref, Matchers.notNullValue(Frame.class));
-    assertThat(ref.get().getDestination()).isEqualTo("/hello");
+    await().atMost(5, TimeUnit.SECONDS).untilAtomic(ref, Matchers.notNullValue(AsyncResult.class));
+    assertThat(ref.get().succeeded()).isTrue();
+    assertThat(ref.get().result().getDestination()).isEqualTo("/hello");
   }
 
   @Test
   public void testConnectionAndDisconnect() throws InterruptedException {
     CountDownLatch latch = new CountDownLatch(1);
-    AtomicReference<Frame> reference = new AtomicReference<>();
+    AtomicReference<AsyncResult<Frame>> reference = new AtomicReference<>();
     StompClient client = StompClient.create(vertx, new StompClientOptions().setUseStompFrame(true));
     client.connect(ar -> {
       if (ar.failed()) {
@@ -296,7 +297,7 @@ public class StompClientImplTest {
   @Test
   public void testConnectionAndDisconnectWithCustomFrame() throws InterruptedException {
     CountDownLatch latch = new CountDownLatch(1);
-    AtomicReference<Frame> reference = new AtomicReference<>();
+    AtomicReference<AsyncResult<Frame>> reference = new AtomicReference<>();
     StompClient client = StompClient.create(vertx, new StompClientOptions().setUseStompFrame(true));
     client.connect(ar -> {
       if (ar.failed()) {
@@ -312,7 +313,8 @@ public class StompClientImplTest {
     });
     latch.await(1, TimeUnit.MINUTES);
     assertNotNull(reference.get());
-    assertThat(reference.get().getHeader("message")).contains("bye bye");
+    assertNotNull(reference.get().result());
+    assertThat(reference.get().result().getHeader("message")).contains("bye bye");
   }
 
   @Test

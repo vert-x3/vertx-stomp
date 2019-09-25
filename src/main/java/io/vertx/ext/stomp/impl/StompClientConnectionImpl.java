@@ -47,7 +47,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
 
   private volatile long lastServerActivity;
 
-  private final Map<String, Handler<Void>> pendingReceipts = new HashMap<>();
+  private final Map<String, Promise<Void>> pendingReceipts = new HashMap<>();
 
   private String version;
   private String sessionId;
@@ -150,9 +150,15 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
       ponger = -1;
     }
 
+
+    Collection<Promise<Void>> values = new ArrayList<>(pendingReceipts.values());
+    pendingReceipts.clear();
+    for (Promise<Void> promise : values) {
+      promise.fail("Client closed");
+    }
+
     socket.close();
     client.close();
-    pendingReceipts.clear();
     subscriptions.clear();
     server = null;
     sessionId = null;
@@ -170,7 +176,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection send(Map<String, String> headers, Buffer body, Handler<Frame> receiptHandler) {
+  public StompClientConnection send(Map<String, String> headers, Buffer body, Handler<AsyncResult<Frame>> receiptHandler) {
     return send(null, headers, body, receiptHandler);
   }
 
@@ -180,7 +186,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection send(String destination, Buffer body, Handler<Frame> receiptHandler) {
+  public StompClientConnection send(String destination, Buffer body, Handler<AsyncResult<Frame>> receiptHandler) {
     return send(destination, null, body, receiptHandler);
   }
 
@@ -190,11 +196,13 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public synchronized StompClientConnection send(Frame frame, Handler<Frame> receiptHandler) {
+  public synchronized StompClientConnection send(Frame frame, Handler<AsyncResult<Frame>> receiptHandler) {
     if (receiptHandler != null) {
       String receiptId = UUID.randomUUID().toString();
       frame.addHeader(Frame.RECEIPT, receiptId);
-      pendingReceipts.put(receiptId, f -> receiptHandler.handle(frame));
+      Promise<Void> promise = Promise.promise();
+      promise.future().setHandler(f -> receiptHandler.handle(f.map(frame)));
+      pendingReceipts.put(receiptId, promise);
     }
     if (writingHandler != null) {
       writingHandler.handle(frame);
@@ -210,7 +218,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
 
   @Override
   public StompClientConnection send(String destination, Map<String, String> headers, Buffer body,
-                                    Handler<Frame> receiptHandler) {
+                                    Handler<AsyncResult<Frame>> receiptHandler) {
     // No need for synchronization, no field access, except client (final)
     if (headers == null) {
       headers = new Headers();
@@ -239,7 +247,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public String subscribe(String destination, Handler<Frame> handler, Handler<Frame> receiptHandler) {
+  public String subscribe(String destination, Handler<Frame> handler, Handler<AsyncResult<Frame>> receiptHandler) {
     return subscribe(destination, null, handler, receiptHandler);
   }
 
@@ -249,7 +257,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public synchronized String subscribe(String destination, Map<String, String> headers, Handler<Frame> handler, Handler<Frame>
+  public synchronized String subscribe(String destination, Map<String, String> headers, Handler<Frame> handler, Handler<AsyncResult<Frame>>
     receiptHandler) {
     Objects.requireNonNull(destination);
     Objects.requireNonNull(handler);
@@ -286,7 +294,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection unsubscribe(String destination, Handler<Frame> receiptHandler) {
+  public StompClientConnection unsubscribe(String destination, Handler<AsyncResult<Frame>> receiptHandler) {
     return unsubscribe(destination, null, receiptHandler);
   }
 
@@ -296,7 +304,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public synchronized StompClientConnection unsubscribe(String destination, Map<String, String> headers, Handler<Frame>
+  public synchronized StompClientConnection unsubscribe(String destination, Map<String, String> headers, Handler<AsyncResult<Frame>>
     receiptHandler) {
     Objects.requireNonNull(destination);
     if (headers == null) {
@@ -337,7 +345,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection beginTX(String id, Handler<Frame> receiptHandler) {
+  public StompClientConnection beginTX(String id, Handler<AsyncResult<Frame>> receiptHandler) {
     return beginTX(id, new Headers(), receiptHandler);
   }
 
@@ -352,7 +360,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection beginTX(String id, Map<String, String> headers, Handler<Frame> receiptHandler) {
+  public StompClientConnection beginTX(String id, Map<String, String> headers, Handler<AsyncResult<Frame>> receiptHandler) {
     Objects.requireNonNull(id);
     Objects.requireNonNull(headers);
 
@@ -365,7 +373,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection commit(String id, Handler<Frame> receiptHandler) {
+  public StompClientConnection commit(String id, Handler<AsyncResult<Frame>> receiptHandler) {
     return commit(id, new Headers(), receiptHandler);
   }
 
@@ -375,7 +383,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection commit(String id, Map<String, String> headers, Handler<Frame> receiptHandler) {
+  public StompClientConnection commit(String id, Map<String, String> headers, Handler<AsyncResult<Frame>> receiptHandler) {
     Objects.requireNonNull(id);
     Objects.requireNonNull(headers);
     return send(new Frame().setCommand(Frame.Command.COMMIT).setTransaction(id), receiptHandler);
@@ -387,7 +395,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection abort(String id, Handler<Frame> receiptHandler) {
+  public StompClientConnection abort(String id, Handler<AsyncResult<Frame>> receiptHandler) {
     return abort(id, new Headers(), receiptHandler);
   }
 
@@ -397,7 +405,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection abort(String id, Map<String, String> headers, Handler<Frame> receiptHandler) {
+  public StompClientConnection abort(String id, Map<String, String> headers, Handler<AsyncResult<Frame>> receiptHandler) {
     Objects.requireNonNull(id);
     Objects.requireNonNull(headers);
     return send(new Frame().setCommand(Frame.Command.ABORT).setTransaction(id), receiptHandler);
@@ -414,12 +422,12 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection disconnect(Handler<Frame> receiptHandler) {
+  public StompClientConnection disconnect(Handler<AsyncResult<Frame>> receiptHandler) {
     return disconnect(new Frame().setCommand(Frame.Command.DISCONNECT), receiptHandler);
   }
 
   @Override
-  public StompClientConnection disconnect(Frame frame, Handler<Frame> receiptHandler) {
+  public StompClientConnection disconnect(Frame frame, Handler<AsyncResult<Frame>> receiptHandler) {
     Objects.requireNonNull(frame);
     send(frame, f -> {
       if (receiptHandler != null) {
@@ -435,11 +443,11 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
 
   @Override
   public StompClientConnection ack(String id) {
-    return ack(id, (Handler<Frame>) null);
+    return ack(id, (Handler<AsyncResult<Frame>>) null);
   }
 
   @Override
-  public StompClientConnection ack(String id, Handler<Frame> receiptHandler) {
+  public StompClientConnection ack(String id, Handler<AsyncResult<Frame>> receiptHandler) {
     Objects.requireNonNull(id);
     send(new Frame(Frame.Command.ACK, Headers.create(Frame.ID, id), null), receiptHandler);
     return this;
@@ -447,11 +455,11 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
 
   @Override
   public StompClientConnection nack(String id) {
-    return nack(id, (Handler<Frame>) null);
+    return nack(id, (Handler<AsyncResult<Frame>>) null);
   }
 
   @Override
-  public StompClientConnection nack(String id, Handler<Frame> receiptHandler) {
+  public StompClientConnection nack(String id, Handler<AsyncResult<Frame>> receiptHandler) {
     Objects.requireNonNull(id);
     send(new Frame(Frame.Command.NACK, Headers.create(Frame.ID, id), null), receiptHandler);
     return this;
@@ -463,7 +471,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection ack(String id, String txId, Handler<Frame> receiptHandler) {
+  public StompClientConnection ack(String id, String txId, Handler<AsyncResult<Frame>> receiptHandler) {
     Objects.requireNonNull(id, "A ACK frame must contain the ACK id");
     Objects.requireNonNull(txId);
 
@@ -478,7 +486,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public StompClientConnection nack(String id, String txId, Handler<Frame> receiptHandler) {
+  public StompClientConnection nack(String id, String txId, Handler<AsyncResult<Frame>> receiptHandler) {
     Objects.requireNonNull(id, "A NACK frame must contain the ACK id");
     Objects.requireNonNull(txId);
 
@@ -547,11 +555,11 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   private synchronized void handleReceipt(Frame frame) {
     String receipt = frame.getHeader(Frame.RECEIPT_ID);
     if (receipt != null) {
-      Handler<Void> receiptHandler = pendingReceipts.remove(receipt);
+      Promise<Void> receiptHandler = pendingReceipts.remove(receipt);
       if (receiptHandler == null) {
         throw new IllegalStateException("No receipt handler for receipt " + receipt);
       }
-      receiptHandler.handle(null);
+      receiptHandler.complete();
     }
   }
 
