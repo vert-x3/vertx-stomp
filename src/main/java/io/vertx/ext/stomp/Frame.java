@@ -232,7 +232,7 @@ public class Frame {
   public Frame(Frame other) {
     this();
     this.command = other.command;
-    this.headers.putAll(headers);
+    this.headers.putAll(other.headers);
     if (other.body != null) {
       this.body = other.body.copy();
     }
