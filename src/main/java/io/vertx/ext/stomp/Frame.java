@@ -18,6 +18,7 @@ package io.vertx.ext.stomp;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.GenIgnore;
+import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.stomp.impl.FrameException;
@@ -89,6 +90,7 @@ public class Frame {
    * It also contains a {@code PING} command used for heartbeat. It should not be used in frames (as it's not a valid
    * command).
    */
+  @VertxGen
   public enum Command {
     // Connection
     CONNECT,
