@@ -18,13 +18,10 @@ package io.vertx.ext.stomp.impl;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.NetSocket;
 import io.vertx.ext.auth.AuthProvider;
 import io.vertx.ext.auth.User;
-import io.vertx.ext.auth.shiro.ShiroAuth;
-import io.vertx.ext.auth.shiro.ShiroAuthOptions;
-import io.vertx.ext.auth.shiro.ShiroAuthRealmType;
+import io.vertx.ext.auth.properties.PropertyFileAuthentication;
 import io.vertx.ext.stomp.Frame;
 import io.vertx.ext.stomp.StompClient;
 import io.vertx.ext.stomp.StompClientOptions;
@@ -57,8 +54,7 @@ public class SecuredServerConnectionTest {
   @Before
   public void setUp(TestContext context) {
     vertx = rule.vertx();
-    JsonObject config = new JsonObject().put("properties_path", "classpath:test-auth.properties");
-    AuthProvider provider = ShiroAuth.create(vertx, new ShiroAuthOptions().setType(ShiroAuthRealmType.PROPERTIES).setConfig(config));
+    AuthProvider provider = PropertyFileAuthentication.create(vertx, "test-auth.properties");
     server = StompServer.create(vertx, new StompServerOptions().setSecured(true))
         .handler(StompServerHandler.create(vertx).authProvider(provider))
         .listen(context.asyncAssertSuccess());
