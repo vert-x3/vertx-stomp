@@ -19,8 +19,8 @@ package io.vertx.ext.stomp.impl;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.NetSocket;
-import io.vertx.ext.auth.AuthProvider;
 import io.vertx.ext.auth.User;
+import io.vertx.ext.auth.authentication.AuthenticationProvider;
 import io.vertx.ext.auth.properties.PropertyFileAuthentication;
 import io.vertx.ext.stomp.Frame;
 import io.vertx.ext.stomp.StompClient;
@@ -54,7 +54,7 @@ public class SecuredServerConnectionTest {
   @Before
   public void setUp(TestContext context) {
     vertx = rule.vertx();
-    AuthProvider provider = PropertyFileAuthentication.create(vertx, "test-auth.properties");
+    AuthenticationProvider provider = PropertyFileAuthentication.create(vertx, "test-auth.properties");
     server = StompServer.create(vertx, new StompServerOptions().setSecured(true))
         .handler(StompServerHandler.create(vertx).authProvider(provider))
         .listen(context.asyncAssertSuccess());

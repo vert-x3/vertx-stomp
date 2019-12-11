@@ -22,7 +22,7 @@ import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.NetServer;
-import io.vertx.ext.auth.AuthProvider;
+import io.vertx.ext.auth.authentication.AuthenticationProvider;
 import io.vertx.ext.bridge.PermittedOptions;
 import io.vertx.ext.stomp.*;
 
@@ -75,7 +75,7 @@ public class StompServerExamples {
         .listen();
   }
 
-  public void example7(Vertx vertx, AuthProvider provider) {
+  public void example7(Vertx vertx, AuthenticationProvider provider) {
     Future<StompServer> server = StompServer.create(vertx, new StompServerOptions().setSecured(true))
         .handler(StompServerHandler.create(vertx).authProvider(provider))
         .listen();

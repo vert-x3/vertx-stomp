@@ -209,7 +209,7 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
 
   /**
    * Checks whether or not the server is secured (meaning it has an authentication mechanism). Security is disabled
-   * by default and requires an {@link io.vertx.ext.auth.AuthProvider} handler.
+   * by default and requires an {@link io.vertx.ext.auth.authentication.AuthenticationProvider} handler.
    *
    * @return whether or not the option is enabled.
    */
@@ -218,7 +218,7 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
   }
 
   /**
-   * Enables or disables the server security feature. It requires an {@link io.vertx.ext.auth.AuthProvider} handler.
+   * Enables or disables the server security feature. It requires an {@link io.vertx.ext.auth.authentication.AuthenticationProvider} handler.
    *
    * @param secured whether or not the option should be enabled.
    * @return the current {@link StompServerOptions}

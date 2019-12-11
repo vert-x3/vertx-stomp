@@ -25,9 +25,8 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
 import io.vertx.core.shareddata.LocalMap;
-import io.vertx.core.shareddata.Lock;
-import io.vertx.ext.auth.AuthProvider;
 import io.vertx.ext.auth.User;
+import io.vertx.ext.auth.authentication.AuthenticationProvider;
 import io.vertx.ext.stomp.Acknowledgement;
 import io.vertx.ext.stomp.BridgeOptions;
 import io.vertx.ext.stomp.DefaultAbortHandler;
@@ -95,7 +94,7 @@ public class DefaultStompHandler implements StompServerHandler {
     connection.close();
   });
 
-  private AuthProvider authProvider;
+  private AuthenticationProvider authProvider;
 
   private Handler<StompServerConnection> pingHandler = StompServerConnection::ping;
 
@@ -404,7 +403,7 @@ public class DefaultStompHandler implements StompServerHandler {
   }
 
   @Override
-  public synchronized StompServerHandler authProvider(AuthProvider handler) {
+  public synchronized StompServerHandler authProvider(AuthenticationProvider handler) {
     this.authProvider = handler;
     return this;
   }
@@ -413,7 +412,7 @@ public class DefaultStompHandler implements StompServerHandler {
   public StompServerHandler onAuthenticationRequest(StompServerConnection connection,
                                                     String login, String passcode,
                                                     Handler<AsyncResult<Boolean>> handler) {
-    final AuthProvider auth;
+    final AuthenticationProvider auth;
     synchronized (this) {
       // Stack contention.
       auth = authProvider;
@@ -451,7 +450,7 @@ public class DefaultStompHandler implements StompServerHandler {
    * Return the authenticated user for this session.
    *
    * @param session session ID for the server connection.
-   * @return the user provided by the {@link AuthProvider} or null if not found.
+   * @return the user provided by the {@link AuthenticationProvider} or null if not found.
    */
   @Override
   public User getUserBySession(String session) {

@@ -115,7 +115,7 @@ The STOMP heartbeat is configured using a JSON object as follows:
 {@link examples.StompServerExamples#example6}
 ----
 
-Enabling security requires an additional {@link io.vertx.ext.auth.AuthProvider} handling the
+Enabling security requires an additional {@link io.vertx.ext.auth.authentication.AuthenticationProvider} handling the
 authentication requests:
 
 [source,$lang]
@@ -123,7 +123,7 @@ authentication requests:
 {@link examples.StompServerExamples#example7}
 ----
 
-More information about {@link io.vertx.ext.auth.AuthProvider} is available
+More information about {@link io.vertx.ext.auth.authentication.AuthenticationProvider} is available
 http://vertx.io/docs/#authentication_and_authorisation[here].
 
 If a frame exceeds one of the size limits, the frame is rejected and the client receives an `ERROR` frame. As the

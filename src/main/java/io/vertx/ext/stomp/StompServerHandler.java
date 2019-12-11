@@ -21,8 +21,8 @@ import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
-import io.vertx.ext.auth.AuthProvider;
 import io.vertx.ext.auth.User;
+import io.vertx.ext.auth.authentication.AuthenticationProvider;
 import io.vertx.ext.stomp.impl.DefaultStompHandler;
 
 import java.util.List;
@@ -175,8 +175,8 @@ public interface StompServerHandler extends Handler<ServerFrame> {
   StompServerHandler nackHandler(Handler<ServerFrame> handler);
 
   /**
-   * Called when the client connects to a server requiring authentication. It invokes the {@link AuthProvider} configured
-   * using {@link #authProvider(AuthProvider)}.
+   * Called when the client connects to a server requiring authentication. It invokes the {@link AuthenticationProvider} configured
+   * using {@link #authProvider(AuthenticationProvider)}.
    *
    * @param connection server connection that contains session ID
    * @param login      the login
@@ -189,7 +189,7 @@ public interface StompServerHandler extends Handler<ServerFrame> {
                                              Handler<AsyncResult<Boolean>> handler);
 
   /**
-   * Provides for authorization matches on a destination level, this will return the User created by the {@link AuthProvider}.
+   * Provides for authorization matches on a destination level, this will return the User created by the {@link AuthenticationProvider}.
    *
    * @param session session ID for the server connection.
    * @return null if not authenticated.
@@ -197,13 +197,13 @@ public interface StompServerHandler extends Handler<ServerFrame> {
   User getUserBySession(String session);
 
   /**
-   * Configures the {@link AuthProvider} to be used to authenticate the user.
+   * Configures the {@link AuthenticationProvider} to be used to authenticate the user.
    *
    * @param handler the handler
    * @return the current {@link StompServerHandler}
    */
   @Fluent
-  StompServerHandler authProvider(AuthProvider handler);
+  StompServerHandler authProvider(AuthenticationProvider handler);
 
   /**
    * @return the list of destination managed by the STOMP server. Don't forget the STOMP interprets destination as
