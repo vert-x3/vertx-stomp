@@ -404,7 +404,7 @@ HTML page, or as an npm module (https://www.npmjs.com/package/stompjs).
 
 To achieve the first step, you would need a HTTP server, and pass the
 {@link io.vertx.ext.stomp.StompServer#webSocketHandler()} result to
-{@link io.vertx.core.http.HttpServer#websocketHandler(io.vertx.core.Handler)}:
+{@link io.vertx.core.http.HttpServer#webSocketHandler(io.vertx.core.Handler)}:
 
 [source,$lang]
 ----

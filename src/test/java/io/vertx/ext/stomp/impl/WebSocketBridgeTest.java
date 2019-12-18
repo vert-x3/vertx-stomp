@@ -76,10 +76,10 @@ public class WebSocketBridgeTest {
     stompLock.waitForSuccess();
 
     HttpServerOptions httpOptions = new HttpServerOptions()
-      .setMaxWebsocketFrameSize(MAX_WEBSOCKET_FRAME_SIZE)
-      .setMaxWebsocketMessageSize(2048);
+      .setMaxWebSocketFrameSize(MAX_WEBSOCKET_FRAME_SIZE)
+      .setMaxWebSocketMessageSize(2048);
 
-    http = vertx.createHttpServer(httpOptions).websocketHandler(server.webSocketHandler()).listen(8080, httpLock.handler());
+    http = vertx.createHttpServer(httpOptions).webSocketHandler(server.webSocketHandler()).listen(8080, httpLock.handler());
     httpLock.waitForSuccess();
   }
 
@@ -315,7 +315,7 @@ public class WebSocketBridgeTest {
         .handler(StompServerHandler.create(vertx));
 
     AsyncLock<HttpServer> httpLock = new AsyncLock<>();
-    http = vertx.createHttpServer().websocketHandler(server.webSocketHandler()).listen(8080, httpLock.handler());
+    http = vertx.createHttpServer().webSocketHandler(server.webSocketHandler()).listen(8080, httpLock.handler());
     httpLock.waitForSuccess();
 
     AtomicReference<Throwable> error = new AtomicReference<>();

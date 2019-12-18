@@ -196,7 +196,7 @@ public interface StompServer {
    * Gets the {@link Handler} able to manage web socket connections. If the web socket bridge is disabled, it returns
    * {@code null}.
    *
-   * @return the handler that can be passed to {@link io.vertx.core.http.HttpServer#websocketHandler(Handler)}.
+   * @return the handler that can be passed to {@link io.vertx.core.http.HttpServer#webSocketHandler(Handler)}.
    */
   Handler<ServerWebSocket> webSocketHandler();
 
