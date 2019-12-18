@@ -26,6 +26,8 @@ import io.vertx.ext.auth.authentication.AuthenticationProvider;
 import io.vertx.ext.bridge.PermittedOptions;
 import io.vertx.ext.stomp.*;
 
+import java.util.Arrays;
+
 /**
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
@@ -194,9 +196,9 @@ public class StompServerExamples {
         .handler(StompServerHandler.create(vertx));
 
     Future<HttpServer> http = vertx.createHttpServer(
-        new HttpServerOptions().setWebsocketSubProtocols("v10.stomp, v11.stomp")
+        new HttpServerOptions().setWebSocketSubProtocols(Arrays.asList("v10.stomp, v11.stomp"))
     )
-        .websocketHandler(server.webSocketHandler())
+        .webSocketHandler(server.webSocketHandler())
         .listen(8080);
   }
 

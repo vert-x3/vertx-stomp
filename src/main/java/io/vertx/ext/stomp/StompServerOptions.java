@@ -410,7 +410,7 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
    * Checks whether or not the web socket bridge is enabled. This bridge allows receiving and sending STOMP frames on
    * a web socket. If set to {@code true}, the Stomp server provides a
    * {@link io.vertx.core.Handler<io.vertx.core.http.ServerWebSocket>} to read and write from the web socket. This
-   * {@link Handler} must be passed to {@link io.vertx.core.http.HttpServer#websocketHandler(Handler)}.
+   * {@link Handler} must be passed to {@link io.vertx.core.http.HttpServer#webSocketHandler(Handler)}.
    *
    * @return whether or not the web socket bridge is enabled, {@code false} by default.
    */
