@@ -203,7 +203,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
       String receiptId = UUID.randomUUID().toString();
       frame.addHeader(Frame.RECEIPT, receiptId);
       Promise<Void> promise = Promise.promise();
-      promise.future().setHandler(f -> receiptHandler.handle(f.map(frame)));
+      promise.future().onComplete(f -> receiptHandler.handle(f.map(frame)));
       pendingReceipts.put(receiptId, promise);
     }
     if (writingHandler != null) {
