@@ -36,6 +36,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -232,20 +233,29 @@ public class WebSocketBridgeTest {
 
     vertx.createHttpClient().websocket(8080, "localhost", "/stomp", MultiMap.caseInsensitiveMultiMap().add
       ("Sec-WebSocket-Protocol", "v10.stomp, v11.stomp, v12.stomp"), ws -> {
-        ws.exceptionHandler(error::set)
-          .handler(buffer -> {
-            if (buffer.toString().startsWith("CONNECTED")) {
-              ws.write(
-                new Frame(Frame.Command.SUBSCRIBE, Headers.create("id", "myId", "destination", "bigData"), null)
-                  .toBuffer());
-              return;
+      AtomicBoolean inMsg = new AtomicBoolean();
+      ws.exceptionHandler(error::set)
+        .frameHandler(frame -> {
+          if (!frame.isContinuation()) {
+            if (frame.isBinary()) {
+              String data = frame.binaryData().toString();
+              if (data.startsWith("CONNECTED")) {
+                ws.write(
+                  new Frame(Frame.Command.SUBSCRIBE, Headers.create("id", "myId", "destination", "bigData"), null)
+                    .toBuffer());
+              }
+              if (data.startsWith("MESSAGE")) {
+                // Start collecting the frames once we see the first real payload message
+                inMsg.set(true);
+                wsBuffers.add(frame);
+              } else {
+                inMsg.set(false);
+              }
             }
-            // Start collecting the frames once we see the first real payload message
-            if (buffer.toString().startsWith("MESSAGE")) {
-              ws.frameHandler(wsBuffers::add);
-            }
-          })
-          .write(new Frame(Frame.Command.CONNECT, Headers.create("accept-version", "1.2,1.1,1.0",
+          } else if (inMsg.get()) {
+            wsBuffers.add(frame);
+          }
+        }).write(new Frame(Frame.Command.CONNECT, Headers.create("accept-version", "1.2,1.1,1.0",
             "heart-beat", "10000,10000"), null).toBuffer());
       socket.set(ws);
     });
