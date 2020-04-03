@@ -34,6 +34,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.jayway.awaitility.Awaitility.await;
@@ -240,17 +241,27 @@ public class WebSocketBridgeTest {
     vertx.createHttpClient().webSocket(options, ar -> {
       if (ar.succeeded()) {
         WebSocket ws = ar.result();
+        AtomicBoolean inMsg = new AtomicBoolean();
         ws.exceptionHandler(error::set)
-          .handler(buffer -> {
-            if (buffer.toString().startsWith("CONNECTED")) {
-              ws.write(
-                new Frame(Frame.Command.SUBSCRIBE, Headers.create("id", "myId", "destination", "bigData"), null)
-                  .toBuffer());
-              return;
-            }
-            // Start collecting the frames once we see the first real payload message
-            if (buffer.toString().startsWith("MESSAGE")) {
-              ws.frameHandler(wsBuffers::add);
+          .frameHandler(frame -> {
+            if (!frame.isContinuation()) {
+              if (frame.isBinary()) {
+                String data = frame.binaryData().toString();
+                if (data.startsWith("CONNECTED")) {
+                  ws.write(
+                    new Frame(Frame.Command.SUBSCRIBE, Headers.create("id", "myId", "destination", "bigData"), null)
+                      .toBuffer());
+                }
+                if (data.startsWith("MESSAGE")) {
+                  // Start collecting the frames once we see the first real payload message
+                  inMsg.set(true);
+                  wsBuffers.add(frame);
+                } else {
+                  inMsg.set(false);
+                }
+              }
+            } else if (inMsg.get()) {
+              wsBuffers.add(frame);
             }
           })
           .write(new Frame(Frame.Command.CONNECT, Headers.create("accept-version", "1.2,1.1,1.0",
