@@ -25,6 +25,8 @@ import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.json.JsonObject;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.bridge.PermittedOptions;
 import io.vertx.ext.stomp.*;
 import io.vertx.ext.stomp.utils.Headers;
