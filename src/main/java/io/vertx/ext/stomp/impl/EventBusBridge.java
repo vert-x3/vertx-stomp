@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class EventBusBridge extends Topic {
-
+  private static final Logger log = LoggerFactory.getLogger(EventBusBridge.class);
   private final BridgeOptions options;
 
   private final Map<String, Pattern> expressions = new HashMap<>();
@@ -88,7 +88,11 @@ public class EventBusBridge extends Topic {
           } else {
             subscriptions.stream().filter(s -> s.destination.equals(address)).forEach(s -> {
               Frame stompFrame = transform(msg, s);
-              s.connection.write(stompFrame);
+              try {
+                s.connection.write(stompFrame);
+              } catch (IllegalStateException ex) {
+                log.warn("Exception writing to subscription " + s.destination + ": " + ex.getMessage(), ex);
+              }
             });
           }
         }));
