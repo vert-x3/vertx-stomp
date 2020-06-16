@@ -88,11 +88,12 @@ public class EventBusBridge extends Topic {
               chosen.get().connection.write(stompFrame);
             }
           } else {
-            subscriptions.stream().filter(s -> s.destination.equals(address)).forEach(s -> {
+            subscriptions.parallelStream().filter(s -> s.destination.equals(address)).forEach(s -> {
               Frame stompFrame = transform(msg, s);
               try {
                 s.connection.write(stompFrame);
-              } catch (IllegalStateException ex) {
+              } catch (Throwable ex) {
+                s.connection.close();
                 log.warn("Exception writing to subscription " + s.destination + ": " + ex.getMessage(), ex);
               }
             });
