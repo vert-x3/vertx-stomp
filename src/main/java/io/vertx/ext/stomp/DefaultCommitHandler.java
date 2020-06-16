@@ -24,7 +24,6 @@ import io.vertx.ext.stomp.utils.Headers;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * STOMP compliant actions executed when receiving a {@code COMMIT} frame. All frames that are part of the

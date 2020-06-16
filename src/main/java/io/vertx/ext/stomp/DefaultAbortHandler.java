@@ -17,7 +17,6 @@
 package io.vertx.ext.stomp;
 
 import io.vertx.core.Handler;
-import io.vertx.ext.stomp.impl.Transaction;
 import io.vertx.ext.stomp.impl.Transactions;
 import io.vertx.ext.stomp.utils.Headers;
 

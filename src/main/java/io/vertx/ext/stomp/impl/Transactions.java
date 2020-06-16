@@ -16,13 +16,10 @@
 
 package io.vertx.ext.stomp.impl;
 
-import io.vertx.core.shareddata.Shareable;
-import io.vertx.ext.stomp.Frame;
 import io.vertx.ext.stomp.StompServerConnection;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Stores the active transactions of the STOMP server.
