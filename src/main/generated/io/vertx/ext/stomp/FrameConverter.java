@@ -2,6 +2,7 @@ package io.vertx.ext.stomp;
 
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.impl.JsonUtil;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 
@@ -19,7 +20,7 @@ public class FrameConverter {
           break;
         case "body":
           if (member.getValue() instanceof String) {
-            obj.setBody(io.vertx.core.buffer.Buffer.buffer(java.util.Base64.getDecoder().decode((String)member.getValue())));
+            obj.setBody(io.vertx.core.buffer.Buffer.buffer(JsonUtil.BASE64_DECODER.decode((String)member.getValue())));
           }
           break;
         case "bodyAsString":
@@ -67,7 +68,7 @@ public class FrameConverter {
       json.put("ack", obj.getAck());
     }
     if (obj.getBody() != null) {
-      json.put("body", java.util.Base64.getEncoder().encodeToString(obj.getBody().getBytes()));
+      json.put("body", JsonUtil.BASE64_ENCODER.encodeToString(obj.getBody().getBytes()));
     }
     if (obj.getBodyAsString() != null) {
       json.put("bodyAsString", obj.getBodyAsString());
