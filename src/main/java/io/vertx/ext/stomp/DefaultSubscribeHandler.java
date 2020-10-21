@@ -16,7 +16,10 @@
 
 package io.vertx.ext.stomp;
 
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Promise;
+import io.vertx.core.impl.VertxInternal;
 import io.vertx.ext.stomp.utils.Headers;
 
 import java.util.List;
@@ -71,24 +74,23 @@ public class DefaultSubscribeHandler implements Handler<ServerFrame> {
       }
     }
 
-    final Destination dest = connection.handler().getOrCreateDestination(destination);
+    Promise<Void> promise = ((VertxInternal)connection.server().vertx()).promise();
+    Destination dest = connection.handler().getOrCreateDestination(destination);
     if (dest != null) {
-      if (dest.subscribe(connection, frame) == null) {
-        // Access denied
-        connection.write(Frames.createErrorFrame(
-            "Access denied",
-            Headers.create(frame.getHeaders()), "The destination has been rejected by the server"));
-        connection.close();
-        return;
-      }
+      dest.subscribe(connection, frame, promise);
     } else {
-      connection.write(Frames.createErrorFrame(
-          "Invalid subscription",
-          Headers.create(frame.getHeaders()), "The destination has been rejected by the server"));
-      connection.close();
-      return;
+      promise.fail("Invalid subscription");
     }
-
-    Frames.handleReceipt(frame, connection);
+    promise.future().onComplete(ar -> {
+      if (ar.succeeded()) {
+        Frames.handleReceipt(frame, connection);
+      } else {
+        Frame errorFrame = Frames.createErrorFrame(
+          ar.cause().getMessage(),
+          Headers.create(frame.getHeaders()), "The destination has been rejected by the server");
+        connection.write(errorFrame);
+        connection.close();
+      }
+    });
   }
 }

@@ -17,8 +17,10 @@
 package io.vertx.ext.stomp.impl;
 
 import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
+import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.DeliveryOptions;
@@ -67,7 +69,7 @@ public class EventBusBridge extends Topic {
    * @return the current instance of {@link Destination}
    */
   @Override
-  public synchronized Destination subscribe(StompServerConnection connection, Frame frame) {
+  public synchronized void subscribe(StompServerConnection connection, Frame frame, Promise<Void> promise) {
     String address = frame.getDestination();
     // Need to check whether the client can receive message from the event bus (outbound).
     if (checkMatches(false, address, null)) {
@@ -93,9 +95,10 @@ public class EventBusBridge extends Topic {
           }
         }));
       }
-      return this;
+      promise.complete();
+    } else {
+      promise.fail("Access denied");
     }
-    return null;
   }
 
   /**
@@ -106,7 +109,8 @@ public class EventBusBridge extends Topic {
    * @return {@code true} if the un-subscription has been handled, {@code false} otherwise.
    */
   @Override
-  public synchronized boolean unsubscribe(StompServerConnection connection, Frame frame) {
+  public synchronized void unsubscribe(StompServerConnection connection, Frame frame, Promise<Void> promise) {
+    boolean res = false;
     for (Subscription subscription : new ArrayList<>(subscriptions)) {
       if (subscription.connection.equals(connection)
           && subscription.id.equals(frame.getId())) {
@@ -120,10 +124,15 @@ public class EventBusBridge extends Topic {
             consumer.unregister();
           }
         }
-        return r;
+        res = r;
+        break;
       }
     }
-    return false;
+    if (res) {
+      promise.complete();
+    } else {
+      promise.fail("Not found");
+    }
   }
 
   /**

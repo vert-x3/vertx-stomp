@@ -18,6 +18,10 @@ package io.vertx.ext.stomp;
 
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.VertxGen;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
+import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.shareddata.Shareable;
 import io.vertx.ext.stomp.impl.EventBusBridge;
@@ -70,19 +74,17 @@ public interface Destination extends Shareable {
    *
    * @param connection the connection
    * @param frame      the {@code SUBSCRIBE} frame
-   * @return the current instance of {@link Destination}
+   * @param promise    the promise to complete
    */
-  @Fluent
-  Destination subscribe(StompServerConnection connection, Frame frame);
+  void subscribe(StompServerConnection connection, Frame frame, Promise<Void> promise);
 
   /**
    * Handles a un-subscription request to the current {@link Destination}.
    *
    * @param connection the connection
    * @param frame      the {@code UNSUBSCRIBE} frame
-   * @return {@code true} if the un-subscription has been handled, {@code false} otherwise.
    */
-  boolean unsubscribe(StompServerConnection connection, Frame frame);
+  void unsubscribe(StompServerConnection connection, Frame frame, Promise<Void> promise);
 
   /**
    * Removes all subscriptions of the given connection

@@ -16,6 +16,8 @@
 
 package io.vertx.ext.stomp.impl;
 
+import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.ext.stomp.Destination;
 import io.vertx.ext.stomp.Frame;
@@ -92,10 +94,10 @@ public class Topic implements Destination {
    * @return the current instance of {@link Destination}
    */
   @Override
-  public synchronized Destination subscribe(StompServerConnection connection, Frame frame) {
+  public synchronized void subscribe(StompServerConnection connection, Frame frame, Promise<Void> promise) {
     Subscription subscription = new Subscription(connection, frame);
     subscriptions.add(subscription);
-    return this;
+    promise.complete();
   }
 
   /**
@@ -106,7 +108,7 @@ public class Topic implements Destination {
    * @return {@code true} if the un-subscription has been handled, {@code false} otherwise.
    */
   @Override
-  public synchronized boolean unsubscribe(StompServerConnection connection, Frame frame) {
+  public synchronized void unsubscribe(StompServerConnection connection, Frame frame, Promise<Void> promise) {
     boolean r = false;
     for (Subscription subscription : subscriptions) {
       if (subscription.connection.equals(connection) && subscription.id.equals(frame.getId())) {
@@ -118,7 +120,11 @@ public class Topic implements Destination {
     if (subscriptions.isEmpty()) {
       vertx.sharedData().getLocalMap("stomp.destinations").remove(this);
     }
-    return r;
+    if (r) {
+      promise.complete();
+    } else {
+      promise.fail("Not found");
+    }
   }
 
   /**

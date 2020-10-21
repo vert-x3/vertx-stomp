@@ -17,8 +17,11 @@
 package io.vertx.ext.stomp;
 
 import io.vertx.core.Handler;
+import io.vertx.core.Promise;
+import io.vertx.core.impl.VertxInternal;
 import io.vertx.ext.stomp.utils.Headers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,24 +48,29 @@ public class DefaultUnsubscribeHandler implements Handler<ServerFrame> {
       return;
     }
 
-    List<Destination> destinations = connection.handler().getDestinations();
-    boolean handled = false;
-    for (Destination destination : destinations) {
-      if (destination.unsubscribe(connection, frame)) {
-        handled = true;
-        break;
-      }
-    }
-
-    if (!handled) {
-      connection.write(Frames.createErrorFrame(
-          "Invalid unsubscribe",
-          Headers.create(frame.getHeaders()),
-          "No subscription associated with the given 'id'"));
-      connection.close();
-      return;
-    }
-
-    Frames.handleReceipt(frame, connection);
+    List<Destination> destinations = new ArrayList<>(connection.handler().getDestinations());
+    unsub(connection, frame, 0, destinations);
   }
+
+  private void unsub(StompServerConnection connection, Frame frame, int index, List<Destination> destinations) {
+    if (index < destinations.size()) {
+      Destination dst = destinations.get(index);
+      Promise<Void> promise = ((VertxInternal)connection.server().vertx()).promise();
+      dst.unsubscribe(connection, frame, promise);
+      promise.future().onComplete(ar -> {
+        if (ar.succeeded()) {
+          Frames.handleReceipt(frame, connection);
+        } else {
+          unsub(connection, frame, index + 1, destinations);
+        }
+      });
+    } else {
+      connection.write(Frames.createErrorFrame(
+        "Invalid unsubscribe",
+        Headers.create(frame.getHeaders()),
+        "No subscription associated with the given 'id'"));
+      connection.close();
+    }
+  }
+
 }
