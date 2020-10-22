@@ -196,7 +196,7 @@ public class StompServerExamples {
         .handler(StompServerHandler.create(vertx));
 
     Future<HttpServer> http = vertx.createHttpServer(
-        new HttpServerOptions().setWebSocketSubProtocols(Arrays.asList("v10.stomp, v11.stomp"))
+        new HttpServerOptions().setWebSocketSubProtocols(Arrays.asList("v10.stomp", "v11.stomp"))
     )
         .webSocketHandler(server.webSocketHandler())
         .listen(8080);
