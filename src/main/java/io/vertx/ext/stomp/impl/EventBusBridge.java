@@ -88,7 +88,7 @@ public class EventBusBridge extends Topic {
               chosen.get().connection.write(stompFrame);
             }
           } else {
-            subscriptions.parallelStream().filter(s -> s.destination.equals(address)).forEach(s -> {
+            subscriptions.stream().filter(s -> s.destination.equals(address)).forEach(s -> {
               Frame stompFrame = transform(msg, s);
               try {
                 s.connection.write(stompFrame);
