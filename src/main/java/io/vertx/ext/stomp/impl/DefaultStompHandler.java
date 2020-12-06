@@ -21,6 +21,8 @@ import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
+import io.vertx.core.impl.ContextInternal;
+import io.vertx.core.impl.future.PromiseInternal;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
@@ -406,6 +408,13 @@ public class DefaultStompHandler implements StompServerHandler {
   public synchronized StompServerHandler authProvider(AuthenticationProvider handler) {
     this.authProvider = handler;
     return this;
+  }
+
+  @Override
+  public Future<Boolean> onAuthenticationRequest(StompServerConnection connection, String login, String passcode) {
+    PromiseInternal<Boolean> promise = ((ContextInternal) context).promise();
+    onAuthenticationRequest(connection, login, passcode, promise);
+    return promise.future();
   }
 
   @Override

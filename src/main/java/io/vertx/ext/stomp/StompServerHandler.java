@@ -19,6 +19,7 @@ package io.vertx.ext.stomp;
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.ext.auth.User;
@@ -187,6 +188,11 @@ public interface StompServerHandler extends Handler<ServerFrame> {
   @Fluent
   StompServerHandler onAuthenticationRequest(StompServerConnection connection, String login, String passcode,
                                              Handler<AsyncResult<Boolean>> handler);
+
+  /**
+   * Like {@link StompServerHandler#onAuthenticationRequest(StompServerConnection, String, String, Handler)} but with a future of the result
+   */
+  Future<Boolean> onAuthenticationRequest(StompServerConnection connection, String login, String passcode);
 
   /**
    * Provides for authorization matches on a destination level, this will return the User created by the {@link AuthenticationProvider}.
