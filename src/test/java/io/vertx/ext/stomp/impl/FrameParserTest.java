@@ -17,6 +17,7 @@
 package io.vertx.ext.stomp.impl;
 
 import io.vertx.core.buffer.Buffer;
+import io.vertx.ext.stomp.Command;
 import io.vertx.ext.stomp.Frame;
 import io.vertx.ext.stomp.StompOptions;
 import io.vertx.ext.stomp.StompServerOptions;
@@ -48,7 +49,7 @@ public class FrameParserTest {
 
     Frame frame = parse(buffer);
 
-    assertThat(frame.getCommand()).isEqualTo(Frame.Command.CONNECT);
+    assertThat(frame.getCommand()).isEqualTo(Command.CONNECT);
     assertThat(frame.getBodyAsByteArray()).isEmpty();
     assertThat(frame.getHeader("accept-version")).isEqualTo("1.2");
     assertThat(frame.getHeader("host")).isEqualTo("stomp.github.org");
@@ -64,7 +65,7 @@ public class FrameParserTest {
 
     Frame frame = parse(buffer);
 
-    assertThat(frame.getCommand()).isEqualTo(Frame.Command.STOMP);
+    assertThat(frame.getCommand()).isEqualTo(Command.STOMP);
     assertThat(frame.getBodyAsByteArray()).isEmpty();
     assertThat(frame.getHeader("accept-version")).isEqualTo("1.2");
     assertThat(frame.getHeader("host")).isEqualTo("stomp.github.org");
@@ -79,7 +80,7 @@ public class FrameParserTest {
 
     Frame frame = parse(buffer);
 
-    assertThat(frame.getCommand()).isEqualTo(Frame.Command.CONNECTED);
+    assertThat(frame.getCommand()).isEqualTo(Command.CONNECTED);
     assertThat(frame.getBodyAsByteArray()).isEmpty();
     assertThat(frame.getHeader("version")).isEqualTo("1.2");
   }
@@ -94,7 +95,7 @@ public class FrameParserTest {
 
     Frame frame = parse(buffer);
 
-    assertThat(frame.getCommand()).isEqualTo(Frame.Command.ERROR);
+    assertThat(frame.getCommand()).isEqualTo(Command.ERROR);
     assertThat(frame.getBodyAsString(StompOptions.UTF_8)).isEqualTo("Supported protocol versions are 1.2 2.1");
     assertThat(frame.getHeader("version")).isEqualTo("1.2,2.1");
     assertThat(frame.getHeader("content-type")).isEqualTo("text/plain");
@@ -125,7 +126,7 @@ public class FrameParserTest {
         .appendString(FrameParser.NULL);
 
     Frame frame = parse(buffer);
-    assertThat(frame.getCommand()).isEqualTo(Frame.Command.SEND);
+    assertThat(frame.getCommand()).isEqualTo(Command.SEND);
     assertThat(frame.getHeader("header")).isEqualTo("hello");
   }
 
@@ -140,7 +141,7 @@ public class FrameParserTest {
         .appendString(FrameParser.EOL);
 
     Frame frame = parse(buffer);
-    assertThat(frame.getCommand()).isEqualTo(Frame.Command.SEND);
+    assertThat(frame.getCommand()).isEqualTo(Command.SEND);
     assertThat(frame.getHeader("header")).isEqualTo("hello");
     assertThat(frame.getBodyAsString(StompOptions.UTF_8)).isEqualTo("this is my content.");
   }
@@ -154,7 +155,7 @@ public class FrameParserTest {
         .appendString(FrameParser.NULL);
 
     Frame frame = parse(buffer);
-    assertThat(frame.getCommand()).isEqualTo(Frame.Command.SEND);
+    assertThat(frame.getCommand()).isEqualTo(Command.SEND);
     assertThat(frame.getHeader("header")).isEqualTo("hello:-)");
     assertThat(frame.getBodyAsString(StompOptions.UTF_8)).isEqualTo("this is my content.");
   }
@@ -167,7 +168,7 @@ public class FrameParserTest {
         .appendString(FrameParser.NULL);
 
     Frame frame = parse(buffer);
-    assertThat(frame.getCommand()).isEqualTo(Frame.Command.CONNECT);
+    assertThat(frame.getCommand()).isEqualTo(Command.CONNECT);
     //By spec, CONNECT and CONNECTED frames do not decode the header.
     assertThat(frame.getHeader("header")).isEqualTo("hello\\c-)");
   }
@@ -182,7 +183,7 @@ public class FrameParserTest {
         .appendString(FrameParser.NULL);
 
     Frame frame = parse(buffer);
-    assertThat(frame.getCommand()).isEqualTo(Frame.Command.SEND);
+    assertThat(frame.getCommand()).isEqualTo(Command.SEND);
     assertThat(frame.getHeader("header")).isEqualTo(" hello");
     assertThat(frame.getHeader("header2")).isEqualTo("hello ");
     assertThat(frame.getBodyAsString(StompOptions.UTF_8)).isEqualTo("this is my content.");
@@ -197,7 +198,7 @@ public class FrameParserTest {
         .appendString(FrameParser.NULL);
 
     Frame frame = parse(buffer);
-    assertThat(frame.getCommand()).isEqualTo(Frame.Command.SEND);
+    assertThat(frame.getCommand()).isEqualTo(Command.SEND);
     assertThat(frame.getHeader("head er")).isEqualTo(" hello");
     assertThat(frame.getBodyAsString(StompOptions.UTF_8)).isEqualTo("this is my content.");
   }
@@ -211,7 +212,7 @@ public class FrameParserTest {
         .appendString(FrameParser.NULL);
 
     Frame frame = parse(buffer);
-    assertThat(frame.getCommand()).isEqualTo(Frame.Command.SEND);
+    assertThat(frame.getCommand()).isEqualTo(Command.SEND);
     assertThat(frame.getHeader("header")).isEqualTo("hello");
     assertThat(frame.getBodyAsString(StompOptions.UTF_8)).isEqualTo("this is my content.");
   }
@@ -227,7 +228,7 @@ public class FrameParserTest {
         .appendString(FrameParser.NULL);
 
     Frame frame = parse(buffer);
-    assertThat(frame.getCommand()).isEqualTo(Frame.Command.SEND);
+    assertThat(frame.getCommand()).isEqualTo(Command.SEND);
     assertThat(frame.getHeader("header")).isEqualTo("hello");
     assertThat(frame.getBodyAsString(StompOptions.UTF_8)).isEqualTo("this is my \n content.");
   }
@@ -243,7 +244,7 @@ public class FrameParserTest {
         .appendString(FrameParser.NULL);
 
     Frame frame = parse(buffer);
-    assertThat(frame.getCommand()).isEqualTo(Frame.Command.SEND);
+    assertThat(frame.getCommand()).isEqualTo(Command.SEND);
     assertThat(frame.getHeader("header")).isEqualTo("hello");
     assertThat(frame.getBodyAsString(StompOptions.UTF_8)).isEqualTo("this is my \n content.");
   }
@@ -259,7 +260,7 @@ public class FrameParserTest {
         .appendString(FrameParser.NULL);
 
     Frame frame = parse(buffer);
-    assertThat(frame.getCommand()).isEqualTo(Frame.Command.SEND);
+    assertThat(frame.getCommand()).isEqualTo(Command.SEND);
     assertThat(frame.getHeader("header")).isEqualTo("hello");
     assertThat(frame.getBodyAsString(StompOptions.UTF_8)).isEqualTo("this is my \n conten");
   }
@@ -275,7 +276,7 @@ public class FrameParserTest {
         .appendString(FrameParser.NULL);
 
     Frame frame = parse(buffer);
-    assertThat(frame.getCommand()).isEqualTo(Frame.Command.SEND);
+    assertThat(frame.getCommand()).isEqualTo(Command.SEND);
     assertThat(frame.getHeader("header")).isEqualTo("hello");
     assertThat(frame.getBodyAsString(StompOptions.UTF_8)).isEqualTo("this is my \n content.");
   }
@@ -291,7 +292,7 @@ public class FrameParserTest {
         .appendString(FrameParser.NULL);
 
     Frame frame = parse(buffer);
-    assertThat(frame.getCommand()).isEqualTo(Frame.Command.SEND);
+    assertThat(frame.getCommand()).isEqualTo(Command.SEND);
     assertThat(frame.getHeader("header")).isEqualTo("hello");
     assertThat(frame.getBodyAsString(StompOptions.UTF_8)).isEqualTo("this is my \u0000 content.");
   }
@@ -306,7 +307,7 @@ public class FrameParserTest {
         "\u0000\r\n";
     Buffer buffer = Buffer.buffer(connect);
     Frame frame = parse(buffer);
-    assertThat(frame.getCommand()).isEqualTo(Frame.Command.CONNECT);
+    assertThat(frame.getCommand()).isEqualTo(Command.CONNECT);
     assertThat(frame.getHeader("accept-version")).isEqualTo("1.2");
     assertThat(frame.getHeader("login")).isEqualTo("system");
     assertThat(frame.getBodyAsByteArray()).isEmpty();
@@ -322,7 +323,7 @@ public class FrameParserTest {
 
     Frame frame = parse(buffer);
 
-    assertThat(frame.getCommand()).isEqualTo(Frame.Command.MESSAGE);
+    assertThat(frame.getCommand()).isEqualTo(Command.MESSAGE);
     assertThat(frame.getBodyAsByteArray()).isEmpty();
     assertThat(frame.getHeader("foo")).isEqualTo("World");
   }
@@ -350,7 +351,7 @@ public class FrameParserTest {
 
     Frame frame = ref.get();
 
-    assertThat(frame.getCommand()).isEqualTo(Frame.Command.MESSAGE);
+    assertThat(frame.getCommand()).isEqualTo(Command.MESSAGE);
     assertThat(frame.getHeader("hello")).isEqualTo("world");
     assertThat(frame.getBody().length()).isEqualTo(LOREM.length() * 2);
   }
@@ -366,12 +367,12 @@ public class FrameParserTest {
         .appendString("SEND\n" + "destination:/queue" + "\n\n" + "Hello World" + FrameParser.NULL);
     parser.handle(buffer);
     assertThat(frames).hasSize(2);
-    assertThat(frames.get(0).getCommand()).isEqualTo(Frame.Command.CONNECT);
+    assertThat(frames.get(0).getCommand()).isEqualTo(Command.CONNECT);
     assertThat(frames.get(0).getHeader("login")).isEqualTo("system");
     assertThat(frames.get(0).getHeader("passcode")).isEqualTo("manager");
     assertThat(frames.get(0).getHeader("destination")).isNull();
     assertThat(frames.get(0).hasEmptyBody()).isTrue();
-    assertThat(frames.get(1).getCommand()).isEqualTo(Frame.Command.SEND);
+    assertThat(frames.get(1).getCommand()).isEqualTo(Command.SEND);
     assertThat(frames.get(1).getHeader("destination")).isEqualTo("/queue");
     assertThat(frames.get(1).getHeader("login")).isNull();
     assertThat(frames.get(1).getBodyAsString()).isEqualTo("Hello World");
@@ -386,7 +387,7 @@ public class FrameParserTest {
         .appendString(FrameParser.NULL);
 
     Frame frame = parse(buffer);
-    assertThat(frame.getCommand()).isEqualTo(Frame.Command.UNKNOWN);
+    assertThat(frame.getCommand()).isEqualTo(Command.UNKNOWN);
     assertThat(frame.getHeader(Frame.STOMP_FRAME_COMMAND)).isEqualTo("ILLEGAL");
   }
 

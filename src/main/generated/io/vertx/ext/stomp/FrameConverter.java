@@ -27,7 +27,7 @@ public class FrameConverter {
           break;
         case "command":
           if (member.getValue() instanceof String) {
-            obj.setCommand(io.vertx.ext.stomp.Frame.Command.valueOf((String)member.getValue()));
+            obj.setCommand(io.vertx.ext.stomp.Command.valueOf((String)member.getValue()));
           }
           break;
         case "destination":

@@ -37,7 +37,7 @@ import java.util.Objects;
 @VertxGen
 public interface Frames {
 
-  Frame PING = new Frame(Frame.Command.PING, Headers.create(), null) {
+  Frame PING = new Frame(Command.PING, Headers.create(), null) {
 
     @Override
     public Buffer toBuffer() {
@@ -49,7 +49,7 @@ public interface Frames {
     Objects.requireNonNull(message);
     Objects.requireNonNull(headers);
     Objects.requireNonNull(body);
-    return new Frame(Frame.Command.ERROR,
+    return new Frame(Command.ERROR,
         Headers.create(headers)
             .add(Frame.MESSAGE, message)
             .add(Frame.CONTENT_LENGTH, Integer.toString(body.length()))
@@ -65,7 +65,7 @@ public interface Frames {
   static Frame createReceiptFrame(String receiptId, Map<String, String> headers) {
     Objects.requireNonNull(receiptId);
     Objects.requireNonNull(headers);
-    return new Frame(Frame.Command.RECEIPT,
+    return new Frame(Command.RECEIPT,
         Headers.create(headers)
             .add(Frame.RECEIPT_ID, receiptId),
         null);

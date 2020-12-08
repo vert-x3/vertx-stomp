@@ -69,7 +69,7 @@ public class DefaultConnectHandler implements Handler<ServerFrame> {
     // Login / Passcode
     authenticate(sf.frame(), sf.connection(), ar -> {
       // Spec says: The server will respond back with the highest version of the protocol -> version
-      sf.connection().write(new Frame(Frame.Command.CONNECTED, Headers.create(
+      sf.connection().write(new Frame(Command.CONNECTED, Headers.create(
           Frame.VERSION, version,
           Frame.SERVER, Server.SERVER_NAME,
           Frame.SESSION, sf.connection().session(),

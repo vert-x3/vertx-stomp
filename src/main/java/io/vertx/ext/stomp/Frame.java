@@ -18,7 +18,6 @@ package io.vertx.ext.stomp;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.GenIgnore;
-import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.stomp.impl.FrameException;
@@ -84,40 +83,6 @@ public class Frame {
    * UTF-8 is used.
    */
   private final static Pattern CHARSET_PATTERN = Pattern.compile(".+;charset=([a-zA-Z0-9\\-]+);?.*");
-
-  /**
-   * The list of command defined by the STOMP specification.
-   * It also contains a {@code PING} command used for heartbeat. It should not be used in frames (as it's not a valid
-   * command).
-   */
-  @VertxGen
-  public enum Command {
-    // Connection
-    CONNECT,
-    CONNECTED,
-    STOMP,
-
-    // Client
-    SEND,
-    SUBSCRIBE,
-    UNSUBSCRIBE,
-    ACK,
-    NACK,
-    BEGIN,
-    COMMIT,
-    ABORT,
-    DISCONNECT,
-
-    // Server
-    MESSAGE,
-    RECEIPT,
-    ERROR,
-
-    // This is not a real STOMP frame, it just notice a ping frame from the client.
-    PING,
-
-    UNKNOWN
-  }
 
   /**
    * Represents the heartbeat configuration. Heartbeat determine when a party involved in the exchange (either the

@@ -89,7 +89,7 @@ public class SubscriptionsUsingQueueTest {
 
     assertThat(frames).hasSize(1);
     assertThat(frames.get(0).getBodyAsString()).isEqualTo("Hello");
-    assertThat(frames.get(0).getCommand()).isEqualTo(Frame.Command.MESSAGE);
+    assertThat(frames.get(0).getCommand()).isEqualTo(Command.MESSAGE);
     assertThat(frames.get(0).getHeader(Frame.MESSAGE_ID)).isNotNull().isNotEmpty();
     assertThat(frames.get(0).getHeader(Frame.SUBSCRIPTION)).isEqualTo("/queue");
     assertThat(frames.get(0).getHeader(Frame.DESTINATION)).isNotNull().isNotEmpty();
@@ -114,7 +114,7 @@ public class SubscriptionsUsingQueueTest {
 
     assertThat(frames).hasSize(1);
     assertThat(frames.get(0).getBodyAsString()).isEqualTo("Hello");
-    assertThat(frames.get(0).getCommand()).isEqualTo(Frame.Command.MESSAGE);
+    assertThat(frames.get(0).getCommand()).isEqualTo(Command.MESSAGE);
     assertThat(frames.get(0).getHeader(Frame.MESSAGE_ID)).isNotNull().isNotEmpty();
     assertThat(frames.get(0).getHeader(Frame.SUBSCRIPTION)).isEqualTo("/queue");
     assertThat(frames.get(0).getHeader(Frame.DESTINATION)).isNotNull().isNotEmpty();
@@ -161,23 +161,23 @@ public class SubscriptionsUsingQueueTest {
     }
 
     assertThat(helloList.get(0).getBodyAsString()).isEqualTo("Hello");
-    assertThat(helloList.get(0).getCommand()).isEqualTo(Frame.Command.MESSAGE);
+    assertThat(helloList.get(0).getCommand()).isEqualTo(Command.MESSAGE);
     assertThat(helloList.get(0).getHeader(Frame.MESSAGE_ID)).isNotNull().isNotEmpty();
     assertThat(helloList.get(0).getHeader(Frame.SUBSCRIPTION)).isEqualTo("/queue");
     assertThat(helloList.get(0).getHeader(Frame.DESTINATION)).isNotNull().isNotEmpty();
     assertThat(helloList.get(1).getBodyAsString()).isEqualTo("Hello");
-    assertThat(helloList.get(1).getCommand()).isEqualTo(Frame.Command.MESSAGE);
+    assertThat(helloList.get(1).getCommand()).isEqualTo(Command.MESSAGE);
     assertThat(helloList.get(1).getHeader(Frame.MESSAGE_ID)).isNotNull().isNotEmpty();
     assertThat(helloList.get(1).getHeader(Frame.SUBSCRIPTION)).isEqualTo("/queue");
     assertThat(helloList.get(1).getHeader(Frame.DESTINATION)).isNotNull().isNotEmpty();
 
     assertThat(vertxList.get(0).getBodyAsString()).isEqualTo("vert.x");
-    assertThat(vertxList.get(0).getCommand()).isEqualTo(Frame.Command.MESSAGE);
+    assertThat(vertxList.get(0).getCommand()).isEqualTo(Command.MESSAGE);
     assertThat(vertxList.get(0).getHeader(Frame.MESSAGE_ID)).isNotNull().isNotEmpty();
     assertThat(vertxList.get(0).getHeader(Frame.SUBSCRIPTION)).isEqualTo("/queue");
     assertThat(vertxList.get(0).getHeader(Frame.DESTINATION)).isNotNull().isNotEmpty();
     assertThat(vertxList.get(1).getBodyAsString()).isEqualTo("vert.x");
-    assertThat(vertxList.get(1).getCommand()).isEqualTo(Frame.Command.MESSAGE);
+    assertThat(vertxList.get(1).getCommand()).isEqualTo(Command.MESSAGE);
     assertThat(vertxList.get(1).getHeader(Frame.MESSAGE_ID)).isNotNull().isNotEmpty();
     assertThat(vertxList.get(1).getHeader(Frame.SUBSCRIPTION)).isEqualTo("/queue");
     assertThat(vertxList.get(1).getHeader(Frame.DESTINATION)).isNotNull().isNotEmpty();
@@ -204,7 +204,7 @@ public class SubscriptionsUsingQueueTest {
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> !frames.isEmpty());
 
     assertThat(frames).hasSize(1);
-    assertThat(frames.get(0).getCommand()).isEqualTo(Frame.Command.ERROR);
+    assertThat(frames.get(0).getCommand()).isEqualTo(Command.ERROR);
     assertThat(frames.get(0).getHeader(Frame.DESTINATION)).isEqualTo("/queue");
     assertThat(frames.get(0).getBodyAsString()).contains("no subscriptions");
   }
@@ -236,13 +236,13 @@ public class SubscriptionsUsingQueueTest {
     assertThat(frames).doesNotContainKeys("error");
 
     Frame frame1 = frames.get("/queue");
-    assertThat(frame1.getCommand()).isEqualTo(Frame.Command.MESSAGE);
+    assertThat(frame1.getCommand()).isEqualTo(Command.MESSAGE);
     assertThat(frame1.getHeader(Frame.DESTINATION)).isEqualTo("/queue");
     assertThat(frame1.getHeader(Frame.SUBSCRIPTION)).isEqualTo("0");
     assertThat(frame1.getBodyAsString()).isEqualTo("Hello");
 
     frame1 = frames.get("/queue2");
-    assertThat(frame1.getCommand()).isEqualTo(Frame.Command.MESSAGE);
+    assertThat(frame1.getCommand()).isEqualTo(Command.MESSAGE);
     assertThat(frame1.getHeader(Frame.DESTINATION)).isEqualTo("/queue2");
     assertThat(frame1.getHeader(Frame.SUBSCRIPTION)).isEqualTo("1");
     assertThat(frame1.getBodyAsString()).isEqualTo("World");
@@ -277,7 +277,7 @@ public class SubscriptionsUsingQueueTest {
       connection.send("/queue", Buffer.buffer("Hello"));
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> frames.size() == 2 && frames.get(1).getCommand() == Frame.Command.ERROR);
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> frames.size() == 2 && frames.get(1).getCommand() == Command.ERROR);
   }
 
   @Test
@@ -309,7 +309,7 @@ public class SubscriptionsUsingQueueTest {
       connection.errorHandler(frames::add);
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> frames.size() == 2 && frames.get(1).getCommand() == Frame.Command.ERROR);
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> frames.size() == 2 && frames.get(1).getCommand() == Command.ERROR);
   }
 
   @Test

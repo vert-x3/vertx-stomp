@@ -17,6 +17,7 @@
 package io.vertx.ext.stomp.impl;
 
 import io.vertx.core.Vertx;
+import io.vertx.ext.stomp.Command;
 import io.vertx.ext.stomp.Destination;
 import io.vertx.ext.stomp.Frame;
 import io.vertx.ext.stomp.StompServerConnection;
@@ -78,7 +79,7 @@ public class Topic implements Destination {
       // We reuse the message Id as ack Id
       headers.add(Frame.ACK, messageId);
     }
-    return new Frame(Frame.Command.MESSAGE,
+    return new Frame(Command.MESSAGE,
         headers,
         frame.getBody());
   }

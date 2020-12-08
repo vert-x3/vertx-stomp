@@ -19,10 +19,7 @@ package io.vertx.ext.stomp.impl;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.parsetools.RecordParser;
-import io.vertx.ext.stomp.Frame;
-import io.vertx.ext.stomp.Frames;
-import io.vertx.ext.stomp.StompOptions;
-import io.vertx.ext.stomp.StompServerOptions;
+import io.vertx.ext.stomp.*;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -46,7 +43,7 @@ public class FrameParser implements Handler<Buffer> {
 
   private final StompServerOptions options;
 
-  private Frame.Command command;
+  private Command command;
   private HashMap<String, String> headers = new HashMap<>();
   private Handler<Frame> handler;
   private int bodyLength = 0;
@@ -97,10 +94,10 @@ public class FrameParser implements Handler<Buffer> {
         // Commands and Header are encoded in UTF-8 (spec)
         String commandLine = buffer.toString(StompOptions.UTF_8).trim();
         try {
-          command = Frame.Command.valueOf(commandLine);
+          command = Command.valueOf(commandLine);
         } catch (IllegalArgumentException e) {
           // Not a valid command, use UNKNOWN, and write the given command as header.
-          command = Frame.Command.UNKNOWN;
+          command = Command.UNKNOWN;
           headers.put(Frame.STOMP_FRAME_COMMAND, commandLine);
         }
         // Only one verb line, so next state
@@ -189,7 +186,7 @@ public class FrameParser implements Handler<Buffer> {
     // By spec all frames except CONNECT and CONNECTED escape any carriage return, line feed or colon
     // found in the resulting UTF-8 encoded headers
     // Escape must be always escaped, STOMP frames are not part of the exception
-    return HeaderCodec.decode(value, command == Frame.Command.CONNECT || command == Frame.Command.CONNECTED);
+    return HeaderCodec.decode(value, command == Command.CONNECT || command == Command.CONNECTED);
   }
 
   private String strip(String s) {

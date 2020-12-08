@@ -156,7 +156,7 @@ public class EventBusBridge extends Topic {
     String messageId = UUID.randomUUID().toString();
 
     Frame frame = new Frame();
-    frame.setCommand(Frame.Command.MESSAGE);
+    frame.setCommand(Command.MESSAGE);
 
     final Headers headers = Headers.create(frame.getHeaders())
         // Destination already set in the input headers.

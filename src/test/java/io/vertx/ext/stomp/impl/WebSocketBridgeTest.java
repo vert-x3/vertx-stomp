@@ -115,7 +115,7 @@ public class WebSocketBridgeTest {
         socket.set(ws);
         ws.exceptionHandler(error::set)
           .handler(frame::set)
-          .write(new Frame(Frame.Command.CONNECT, Headers.create("accept-version", "1.2,1.1,1.0",
+          .write(new Frame(Command.CONNECT, Headers.create("accept-version", "1.2,1.1,1.0",
             "heart-beat", "10000,10000"), null).toBuffer());
       }
     });
@@ -148,7 +148,7 @@ public class WebSocketBridgeTest {
           .handler(buffer -> {
             if (buffer.toString().startsWith("CONNECTED")) {
               ws.write(
-                new Frame(Frame.Command.SUBSCRIBE, Headers.create("id", "sub-0", "destination", "foo"), null)
+                new Frame(Command.SUBSCRIBE, Headers.create("id", "sub-0", "destination", "foo"), null)
                   .toBuffer());
               return;
             }
@@ -156,7 +156,7 @@ public class WebSocketBridgeTest {
               frame.set(buffer);
             }
           })
-          .write(new Frame(Frame.Command.CONNECT, Headers.create("accept-version", "1.2,1.1,1.0",
+          .write(new Frame(Command.CONNECT, Headers.create("accept-version", "1.2,1.1,1.0",
             "heart-beat", "10000,10000"), null).toBuffer());
       }
     });
@@ -196,11 +196,11 @@ public class WebSocketBridgeTest {
           .handler(buffer -> {
             if (buffer.toString().startsWith("CONNECTED")) {
               ws.write(
-                new Frame(Frame.Command.SEND, Headers.create("header", "value", "destination", "foo"), Buffer
+                new Frame(Command.SEND, Headers.create("header", "value", "destination", "foo"), Buffer
                   .buffer("hello")).toBuffer());
             }
           })
-          .write(new Frame(Frame.Command.CONNECT, Headers.create("accept-version", "1.2,1.1,1.0",
+          .write(new Frame(Command.CONNECT, Headers.create("accept-version", "1.2,1.1,1.0",
             "heart-beat", "10000,10000"), null).toBuffer());
       }
     });
@@ -249,7 +249,7 @@ public class WebSocketBridgeTest {
                 String data = frame.binaryData().toString();
                 if (data.startsWith("CONNECTED")) {
                   ws.write(
-                    new Frame(Frame.Command.SUBSCRIBE, Headers.create("id", "myId", "destination", "bigData"), null)
+                    new Frame(Command.SUBSCRIBE, Headers.create("id", "myId", "destination", "bigData"), null)
                       .toBuffer());
                 }
                 if (data.startsWith("MESSAGE")) {
@@ -264,7 +264,7 @@ public class WebSocketBridgeTest {
               wsBuffers.add(frame);
             }
           })
-          .write(new Frame(Frame.Command.CONNECT, Headers.create("accept-version", "1.2,1.1,1.0",
+          .write(new Frame(Command.CONNECT, Headers.create("accept-version", "1.2,1.1,1.0",
             "heart-beat", "10000,10000"), null).toBuffer());
         socket.set(ws);
       }
@@ -313,7 +313,7 @@ public class WebSocketBridgeTest {
               flag.set(true);
             });
           })
-          .write(new Frame(Frame.Command.CONNECT, Headers.create("accept-version", "1.2,1.1,1.0",
+          .write(new Frame(Command.CONNECT, Headers.create("accept-version", "1.2,1.1,1.0",
             "heart-beat", "100,0"), null).toBuffer());
       }
     });
@@ -353,7 +353,7 @@ public class WebSocketBridgeTest {
           .handler(buffer -> {
             if (buffer.toString().startsWith("CONNECTED")) {
               ws.write(
-                new Frame(Frame.Command.SUBSCRIBE, Headers.create("id", "sub-0", "destination", "foo"), null)
+                new Frame(Command.SUBSCRIBE, Headers.create("id", "sub-0", "destination", "foo"), null)
                   .toBuffer());
               return;
             }
@@ -361,7 +361,7 @@ public class WebSocketBridgeTest {
               frame.set(buffer);
             }
           })
-          .write(new Frame(Frame.Command.CONNECT, Headers.create("accept-version", "1.2,1.1,1.0",
+          .write(new Frame(Command.CONNECT, Headers.create("accept-version", "1.2,1.1,1.0",
             "heart-beat", "10000,10000"), null).toBuffer());
       }
     });
@@ -376,11 +376,11 @@ public class WebSocketBridgeTest {
           .handler(buffer -> {
             if (buffer.toString().startsWith("CONNECTED")) {
               ws.write(
-                new Frame(Frame.Command.SEND, Headers.create("header", "value", "destination", "foo"), Buffer
+                new Frame(Command.SEND, Headers.create("header", "value", "destination", "foo"), Buffer
                   .buffer("hello")).toBuffer());
             }
           })
-          .write(new Frame(Frame.Command.CONNECT, Headers.create("accept-version", "1.2,1.1,1.0",
+          .write(new Frame(Command.CONNECT, Headers.create("accept-version", "1.2,1.1,1.0",
             "heart-beat", "10000,10000"), null).toBuffer());
       }
     });
