@@ -180,11 +180,11 @@ public class ReceiptTest {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(errors::add);
       connection.beginTX("my-tx", receipts::add);
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
+      connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx")
           .setBody(Buffer.buffer("Hello")), receipts::add);
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx").setBody(
+      connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx").setBody(
           Buffer.buffer("World")), receipts::add);
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
+      connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx")
           .setBody(Buffer.buffer("!!!")), receipts::add);
       connection.commit("my-tx", receipts::add);
     }));
@@ -210,11 +210,11 @@ public class ReceiptTest {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(errors::add);
       connection.beginTX("my-tx", receipts::add);
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
+      connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx")
           .setBody(Buffer.buffer("Hello")), receipts::add);
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx").setBody(
+      connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx").setBody(
           Buffer.buffer("World")), receipts::add);
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
+      connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx")
           .setBody(Buffer.buffer("!!!")), receipts::add);
       connection.abort("my-tx", receipts::add);
     }));

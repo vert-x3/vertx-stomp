@@ -21,10 +21,7 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
 import io.vertx.core.net.NetSocket;
-import io.vertx.ext.stomp.Frame;
-import io.vertx.ext.stomp.Frames;
-import io.vertx.ext.stomp.StompClient;
-import io.vertx.ext.stomp.StompClientConnection;
+import io.vertx.ext.stomp.*;
 import io.vertx.ext.stomp.utils.Headers;
 
 import java.util.*;
@@ -241,7 +238,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
       headers.put(Frame.CONTENT_LENGTH, Integer.toString(body.length()));
     }
 
-    Frame frame = new Frame(Frame.Command.SEND, headers, body);
+    Frame frame = new Frame(Command.SEND, headers, body);
     return send(frame, receiptHandler);
   }
 
@@ -290,7 +287,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
       headers.put(Frame.ID, id);
     }
 
-    Frame frame = new Frame(Frame.Command.SUBSCRIBE, headers, null);
+    Frame frame = new Frame(Command.SUBSCRIBE, headers, null);
     send(frame, ar -> {
       if (receiptHandler != null) {
         receiptHandler.handle(ar.map(id));
@@ -335,7 +332,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     if (maybeSubscription.isPresent()) {
       final Subscription subscription = maybeSubscription.get();
       subscriptions.remove(subscription);
-      send(new Frame(Frame.Command.UNSUBSCRIBE, headers, null), receiptHandler);
+      send(new Frame(Command.UNSUBSCRIBE, headers, null), receiptHandler);
       return this;
     } else {
       throw new IllegalArgumentException("No subscription with id " + id);
@@ -382,7 +379,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     Objects.requireNonNull(id);
     Objects.requireNonNull(headers);
 
-    return send(new Frame().setCommand(Frame.Command.BEGIN).setTransaction(id), receiptHandler);
+    return send(new Frame().setCommand(Command.BEGIN).setTransaction(id), receiptHandler);
   }
 
   @Override
@@ -406,7 +403,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   public StompClientConnection commit(String id, Map<String, String> headers, Handler<AsyncResult<Frame>> receiptHandler) {
     Objects.requireNonNull(id);
     Objects.requireNonNull(headers);
-    return send(new Frame().setCommand(Frame.Command.COMMIT).setTransaction(id), receiptHandler);
+    return send(new Frame().setCommand(Command.COMMIT).setTransaction(id), receiptHandler);
   }
 
   @Override
@@ -430,13 +427,13 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   public StompClientConnection abort(String id, Map<String, String> headers, Handler<AsyncResult<Frame>> receiptHandler) {
     Objects.requireNonNull(id);
     Objects.requireNonNull(headers);
-    return send(new Frame().setCommand(Frame.Command.ABORT).setTransaction(id), receiptHandler);
+    return send(new Frame().setCommand(Command.ABORT).setTransaction(id), receiptHandler);
   }
 
   @Override
   public Future<Frame> disconnect() {
     Promise<Frame> promise = Promise.promise();
-    disconnect(new Frame().setCommand(Frame.Command.DISCONNECT), promise);
+    disconnect(new Frame().setCommand(Command.DISCONNECT), promise);
     return promise.future();
   }
 
@@ -449,7 +446,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
 
   @Override
   public StompClientConnection disconnect(Handler<AsyncResult<Frame>> receiptHandler) {
-    return disconnect(new Frame().setCommand(Frame.Command.DISCONNECT), receiptHandler);
+    return disconnect(new Frame().setCommand(Command.DISCONNECT), receiptHandler);
   }
 
   @Override
@@ -477,7 +474,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   @Override
   public StompClientConnection ack(String id, Handler<AsyncResult<Frame>> receiptHandler) {
     Objects.requireNonNull(id);
-    send(new Frame(Frame.Command.ACK, Headers.create(Frame.ID, id), null), receiptHandler);
+    send(new Frame(Command.ACK, Headers.create(Frame.ID, id), null), receiptHandler);
     return this;
   }
 
@@ -491,7 +488,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   @Override
   public StompClientConnection nack(String id, Handler<AsyncResult<Frame>> receiptHandler) {
     Objects.requireNonNull(id);
-    send(new Frame(Frame.Command.NACK, Headers.create(Frame.ID, id), null), receiptHandler);
+    send(new Frame(Command.NACK, Headers.create(Frame.ID, id), null), receiptHandler);
     return this;
   }
 
@@ -507,7 +504,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     Objects.requireNonNull(id, "A ACK frame must contain the ACK id");
     Objects.requireNonNull(txId);
 
-    send(new Frame(Frame.Command.ACK, Headers.create(Frame.ID, id, Frame.TRANSACTION, txId), null), receiptHandler);
+    send(new Frame(Command.ACK, Headers.create(Frame.ID, id, Frame.TRANSACTION, txId), null), receiptHandler);
 
     return this;
   }
@@ -524,7 +521,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     Objects.requireNonNull(id, "A NACK frame must contain the ACK id");
     Objects.requireNonNull(txId);
 
-    Frame toSend = new Frame(Frame.Command.NACK, Headers.create(Frame.ID, id, Frame.TRANSACTION, txId), null);
+    Frame toSend = new Frame(Command.NACK, Headers.create(Frame.ID, id, Frame.TRANSACTION, txId), null);
     send(toSend, receiptHandler);
     return this;
   }

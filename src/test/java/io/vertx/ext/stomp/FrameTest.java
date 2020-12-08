@@ -35,30 +35,30 @@ public class FrameTest {
 
   @Test
   public void testThatPassCodeAreNotInToString() {
-    Frame frame = new Frame(Frame.Command.STOMP, Headers.create("login", "vertx", "passcode", "secret"), null);
+    Frame frame = new Frame(Command.STOMP, Headers.create("login", "vertx", "passcode", "secret"), null);
     assertThat(frame.toString()).doesNotContain("secret").contains("********");
   }
 
   @Test(expected = FrameException.class)
   public void testThatConnectFrameCannotHaveBody() {
-    new Frame(Frame.Command.CONNECT, Headers.create("host", "foo"),
+    new Frame(Command.CONNECT, Headers.create("host", "foo"),
       Buffer.buffer("illegal"));
   }
 
   @Test
   public void testDefaultEncoding() {
     final String content = "This content contains utf-8 characters: ü ß é ø î";
-    Frame frame = new Frame(Frame.Command.SEND, Headers.create(), Buffer.buffer(content));
+    Frame frame = new Frame(Command.SEND, Headers.create(), Buffer.buffer(content));
     assertThat(frame.getBodyAsString()).isEqualTo(content);
   }
 
   @Test
   public void testEncoding() {
     final String content = "\u03B1";
-    Frame frame = new Frame(Frame.Command.SEND, Headers.create("content-type",
+    Frame frame = new Frame(Command.SEND, Headers.create("content-type",
       "text/plain;charset=utf-16"), Buffer.buffer(content));
     assertThat(frame.encoding()).isEqualTo("utf-16");
-    frame = new Frame(Frame.Command.SEND, Headers.create("content-type",
+    frame = new Frame(Command.SEND, Headers.create("content-type",
       "text/plain;charset=utf-8"), Buffer.buffer(content));
     assertThat(frame.encoding()).isEqualTo("utf-8");
   }
@@ -69,7 +69,7 @@ public class FrameTest {
     String expected = "test-" + (char) 92 + (char) 114 + (char) 92 + (char) 110 + " " + (char) 92 + (char) 99 +
       (char) 92 + (char) 92 + "-test";
 
-    Frame frame = new Frame(Frame.Command.SEND, Headers.create("header", value), null);
+    Frame frame = new Frame(Command.SEND, Headers.create("header", value), null);
     assertThat(frame.toBuffer().toString()).contains("header:" + expected + "\n");
   }
 
@@ -78,10 +78,10 @@ public class FrameTest {
     String value = "test-\r\n :\\-test";
     String expected = "test-\r\n :" + (char) 92 + (char) 92 + "-test";
 
-    Frame frame = new Frame(Frame.Command.CONNECT, Headers.create("header", value), null);
+    Frame frame = new Frame(Command.CONNECT, Headers.create("header", value), null);
     assertThat(frame.toBuffer().toString()).contains("header:" + expected + "\n");
 
-    frame = new Frame(Frame.Command.CONNECTED, Headers.create("header", value), null);
+    frame = new Frame(Command.CONNECTED, Headers.create("header", value), null);
     assertThat(frame.toBuffer().toString()).contains("header:" + expected + "\n");
   }
 
@@ -137,13 +137,13 @@ public class FrameTest {
 
   @Test
   public void testWithTrailingSpaces() {
-    frame = new Frame(Frame.Command.MESSAGE, Headers.create("foo", "bar"), Buffer.buffer("hello"));
+    frame = new Frame(Command.MESSAGE, Headers.create("foo", "bar"), Buffer.buffer("hello"));
     assertThat(frame.toBuffer(true).toString()).endsWith(FrameParser.NULL + "\n");
 
-    frame = new Frame(Frame.Command.MESSAGE, Headers.create("foo", "bar"), null);
+    frame = new Frame(Command.MESSAGE, Headers.create("foo", "bar"), null);
     assertThat(frame.toBuffer(true).toString()).endsWith(FrameParser.NULL + "\n");
 
-    frame = new Frame(Frame.Command.MESSAGE, Headers.create(), null);
+    frame = new Frame(Command.MESSAGE, Headers.create(), null);
     assertThat(frame.toBuffer(true).toString()).endsWith(FrameParser.NULL + "\n");
   }
 

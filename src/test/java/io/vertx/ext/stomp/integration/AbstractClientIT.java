@@ -18,10 +18,7 @@ package io.vertx.ext.stomp.integration;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.ext.stomp.Frame;
-import io.vertx.ext.stomp.StompClient;
-import io.vertx.ext.stomp.StompClientConnection;
-import io.vertx.ext.stomp.StompClientOptions;
+import io.vertx.ext.stomp.*;
 import io.vertx.ext.stomp.impl.AsyncLock;
 import org.assertj.core.api.Assertions;
 import org.junit.After;
@@ -109,7 +106,7 @@ public abstract class AbstractClientIT {
 
     // Step 3.
     await().atMost(10, TimeUnit.SECONDS).until(() -> frame.get() != null);
-    assertThat(frame.get().getCommand()).isEqualTo(Frame.Command.MESSAGE);
+    assertThat(frame.get().getCommand()).isEqualTo(Command.MESSAGE);
     assertThat(frame.get().getHeaders())
         .contains(entry("content-length", "17"))
         .containsKeys("destination", "message-id", "subscription");
@@ -159,7 +156,7 @@ public abstract class AbstractClientIT {
 
     // Step 3.
     await().atMost(10, TimeUnit.SECONDS).until(() -> frame.get() != null);
-    assertThat(frame.get().getCommand()).isEqualTo(Frame.Command.MESSAGE);
+    assertThat(frame.get().getCommand()).isEqualTo(Command.MESSAGE);
     assertThat(frame.get().getHeaders())
         .contains(entry("content-length", "17"))
         .containsKeys("destination", "message-id", "subscription");

@@ -17,6 +17,7 @@
 package io.vertx.ext.stomp.impl;
 
 import io.vertx.core.buffer.Buffer;
+import io.vertx.ext.stomp.Command;
 import io.vertx.ext.stomp.Frame;
 import org.junit.Test;
 
@@ -29,7 +30,7 @@ public class FrameTest {
 
   @Test
   public void testCopyFrame() {
-    Frame.Command command = Frame.Command.UNKNOWN;
+    Command command = Command.UNKNOWN;
     Map<String, String> headers = new HashMap<String, String>() {{
       this.put("hdr0", "val0");
       this.put("hdr1", "val1");
@@ -37,7 +38,7 @@ public class FrameTest {
     Buffer body = Buffer.buffer("body content");
     Frame other = new Frame(command, headers, body);
     Frame current = new Frame(other);
-    assertThat(current.getCommand()).isEqualTo(Frame.Command.UNKNOWN);
+    assertThat(current.getCommand()).isEqualTo(Command.UNKNOWN);
     assertThat(current.getHeader("hdr0")).isEqualTo("val0");
     assertThat(current.getHeader("hdr1")).isEqualTo("val1");
     assertThat(current.getBody()).isNotSameAs(other.getBody());

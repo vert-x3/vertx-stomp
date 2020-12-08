@@ -84,11 +84,11 @@ public class TransactionsTest {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(errors::add);
       connection.beginTX("my-tx");
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
+      connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx")
           .setBody(Buffer.buffer("Hello")));
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx").setBody(
+      connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx").setBody(
           Buffer.buffer("World")));
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
+      connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx")
           .setBody(Buffer.buffer("!!!")));
       connection.commit("my-tx");
     }));
@@ -115,11 +115,11 @@ public class TransactionsTest {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(errors::add);
       connection.beginTX("my-tx");
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
+      connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx")
           .setBody(Buffer.buffer("Hello")));
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx").setBody(
+      connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx").setBody(
           Buffer.buffer("World")));
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
+      connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx")
           .setBody(Buffer.buffer("!!!")));
       connection.abort("my-tx");
     }));
@@ -152,11 +152,11 @@ public class TransactionsTest {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(errors::add);
       connection.beginTX("my-tx");
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
+      connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx")
           .setBody(Buffer.buffer("Hello")));
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx").setBody(
+      connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx").setBody(
           Buffer.buffer("World")));
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
+      connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx")
           .setBody(Buffer.buffer("!!!")));
       connection.commit("my-tx");
     }));
@@ -186,9 +186,9 @@ public class TransactionsTest {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(errors::add);
       connection.beginTX("my-tx");
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
+      connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx")
           .setBody(Buffer.buffer("Hello")));
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx").setBody(
+      connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx").setBody(
           Buffer.buffer("World")));
       connection.beginTX("my-tx"); // Illegal call
     }));
@@ -213,13 +213,13 @@ public class TransactionsTest {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(errors::add);
       connection.beginTX("my-tx");
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
+      connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx")
           .setBody(Buffer.buffer("Hello")));
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx").setBody(
+      connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx").setBody(
           Buffer.buffer("World")));
       connection.commit("my-tx");
       connection.beginTX("my-tx");
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
+      connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx")
           .setBody(Buffer.buffer("!!!")));
       connection.commit("my-tx");
     }));
@@ -247,11 +247,11 @@ public class TransactionsTest {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(errors::add);
       connection.beginTX("my-tx");
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
+      connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx")
           .setBody(Buffer.buffer("Hello")));
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx").setBody(
+      connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx").setBody(
           Buffer.buffer("World")));
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
+      connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx")
           .setBody(Buffer.buffer("!!!")));
 
       connection.close();
@@ -280,11 +280,11 @@ public class TransactionsTest {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(errors::add);
       connection.beginTX("my-tx", f -> {
-        connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
+        connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx")
             .setBody(Buffer.buffer("Hello")));
-        connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx").setBody(
+        connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx").setBody(
             Buffer.buffer("World")));
-        connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
+        connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx")
             .setBody(Buffer.buffer("!!!")));
         connection.disconnect();
       });
@@ -310,11 +310,11 @@ public class TransactionsTest {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(errors::add);
       connection.beginTX("my-tx");
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
+      connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx")
           .setBody(Buffer.buffer("Hello")));
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx").setBody(
+      connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx").setBody(
           Buffer.buffer("World")));
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
+      connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx")
           .setBody(Buffer.buffer("!!!")));
       connection.commit("illegal");
     }));
@@ -341,11 +341,11 @@ public class TransactionsTest {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(errors::add);
       connection.beginTX("my-tx");
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
+      connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx")
           .setBody(Buffer.buffer("Hello")));
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx").setBody(
+      connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx").setBody(
           Buffer.buffer("World")));
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
+      connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx")
           .setBody(Buffer.buffer("!!!")));
       connection.abort("illegal");
     }));
@@ -374,12 +374,12 @@ public class TransactionsTest {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(errors::add);
       connection.beginTX("my-tx");
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
+      connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx")
           .setBody(Buffer.buffer("Hello")));
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx").setBody(
+      connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx").setBody(
           Buffer.buffer("World")));
       // Next will be dropped:
-      connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
+      connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx")
           .setBody(Buffer.buffer("!!!")));
       connection.commit("my-tx");
     }));
@@ -406,7 +406,7 @@ public class TransactionsTest {
       final StompClientConnection connection = ar.result();
       connection.beginTX("my-tx");
       for (int i = 0; i < 5000; i++) {
-        connection.send(new Frame().setCommand(Frame.Command.SEND).setDestination("/queue").setTransaction("my-tx")
+        connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx")
             .setBody(Buffer.buffer("Hello-" + i)));
       }
       connection.commit("my-tx");

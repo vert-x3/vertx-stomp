@@ -304,7 +304,7 @@ public class StompClientImplTest {
         reference.set(null);
         latch.countDown();
       } else {
-        ar.result().disconnect(new Frame(Frame.Command.DISCONNECT, Headers.create("message", "bye bye"), null),
+        ar.result().disconnect(new Frame(Command.DISCONNECT, Headers.create("message", "bye bye"), null),
             frame -> {
               reference.set(frame);
               latch.countDown();
@@ -405,7 +405,7 @@ public class StompClientImplTest {
     server = StompServer.create(vertx,
       new StompServerOptions().setHeartbeat(new JsonObject().put("x", 300).put("y", 200)))
       .handler(StompServerHandler.create(vertx).receivedFrameHandler(frame -> {
-        if(Frame.Command.PING.equals(frame.frame().getCommand())) {
+        if(Command.PING.equals(frame.frame().getCommand())) {
           serverReceivedPingTimestamps.add(System.currentTimeMillis());
         }
       })).listen(lock.handler());
@@ -417,7 +417,7 @@ public class StompClientImplTest {
     StompClient client = StompClient.create(vertx, new StompClientOptions().setHeartbeat(new JsonObject()
       .put("x", 100).put("y", 400)))
       .receivedFrameHandler(frame -> {
-        if(Frame.Command.PING.equals(frame.getCommand())) {
+        if(Command.PING.equals(frame.getCommand())) {
           clientReceivedPingTimestamps.add(System.currentTimeMillis());
         }
     });

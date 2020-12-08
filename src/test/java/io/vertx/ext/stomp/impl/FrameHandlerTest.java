@@ -97,22 +97,22 @@ public class FrameHandlerTest {
     });
 
     await().atMost(10, TimeUnit.SECONDS).until(() ->
-        containsFrameWithCommand(receivedByServer, Frame.Command.CONNECT));
+        containsFrameWithCommand(receivedByServer, Command.CONNECT));
     await().atMost(10, TimeUnit.SECONDS).until(() ->
-        containsFrameWithCommand(receivedByClient, Frame.Command.CONNECTED));
+        containsFrameWithCommand(receivedByClient, Command.CONNECTED));
     await().atMost(10, TimeUnit.SECONDS).until(() ->
-        containsFrameWithCommand(writtenByServer, Frame.Command.CONNECTED));
+        containsFrameWithCommand(writtenByServer, Command.CONNECTED));
 
     reference.get().send("foo", Buffer.buffer("hello"), f -> {
       // just there to receive a reply.
     });
 
     await().atMost(10, TimeUnit.SECONDS).until(() -> containsFrameWithCommandAndIsMarked(receivedByServer,
-        Frame.Command.SEND));
+        Command.SEND));
     await().atMost(10, TimeUnit.SECONDS).until(() -> containsFrameWithCommandAndIsMarked(receivedByClient,
-        Frame.Command.RECEIPT));
+        Command.RECEIPT));
     await().atMost(10, TimeUnit.SECONDS).until(() -> containsFrameWithCommandAndIsMarked(writtenByServer,
-        Frame.Command.RECEIPT));
+        Command.RECEIPT));
   }
 
   @Test
@@ -124,18 +124,18 @@ public class FrameHandlerTest {
     });
 
     await().atMost(10, TimeUnit.SECONDS).until(() ->
-        containsFrameWithCommand(receivedByServer, Frame.Command.CONNECT));
+        containsFrameWithCommand(receivedByServer, Command.CONNECT));
     await().atMost(10, TimeUnit.SECONDS).until(() ->
-        containsFrameWithCommand(receivedByClient, Frame.Command.CONNECTED));
+        containsFrameWithCommand(receivedByClient, Command.CONNECTED));
     await().atMost(10, TimeUnit.SECONDS).until(() ->
-        containsFrameWithCommand(writtenByServer, Frame.Command.CONNECTED));
+        containsFrameWithCommand(writtenByServer, Command.CONNECTED));
 
     await().atMost(10, TimeUnit.SECONDS).until(() -> containsFrameWithCommand(receivedByServer,
-        Frame.Command.PING));
+        Command.PING));
     await().atMost(10, TimeUnit.SECONDS).until(() -> containsFrameWithCommand(receivedByClient,
-        Frame.Command.PING));
+        Command.PING));
     await().atMost(10, TimeUnit.SECONDS).until(() -> containsFrameWithCommand(writtenByServer,
-        Frame.Command.PING));
+        Command.PING));
   }
 
   @Test
@@ -147,9 +147,9 @@ public class FrameHandlerTest {
     });
 
     await().atMost(10, TimeUnit.SECONDS).until(() ->
-        containsFrameWithCommand(receivedByServer, Frame.Command.CONNECT));
+        containsFrameWithCommand(receivedByServer, Command.CONNECT));
     await().atMost(10, TimeUnit.SECONDS).until(() ->
-        containsFrameWithCommand(receivedByClient, Frame.Command.CONNECTED));
+        containsFrameWithCommand(receivedByClient, Command.CONNECTED));
 
     StompClientConnectionImpl impl = (StompClientConnectionImpl) reference.get();
     NetSocket socket = impl.socket();
@@ -157,9 +157,9 @@ public class FrameHandlerTest {
     socket.write(UNKNOWN_FRAME);
 
     await().atMost(10, TimeUnit.SECONDS).until(() ->
-        containsFrameWithCommand(receivedByServer, Frame.Command.UNKNOWN));
+        containsFrameWithCommand(receivedByServer, Command.UNKNOWN));
 
-    Frame frame = getFrameWithCommand(receivedByServer, Frame.Command.UNKNOWN);
+    Frame frame = getFrameWithCommand(receivedByServer, Command.UNKNOWN);
     assertThat(frame).isNotNull();
     assertThat(frame.getHeader(Frame.STOMP_FRAME_COMMAND)).isEqualToIgnoringCase("YEAH");
   }
@@ -169,21 +169,21 @@ public class FrameHandlerTest {
     client.connect(v -> { });
 
     await().atMost(10, TimeUnit.SECONDS).until(() ->
-        containsFrameWithCommand(receivedByServer, Frame.Command.CONNECT));
+        containsFrameWithCommand(receivedByServer, Command.CONNECT));
     await().atMost(10, TimeUnit.SECONDS).until(() ->
-        containsFrameWithCommand(receivedByClient, Frame.Command.CONNECTED));
+        containsFrameWithCommand(receivedByClient, Command.CONNECTED));
 
     assertThat(connection).isNotNull();
     connection.write(UNKNOWN_FRAME);
 
     await().atMost(10, TimeUnit.SECONDS).until(() ->
-        containsFrameWithCommand(receivedByClient, Frame.Command.UNKNOWN));
-    Frame frame = getFrameWithCommand(receivedByClient, Frame.Command.UNKNOWN);
+        containsFrameWithCommand(receivedByClient, Command.UNKNOWN));
+    Frame frame = getFrameWithCommand(receivedByClient, Command.UNKNOWN);
     assertThat(frame).isNotNull();
     assertThat(frame.getHeader(Frame.STOMP_FRAME_COMMAND)).isEqualToIgnoringCase("YEAH");
   }
 
-  private boolean containsFrameWithCommand(List<Frame> frames, Frame.Command command) {
+  private boolean containsFrameWithCommand(List<Frame> frames, Command command) {
     for (Frame frame : frames) {
       if (frame.getCommand() == command) {
         return true;
@@ -192,7 +192,7 @@ public class FrameHandlerTest {
     return false;
   }
 
-  private boolean containsFrameWithCommandAndIsMarked(List<Frame> frames, Frame.Command command) {
+  private boolean containsFrameWithCommandAndIsMarked(List<Frame> frames, Command command) {
     for (Frame frame : frames) {
       if (frame.getCommand() == command  && frame.getHeader("mark") != null) {
         return true;
@@ -201,7 +201,7 @@ public class FrameHandlerTest {
     return false;
   }
 
-  private Frame getFrameWithCommand(List<Frame> frames, Frame.Command command) {
+  private Frame getFrameWithCommand(List<Frame> frames, Command command) {
     for (Frame frame : frames) {
       if (frame.getCommand() == command) {
         return frame;
@@ -218,13 +218,13 @@ public class FrameHandlerTest {
     AtomicReference<StompClientConnection> ref = new AtomicReference<>();
     stompClient
       .receivedFrameHandler(frame -> {
-        if (frame.getCommand() != Frame.Command.PING) {
+        if (frame.getCommand() != Command.PING) {
           received.add(frame);
         }
 
       })
       .writingFrameHandler(frame -> {
-        if (frame.getCommand() != Frame.Command.PING) {
+        if (frame.getCommand() != Command.PING) {
           sent.add(frame);
         }
       })
@@ -237,12 +237,12 @@ public class FrameHandlerTest {
         }
       });
 
-    await().until(() -> sent.stream().anyMatch(f -> f.getCommand() == Frame.Command.CONNECT));
-    await().until(() -> received.stream().anyMatch(f -> f.getCommand() == Frame.Command.CONNECTED));
+    await().until(() -> sent.stream().anyMatch(f -> f.getCommand() == Command.CONNECT));
+    await().until(() -> received.stream().anyMatch(f -> f.getCommand() == Command.CONNECTED));
 
     ref.get().disconnect();
 
-    await().until(() -> sent.stream().anyMatch(f -> f.getCommand() == Frame.Command.DISCONNECT));
+    await().until(() -> sent.stream().anyMatch(f -> f.getCommand() == Command.DISCONNECT));
 
   }
 

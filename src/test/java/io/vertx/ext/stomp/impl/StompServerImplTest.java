@@ -70,7 +70,7 @@ public class StompServerImplTest {
         .connectHandler(
             sf -> {
               Frame frame = sf.frame();
-              context.assertTrue(frame.getCommand() == Frame.Command.CONNECT);
+              context.assertTrue(frame.getCommand() == Command.CONNECT);
               context.assertTrue(frame.getHeader("login").equals("system"));
               server.close(ar2 -> {
                 ensureClosed(context, ar2, server);
@@ -92,7 +92,7 @@ public class StompServerImplTest {
         .connectHandler(
             sf -> {
               Frame frame = sf.frame();
-              context.assertTrue(frame.getCommand() == Frame.Command.CONNECT);
+              context.assertTrue(frame.getCommand() == Command.CONNECT);
               context.assertTrue(frame.getHeader("login").equals("system"));
               server.close(ar2 -> {
                 ensureClosed(context, ar2, server);
@@ -114,7 +114,7 @@ public class StompServerImplTest {
         StompServerHandler.create(vertx).connectHandler(
             sf -> {
               Frame frame = sf.frame();
-              context.assertTrue(frame.getCommand() == Frame.Command.CONNECT);
+              context.assertTrue(frame.getCommand() == Command.CONNECT);
               context.assertTrue(frame.getHeader("login").equals("system"));
               server.close(ar2 -> {
                 ensureClosed(context, ar2, server);
@@ -135,7 +135,7 @@ public class StompServerImplTest {
         StompServerHandler.create(vertx).connectHandler(
             sf -> {
               Frame frame = sf.frame();
-              context.assertTrue(frame.getCommand() == Frame.Command.CONNECT);
+              context.assertTrue(frame.getCommand() == Command.CONNECT);
               context.assertTrue(frame.getHeader("login").equals("system"));
               server.close(ar2 -> {
                 ensureClosed(context, ar2, server);

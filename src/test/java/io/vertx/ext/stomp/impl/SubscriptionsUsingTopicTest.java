@@ -89,7 +89,7 @@ public class SubscriptionsUsingTopicTest {
 
     assertThat(frames).hasSize(1);
     assertThat(frames.get(0).getBodyAsString()).isEqualTo("Hello");
-    assertThat(frames.get(0).getCommand()).isEqualTo(Frame.Command.MESSAGE);
+    assertThat(frames.get(0).getCommand()).isEqualTo(Command.MESSAGE);
     assertThat(frames.get(0).getHeader(Frame.MESSAGE_ID)).isNotNull().isNotEmpty();
     assertThat(frames.get(0).getHeader(Frame.SUBSCRIPTION)).isEqualTo("/topic");
     assertThat(frames.get(0).getHeader(Frame.DESTINATION)).isNotNull().isNotEmpty();
@@ -114,7 +114,7 @@ public class SubscriptionsUsingTopicTest {
 
     assertThat(frames).hasSize(1);
     assertThat(frames.get(0).getBodyAsString()).isEqualTo("Hello");
-    assertThat(frames.get(0).getCommand()).isEqualTo(Frame.Command.MESSAGE);
+    assertThat(frames.get(0).getCommand()).isEqualTo(Command.MESSAGE);
     assertThat(frames.get(0).getHeader(Frame.MESSAGE_ID)).isNotNull().isNotEmpty();
     assertThat(frames.get(0).getHeader(Frame.SUBSCRIPTION)).isEqualTo("/topic");
     assertThat(frames.get(0).getHeader(Frame.DESTINATION)).isNotNull().isNotEmpty();
@@ -145,13 +145,13 @@ public class SubscriptionsUsingTopicTest {
 
     assertThat(frames).hasSize(2);
     assertThat(frames.get(0).getBodyAsString()).isEqualTo("Hello");
-    assertThat(frames.get(0).getCommand()).isEqualTo(Frame.Command.MESSAGE);
+    assertThat(frames.get(0).getCommand()).isEqualTo(Command.MESSAGE);
     assertThat(frames.get(0).getHeader(Frame.MESSAGE_ID)).isNotNull().isNotEmpty();
     assertThat(frames.get(0).getHeader(Frame.SUBSCRIPTION)).isEqualTo("/topic");
     assertThat(frames.get(0).getHeader(Frame.DESTINATION)).isNotNull().isNotEmpty();
     assertThat(frames.get(0).getHeader(Frame.CONTENT_LENGTH)).isEqualTo("5"); // Content length as string.
     assertThat(frames.get(1).getBodyAsString()).isEqualTo("Hello");
-    assertThat(frames.get(1).getCommand()).isEqualTo(Frame.Command.MESSAGE);
+    assertThat(frames.get(1).getCommand()).isEqualTo(Command.MESSAGE);
     assertThat(frames.get(1).getHeader(Frame.MESSAGE_ID)).isNotNull().isNotEmpty();
     assertThat(frames.get(1).getHeader(Frame.SUBSCRIPTION)).isEqualTo("/topic");
     assertThat(frames.get(1).getHeader(Frame.DESTINATION)).isNotNull().isNotEmpty();
@@ -206,7 +206,7 @@ public class SubscriptionsUsingTopicTest {
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> !frames.isEmpty());
 
     assertThat(frames).hasSize(1);
-    assertThat(frames.get(0).getCommand()).isEqualTo(Frame.Command.ERROR);
+    assertThat(frames.get(0).getCommand()).isEqualTo(Command.ERROR);
     assertThat(frames.get(0).getHeader(Frame.DESTINATION)).isEqualTo("/topic");
     assertThat(frames.get(0).getBodyAsString()).contains("no subscriptions");
   }
@@ -238,13 +238,13 @@ public class SubscriptionsUsingTopicTest {
     assertThat(frames).doesNotContainKeys("error");
 
     Frame frame1 = frames.get("/topic");
-    assertThat(frame1.getCommand()).isEqualTo(Frame.Command.MESSAGE);
+    assertThat(frame1.getCommand()).isEqualTo(Command.MESSAGE);
     assertThat(frame1.getHeader(Frame.DESTINATION)).isEqualTo("/topic");
     assertThat(frame1.getHeader(Frame.SUBSCRIPTION)).isEqualTo("0");
     assertThat(frame1.getBodyAsString()).isEqualTo("Hello");
 
     frame1 = frames.get("/queue2");
-    assertThat(frame1.getCommand()).isEqualTo(Frame.Command.MESSAGE);
+    assertThat(frame1.getCommand()).isEqualTo(Command.MESSAGE);
     assertThat(frame1.getHeader(Frame.DESTINATION)).isEqualTo("/queue2");
     assertThat(frame1.getHeader(Frame.SUBSCRIPTION)).isEqualTo("1");
     assertThat(frame1.getBodyAsString()).isEqualTo("World");
@@ -279,7 +279,7 @@ public class SubscriptionsUsingTopicTest {
       connection.send("/topic", Buffer.buffer("Hello"));
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> frames.size() == 2 && frames.get(1).getCommand() == Frame.Command.ERROR);
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> frames.size() == 2 && frames.get(1).getCommand() == Command.ERROR);
   }
 
   @Test
@@ -311,7 +311,7 @@ public class SubscriptionsUsingTopicTest {
       connection.errorHandler(frames::add);
     }));
 
-    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> frames.size() == 2 && frames.get(1).getCommand() == Frame.Command.ERROR);
+    Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> frames.size() == 2 && frames.get(1).getCommand() == Command.ERROR);
   }
 
   @Test

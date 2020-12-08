@@ -24,10 +24,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
 import io.vertx.core.net.NetClient;
-import io.vertx.ext.stomp.Frame;
-import io.vertx.ext.stomp.StompClient;
-import io.vertx.ext.stomp.StompClientConnection;
-import io.vertx.ext.stomp.StompClientOptions;
+import io.vertx.ext.stomp.*;
 import io.vertx.ext.stomp.utils.Headers;
 
 /**
@@ -253,7 +250,7 @@ public class StompClientImpl implements StompClient {
     }
     headers.put(Frame.HEARTBEAT, Frame.Heartbeat.create(options.getHeartbeat()).toString());
 
-    Frame.Command cmd = options.isUseStompFrame() ? Frame.Command.STOMP : Frame.Command.CONNECT;
+    Command cmd = options.isUseStompFrame() ? Command.STOMP : Command.CONNECT;
     return new Frame(cmd, headers, null);
   }
 
