@@ -86,10 +86,17 @@ public class EventBusBridge extends Topic {
               chosen.get().connection.write(stompFrame);
             }
           } else {
-            subscriptions.stream().filter(s -> s.destination.equals(address)).forEach(s -> {
-              Frame stompFrame = transform(msg, s);
-              s.connection.write(stompFrame);
-            });
+            for (Topic.Subscription sub : subscriptions) {
+              if (sub.destination.equals(address)) {
+                Frame stompFrame = transform(msg, sub);
+                try {
+                  sub.connection.write(stompFrame);
+                } catch (Exception e) {
+                  sub.connection.close();
+                  break;
+                }
+              }
+            }
           }
         }));
       }
