@@ -9,13 +9,13 @@
   </parent>
 
   <artifactId>vertx-stomp</artifactId>
-  <version>3.9.7-SNAPSHOT</version>
+  <version>3.9.7</version>
 
   <name>Vert.x Stomp</name>
   <description>Stomp support for Vert.x 3</description>
 
   <properties>
-    <stack.version>3.9.7-SNAPSHOT</stack.version>
+    <stack.version>3.9.7</stack.version>
   </properties>
 
   <dependencyManagement>
