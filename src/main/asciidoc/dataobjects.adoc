@@ -129,6 +129,7 @@ Sets the STOMP server port. <code>61613</code> by default.
 |[[tcpKeepAlive]]`@tcpKeepAlive`|`Boolean`|-
 |[[tcpNoDelay]]`@tcpNoDelay`|`Boolean`|-
 |[[tcpQuickAck]]`@tcpQuickAck`|`Boolean`|-
+|[[tcpUserTimeout]]`@tcpUserTimeout`|`Number (int)`|-
 |[[trafficClass]]`@trafficClass`|`Number (int)`|-
 |[[trailingLine]]`@trailingLine`|`Boolean`|+++
 Sets whether or not an empty line should be appended to the written STOMP frame. This option is disabled by
@@ -227,6 +228,7 @@ Sets the STOMP protocol versions supported by the server. Versions must be given
 |[[tcpKeepAlive]]`@tcpKeepAlive`|`Boolean`|-
 |[[tcpNoDelay]]`@tcpNoDelay`|`Boolean`|-
 |[[tcpQuickAck]]`@tcpQuickAck`|`Boolean`|-
+|[[tcpUserTimeout]]`@tcpUserTimeout`|`Number (int)`|-
 |[[timeFactor]]`@timeFactor`|`Number (int)`|+++
 Sets the time factor.
 +++
