@@ -55,7 +55,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   private volatile long pinger = -1L;
   private volatile long ponger = -1L;
 
-  private Handler<StompClientConnection> pingHandler = connection -> connection.send(Frames.ping());
+  private Handler<StompClientConnection> pingHandler = connection -> connection.send(Frames.ping(), null);
   private Handler<StompClientConnection> closeHandler;
   private Handler<StompClientConnection> droppedHandler = v -> {
     // Do nothing by default.
