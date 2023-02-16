@@ -196,7 +196,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
 
   @Override
   public synchronized StompClientConnection send(Frame frame, Handler<AsyncResult<Frame>> receiptHandler) {
-    if (receiptHandler != null) {
+    if (receiptHandler != null && frame.getCommand() != Command.PING) {
       String receiptId = UUID.randomUUID().toString();
       frame.addHeader(Frame.RECEIPT, receiptId);
       Promise<Void> promise = Promise.promise();
@@ -206,7 +206,12 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     if (writingHandler != null) {
       writingHandler.handle(frame);
     }
-    socket.write(frame.toBuffer(client.options().isTrailingLine()));
+    Future<Void> written = socket.write(frame.toBuffer(client.options().isTrailingLine()));
+    if (receiptHandler != null && frame.getCommand() == Command.PING) {
+      written
+        .map(frame)
+        .onComplete(receiptHandler);
+    }
     return this;
   }
 
