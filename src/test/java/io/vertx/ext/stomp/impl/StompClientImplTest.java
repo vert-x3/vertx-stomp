@@ -34,6 +34,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -172,6 +173,19 @@ public class StompClientImplTest {
     assertNotNull(reference.get().session());
     assertNotNull(reference.get().server());
     assertNotNull(reference.get().version());
+  }
+
+  @Test
+  public void testPingFrameGetAckedImmediately() throws Exception {
+    CompletableFuture<Void> test = new CompletableFuture<>();
+    StompClient client = StompClient.create(vertx);
+    client.connect()
+      .onSuccess(conn -> conn
+        .send(Frames.PING)
+        .onSuccess(v -> test.complete(null))
+        .onFailure(test::completeExceptionally))
+      .onFailure(test::completeExceptionally);
+    test.get(1, TimeUnit.MINUTES);
   }
 
   @Test
