@@ -63,8 +63,6 @@ public class WebSocketBridgeTest {
   @Before
   public void setUp() {
     vertx = Vertx.vertx();
-    AsyncLock<HttpServer> httpLock = new AsyncLock<>();
-    AsyncLock<StompServer> stompLock = new AsyncLock<>();
 
     vertx = Vertx.vertx();
 
@@ -73,15 +71,24 @@ public class WebSocketBridgeTest {
          .bridge(new BridgeOptions()
           .addInboundPermitted(new PermittedOptions().setAddressRegex(".*"))
           .addOutboundPermitted(new PermittedOptions().setAddressRegex(".*")))
-        )
-        .listen(stompLock.handler());
-    stompLock.waitForSuccess();
+        );
 
     HttpServerOptions httpOptions = new HttpServerOptions()
       .setMaxWebSocketFrameSize(MAX_WEBSOCKET_FRAME_SIZE)
-      .setMaxWebSocketMessageSize(2048);
+      .setMaxWebSocketMessageSize(2048)
+      .setPort(8080);
 
-    http = vertx.createHttpServer(httpOptions).webSocketHandler(server.webSocketHandler()).listen(8080, httpLock.handler());
+    http = vertx.createHttpServer(httpOptions).webSocketHandler(server.webSocketHandler());
+  }
+
+  private void startServers() {
+    if (server.options().getPort() != -1) {
+      AsyncLock<StompServer> stompLock = new AsyncLock<>();
+      server.listen(stompLock.handler());
+      stompLock.waitForSuccess();
+    }
+    AsyncLock<HttpServer> httpLock = new AsyncLock<>();
+    http.listen(httpLock.handler());
     httpLock.waitForSuccess();
   }
 
@@ -105,6 +112,8 @@ public class WebSocketBridgeTest {
 
   @Test
   public void testConnection() {
+    startServers();
+
     AtomicReference<Throwable> error = new AtomicReference<>();
     AtomicReference<Buffer> frame = new AtomicReference<>();
     AtomicReference<WebSocket> socket = new AtomicReference<>();
@@ -128,6 +137,8 @@ public class WebSocketBridgeTest {
 
   @Test
   public void testReceivingAMessage() {
+    startServers();
+
     AtomicReference<Throwable> error = new AtomicReference<>();
     AtomicReference<Buffer> frame = new AtomicReference<>();
     AtomicReference<WebSocket> socket = new AtomicReference<>();
@@ -172,6 +183,8 @@ public class WebSocketBridgeTest {
 
   @Test
   public void testSendingAMessage() {
+    startServers();
+
     AtomicReference<Throwable> error = new AtomicReference<>();
     AtomicReference<Frame> frame = new AtomicReference<>();
     AtomicReference<WebSocket> socket = new AtomicReference<>();
@@ -219,6 +232,8 @@ public class WebSocketBridgeTest {
       Regression for #35
    */
   public void testSendingAMessageBiggerThanSocketFrameSize() {
+    startServers();
+
     AtomicReference<Throwable> error = new AtomicReference<>();
     List<WebSocketFrame> wsBuffers = new ArrayList<>();
     List<Buffer> stompBuffers = new ArrayList<>();
@@ -291,6 +306,8 @@ public class WebSocketBridgeTest {
   }
   @Test
   public void testPingFromServer() {
+    startServers();
+
     AtomicReference<Throwable> error = new AtomicReference<>();
     AtomicReference<WebSocket> socket = new AtomicReference<>();
     AtomicReference<Boolean> flag = new AtomicReference<>();
@@ -324,21 +341,15 @@ public class WebSocketBridgeTest {
 
   @Test
   public void testWebSocketsWhenTCPDisabled() {
-    AsyncLock<Void> lock = new AsyncLock<>();
-    server.close(lock.handler());
-    lock.waitForSuccess();
-
-    lock = new AsyncLock<>();
-    http.close(lock.handler());
-    lock.waitForSuccess();
-
     server = StompServer.create(vertx, new StompServerOptions().setWebsocketBridge(true).setPort(-1)
         .setWebsocketPath("/something"))
         .handler(StompServerHandler.create(vertx));
 
-    AsyncLock<HttpServer> httpLock = new AsyncLock<>();
-    http = vertx.createHttpServer().webSocketHandler(server.webSocketHandler()).listen(8080, httpLock.handler());
-    httpLock.waitForSuccess();
+    http = vertx
+      .createHttpServer(new HttpServerOptions().setPort(8080))
+      .webSocketHandler(server.webSocketHandler());
+
+    startServers();
 
     AtomicReference<Throwable> error = new AtomicReference<>();
     AtomicReference<WebSocket> sender = new AtomicReference<>();
@@ -391,6 +402,4 @@ public class WebSocketBridgeTest {
     receiver.get().close();
     sender.get().close();
   }
-
-
 }

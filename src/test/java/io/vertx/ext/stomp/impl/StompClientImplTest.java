@@ -60,17 +60,17 @@ public class StompClientImplTest {
   @Rule
   public RepeatRule rule = new RepeatRule();
 
-
-
   @Before
   public void setUp() {
-    AsyncLock<StompServer> lock = new AsyncLock<>();
     vertx = Vertx.vertx();
     options = new StompServerOptions();
     server = StompServer.create(vertx, options)
-        .handler(StompServerHandler.create(vertx))
-        .listen(lock.handler());
+        .handler(StompServerHandler.create(vertx));
+  }
 
+  private void startServer() {
+    AsyncLock<StompServer> lock = new AsyncLock<>();
+    server.listen().onComplete(lock.handler());
     lock.waitForSuccess();
   }
 
@@ -156,6 +156,7 @@ public class StompClientImplTest {
 
   @Test
   public void testConnection() throws InterruptedException {
+    startServer();
     CountDownLatch latch = new CountDownLatch(1);
     AtomicReference<StompClientConnection> reference = new AtomicReference<>();
     StompClient client = StompClient.create(vertx);
@@ -177,6 +178,7 @@ public class StompClientImplTest {
 
   @Test
   public void testPingFrameGetAckedImmediately() throws Exception {
+    startServer();
     CompletableFuture<Void> test = new CompletableFuture<>();
     StompClient client = StompClient.create(vertx);
     client.connect()
@@ -191,6 +193,7 @@ public class StompClientImplTest {
   @Test
   public void testConnectionWithTrailingLine() throws InterruptedException {
     options.setTrailingLine(true);
+    startServer();
     CountDownLatch latch = new CountDownLatch(1);
     AtomicReference<StompClientConnection> reference = new AtomicReference<>();
     StompClient client = StompClient.create(vertx, new StompClientOptions().setTrailingLine(true));
@@ -213,6 +216,7 @@ public class StompClientImplTest {
 
   @Test
   public void testConnectionWithStompFrame() throws InterruptedException {
+    startServer();
     CountDownLatch latch = new CountDownLatch(1);
     AtomicReference<StompClientConnection> reference = new AtomicReference<>();
     StompClient client = StompClient.create(vertx, new StompClientOptions().setUseStompFrame(true));
@@ -235,6 +239,7 @@ public class StompClientImplTest {
   @Test
   public void testConnectionWithStompFrameWithTrailingLine() throws InterruptedException {
     options.setTrailingLine(true);
+    startServer();
     CountDownLatch latch = new CountDownLatch(1);
     AtomicReference<StompClientConnection> reference = new AtomicReference<>();
     StompClient client = StompClient.create(vertx, new StompClientOptions().setUseStompFrame(true).setTrailingLine(true));
@@ -256,6 +261,7 @@ public class StompClientImplTest {
 
   @Test
   public void testSendingMessages() {
+    startServer();
     AtomicReference<AsyncResult<Frame>> ref = new AtomicReference<>();
     StompClient client = StompClient.create(vertx);
     client.connect(ar -> {
@@ -273,6 +279,7 @@ public class StompClientImplTest {
   @Test
   public void testSendingMessagesWithTrailingLine() {
     options.setTrailingLine(true);
+    startServer();
     AtomicReference<AsyncResult<Frame>> ref = new AtomicReference<>();
     StompClient client = StompClient.create(vertx, new StompClientOptions().setTrailingLine(true));
     client.connect(ar -> {
@@ -289,6 +296,7 @@ public class StompClientImplTest {
 
   @Test
   public void testConnectionAndDisconnect() throws InterruptedException {
+    startServer();
     CountDownLatch latch = new CountDownLatch(1);
     AtomicReference<AsyncResult<Frame>> reference = new AtomicReference<>();
     StompClient client = StompClient.create(vertx, new StompClientOptions().setUseStompFrame(true));
@@ -310,6 +318,7 @@ public class StompClientImplTest {
 
   @Test
   public void testConnectionAndDisconnectWithCustomFrame() throws InterruptedException {
+    startServer();
     CountDownLatch latch = new CountDownLatch(1);
     AtomicReference<AsyncResult<Frame>> reference = new AtomicReference<>();
     StompClient client = StompClient.create(vertx, new StompClientOptions().setUseStompFrame(true));
@@ -334,18 +343,12 @@ public class StompClientImplTest {
   @Test
   public void testClientHeartbeatWhenNoServerActivity() {
     AtomicReference<StompClientConnection> reference = new AtomicReference<>();
-    AsyncLock<Void> closeLock = new AsyncLock<>();
-    server.close(closeLock.handler());
-    closeLock.waitForSuccess();
-
-    AsyncLock<StompServer> lock = new AsyncLock<>();
     server = StompServer.create(vertx,
         new StompServerOptions().setHeartbeat(new JsonObject().put("x", 100).put("y", 100)))
         // Disable ping frame:
         .handler(StompServerHandler.create(vertx).pingHandler(v -> {
-        }))
-        .listen(lock.handler());
-    lock.waitForSuccess();
+        }));
+    startServer();
 
     StompClient client = StompClient.create(vertx, new StompClientOptions().setHeartbeat(new JsonObject().put
         ("x", 100).put("y", 100)));
@@ -360,15 +363,10 @@ public class StompClientImplTest {
   @Test
   public void testClientHeartbeatWithServerActivity() throws InterruptedException {
     AtomicReference<StompClientConnection> reference = new AtomicReference<>();
-    AsyncLock lock = new AsyncLock<>();
-    server.close(lock.handler());
-    lock.waitForSuccess();
-    lock = new AsyncLock();
     server = StompServer.create(vertx,
         new StompServerOptions().setHeartbeat(new JsonObject().put("x", 100).put("y", 100)))
-        .handler(StompServerHandler.create(vertx))
-        .listen(lock.handler());
-    lock.waitForSuccess();
+        .handler(StompServerHandler.create(vertx));
+    startServer();
 
     StompClient client = StompClient.create(vertx, new StompClientOptions().setHeartbeat(new JsonObject()
         .put("x", 100).put("y", 100)));
@@ -380,17 +378,12 @@ public class StompClientImplTest {
 
   @Test
   public void testServerHeartbeatWhenNoClientActivity() {
-    AsyncLock<Void> closeLock = new AsyncLock<>();
     AtomicReference<StompClientConnection> reference = new AtomicReference<>();
-    server.close(closeLock.handler());
-    closeLock.waitForSuccess();
 
-    AsyncLock<StompServer> lock = new AsyncLock<>();
     server = StompServer.create(vertx,
         new StompServerOptions().setHeartbeat(new JsonObject().put("x", 100).put("y", 100)))
-        .handler(StompServerHandler.create(vertx))
-        .listen(lock.handler());
-    lock.waitForSuccess();
+        .handler(StompServerHandler.create(vertx));
+    startServer();
 
     StompClient client = StompClient.create(vertx, new StompClientOptions().setHeartbeat(new JsonObject()
         .put("x", 100).put("y", 100)));
@@ -410,10 +403,6 @@ public class StompClientImplTest {
   @Test
   public void testAsymmetricHeartbeatTime() throws InterruptedException {
     AtomicReference<StompClientConnection> reference = new AtomicReference<>();
-    AsyncLock lock = new AsyncLock<>();
-    server.close(lock.handler());
-    lock.waitForSuccess();
-    lock = new AsyncLock();
 
     List<Long> serverReceivedPingTimestamps = new ArrayList<>();
     server = StompServer.create(vertx,
@@ -422,10 +411,8 @@ public class StompClientImplTest {
         if(Command.PING.equals(frame.frame().getCommand())) {
           serverReceivedPingTimestamps.add(System.currentTimeMillis());
         }
-      })).listen(lock.handler());
-
-
-    lock.waitForSuccess();
+      }));
+    startServer();
 
     List<Long> clientReceivedPingTimestamps = new ArrayList<>();
     StompClient client = StompClient.create(vertx, new StompClientOptions().setHeartbeat(new JsonObject()
@@ -454,10 +441,6 @@ public class StompClientImplTest {
   public void testConnectionDroppedHandler() throws InterruptedException {
     AtomicBoolean flag = new AtomicBoolean(true);
     AtomicBoolean dropped = new AtomicBoolean(false);
-    AsyncLock lock = new AsyncLock<>();
-    server.close(lock.handler());
-    lock.waitForSuccess();
-    lock = new AsyncLock();
     server = StompServer.create(vertx,
         new StompServerOptions().setHeartbeat(new JsonObject().put("x", 100).put("y", 100)))
         .handler(StompServerHandler.create(vertx).pingHandler(connection -> {
@@ -466,9 +449,8 @@ public class StompClientImplTest {
           }
           // When the flag is set to false, the ping are not sent anymore. We use this mechanism to mimic a
           // server not sending ping anymore.
-        }))
-        .listen(lock.handler());
-    lock.waitForSuccess();
+        }));
+    startServer();
 
     StompClient client = StompClient.create(vertx, new StompClientOptions().setHeartbeat(new JsonObject()
         .put("x", 100).put("y", 100)));
@@ -489,10 +471,6 @@ public class StompClientImplTest {
     AtomicInteger dropped = new AtomicInteger(0);
     AtomicInteger connectionCounter = new AtomicInteger();
     List<ServerFrame> frames = new ArrayList<>();
-    AsyncLock lock = new AsyncLock<>();
-    server.close(lock.handler());
-    lock.waitForSuccess();
-    lock = new AsyncLock();
     server = StompServer.create(vertx,
         new StompServerOptions()
             .setHeartbeat(new JsonObject().put("x", 1000).put("y", 1000)))
@@ -502,9 +480,8 @@ public class StompClientImplTest {
           }
           // When the flag is set to false, the ping are not sent anymore. We use this mechanism to mimic a
           // server not sending ping anymore.
-        }).receivedFrameHandler(frames::add))
-        .listen(lock.handler());
-    lock.waitForSuccess();
+        }).receivedFrameHandler(frames::add));
+    startServer();
 
     StompClient client = StompClient.create(vertx, new StompClientOptions().setHeartbeat(new JsonObject()
         .put("x", 1000).put("y", 1000)));
@@ -526,10 +503,6 @@ public class StompClientImplTest {
     AtomicInteger dropped = new AtomicInteger(0);
     AtomicInteger connectionCounter = new AtomicInteger();
     List<ServerFrame> frames = new ArrayList<>();
-    AsyncLock lock = new AsyncLock<>();
-    server.close(lock.handler());
-    lock.waitForSuccess();
-    lock = new AsyncLock();
     server = StompServer.create(vertx,
         new StompServerOptions()
             .setHeartbeat(new JsonObject().put("x", 1000).put("y", 1000)))
@@ -541,9 +514,8 @@ public class StompClientImplTest {
           }
           // When the flag is set to false, the ping are not sent anymore. We use this mechanism to mimic a
           // server not sending ping anymore.
-        }).receivedFrameHandler(frames::add))
-        .listen(lock.handler());
-    lock.waitForSuccess();
+        }).receivedFrameHandler(frames::add));
+    startServer();
 
     StompClient client = StompClient.create(vertx, new StompClientOptions().setHeartbeat(new JsonObject()
         .put("x", 1000).put("y", 1000)));
@@ -588,16 +560,11 @@ public class StompClientImplTest {
 
   @Test
   public void testThatDroppedHandlerIsNotCalledWhenTheClientIsClosing() {
-    AsyncLock lock = new AsyncLock<>();
-    server.close(lock.handler());
-    lock.waitForSuccess();
-    lock = new AsyncLock();
     server = StompServer.create(vertx,
         new StompServerOptions()
             .setHeartbeat(new JsonObject().put("x", 1000).put("y", 1000)))
-        .handler(StompServerHandler.create(vertx))
-        .listen(lock.handler());
-    lock.waitForSuccess();
+        .handler(StompServerHandler.create(vertx));
+    startServer();
 
     StompClient client = StompClient.create(vertx, new StompClientOptions().setHeartbeat(new JsonObject()
         .put("x", 1000).put("y", 1000)));
