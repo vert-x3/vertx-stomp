@@ -63,6 +63,7 @@ public interface StompClient {
    * @return the current {@link StompClient}
    */
   @Fluent
+  @Deprecated
   StompClient connect(int port, String host, Handler<AsyncResult<StompClientConnection>> resultHandler);
 
   /**
@@ -78,6 +79,7 @@ public interface StompClient {
    * @return the current {@link StompClient}
    */
   @Fluent
+  @Deprecated
   StompClient connect(NetClient net, Handler<AsyncResult<StompClientConnection>> resultHandler);
 
   /**
@@ -95,6 +97,7 @@ public interface StompClient {
    * @return the current {@link StompClient}
    */
   @Fluent
+  @Deprecated
   StompClient connect(int port, String host, NetClient net,
                       Handler<AsyncResult<StompClientConnection>> resultHandler);
 
@@ -112,6 +115,7 @@ public interface StompClient {
    * @return the current {@link StompClient}
    */
   @Fluent
+  @Deprecated
   StompClient connect(Handler<AsyncResult<StompClientConnection>> resultHandler);
 
   /**
