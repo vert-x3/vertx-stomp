@@ -186,6 +186,7 @@ public interface StompServerHandler extends Handler<ServerFrame> {
    * @return the current {@link StompServerHandler}
    */
   @Fluent
+  @Deprecated
   StompServerHandler onAuthenticationRequest(StompServerConnection connection, String login, String passcode,
                                              Handler<AsyncResult<Boolean>> handler);
 

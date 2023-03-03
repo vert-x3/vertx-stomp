@@ -121,6 +121,7 @@ public interface StompServer {
    * @return the current {@link StompServer}
    */
   @Fluent
+  @Deprecated
   StompServer listen(Handler<AsyncResult<StompServer>> handler);
 
   /**
@@ -132,6 +133,7 @@ public interface StompServer {
    * @return the current {@link StompServer}
    */
   @Fluent
+  @Deprecated
   StompServer listen(int port, Handler<AsyncResult<StompServer>> handler);
 
   /**
@@ -144,6 +146,7 @@ public interface StompServer {
    * @return the current {@link StompServer}
    */
   @Fluent
+  @Deprecated
   StompServer listen(int port, String host, Handler<AsyncResult<StompServer>> handler);
 
   /**
@@ -151,6 +154,7 @@ public interface StompServer {
    *
    * @param completionHandler handler called once the server has been stopped
    */
+  @Deprecated
   void close(Handler<AsyncResult<Void>> completionHandler);
 
   /**

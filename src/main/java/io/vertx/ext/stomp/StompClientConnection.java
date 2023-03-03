@@ -76,6 +76,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
+  @Deprecated
   StompClientConnection send(Map<String, String> headers, Buffer body, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
@@ -97,6 +98,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
+  @Deprecated
   StompClientConnection send(String destination, Buffer body, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
@@ -116,6 +118,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
+  @Deprecated
   StompClientConnection send(Frame frame, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
@@ -141,6 +144,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
+  @Deprecated
   StompClientConnection send(String destination, Map<String, String> headers, Buffer body, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
@@ -162,6 +166,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
+  @Deprecated
   StompClientConnection subscribe(String destination, Handler<Frame> handler, Handler<AsyncResult<String>> receiptHandler);
 
   /**
@@ -189,6 +194,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
+  @Deprecated
   StompClientConnection subscribe(String destination, Map<String, String> headers, Handler<Frame> handler, Handler<AsyncResult<String>> receiptHandler);
 
   /**
@@ -210,6 +216,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
+  @Deprecated
   StompClientConnection unsubscribe(String destination, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
@@ -233,6 +240,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
+  @Deprecated
   StompClientConnection unsubscribe(String destination, Map<String, String> headers, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
@@ -285,6 +293,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
+  @Deprecated
   StompClientConnection beginTX(String id, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
@@ -317,6 +326,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
+  @Deprecated
   StompClientConnection beginTX(String id, Map<String, String> headers, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
@@ -337,6 +347,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
+  @Deprecated
   StompClientConnection commit(String id, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
@@ -361,6 +372,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
+  @Deprecated
   StompClientConnection commit(String id, Map<String, String> headers, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
@@ -381,6 +393,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
+  @Deprecated
   StompClientConnection abort(String id, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
@@ -405,6 +418,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
+  @Deprecated
   StompClientConnection abort(String id, Map<String, String> headers, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
@@ -425,6 +439,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
+  @Deprecated
   StompClientConnection disconnect(Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
@@ -447,6 +462,7 @@ public interface StompClientConnection {
    * @return a future resolved with the sent frame when the {@code RECEIPT} frame associated with the sent frame has been received
    */
   @Fluent
+  @Deprecated
   StompClientConnection disconnect(Frame frame, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
@@ -469,6 +485,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
+  @Deprecated
   StompClientConnection ack(String id, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
@@ -491,6 +508,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
+  @Deprecated
   StompClientConnection nack(String id, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
@@ -515,6 +533,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
+  @Deprecated
   StompClientConnection ack(String id, String txId, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
@@ -539,6 +558,7 @@ public interface StompClientConnection {
    * @return the current {@link StompClientConnection}
    */
   @Fluent
+  @Deprecated
   StompClientConnection nack(String id, String txId, Handler<AsyncResult<Frame>> receiptHandler);
 
 
