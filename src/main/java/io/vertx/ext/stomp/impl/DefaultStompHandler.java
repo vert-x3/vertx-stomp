@@ -23,12 +23,12 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.impl.ContextInternal;
 import io.vertx.core.impl.future.PromiseInternal;
-import io.vertx.core.json.JsonObject;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
 import io.vertx.core.shareddata.LocalMap;
 import io.vertx.ext.auth.User;
 import io.vertx.ext.auth.authentication.AuthenticationProvider;
+import io.vertx.ext.auth.authentication.UsernamePasswordCredentials;
 import io.vertx.ext.stomp.Acknowledgement;
 import io.vertx.ext.stomp.BridgeOptions;
 import io.vertx.ext.stomp.DefaultAbortHandler;
@@ -443,14 +443,12 @@ public class DefaultStompHandler implements StompServerHandler {
     }
 
     context.runOnContext(v ->
-        auth.authenticate(new JsonObject().put("username", login).put("password", passcode), ar -> {
-          if (ar.succeeded()) {
+        auth.authenticate(new UsernamePasswordCredentials(login, passcode))
+          .onFailure(err -> context.runOnContext(v2 -> handler.handle(Future.succeededFuture(false))))
+          .onSuccess(user -> {
             // make the user available
-            users.put(connection.session(), ar.result());
+            users.put(connection.session(), user);
             context.runOnContext(v2 -> handler.handle(Future.succeededFuture(true)));
-          } else {
-            context.runOnContext(v2 -> handler.handle(Future.succeededFuture(false)));
-          }
         }));
     return this;
   }
