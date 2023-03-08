@@ -1,11 +1,6 @@
 = vert.x-stomp
 
-image:https://github.com/vert-x3/vertx-stomp/workflows/CI/badge.svg?branch=master["Build Status", link="https://github.com/vert-x3/vertx-stomp/actions?query=workflow%3ACI"]
+image:https://github.com/vert-x3/vertx-stomp/actions/workflows/ci-5.x.yml/badge.svg["Build Status (5.x)",link="https://github.com/vert-x3/vertx-stomp/actions/workflows/ci-5.x.yml"]
+image:https://github.com/vert-x3/vertx-stomp/actions/workflows/ci-4.x.yml/badge.svg["Build Status (4.x)",link="https://github.com/vert-x3/vertx-stomp/actions/workflows/ci-4.x.yml"]
 
 A vert.x implementation of the STOMP specification. It provides a STOMP server and client.
-
-* http://vertx.io/docs/vertx-stomp/java/[Java documentation]
-* http://vertx.io/docs/vertx-stomp/js/[JavaScript documentation]
-* http://vertx.io/docs/vertx-stomp/kotlin/[Kotlin documentation]
-* http://vertx.io/docs/vertx-stomp/groovy/[Groovy documentation]
-* http://vertx.io/docs/vertx-stomp/ruby/[Ruby documentation]
