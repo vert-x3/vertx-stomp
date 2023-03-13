@@ -49,7 +49,9 @@ public class StompServerExamples {
   public void example3(Vertx vertx) {
     StompServer server = StompServer.create(vertx)
         .handler(StompServerHandler.create(vertx))
-        .listen(ar -> {
+    server
+      .listen()
+      .onComplete(ar -> {
           if (ar.failed()) {
             System.out.println("Failing to start the STOMP server : " + ar.cause().getMessage());
           } else {
@@ -115,7 +117,9 @@ public class StompServerExamples {
   }
 
   public void example10(StompServer server) {
-    server.close(ar -> {
+    server
+      .close()
+      .onComplete(ar -> {
       if (ar.succeeded()) {
         System.out.println("The STOMP server has been closed");
       } else {
