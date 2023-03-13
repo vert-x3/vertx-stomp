@@ -64,8 +64,8 @@ public class FrameHandlerTest {
         .writingFrameHandler(frame -> {
           frame.frame().addHeader("mark", "true");
           writtenByServer.add(frame.frame());
-        })
-        .listen(lock.handler());
+        });
+    server.listen().onComplete(lock.handler());
     lock.waitForSuccess();
 
     client = StompClient.create(vertx);
@@ -78,10 +78,10 @@ public class FrameHandlerTest {
   @After
   public void tearDown() {
     AsyncLock<Void> lock = new AsyncLock<>();
-    server.close(lock.handler());
+    server.close().onComplete(lock.handler());
     lock.waitForSuccess();
     lock = new AsyncLock<>();
-    vertx.close(lock.handler());
+    vertx.close().onComplete(lock.handler());
     lock.waitForSuccess();
     client.close();
 
@@ -92,7 +92,7 @@ public class FrameHandlerTest {
   @Test
   public void testFrameHandler() {
     AtomicReference<StompClientConnection> reference = new AtomicReference<>();
-    client.connect(connection -> {
+    client.connect().onComplete(connection -> {
       reference.set(connection.result());
     });
 
@@ -103,9 +103,7 @@ public class FrameHandlerTest {
     await().atMost(10, TimeUnit.SECONDS).until(() ->
         containsFrameWithCommand(writtenByServer, Command.CONNECTED));
 
-    reference.get().send("foo", Buffer.buffer("hello"), f -> {
-      // just there to receive a reply.
-    });
+    reference.get().send("foo", Buffer.buffer("hello"));
 
     await().atMost(10, TimeUnit.SECONDS).until(() -> containsFrameWithCommandAndIsMarked(receivedByServer,
         Command.SEND));
@@ -119,7 +117,7 @@ public class FrameHandlerTest {
   public void testFrameHandlerWithPingFrames() {
     AtomicReference<StompClientConnection> reference = new AtomicReference<>();
 
-    client.connect(connection -> {
+    client.connect().onComplete(connection -> {
       reference.set(connection.result());
     });
 
@@ -142,7 +140,7 @@ public class FrameHandlerTest {
   public void testFrameHandlerWithInvalidFramesReceivedByServer() throws InterruptedException {
     AtomicReference<StompClientConnection> reference = new AtomicReference<>();
 
-    client.connect(connection -> {
+    client.connect().onComplete(connection -> {
       reference.set(connection.result());
     });
 
@@ -166,7 +164,7 @@ public class FrameHandlerTest {
 
   @Test
   public void testFrameHandlerWithInvalidFramesReceivedByClient() throws InterruptedException {
-    client.connect(v -> { });
+    client.connect();
 
     await().atMost(10, TimeUnit.SECONDS).until(() ->
         containsFrameWithCommand(receivedByServer, Command.CONNECT));
@@ -228,7 +226,7 @@ public class FrameHandlerTest {
           sent.add(frame);
         }
       })
-      .connect(ar -> {
+      .connect().onComplete(ar -> {
         ref.set(ar.result());
         if (ar.succeeded()) {
           ref.set(ar.result());

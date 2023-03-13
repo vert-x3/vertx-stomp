@@ -53,8 +53,8 @@ public class TestSendFailure {
                 server.close();
               }
             })
-            .destinationFactory(new QueueManagingAcknowledgmentsFactory()))
-        .listen(context.asyncAssertSuccess());
+            .destinationFactory(new QueueManagingAcknowledgmentsFactory()));
+    server.listen().onComplete(context.asyncAssertSuccess());
   }
 
   @After
@@ -62,8 +62,8 @@ public class TestSendFailure {
     if (client != null) {
       client.close();
     }
-    server.close(context.asyncAssertSuccess());
-    vertx.close(context.asyncAssertSuccess());
+    server.close().onComplete(context.asyncAssertSuccess());
+    vertx.close().onComplete(context.asyncAssertSuccess());
   }
 
 
@@ -71,8 +71,8 @@ public class TestSendFailure {
   public void testSimpleAck(TestContext ctx) {
     Handler<AsyncResult<Frame>> receiptHandler = ctx.asyncAssertFailure();
     client = StompClient.create(vertx);
-    client.connect(ctx.asyncAssertSuccess(conn -> {
-      conn.send("/queue", Buffer.buffer("Hello"), receiptHandler);
+    client.connect().onComplete(ctx.asyncAssertSuccess(conn -> {
+      conn.send("/queue", Buffer.buffer("Hello")).onComplete(receiptHandler);
     }));
   }
 }

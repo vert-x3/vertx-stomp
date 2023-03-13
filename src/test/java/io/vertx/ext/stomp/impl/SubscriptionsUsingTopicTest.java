@@ -17,6 +17,8 @@
 package io.vertx.ext.stomp.impl;
 
 import com.jayway.awaitility.Awaitility;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.stomp.*;
@@ -52,8 +54,8 @@ public class SubscriptionsUsingTopicTest {
     AsyncLock<StompServer> lock = new AsyncLock<>();
     vertx = Vertx.vertx();
     server = StompServer.create(vertx)
-        .handler(StompServerHandler.create(vertx))
-        .listen(lock.handler());
+        .handler(StompServerHandler.create(vertx));
+    server.listen().onComplete(lock.handler());
     lock.waitForSuccess();
   }
 
@@ -62,25 +64,30 @@ public class SubscriptionsUsingTopicTest {
     AsyncLock<Void> lock = new AsyncLock<>();
     clients.forEach(StompClient::close);
     clients.clear();
-    server.close(lock.handler());
+    server.close().onComplete(lock.handler());
     lock.waitForSuccess();
     lock = new AsyncLock<>();
-    vertx.close(lock.handler());
+    vertx.close().onComplete(lock.handler());
     lock.waitForSuccess();
   }
 
+  private void client(Handler<AsyncResult<StompClientConnection>> handler) {
+    StompClient client = StompClient.create(vertx);
+    clients.add(client);
+    client.connect().onComplete(handler);
+  }
 
   @Test
   public void testSubscriptionAndReception() {
     List<Frame> frames = new CopyOnWriteArrayList<>();
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/topic", (frames::add));
     }));
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/topic"));
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.send("/topic", Buffer.buffer("Hello"));
     }));
@@ -98,14 +105,14 @@ public class SubscriptionsUsingTopicTest {
   @Test
   public void testThatCustomHeadersArePropagated() {
     List<Frame> frames = new CopyOnWriteArrayList<>();
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/topic", (frames::add));
     }));
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/topic"));
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.send("/topic", Headers.create("foo", "bar", "toto", "titi"), Buffer.buffer("Hello"));
     }));
@@ -125,18 +132,18 @@ public class SubscriptionsUsingTopicTest {
   @Test
   public void testSubscriptionAndTwoReceptions() {
     List<Frame> frames = new CopyOnWriteArrayList<>();
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/topic", (frames::add));
     }));
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/topic", (frames::add));
     }));
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/topic"));
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.send("/topic", Buffer.buffer("Hello"));
     }));
@@ -160,7 +167,7 @@ public class SubscriptionsUsingTopicTest {
   @Test
   public void testSendingWithoutDestination() {
     AtomicBoolean failureDetected = new AtomicBoolean();
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       try {
         connection.send((String) null, Buffer.buffer("hello"));
@@ -174,7 +181,7 @@ public class SubscriptionsUsingTopicTest {
   @Test
   public void testSendingWithHeadersButWithoutDestination() {
     AtomicBoolean failureDetected = new AtomicBoolean();
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       try {
         connection.send(Headers.create("foo", "bar"), Buffer.buffer("hello"));
@@ -190,14 +197,14 @@ public class SubscriptionsUsingTopicTest {
     server.options().setSendErrorOnNoSubscriptions(true);
 
     List<Frame> frames = new CopyOnWriteArrayList<>();
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue2", (frames::add));
     }));
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue2"));
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.send("/topic", Buffer.buffer("Hello"));
       connection.errorHandler(frames::add);
@@ -216,7 +223,7 @@ public class SubscriptionsUsingTopicTest {
     server.options().setSendErrorOnNoSubscriptions(true);
 
     Map<String, Frame> frames = new HashMap<>();
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/topic", Headers.create().add(Frame.ID, "0"), f -> frames.put("/topic", f));
       connection.subscribe("/queue2", Headers.create().add(Frame.ID, "1"), f -> frames.put("/queue2", f));
@@ -225,7 +232,7 @@ public class SubscriptionsUsingTopicTest {
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue2"));
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/topic"));
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.send("/topic", Buffer.buffer("Hello"));
       connection.send("/queue2", Buffer.buffer("World"));
@@ -255,7 +262,7 @@ public class SubscriptionsUsingTopicTest {
     server.options().setSendErrorOnNoSubscriptions(true);
 
     List<Frame> frames = new CopyOnWriteArrayList<>();
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/topic", frame -> {
         frames.add(frame);
@@ -265,7 +272,7 @@ public class SubscriptionsUsingTopicTest {
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/topic"));
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(frames::add);
       connection.send("/topic", Buffer.buffer("Hello"));
@@ -273,7 +280,7 @@ public class SubscriptionsUsingTopicTest {
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> !Helper.hasDestination(server.stompHandler().getDestinations(), "/topic"));
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(frames::add);
       connection.send("/topic", Buffer.buffer("Hello"));
@@ -287,7 +294,7 @@ public class SubscriptionsUsingTopicTest {
     server.options().setSendErrorOnNoSubscriptions(true);
 
     List<Frame> frames = new CopyOnWriteArrayList<>();
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/topic", Headers.create(Frame.ID, "0"), frame -> {
         frames.add(frame);
@@ -297,7 +304,7 @@ public class SubscriptionsUsingTopicTest {
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/topic"));
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.send("/topic", Buffer.buffer("Hello"));
       connection.errorHandler(frames::add);
@@ -305,7 +312,7 @@ public class SubscriptionsUsingTopicTest {
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> !Helper.hasDestination(server.stompHandler().getDestinations(), "/topic"));
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.send("/topic", Buffer.buffer("Hello"));
       connection.errorHandler(frames::add);
@@ -317,7 +324,7 @@ public class SubscriptionsUsingTopicTest {
   @Test
   public void testSubscriptionsUsingTheSameDefaultId() {
     AtomicBoolean failureDetected = new AtomicBoolean();
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/topic", frame -> {
       });
@@ -334,7 +341,7 @@ public class SubscriptionsUsingTopicTest {
   @Test
   public void testSubscriptionsUsingTheSameCustomId() {
     AtomicBoolean failureDetected = new AtomicBoolean();
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/topic", Headers.create("id", "0"), frame -> {
       });
@@ -352,7 +359,7 @@ public class SubscriptionsUsingTopicTest {
   @Test
   public void testSubscriptionsUsingTheSameDestinationButDifferentId() {
     AtomicBoolean complete = new AtomicBoolean();
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/topic", Headers.create(Frame.ID, "0"), frame -> {
       });
@@ -366,7 +373,8 @@ public class SubscriptionsUsingTopicTest {
   @Test
   public void testClosingConnection() {
     List<Frame> frames = new CopyOnWriteArrayList<>();
-    StompClient client = StompClient.create(vertx).connect(ar -> {
+    StompClient client = StompClient.create(vertx);
+    client.connect().onComplete(ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/topic", (frames::add));
       connection.subscribe("/queue2", (frames::add));
@@ -376,12 +384,12 @@ public class SubscriptionsUsingTopicTest {
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestinations().size() == 2);
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.send("/topic", Buffer.buffer("Hello"));
     }));
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.send("/queue2", Buffer.buffer("World"));
     }));

@@ -17,6 +17,8 @@
 package io.vertx.ext.stomp.impl;
 
 import com.jayway.awaitility.Awaitility;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.stomp.*;
@@ -50,8 +52,8 @@ public class TransactionsTest {
     AsyncLock<StompServer> lock = new AsyncLock<>();
     vertx = Vertx.vertx();
     server = StompServer.create(vertx)
-        .handler(StompServerHandler.create(vertx))
-        .listen(lock.handler());
+        .handler(StompServerHandler.create(vertx));
+    server.listen().onComplete(lock.handler());
     lock.waitForSuccess();
   }
 
@@ -60,27 +62,32 @@ public class TransactionsTest {
     clients.forEach(StompClient::close);
     clients.clear();
     AsyncLock<Void> lock = new AsyncLock<>();
-    server.close(lock.handler());
+    server.close().onComplete(lock.handler());
     lock.waitForSuccess();
 
     lock = new AsyncLock<>();
-    vertx.close(lock.handler());
+    vertx.close().onComplete(lock.handler());
     lock.waitForSuccess();
   }
 
+  private void client(Handler<AsyncResult<StompClientConnection>> handler) {
+    StompClient client = StompClient.create(vertx);
+    clients.add(client);
+    client.connect().onComplete(handler);
+  }
 
   @Test
   public void testBasicTransaction() {
     List<Frame> frames = new CopyOnWriteArrayList<>();
     List<Frame> errors = new CopyOnWriteArrayList<>();
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", (frames::add));
     }));
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(errors::add);
       connection.beginTX("my-tx");
@@ -104,14 +111,14 @@ public class TransactionsTest {
     List<Frame> frames = new CopyOnWriteArrayList<>();
     List<Frame> errors = new CopyOnWriteArrayList<>();
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", (frames::add));
     }));
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(errors::add);
       connection.beginTX("my-tx");
@@ -136,19 +143,19 @@ public class TransactionsTest {
     List<Frame> frames1 = new CopyOnWriteArrayList<>();
     List<Frame> frames2 = new CopyOnWriteArrayList<>();
     List<Frame> errors = new CopyOnWriteArrayList<>();
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", (frames1::add));
     }));
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", (frames2::add));
     }));
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(errors::add);
       connection.beginTX("my-tx");
@@ -175,14 +182,14 @@ public class TransactionsTest {
   public void testThatYouCannotBeginTwoTransactionsWithTheSameId() {
     List<Frame> frames = new CopyOnWriteArrayList<>();
     List<Frame> errors = new CopyOnWriteArrayList<>();
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", (frames::add));
     }));
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(errors::add);
       connection.beginTX("my-tx");
@@ -202,14 +209,14 @@ public class TransactionsTest {
   public void testThatTransactionIDCanBeReusedAfterCommit() {
     List<Frame> frames = new CopyOnWriteArrayList<>();
     List<Frame> errors = new CopyOnWriteArrayList<>();
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", (frames::add));
     }));
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(errors::add);
       connection.beginTX("my-tx");
@@ -235,7 +242,7 @@ public class TransactionsTest {
     List<Frame> frames = new CopyOnWriteArrayList<>();
     List<Frame> errors = new CopyOnWriteArrayList<>();
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", (frames::add));
     }));
@@ -243,7 +250,7 @@ public class TransactionsTest {
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
     AtomicBoolean done = new AtomicBoolean();
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(errors::add);
       connection.beginTX("my-tx");
@@ -269,17 +276,17 @@ public class TransactionsTest {
     List<Frame> frames = new CopyOnWriteArrayList<>();
     List<Frame> errors = new CopyOnWriteArrayList<>();
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", (frames::add));
     }));
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(errors::add);
-      connection.beginTX("my-tx", f -> {
+      connection.beginTX("my-tx").onComplete(f -> {
         connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx")
             .setBody(Buffer.buffer("Hello")));
         connection.send(new Frame().setCommand(Command.SEND).setDestination("/queue").setTransaction("my-tx").setBody(
@@ -299,14 +306,14 @@ public class TransactionsTest {
   public void testCommitWithIllegalId() {
     List<Frame> frames = new CopyOnWriteArrayList<>();
     List<Frame> errors = new CopyOnWriteArrayList<>();
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", (frames::add));
     }));
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(errors::add);
       connection.beginTX("my-tx");
@@ -330,14 +337,14 @@ public class TransactionsTest {
   public void testAbortWithBadTransactionId() {
     List<Frame> frames = new CopyOnWriteArrayList<>();
     List<Frame> errors = new CopyOnWriteArrayList<>();
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", (frames::add));
     }));
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(errors::add);
       connection.beginTX("my-tx");
@@ -363,14 +370,14 @@ public class TransactionsTest {
 
     List<Frame> frames = new CopyOnWriteArrayList<>();
     List<Frame> errors = new CopyOnWriteArrayList<>();
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", (frames::add));
     }));
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(errors::add);
       connection.beginTX("my-tx");
@@ -395,14 +402,14 @@ public class TransactionsTest {
     server.options().setMaxFrameInTransaction(10000);
 
     List<Frame> frames = new CopyOnWriteArrayList<>();
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/queue", (frames::add));
     }));
 
     Awaitility.waitAtMost(10, TimeUnit.SECONDS).until(() -> Helper.hasDestination(server.stompHandler().getDestinations(), "/queue"));
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.beginTX("my-tx");
       for (int i = 0; i < 5000; i++) {

@@ -36,7 +36,7 @@ public class ReceiverStompClient extends AbstractVerticle {
 
   @Override
   public void start(Promise<Void> future) throws Exception {
-    StompClient.create(vertx).connect(ar -> {
+    StompClient.create(vertx).connect().onComplete(ar -> {
       if (ar.failed()) {
         future.fail(ar.cause());
         return;
@@ -45,7 +45,7 @@ public class ReceiverStompClient extends AbstractVerticle {
       connection
           .receivedFrameHandler(frame -> System.out.println("Client receiving:\n" + frame))
           .writingFrameHandler(frame -> System.out.println("Client sending:\n" + frame))
-          .subscribe("/queue", FRAMES::add, frame -> {
+          .subscribe("/queue", FRAMES::add).onComplete(frame -> {
             future.tryComplete();
       });
     });

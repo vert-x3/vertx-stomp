@@ -55,18 +55,18 @@ public class ServerConnectionTest {
     vertx = Vertx.vertx();
     AsyncLock<StompServer> lock = new AsyncLock<>();
     server = StompServer.create(vertx)
-        .handler(StompServerHandler.create(vertx))
-        .listen(lock.handler());
+        .handler(StompServerHandler.create(vertx));
+    server.listen().onComplete(lock.handler());
     lock.waitForSuccess();
   }
 
   @After
   public void tearDown() {
     AsyncLock<Void> lock = new AsyncLock<>();
-    server.close(lock.handler());
+    server.close().onComplete(lock.handler());
     lock.waitForSuccess();
     lock = new AsyncLock<>();
-    vertx.close(lock.handler());
+    vertx.close().onComplete(lock.handler());
     lock.waitForSuccess();
 
     if (client != null) {
@@ -78,7 +78,8 @@ public class ServerConnectionTest {
   @Test
   public void testConnection(TestContext context) {
     Async async = context.async();
-    client = vertx.createNetClient().connect(server.actualPort(), "0.0.0.0", result -> {
+    client = vertx.createNetClient();
+    client.connect(server.actualPort(), "0.0.0.0").onComplete(result -> {
       if (result.failed()) {
         context.fail("Connection failed");
         return;
@@ -99,7 +100,8 @@ public class ServerConnectionTest {
   @Test
   public void testConnectionWithSeveralVersions(TestContext context) {
     Async async = context.async();
-    client = vertx.createNetClient().connect(server.actualPort(), "0.0.0.0", result -> {
+    client = vertx.createNetClient();
+    client.connect(server.actualPort(), "0.0.0.0").onComplete(result -> {
       if (result.failed()) {
         context.fail("Connection failed");
         return;
@@ -117,7 +119,8 @@ public class ServerConnectionTest {
   @Test
   public void testConnectionWithoutVersionHeader(TestContext context) {
     Async async = context.async();
-    client = vertx.createNetClient().connect(server.actualPort(), "0.0.0.0", result -> {
+    client = vertx.createNetClient();
+    client.connect(server.actualPort(), "0.0.0.0").onComplete(result -> {
       if (result.failed()) {
         context.fail("Connection failed");
         return;
@@ -135,7 +138,8 @@ public class ServerConnectionTest {
   @Test
   public void testConnectionWithInvalidVersions(TestContext context) {
     Async async = context.async();
-    client = vertx.createNetClient().connect(server.actualPort(), "0.0.0.0", result -> {
+    client = vertx.createNetClient();
+    client.connect(server.actualPort(), "0.0.0.0").onComplete(result -> {
       if (result.failed()) {
         context.fail("Connection failed");
         return;
@@ -154,7 +158,8 @@ public class ServerConnectionTest {
   @Test
   public void testConnectionWithInvalidVersionLists(TestContext context) {
     Async async = context.async();
-    client = vertx.createNetClient().connect(server.actualPort(), "0.0.0.0", result -> {
+    client = vertx.createNetClient();
+    client.connect(server.actualPort(), "0.0.0.0").onComplete(result -> {
       if (result.failed()) {
         context.fail("Connection failed");
         return;
@@ -173,7 +178,8 @@ public class ServerConnectionTest {
   @Test
   public void testConnectionWithStompFrame(TestContext context) {
     Async async = context.async();
-    client = vertx.createNetClient().connect(server.actualPort(), "0.0.0.0", result -> {
+    client = vertx.createNetClient();
+    client.connect(server.actualPort(), "0.0.0.0").onComplete(result -> {
       if (result.failed()) {
         context.fail("Connection failed");
         return;
@@ -196,7 +202,8 @@ public class ServerConnectionTest {
     List<Buffer> frames = new ArrayList<>();
     AtomicReference<NetSocket> reference = new AtomicReference<>();
 
-    client = vertx.createNetClient().connect(server.actualPort(), "0.0.0.0", result -> {
+    client = vertx.createNetClient();
+    client.connect(server.actualPort(), "0.0.0.0").onComplete(result -> {
       if (result.failed()) {
         context.fail("Connection failed");
         return;
@@ -229,7 +236,8 @@ public class ServerConnectionTest {
     List<Buffer> frames = new ArrayList<>();
     AtomicReference<NetSocket> reference = new AtomicReference<>();
 
-    client = vertx.createNetClient().connect(server.actualPort(), "0.0.0.0", result -> {
+    client = vertx.createNetClient();
+    client.connect(server.actualPort(), "0.0.0.0").onComplete(result -> {
       if (result.failed()) {
         context.fail("Connection failed");
         return;
@@ -256,7 +264,8 @@ public class ServerConnectionTest {
     List<Buffer> frames = new ArrayList<>();
     AtomicReference<NetSocket> reference = new AtomicReference<>();
 
-    client = vertx.createNetClient().connect(server.actualPort(), "0.0.0.0", result -> {
+    client = vertx.createNetClient();
+    client.connect(server.actualPort(), "0.0.0.0").onComplete(result -> {
       if (result.failed()) {
         System.err.println("Connection failed");
         context.fail("Connection failed");
@@ -283,7 +292,8 @@ public class ServerConnectionTest {
   public void testMalformedFrame(TestContext context) {
     List<Buffer> frames = new ArrayList<>();
 
-    client = vertx.createNetClient().connect(server.actualPort(), "0.0.0.0", result -> {
+    client = vertx.createNetClient();
+    client.connect(server.actualPort(), "0.0.0.0").onComplete(result -> {
       if (result.failed()) {
         context.fail("Connection failed");
         return;
@@ -305,7 +315,8 @@ public class ServerConnectionTest {
     List<Buffer> frames = new ArrayList<>();
     AtomicReference<NetSocket> reference = new AtomicReference<>();
 
-    client = vertx.createNetClient().connect(server.actualPort(), "0.0.0.0", result -> {
+    client = vertx.createNetClient();
+    client.connect(server.actualPort(), "0.0.0.0").onComplete(result -> {
       if (result.failed()) {
         context.fail("Connection failed");
         return;

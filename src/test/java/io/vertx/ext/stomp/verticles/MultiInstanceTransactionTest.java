@@ -47,29 +47,28 @@ public class MultiInstanceTransactionTest {
   public void tearDown() {
     AsyncLock<Void> lock = new AsyncLock<>();
     if (deploymentId != null) {
-      vertx.undeploy(deploymentId, lock.handler());
+      vertx.undeploy(deploymentId).onComplete(lock.handler());
     }
     lock.waitForSuccess();
 
     lock = new AsyncLock<>();
-    vertx.close(lock.handler());
+    vertx.close().onComplete(lock.handler());
     lock.waitForSuccess();
   }
 
   @Test
   public void testThatTransactionAreNotShared(TestContext context) {
-    vertx.deployVerticle("io.vertx.ext.stomp.verticles.StompServerVerticle", new DeploymentOptions().setInstances(3),
-        ar -> {
+    vertx.deployVerticle("io.vertx.ext.stomp.verticles.StompServerVerticle", new DeploymentOptions().setInstances(3)).onComplete(ar -> {
           if (ar.failed()) {
             context.fail(ar.cause());
           } else {
             deploymentId = ar.result();
             // Deploy the clients.
-            vertx.deployVerticle("io.vertx.ext.stomp.verticles.ReceiverStompClient", ar2 -> {
+            vertx.deployVerticle("io.vertx.ext.stomp.verticles.ReceiverStompClient").onComplete(ar2 -> {
               if (ar.failed()) {
                 context.fail(ar.cause());
               } else {
-                vertx.deployVerticle("io.vertx.ext.stomp.verticles.TxSenderStompClient", ar3 -> {
+                vertx.deployVerticle("io.vertx.ext.stomp.verticles.TxSenderStompClient").onComplete(ar3 -> {
                   System.out.println("Test started");
                 });
               }

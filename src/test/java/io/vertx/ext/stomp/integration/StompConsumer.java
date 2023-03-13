@@ -33,7 +33,7 @@ public class StompConsumer extends AbstractVerticle {
   public void start() throws Exception {
     System.out.println("Starting client");
     client = StompClient.create(vertx, new StompClientOptions(config()));
-    client.connect(ar -> {
+    client.connect().onComplete(ar -> {
       if (ar.failed()) {
         System.err.println("Cannot connect to STOMP server");
         ar.cause().printStackTrace();

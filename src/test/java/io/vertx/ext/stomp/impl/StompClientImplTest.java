@@ -77,10 +77,10 @@ public class StompClientImplTest {
   @After
   public void tearDown() {
     AsyncLock<Void> lock = new AsyncLock<>();
-    server.close(lock.handler());
+    server.close().onComplete(lock.handler());
     lock.waitForSuccess();
     lock = new AsyncLock<>();
-    vertx.close(lock.handler());
+    vertx.close().onComplete(lock.handler());
     lock.waitForSuccess();
   }
 
@@ -91,7 +91,7 @@ public class StompClientImplTest {
 
     vertx.createNetServer()
       .connectHandler(NetSocket::close)
-      .listen(61614, ar -> done.set(true));
+      .listen(61614).onComplete(ar -> done.set(true));
 
     await().untilAtomic(done, is(true));
     CountDownLatch latch = new CountDownLatch(1);
@@ -101,7 +101,7 @@ public class StompClientImplTest {
     StompClientOptions options = new StompClientOptions().setPort(61614);
     options.setConnectTimeout(1000);
     StompClient client = StompClient.create(vertx, options);
-    client.connect(ar -> {
+    client.connect().onComplete(ar -> {
       if (ar.failed()) {
         failed.set(true);
         reference.set(null);
@@ -122,7 +122,7 @@ public class StompClientImplTest {
     AtomicBoolean done = new AtomicBoolean();
     vertx.createNetServer()
       .connectHandler(NetSocket::close)
-      .listen(61614, ar -> done.set(true));
+      .listen(61614).onComplete(ar -> done.set(true));
 
     await().untilAtomic(done, is(true));
 
@@ -137,7 +137,7 @@ public class StompClientImplTest {
     StompClient client = StompClient.create(vertx, options).exceptionHandler(failure::set);
 
     AtomicBoolean failed = new AtomicBoolean();
-    client.connect(ar -> {
+    client.connect().onComplete(ar -> {
       if (ar.failed()) {
         failed.set(true);
         reference.set(null);
@@ -160,7 +160,7 @@ public class StompClientImplTest {
     CountDownLatch latch = new CountDownLatch(1);
     AtomicReference<StompClientConnection> reference = new AtomicReference<>();
     StompClient client = StompClient.create(vertx);
-    client.connect(ar -> {
+    client.connect().onComplete(ar -> {
       if (ar.failed()) {
         reference.set(null);
       } else {
@@ -197,7 +197,7 @@ public class StompClientImplTest {
     CountDownLatch latch = new CountDownLatch(1);
     AtomicReference<StompClientConnection> reference = new AtomicReference<>();
     StompClient client = StompClient.create(vertx, new StompClientOptions().setTrailingLine(true));
-    client.connect(ar -> {
+    client.connect().onComplete(ar -> {
       if (ar.failed()) {
         reference.set(null);
       } else {
@@ -220,7 +220,7 @@ public class StompClientImplTest {
     CountDownLatch latch = new CountDownLatch(1);
     AtomicReference<StompClientConnection> reference = new AtomicReference<>();
     StompClient client = StompClient.create(vertx, new StompClientOptions().setUseStompFrame(true));
-    client.connect(ar -> {
+    client.connect().onComplete(ar -> {
       if (ar.failed()) {
         reference.set(null);
       } else {
@@ -243,7 +243,7 @@ public class StompClientImplTest {
     CountDownLatch latch = new CountDownLatch(1);
     AtomicReference<StompClientConnection> reference = new AtomicReference<>();
     StompClient client = StompClient.create(vertx, new StompClientOptions().setUseStompFrame(true).setTrailingLine(true));
-    client.connect(ar -> {
+    client.connect().onComplete(ar -> {
       if (ar.failed()) {
         reference.set(null);
       } else {
@@ -264,11 +264,11 @@ public class StompClientImplTest {
     startServer();
     AtomicReference<AsyncResult<Frame>> ref = new AtomicReference<>();
     StompClient client = StompClient.create(vertx);
-    client.connect(ar -> {
+    client.connect().onComplete(ar -> {
       if (ar.failed()) {
         return;
       }
-      ar.result().send("/hello", Buffer.buffer("this is my content"), ref::set);
+      ar.result().send("/hello", Buffer.buffer("this is my content")).onComplete(ref::set);
     });
 
     await().atMost(5, TimeUnit.SECONDS).untilAtomic(ref, Matchers.notNullValue(AsyncResult.class));
@@ -282,11 +282,11 @@ public class StompClientImplTest {
     startServer();
     AtomicReference<AsyncResult<Frame>> ref = new AtomicReference<>();
     StompClient client = StompClient.create(vertx, new StompClientOptions().setTrailingLine(true));
-    client.connect(ar -> {
+    client.connect().onComplete(ar -> {
       if (ar.failed()) {
         return;
       }
-      ar.result().send("/hello", Buffer.buffer("this is my content"), ref::set);
+      ar.result().send("/hello", Buffer.buffer("this is my content")).onComplete(ref::set);
     });
 
     await().atMost(5, TimeUnit.SECONDS).untilAtomic(ref, Matchers.notNullValue(AsyncResult.class));
@@ -300,12 +300,12 @@ public class StompClientImplTest {
     CountDownLatch latch = new CountDownLatch(1);
     AtomicReference<AsyncResult<Frame>> reference = new AtomicReference<>();
     StompClient client = StompClient.create(vertx, new StompClientOptions().setUseStompFrame(true));
-    client.connect(ar -> {
+    client.connect().onComplete(ar -> {
       if (ar.failed()) {
         reference.set(null);
         latch.countDown();
       } else {
-        ar.result().disconnect(
+        ar.result().disconnect().onComplete(
             frame -> {
               reference.set(frame);
               latch.countDown();
@@ -322,13 +322,12 @@ public class StompClientImplTest {
     CountDownLatch latch = new CountDownLatch(1);
     AtomicReference<AsyncResult<Frame>> reference = new AtomicReference<>();
     StompClient client = StompClient.create(vertx, new StompClientOptions().setUseStompFrame(true));
-    client.connect(ar -> {
+    client.connect().onComplete(ar -> {
       if (ar.failed()) {
         reference.set(null);
         latch.countDown();
       } else {
-        ar.result().disconnect(new Frame(Command.DISCONNECT, Headers.create("message", "bye bye"), null),
-            frame -> {
+        ar.result().disconnect(new Frame(Command.DISCONNECT, Headers.create("message", "bye bye"), null)).onComplete(frame -> {
               reference.set(frame);
               latch.countDown();
             });
@@ -352,7 +351,7 @@ public class StompClientImplTest {
 
     StompClient client = StompClient.create(vertx, new StompClientOptions().setHeartbeat(new JsonObject().put
         ("x", 100).put("y", 100)));
-    client.connect(ar -> reference.set(ar.result()));
+    client.connect().onComplete(ar -> reference.set(ar.result()));
 
     // Wait until inactivity is detected.
     await().atMost(1000, TimeUnit.MILLISECONDS).until(
@@ -370,7 +369,7 @@ public class StompClientImplTest {
 
     StompClient client = StompClient.create(vertx, new StompClientOptions().setHeartbeat(new JsonObject()
         .put("x", 100).put("y", 100)));
-    client.connect(ar -> reference.set(ar.result()));
+    client.connect().onComplete(ar -> reference.set(ar.result()));
 
     Thread.sleep(1000);
     assertThat(reference.get().server()).isNotNull();
@@ -387,7 +386,7 @@ public class StompClientImplTest {
 
     StompClient client = StompClient.create(vertx, new StompClientOptions().setHeartbeat(new JsonObject()
         .put("x", 100).put("y", 100)));
-    client.connect(ar -> {
+    client.connect().onComplete(ar -> {
       reference.set(ar.result());
       // Disable ping frame:
       ar.result().pingHandler(connection -> {
@@ -422,7 +421,7 @@ public class StompClientImplTest {
           clientReceivedPingTimestamps.add(System.currentTimeMillis());
         }
     });
-    client.connect(ar -> reference.set(ar.result()));
+    client.connect().onComplete(ar -> reference.set(ar.result()));
 
     Thread.sleep(2000);
 
@@ -454,7 +453,7 @@ public class StompClientImplTest {
 
     StompClient client = StompClient.create(vertx, new StompClientOptions().setHeartbeat(new JsonObject()
         .put("x", 100).put("y", 100)));
-    client.connect(ar -> {
+    client.connect().onComplete(ar -> {
       ar.result().connectionDroppedHandler(v -> {
         dropped.set(true);
       });
@@ -488,7 +487,7 @@ public class StompClientImplTest {
     Handler<AsyncResult<StompClientConnection>> connectionHandler = getConnectionHandler(client, flag, dropped,
         connectionCounter);
 
-    client.connect(connectionHandler);
+    client.connect().onComplete(connectionHandler);
 
 
     await().atMost(10, TimeUnit.SECONDS).until(() -> dropped.get() == 1);
@@ -522,7 +521,7 @@ public class StompClientImplTest {
     Handler<AsyncResult<StompClientConnection>> connectionHandler = getConnectionHandler(client, flag, dropped,
         connectionCounter);
 
-    client.connect(connectionHandler);
+    client.connect().onComplete(connectionHandler);
 
 
     await().atMost(10, TimeUnit.SECONDS).until(() -> dropped.get() == 1);
@@ -547,7 +546,7 @@ public class StompClientImplTest {
       if (ar.succeeded()) {
         ar.result().connectionDroppedHandler(v -> {
           dropped.incrementAndGet();
-          client.connect(getConnectionHandler(client, flag, dropped, connection));
+          client.connect().onComplete(getConnectionHandler(client, flag, dropped, connection));
         });
         int count = connection.incrementAndGet();
         flag.set(false); // Disable the ping.
@@ -572,7 +571,7 @@ public class StompClientImplTest {
 
     AtomicBoolean dropped = new AtomicBoolean();
     AtomicBoolean connected = new AtomicBoolean();
-    client.connect(connection -> {
+    client.connect().onComplete(connection -> {
        connection.result().connectionDroppedHandler(conn -> {
          dropped.set(true);
        });

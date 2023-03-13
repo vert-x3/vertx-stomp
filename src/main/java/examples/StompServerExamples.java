@@ -48,7 +48,7 @@ public class StompServerExamples {
 
   public void example3(Vertx vertx) {
     StompServer server = StompServer.create(vertx)
-        .handler(StompServerHandler.create(vertx))
+        .handler(StompServerHandler.create(vertx));
     server
       .listen()
       .onComplete(ar -> {

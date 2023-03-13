@@ -52,9 +52,9 @@ public class StompServerImplTest {
     final Async async = context.async();
     StompServer.create(vertx)
         .handler(StompServerHandler.create(vertx))
-        .listen(ar -> {
+        .listen().onComplete(ar -> {
           ensureListening(context, ar);
-          ar.result().close(ar2 -> {
+          ar.result().close().onComplete(ar2 -> {
             ensureClosed(context, ar2, ar.result());
             async.complete();
           });
@@ -72,13 +72,13 @@ public class StompServerImplTest {
               Frame frame = sf.frame();
               context.assertTrue(frame.getCommand() == Command.CONNECT);
               context.assertTrue(frame.getHeader("login").equals("system"));
-              server.close(ar2 -> {
+              server.close().onComplete(ar2 -> {
                 ensureClosed(context, ar2, server);
                 async.complete();
               });
             }
         )
-    ).listen(ar -> {
+    ).listen().onComplete(ar -> {
       ensureListening(context, ar);
       writeMessage(vertx);
     });
@@ -94,13 +94,13 @@ public class StompServerImplTest {
               Frame frame = sf.frame();
               context.assertTrue(frame.getCommand() == Command.CONNECT);
               context.assertTrue(frame.getHeader("login").equals("system"));
-              server.close(ar2 -> {
+              server.close().onComplete(ar2 -> {
                 ensureClosed(context, ar2, server);
                 async.complete();
               });
             }
         )
-    ).listen(ar -> {
+    ).listen().onComplete(ar -> {
       ensureListening(context, ar);
       writeMessageWithTrailingLine(vertx);
     });
@@ -116,12 +116,12 @@ public class StompServerImplTest {
               Frame frame = sf.frame();
               context.assertTrue(frame.getCommand() == Command.CONNECT);
               context.assertTrue(frame.getHeader("login").equals("system"));
-              server.close(ar2 -> {
+              server.close().onComplete(ar2 -> {
                 ensureClosed(context, ar2, server);
                 async.complete();
               });
             }
-        )).listen(ar -> {
+        )).listen().onComplete(ar -> {
       ensureListening(context, ar);
       writeMessage(vertx);
     });
@@ -137,12 +137,12 @@ public class StompServerImplTest {
               Frame frame = sf.frame();
               context.assertTrue(frame.getCommand() == Command.CONNECT);
               context.assertTrue(frame.getHeader("login").equals("system"));
-              server.close(ar2 -> {
+              server.close().onComplete(ar2 -> {
                 ensureClosed(context, ar2, server);
                 async.complete();
               });
             }
-        )).listen(ar -> {
+        )).listen().onComplete(ar -> {
       ensureListening(context, ar);
       writeMessageWithTrailingLine(vertx);
     });
@@ -153,12 +153,12 @@ public class StompServerImplTest {
     final Async async = context.async();
     StompServer.create(vertx, new StompServerOptions().setPort(-1)).handler(StompServerHandler
         .create(vertx))
-        .listen(ar -> {
+        .listen().onComplete(ar -> {
           if (!ar.failed()) {
             context.fail("Error expected");
           } else {
             // Create a client and check it cannot connect
-            StompClient.create(vertx).connect(61613, "localhost", x -> {
+            StompClient.create(vertx).connect(61613, "localhost").onComplete(x -> {
               if (!x.failed()) {
                 context.fail("Error expected on the client side");
               }
@@ -173,12 +173,12 @@ public class StompServerImplTest {
     final Async async = context.async();
     StompServer.create(vertx).handler(StompServerHandler
         .create(vertx))
-        .listen(-1, ar -> {
+        .listen(-1).onComplete(ar -> {
           if (!ar.failed()) {
             context.fail("Error expected");
           } else {
             // Create a client and check it cannot connect
-            StompClient.create(vertx).connect(61613, "localhost", x -> {
+            StompClient.create(vertx).connect(61613, "localhost").onComplete(x -> {
               if (!x.failed()) {
                 context.fail("Error expected on the client side");
               }
@@ -189,13 +189,13 @@ public class StompServerImplTest {
   }
 
   private void writeMessage(Vertx vertx) {
-    vertx.createNetClient().connect(StompServerOptions.DEFAULT_STOMP_PORT, "0.0.0.0",
-        ar -> ar.result().write("CONNECT\n" + "login:system\n" + "passcode:manager\n\n" + FrameParser.NULL));
+    vertx.createNetClient().connect(StompServerOptions.DEFAULT_STOMP_PORT, "0.0.0.0")
+      .onComplete(ar -> ar.result().write("CONNECT\n" + "login:system\n" + "passcode:manager\n\n" + FrameParser.NULL));
   }
 
   private void writeMessageWithTrailingLine(Vertx vertx) {
-    vertx.createNetClient().connect(StompServerOptions.DEFAULT_STOMP_PORT, "0.0.0.0",
-        ar -> ar.result().write("CONNECT\n" + "login:system\n" + "passcode:manager\n\n" + FrameParser.NULL + "\n"));
+    vertx.createNetClient().connect(StompServerOptions.DEFAULT_STOMP_PORT, "0.0.0.0")
+      .onComplete(ar -> ar.result().write("CONNECT\n" + "login:system\n" + "passcode:manager\n\n" + FrameParser.NULL + "\n"));
   }
 
   private void ensureClosed(TestContext context, AsyncResult<Void> ar, StompServer server) {
@@ -208,5 +208,4 @@ public class StompServerImplTest {
     context.assertNotNull(ar.result());
     context.assertTrue(ar.result().isListening());
   }
-
 }

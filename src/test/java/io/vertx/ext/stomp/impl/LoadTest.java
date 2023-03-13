@@ -17,6 +17,8 @@
 package io.vertx.ext.stomp.impl;
 
 import com.jayway.awaitility.Awaitility;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
@@ -58,8 +60,8 @@ public class LoadTest {
         new JsonObject().put("x", 0).put("y", 0)))
         .handler(StompServerHandler.create(vertx)
             .onAckHandler(acknowledgement -> acked.addAll(acknowledgement.frames()))
-            .onNackHandler(acknowledgement -> nacked.addAll(acknowledgement.frames())))
-        .listen(context.asyncAssertSuccess());
+            .onNackHandler(acknowledgement -> nacked.addAll(acknowledgement.frames())));
+    server.listen().onComplete(context.asyncAssertSuccess());
   }
 
   @After
@@ -67,10 +69,15 @@ public class LoadTest {
     System.out.println("Closing clients");
     clients.forEach(StompClient::close);
     System.out.println("Closing server");
-    server.close(context.asyncAssertSuccess());
-    vertx.close(context.asyncAssertSuccess());
+    server.close().onComplete(context.asyncAssertSuccess());
+    vertx.close().onComplete(context.asyncAssertSuccess());
   }
 
+  private void client(Handler<AsyncResult<StompClientConnection>> handler) {
+    StompClient client = StompClient.create(vertx);
+    clients.add(client);
+    client.connect().onComplete(handler);
+  }
 
   @Test
   public void testWithMultiplePublisherAndConsumerOnOneDestination() {
@@ -85,8 +92,7 @@ public class LoadTest {
     // Init consumers
     for (int i = 0; i < consumer; i++) {
 
-      clients.add(StompClient.create(vertx)
-          .connect(ar -> {
+      client((ar -> {
             if (ar.failed()) {
               System.err.println("Consumer connection error " + ar.cause().getMessage());
               ar.cause().printStackTrace();
@@ -96,8 +102,7 @@ public class LoadTest {
                 .errorHandler(frame -> System.err.println("Consumer Error : " + frame))
                 .subscribe(dest, frame -> {
                       received.incrementAndGet();
-                    },
-                    frame -> started.incrementAndGet()
+                    }).onComplete(frame -> started.incrementAndGet()
                 );
           }));
     }
@@ -109,7 +114,7 @@ public class LoadTest {
     AtomicInteger global = new AtomicInteger();
     for (int i = 0; i < publisher; i++) {
       String p = Integer.toString(i);
-      clients.add(StompClient.create(vertx).connect(ar -> {
+      client((ar -> {
         final StompClientConnection connection = ar.result();
         connection.errorHandler(frame -> System.err.println("Producer Error : " + frame));
         AtomicInteger count = new AtomicInteger();
@@ -147,8 +152,7 @@ public class LoadTest {
     // Init consumers
     for (int i = 0; i < consumer; i++) {
 
-      clients.add(StompClient.create(vertx)
-          .connect(ar -> {
+     client((ar -> {
             if (ar.failed()) {
               System.err.println("Consumer connection error " + ar.cause().getMessage());
               ar.cause().printStackTrace();
@@ -158,8 +162,7 @@ public class LoadTest {
                 .errorHandler(frame -> System.err.println("Consumer Error : " + frame))
                 .subscribe(dest, frame -> {
                       received.incrementAndGet();
-                    },
-                    frame -> started.incrementAndGet()
+                    }).onComplete(frame -> started.incrementAndGet()
                 );
           }));
     }
@@ -170,7 +173,7 @@ public class LoadTest {
     AtomicInteger global = new AtomicInteger();
     for (int i = 0; i < publisher; i++) {
       String p = Integer.toString(i);
-      clients.add(StompClient.create(vertx).connect(ar -> {
+      client((ar -> {
         final StompClientConnection connection = ar.result();
         connection.errorHandler(frame -> System.err.println("Producer Error : " + frame));
         AtomicInteger count = new AtomicInteger();

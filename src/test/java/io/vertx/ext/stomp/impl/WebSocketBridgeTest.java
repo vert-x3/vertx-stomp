@@ -84,11 +84,11 @@ public class WebSocketBridgeTest {
   private void startServers() {
     if (server.options().getPort() != -1) {
       AsyncLock<StompServer> stompLock = new AsyncLock<>();
-      server.listen(stompLock.handler());
+      server.listen().onComplete(stompLock.handler());
       stompLock.waitForSuccess();
     }
     AsyncLock<HttpServer> httpLock = new AsyncLock<>();
-    http.listen(httpLock.handler());
+    http.listen().onComplete(httpLock.handler());
     httpLock.waitForSuccess();
   }
 
@@ -98,15 +98,15 @@ public class WebSocketBridgeTest {
     clients.clear();
 
     AsyncLock<Void> lock = new AsyncLock<>();
-    server.close(lock.handler());
+    server.close().onComplete(lock.handler());
     lock.waitForSuccess();
 
     lock = new AsyncLock<>();
-    http.close(lock.handler());
+    http.close().onComplete(lock.handler());
     lock.waitForSuccess();
 
     lock = new AsyncLock<>();
-    vertx.close(lock.handler());
+    vertx.close().onComplete(lock.handler());
     lock.waitForSuccess();
   }
 
@@ -118,7 +118,7 @@ public class WebSocketBridgeTest {
     AtomicReference<Buffer> frame = new AtomicReference<>();
     AtomicReference<WebSocket> socket = new AtomicReference<>();
 
-    vertx.createHttpClient().webSocket(options, ar -> {
+    vertx.createHttpClient().webSocket(options).onComplete(ar -> {
       if (ar.succeeded()) {
         WebSocket ws = ar.result();
         socket.set(ws);
@@ -145,13 +145,15 @@ public class WebSocketBridgeTest {
 
     AtomicReference<StompClientConnection> client = new AtomicReference<>();
 
-    clients.add(StompClient.create(vertx).connect(61613, "localhost", connection -> {
+    StompClient c = StompClient.create(vertx);
+    c.connect(61613, "localhost").onComplete(connection -> {
       client.set(connection.result());
-    }));
+    });
+    clients.add(c);
 
     await().atMost(10, TimeUnit.SECONDS).until(() -> client.get() != null);
 
-    vertx.createHttpClient().webSocket(options, ar -> {
+    vertx.createHttpClient().webSocket(options).onComplete(ar -> {
       if (ar.succeeded()) {
         WebSocket ws = ar.result();
         socket.set(ws);
@@ -191,17 +193,19 @@ public class WebSocketBridgeTest {
 
     AtomicReference<StompClientConnection> client = new AtomicReference<>();
 
-    clients.add(StompClient.create(vertx).connect(61613, "localhost", connection -> {
-      connection.result().subscribe("foo", frame::set, r -> {
+    StompClient c = StompClient.create(vertx);
+    c.connect(61613, "localhost").onComplete(connection -> {
+      connection.result().subscribe("foo", frame::set).onComplete(r -> {
         client.set(connection.result());
       });
-    }));
+    });
+    clients.add(c);
 
     await().atMost(10, TimeUnit.SECONDS).until(() -> client.get() != null);
     await().atMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestination("foo") != null);
 
 
-    vertx.createHttpClient().webSocket(options, ar -> {
+    vertx.createHttpClient().webSocket(options).onComplete(ar -> {
       if (ar.succeeded()) {
         WebSocket ws = ar.result();
         socket.set(ws);
@@ -241,19 +245,22 @@ public class WebSocketBridgeTest {
     AtomicReference<WebSocket> socket = new AtomicReference<>();
     AtomicReference<StompClientConnection> client = new AtomicReference<>();
 
-    clients.add(StompClient.create(vertx).connect(61613, "localhost", connection -> {
-      connection.result().subscribe("bigData", h-> {}, r -> {
+    StompClient c = StompClient.create(vertx);
+    c.connect(61613, "localhost").onComplete(connection -> {
+      connection.result().subscribe("bigData", h -> {
+      }).onComplete(r -> {
         client.set(connection.result());
 
       });
       connection.result().receivedFrameHandler(stompFrame -> {
-        if(stompFrame.toBuffer().toString().startsWith("MESSAGE")) {
+        if (stompFrame.toBuffer().toString().startsWith("MESSAGE")) {
           stompBuffers.add(stompFrame.toBuffer());
         }
       });
-    }));
+    });
+    clients.add(c);
 
-    vertx.createHttpClient().webSocket(options, ar -> {
+    vertx.createHttpClient().webSocket(options).onComplete(ar -> {
       if (ar.succeeded()) {
         WebSocket ws = ar.result();
         AtomicBoolean inMsg = new AtomicBoolean();
@@ -314,13 +321,15 @@ public class WebSocketBridgeTest {
 
     AtomicReference<StompClientConnection> client = new AtomicReference<>();
 
-    clients.add(StompClient.create(vertx).connect(61613, "localhost", connection -> {
+    StompClient c = StompClient.create(vertx);
+    c.connect(61613, "localhost").onComplete(connection -> {
       client.set(connection.result());
-    }));
+    });
+    clients.add(c);
 
     await().atMost(10, TimeUnit.SECONDS).until(() -> client.get() != null);
 
-    vertx.createHttpClient().webSocket(options, ar -> {
+    vertx.createHttpClient().webSocket(options).onComplete(ar -> {
       if (ar.succeeded()) {
         WebSocket ws = ar.result();
         socket.set(ws);
@@ -356,7 +365,7 @@ public class WebSocketBridgeTest {
     AtomicReference<WebSocket> receiver = new AtomicReference<>();
     AtomicReference<Buffer> frame = new AtomicReference<>();
 
-    vertx.createHttpClient().webSocket(new WebSocketConnectOptions(options).setURI("/something"), ar -> {
+    vertx.createHttpClient().webSocket(new WebSocketConnectOptions(options).setURI("/something")).onComplete(ar -> {
       if (ar.succeeded()) {
         WebSocket ws = ar.result();
         receiver.set(ws);
@@ -379,7 +388,7 @@ public class WebSocketBridgeTest {
 
     await().atMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestination("foo") != null);
 
-    vertx.createHttpClient().webSocket(new WebSocketConnectOptions(options).setURI("/something"), ar -> {
+    vertx.createHttpClient().webSocket(new WebSocketConnectOptions(options).setURI("/something")).onComplete(ar -> {
       if (ar.succeeded()) {
         WebSocket ws = ar.result();
         sender.set(ws);
