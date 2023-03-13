@@ -33,7 +33,7 @@ public class TxSenderStompClient extends AbstractVerticle {
 
   @Override
   public void start() throws Exception {
-    StompClient.create(vertx).connect(ar -> {
+    StompClient.create(vertx).connect().onComplete(ar -> {
       final StompClientConnection connection = ar.result();
       connection.errorHandler(frame -> System.err.println("Tx Sender has received an ERROR frame : \n" + frame));
       connection.beginTX("my-transaction");

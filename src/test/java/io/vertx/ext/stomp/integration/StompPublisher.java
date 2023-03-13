@@ -34,14 +34,14 @@ public class StompPublisher extends AbstractVerticle {
   public void start() throws Exception {
     System.out.println("Starting publisher");
     client = StompClient.create(vertx, new StompClientOptions(config()));
-    client.connect(ar -> {
+    client.connect().onComplete(ar -> {
       if (ar.failed()) {
         System.err.println("Cannot connect to STOMP server");
         ar.cause().printStackTrace();
         return;
       }
 
-      vertx.setPeriodic(5000, l -> ar.result().send("/queue/event", Buffer.buffer("Hello"), frame -> {
+      vertx.setPeriodic(5000, l -> ar.result().send("/queue/event", Buffer.buffer("Hello")).onComplete(frame -> {
         System.out.println("Receipt received");
       }));
     });

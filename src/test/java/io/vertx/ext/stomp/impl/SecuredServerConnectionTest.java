@@ -56,13 +56,13 @@ public class SecuredServerConnectionTest {
     vertx = rule.vertx();
     AuthenticationProvider provider = PropertyFileAuthentication.create(vertx, "test-auth.properties");
     server = StompServer.create(vertx, new StompServerOptions().setSecured(true))
-        .handler(StompServerHandler.create(vertx).authProvider(provider))
-        .listen(context.asyncAssertSuccess());
+        .handler(StompServerHandler.create(vertx).authProvider(provider));
+    server.listen().onComplete(context.asyncAssertSuccess());
   }
 
   @After
   public void tearDown(TestContext context) {
-    server.close(context.asyncAssertSuccess());
+    server.close().onComplete(context.asyncAssertSuccess());
     // Do not close the vert.x instance when using the RunTestOnContext rule.
   }
 
@@ -76,7 +76,7 @@ public class SecuredServerConnectionTest {
   @Test
   public void testAuthenticatedConnection(TestContext context) {
     Async async = context.async();
-    vertx.createNetClient().connect(server.actualPort(), "0.0.0.0", result -> {
+    vertx.createNetClient().connect(server.actualPort(), "0.0.0.0").onComplete(result -> {
       if (result.failed()) {
         context.fail("Connection failed");
         return;
@@ -94,7 +94,7 @@ public class SecuredServerConnectionTest {
   @Test
   public void testFailedAuthentication(TestContext context) {
     Async async = context.async();
-    vertx.createNetClient().connect(server.actualPort(), "0.0.0.0", result -> {
+    vertx.createNetClient().connect(server.actualPort(), "0.0.0.0").onComplete(result -> {
       if (result.failed()) {
         context.fail("Connection failed");
         return;
@@ -112,7 +112,7 @@ public class SecuredServerConnectionTest {
   @Test(timeout = 5000)
   public void testFailedAuthenticationBecauseOfMissingHeaders(TestContext context) {
     Async async = context.async();
-    vertx.createNetClient().connect(server.actualPort(), "0.0.0.0", result -> {
+    vertx.createNetClient().connect(server.actualPort(), "0.0.0.0").onComplete(result -> {
       if (result.failed()) {
         context.fail("Connection failed");
         return;
@@ -130,7 +130,7 @@ public class SecuredServerConnectionTest {
   @Test
   public void testAuthenticatedConnectionWithStompFrame(TestContext context) {
     Async async = context.async();
-    vertx.createNetClient().connect(server.actualPort(), "0.0.0.0", result -> {
+    vertx.createNetClient().connect(server.actualPort(), "0.0.0.0").onComplete(result -> {
       if (result.failed()) {
         context.fail("Connection failed");
         return;
@@ -152,7 +152,7 @@ public class SecuredServerConnectionTest {
         .errorFrameHandler(frame -> {
           async.complete();
         });
-    client.connect(connection -> {
+    client.connect().onComplete(connection -> {
       context.fail("Authentication issue expected");
     });
   }

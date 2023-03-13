@@ -41,8 +41,8 @@ public class StompServerVerticle extends AbstractVerticle {
           } else {
             return Destination.topic(vertx, name);
           }
-        }))
-        .listen(ar -> {
+        }));
+    server.listen().onComplete(ar -> {
           if (ar.failed()) {
             future.fail(ar.cause());
           } else {

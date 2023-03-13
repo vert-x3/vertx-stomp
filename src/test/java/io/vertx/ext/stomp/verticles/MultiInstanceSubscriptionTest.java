@@ -48,26 +48,25 @@ public class MultiInstanceSubscriptionTest {
   public void tearDown() {
     AsyncLock<Void> lock = new AsyncLock<>();
     if (deploymentId != null) {
-      vertx.undeploy(deploymentId, lock.handler());
+      vertx.undeploy(deploymentId).onComplete(lock.handler());
     }
     lock.waitForSuccess();
 
     lock = new AsyncLock<>();
-    vertx.close(lock.handler());
+    vertx.close().onComplete(lock.handler());
     lock.waitForSuccess();
   }
 
   @Test
   public void testThatTopicSubscriptionsAreShared(TestContext context) {
-    vertx.deployVerticle("io.vertx.ext.stomp.verticles.StompServerVerticle", new DeploymentOptions().setInstances(3),
-        ar -> {
+    vertx.deployVerticle("io.vertx.ext.stomp.verticles.StompServerVerticle", new DeploymentOptions().setInstances(3)).onComplete(ar -> {
           if (ar.failed()) {
             context.fail(ar.cause());
           } else {
             deploymentId = ar.result();
             // Deploy the clients.
             vertx.deployVerticle("io.vertx.ext.stomp.verticles.ReceiverStompClient",
-                new DeploymentOptions().setInstances(3), ar2 -> {
+                new DeploymentOptions().setInstances(3)).onComplete(ar2 -> {
               if (ar.failed()) {
                 context.fail(ar.cause());
               } else {
@@ -85,15 +84,14 @@ public class MultiInstanceSubscriptionTest {
   public void testThatQueueSubscriptionsAreShared(TestContext context) {
     vertx.deployVerticle("io.vertx.ext.stomp.verticles.StompServerVerticle", new DeploymentOptions()
             .setConfig(new JsonObject().put("useQueue", true))
-            .setInstances(3),
-        ar -> {
+            .setInstances(3)).onComplete(ar -> {
           if (ar.failed()) {
             context.fail(ar.cause());
           } else {
             deploymentId = ar.result();
             // Deploy the clients.
             vertx.deployVerticle("io.vertx.ext.stomp.verticles.ReceiverStompClient",
-                new DeploymentOptions().setInstances(3), ar2 -> {
+                new DeploymentOptions().setInstances(3)).onComplete(ar2 -> {
                   if (ar.failed()) {
                     context.fail(ar.cause());
                   } else {

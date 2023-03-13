@@ -52,7 +52,7 @@ public abstract class AbstractClientIT {
   public void tearDown() {
     clients.forEach(StompClient::close);
     AsyncLock<Void> lock = new AsyncLock<>();
-    vertx.close(lock.handler());
+    vertx.close().onComplete(lock.handler());
     lock.waitForSuccess();
   }
 
@@ -78,8 +78,8 @@ public abstract class AbstractClientIT {
     AtomicReference<Frame> frame = new AtomicReference<>();
 
     // Step 1.
-    StompClient client1 = StompClient.create(vertx, getOptions())
-        .connect(connection -> {
+    StompClient client1 = StompClient.create(vertx, getOptions());
+    client1.connect().onComplete(connection -> {
           if (connection.failed()) {
             connection.cause().printStackTrace();
           } else {
@@ -92,8 +92,8 @@ public abstract class AbstractClientIT {
     await().atMost(10, TimeUnit.SECONDS).until(() -> receiver.get() != null);
 
     // Step 2.
-    StompClient client2 = StompClient.create(vertx, getOptions())
-        .connect(connection -> {
+    StompClient client2 = StompClient.create(vertx, getOptions());
+    client2.connect().onComplete(connection -> {
           if (connection.failed()) {
             connection.cause().printStackTrace();
           } else {
@@ -128,8 +128,8 @@ public abstract class AbstractClientIT {
     AtomicReference<Frame> frame = new AtomicReference<>();
 
     // Step 1.
-    StompClient client1 = StompClient.create(vertx, getOptionsWithSSL())
-        .connect(connection -> {
+    StompClient client1 = StompClient.create(vertx, getOptionsWithSSL());
+    client1.connect().onComplete(connection -> {
           if (connection.failed()) {
             connection.cause().printStackTrace();
           } else {
@@ -142,8 +142,8 @@ public abstract class AbstractClientIT {
     await().atMost(10, TimeUnit.SECONDS).until(() -> receiver.get() != null);
 
     // Step 2.
-    StompClient client2 = StompClient.create(vertx, getOptionsWithSSL())
-        .connect(connection -> {
+    StompClient client2 = StompClient.create(vertx, getOptionsWithSSL());
+    client2.connect().onComplete(connection -> {
           if (connection.failed()) {
             connection.cause().printStackTrace();
           } else {

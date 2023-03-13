@@ -17,6 +17,8 @@
 package io.vertx.ext.stomp.impl;
 
 import com.jayway.awaitility.Awaitility;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.DeliveryOptions;
@@ -58,8 +60,8 @@ public class EventBusBridgeTest {
                 .bridge(new BridgeOptions()
                     .addInboundPermitted(new PermittedOptions().setAddress("/bus"))
                     .addOutboundPermitted(new PermittedOptions().setAddress("/bus")))
-        )
-        .listen(lock.handler());
+        );
+    server.listen().onComplete(lock.handler());
 
     lock.waitForSuccess();
   }
@@ -72,12 +74,18 @@ public class EventBusBridgeTest {
     consumers.clear();
 
     AsyncLock<Void> lock = new AsyncLock<>();
-    server.close(lock.handler());
+    server.close().onComplete(lock.handler());
     lock.waitForSuccess();
 
     lock = new AsyncLock<>();
-    vertx.close(lock.handler());
+    vertx.close().onComplete(lock.handler());
     lock.waitForSuccess();
+  }
+
+  private void client(Handler<AsyncResult<StompClientConnection>> handler) {
+    StompClient client = StompClient.create(vertx);
+    clients.add(client);
+    client.connect().onComplete(handler);
   }
 
   @Test
@@ -85,7 +93,7 @@ public class EventBusBridgeTest {
     AtomicReference<Message> reference = new AtomicReference<>();
     consumers.add(vertx.eventBus().consumer("/bus", reference::set));
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.send("/bus", Headers.create("foo", "bar"), Buffer.buffer("Hello from STOMP"));
     }));
@@ -103,10 +111,11 @@ public class EventBusBridgeTest {
   public void testThatEventBusMessagesAreTransferredToStomp() {
     AtomicReference<Frame> reference = new AtomicReference<>();
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
           final StompClientConnection connection = ar.result();
-          connection.subscribe("/bus", reference::set,
-              f -> {
+          connection
+            .subscribe("/bus", reference::set)
+            .onComplete(f -> {
                 vertx.eventBus().publish("/bus", "Hello from Vert.x", new DeliveryOptions().addHeader("foo", "bar"));
               }
           );
@@ -137,14 +146,14 @@ public class EventBusBridgeTest {
       }
     }));
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.subscribe("/toStomp", frame -> {
         stomp.add(frame);
         if (stomp.size() < 4) {
           connection.send("/toBus", Buffer.buffer("ping"));
         }
-      }, receipt -> {
+      }).onComplete(receipt -> {
         connection.send("/toBus", Buffer.buffer("ping"));
       });
     }));
@@ -163,10 +172,9 @@ public class EventBusBridgeTest {
   public void testThatEventBusMessagesContainingJsonObjectAreTransferredToStomp() {
     AtomicReference<Frame> reference = new AtomicReference<>();
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
           final StompClientConnection connection = ar.result();
-          connection.subscribe("/bus", reference::set,
-              f -> {
+          connection.subscribe("/bus", reference::set).onComplete(f -> {
                 vertx.eventBus().publish("/bus", new JsonObject()
                         .put("name", "vert.x")
                         .put("count", 1)
@@ -192,10 +200,9 @@ public class EventBusBridgeTest {
     AtomicReference<Frame> reference = new AtomicReference<>();
 
     byte[] bytes = new byte[]{0, 1, 2, 3, 4, 5, 6};
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
           final StompClientConnection connection = ar.result();
-          connection.subscribe("/bus", reference::set,
-              f -> {
+          connection.subscribe("/bus", reference::set).onComplete(f -> {
                 vertx.eventBus().publish("/bus", Buffer.buffer(bytes),
                     new DeliveryOptions().addHeader("foo", "bar"));
               }
@@ -215,10 +222,9 @@ public class EventBusBridgeTest {
   public void testThatEventBusMessagesContainingNoBodyAreTransferredToStomp() {
     AtomicReference<Frame> reference = new AtomicReference<>();
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
           final StompClientConnection connection = ar.result();
-          connection.subscribe("/bus", reference::set,
-              f -> {
+          connection.subscribe("/bus", reference::set).onComplete(f -> {
                 vertx.eventBus().publish("/bus", null,
                     new DeliveryOptions().addHeader("foo", "bar"));
               }
@@ -240,7 +246,7 @@ public class EventBusBridgeTest {
     consumers.add(vertx.eventBus().consumer("/bus", messages::add));
     consumers.add(vertx.eventBus().consumer("/bus", messages::add));
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.send("/bus", Headers.create("foo", "bar"), Buffer.buffer("Hello from STOMP"));
     }));
@@ -258,7 +264,7 @@ public class EventBusBridgeTest {
     consumers.add(vertx.eventBus().consumer("/toBus", messages::add));
     consumers.add(vertx.eventBus().consumer("/toBus", messages::add));
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.send("/toBus", Headers.create("foo", "bar"), Buffer.buffer("Hello from STOMP"));
     }));
@@ -271,13 +277,12 @@ public class EventBusBridgeTest {
   public void testThatEventBusMessagesAreTransferredToSeveralStompClients() {
     List<Frame> frames = new CopyOnWriteArrayList<>();
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
-      connection.subscribe("/bus", frames::add,
-          f -> {
-            clients.add(StompClient.create(vertx).connect(ar2 -> {
+      connection.subscribe("/bus", frames::add).onComplete(f -> {
+            client((ar2 -> {
               final StompClientConnection connection2 = ar2.result();
-              connection2.subscribe("/bus", frames::add, receipt -> {
+              connection2.subscribe("/bus", frames::add).onComplete(receipt -> {
                 vertx.eventBus().publish("/bus", "Hello from Vert.x", new DeliveryOptions().addHeader("foo", "bar"));
               });
             }));
@@ -295,13 +300,12 @@ public class EventBusBridgeTest {
             .setPointToPoint(true)
     );
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
-      connection.subscribe("/toStomp", frames::add,
-          f -> {
-            clients.add(StompClient.create(vertx).connect(ar2 -> {
+      connection.subscribe("/toStomp", frames::add).onComplete(f -> {
+            client((ar2 -> {
               final StompClientConnection connection2 = ar2.result();
-              connection2.subscribe("/toStomp", frames::add, receipt -> {
+              connection2.subscribe("/toStomp", frames::add).onComplete(receipt -> {
                 vertx.eventBus().publish("/toStomp", "Hello from Vert.x", new DeliveryOptions().addHeader("foo", "bar"));
               });
             }));
@@ -326,9 +330,9 @@ public class EventBusBridgeTest {
       msg.reply("pong");
     }));
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
-      connection.subscribe("/replyTo", response::set, r1 -> {
+      connection.subscribe("/replyTo", response::set).onComplete(r1 -> {
         connection.send("/request", Headers.create("reply-address", "/replyTo"), Buffer.buffer("ping"));
       });
     }));
@@ -340,13 +344,12 @@ public class EventBusBridgeTest {
   public void testThatStompClientCanUnsubscribe() throws InterruptedException {
     List<Frame> frames = new ArrayList<>();
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
           final StompClientConnection connection = ar.result();
           connection.subscribe("/bus", frame -> {
                 frames.add(frame);
                 connection.unsubscribe("/bus");
-              },
-              f -> {
+              }).onComplete(f -> {
                 vertx.eventBus().publish("/bus", "Hello from Vert.x", new DeliveryOptions().addHeader("foo", "bar"));
               }
           );
@@ -366,13 +369,12 @@ public class EventBusBridgeTest {
   public void testThatStompClientCanCloseTheConnection() throws InterruptedException {
     List<Frame> frames = new ArrayList<>();
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
           final StompClientConnection connection = ar.result();
           connection.subscribe("/bus", frame -> {
                 frames.add(frame);
                 connection.close();
-              },
-              f -> {
+              }).onComplete(f -> {
                 vertx.eventBus().publish("/bus", "Hello from Vert.x", new DeliveryOptions().addHeader("foo", "bar"));
               }
           );
@@ -392,13 +394,12 @@ public class EventBusBridgeTest {
   public void testThatStompClientCanDisconnect() throws InterruptedException {
     List<Frame> frames = new ArrayList<>();
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
           final StompClientConnection connection = ar.result();
           connection.subscribe("/bus", frame -> {
                 frames.add(frame);
                 connection.disconnect();
-              },
-              f -> {
+              }).onComplete(f -> {
                 vertx.eventBus().publish("/bus", "Hello from Vert.x", new DeliveryOptions().addHeader("foo", "bar"));
               }
           );
@@ -425,15 +426,15 @@ public class EventBusBridgeTest {
             .bridge(new BridgeOptions()
                 .addInboundPermitted(new PermittedOptions().setAddress("/bus").setMatch(new JsonObject().put("id", 1)))
                 .addOutboundPermitted(new PermittedOptions().setAddress("/bus")))
-        )
-        .listen(lock.handler());
+        );
+    server.listen().onComplete(lock.handler());
 
     lock.waitForSuccess();
 
     AtomicReference<Message> reference = new AtomicReference<>();
     consumers.add(vertx.eventBus().consumer("/bus", reference::set));
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.send("/bus", Headers.create("foo", "bar"), Buffer.buffer(new JsonObject().put("id", 1).put("msg",
           "Hello from STOMP").toString()));
@@ -459,15 +460,15 @@ public class EventBusBridgeTest {
             .bridge(new BridgeOptions()
                 .addInboundPermitted(new PermittedOptions().setAddress("/bus").setMatch(new JsonObject().put("id", 2)))
                 .addOutboundPermitted(new PermittedOptions().setAddress("/bus")))
-        )
-        .listen(lock.handler());
+        );
+    server.listen().onComplete(lock.handler());
 
     lock.waitForSuccess();
 
     AtomicReference<Message> reference = new AtomicReference<>();
     consumers.add(vertx.eventBus().consumer("/bus", reference::set));
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
       final StompClientConnection connection = ar.result();
       connection.send("/bus", Headers.create("foo", "bar"), Buffer.buffer(new JsonObject().put("msg",
           "Hello from STOMP").toString()));
@@ -488,18 +489,17 @@ public class EventBusBridgeTest {
             .bridge(new BridgeOptions()
                 .addInboundPermitted(new PermittedOptions().setAddress("/bus"))
                 .addOutboundPermitted(new PermittedOptions().setAddress("/bus").setMatch(new JsonObject().put("id", 2)
-        ))))
-        .listen(lock.handler());
+        ))));
+    server.listen().onComplete(lock.handler());
 
     lock.waitForSuccess();
 
 
     AtomicReference<Frame> reference = new AtomicReference<>();
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
           final StompClientConnection connection = ar.result();
-          connection.subscribe("/bus", reference::set,
-              f -> {
+          connection.subscribe("/bus", reference::set).onComplete(f -> {
                 JsonObject payload = new JsonObject().put("id", 2).put("message", "Hello from Vert.x");
                 vertx.eventBus().publish("/bus", payload, new DeliveryOptions().addHeader("foo", "bar"));
               }
@@ -526,18 +526,17 @@ public class EventBusBridgeTest {
             .bridge(new BridgeOptions()
                 .addInboundPermitted(new PermittedOptions().setAddress("/bus"))
                 .addOutboundPermitted(new PermittedOptions().setAddress("/bus").setMatch(new JsonObject().put("id", 2)
-                ))))
-        .listen(lock.handler());
+                ))));
+    server.listen().onComplete(lock.handler());
 
     lock.waitForSuccess();
 
 
     AtomicReference<Frame> reference = new AtomicReference<>();
 
-    clients.add(StompClient.create(vertx).connect(ar -> {
+    client((ar -> {
           final StompClientConnection connection = ar.result();
-          connection.subscribe("/bus", reference::set,
-              f -> {
+          connection.subscribe("/bus", reference::set).onComplete(f -> {
                 JsonObject payload = new JsonObject().put("id", 1).put("message", "Hello from Vert.x");
                 vertx.eventBus().publish("/bus", payload, new DeliveryOptions().addHeader("foo", "bar"));
               }

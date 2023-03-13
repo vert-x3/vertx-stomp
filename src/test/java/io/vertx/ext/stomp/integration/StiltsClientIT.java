@@ -50,18 +50,19 @@ public class StiltsClientIT {
   public void setUp() {
     AsyncLock<StompServer> lock = new AsyncLock<>();
     vertx = Vertx.vertx();
-    server = StompServer.create(vertx).handler(StompServerHandler.create(vertx)).listen(lock.handler());
+    server = StompServer.create(vertx).handler(StompServerHandler.create(vertx));
+    server.listen().onComplete(lock.handler());
     lock.waitForSuccess();
   }
 
   @After
   public void tearDown() {
     AsyncLock<Void> lock = new AsyncLock<>();
-    server.close(lock.handler());
+    server.close().onComplete(lock.handler());
     lock.waitForSuccess();
 
     lock = new AsyncLock<>();
-    vertx.close(lock.handler());
+    vertx.close().onComplete(lock.handler());
     lock.waitForSuccess();
   }
 
