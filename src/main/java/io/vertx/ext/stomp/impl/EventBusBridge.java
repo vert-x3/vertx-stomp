@@ -245,7 +245,7 @@ public class EventBusBridge extends Topic {
   private void send(String address, Frame frame, Handler<AsyncResult<Message<Object>>> replyHandler) {
     if (options.isPointToPoint()) {
       vertx.eventBus().request(address, frame.getBody(),
-          new DeliveryOptions().setHeaders(toMultimap(frame.getHeaders())), replyHandler);
+          new DeliveryOptions().setHeaders(toMultimap(frame.getHeaders()))).onComplete(replyHandler);
     } else {
       // the reply handler is ignored in non point to point interaction.
       vertx.eventBus().publish(address, frame.getBody(),

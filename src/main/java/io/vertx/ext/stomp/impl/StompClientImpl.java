@@ -175,7 +175,7 @@ public class StompClientImpl implements StompClient {
     Handler<Frame> r = receivedFrameHandler;
     Handler<Frame> w = writingFrameHandler;
     Handler<Throwable> err = exceptionHandler;
-    net.connect(port, host, ar -> {
+    net.connect(port, host).onComplete(ar -> {
       synchronized (StompClientImpl.this) {
         client = ar.failed() ? null : net;
         if (client != null) {

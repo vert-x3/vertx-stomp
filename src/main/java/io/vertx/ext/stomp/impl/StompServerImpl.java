@@ -133,7 +133,7 @@ public class StompServerImpl implements StompServer {
               .handler(frame -> stomp.handle(new ServerFrameImpl(frame, connection)));
           socket.handler(parser);
         })
-        .listen(port, host, ar -> {
+        .listen(port, host).onComplete(ar -> {
           if (ar.failed()) {
             if (handler != null) {
               vertx.runOnContext(v -> handler.handle(Future.failedFuture(ar.cause())));
@@ -206,7 +206,7 @@ public class StompServerImpl implements StompServer {
       }
     };
 
-    server.close(listener);
+    server.close().onComplete(listener);
   }
 
   @Override

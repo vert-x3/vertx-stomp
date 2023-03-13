@@ -83,7 +83,7 @@ public class DefaultConnectHandler implements Handler<ServerFrame> {
       String login = frame.getHeader(Frame.LOGIN);
       String passcode = frame.getHeader(Frame.PASSCODE);
 
-      connection.handler().onAuthenticationRequest(connection, login, passcode, ar -> {
+      connection.handler().onAuthenticationRequest(connection, login, passcode).onComplete(ar -> {
         if (ar.result()) {
           remainingActions.handle(Future.succeededFuture());
         } else {
