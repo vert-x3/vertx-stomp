@@ -589,7 +589,6 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   private synchronized void handleReceipt(Frame frame) {
-    System.out.println("handle receipt");
     String receipt = frame.getHeader(Frame.RECEIPT_ID);
     if (receipt != null) {
       Promise<Void> receiptHandler = pendingReceipts.remove(receipt);
