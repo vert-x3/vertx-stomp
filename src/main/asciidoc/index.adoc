@@ -283,7 +283,7 @@ You can configure various aspect by passing a
 STOMP client relies on a {@link io.vertx.core.net.NetClient}, you can configure the underlying Net Client from
 the {@link io.vertx.ext.stomp.StompClientOptions}. Alternatively, you can pass the {@link io.vertx.core.net.NetClient}
 you want to use in the
-{@link io.vertx.ext.stomp.StompClient#connect(io.vertx.core.net.NetClient, io.vertx.core.Handler)} method:
+{@link io.vertx.ext.stomp.StompClient#connect(io.vertx.core.net.NetClient)} method:
 
 [source,$lang]
 ----
