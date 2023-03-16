@@ -79,7 +79,6 @@ public class StompServerImpl implements StompServer {
     return promise.future();
   }
 
-  @Override
   public StompServer listen(Handler<AsyncResult<StompServer>> handler) {
     return listen(options.getPort(), options.getHost(), handler);
   }
@@ -96,12 +95,6 @@ public class StompServerImpl implements StompServer {
     return promise.future();
   }
 
-  @Override
-  public StompServer listen(int port, Handler<AsyncResult<StompServer>> handler) {
-    return listen(port, StompServerOptions.DEFAULT_STOMP_HOST, handler);
-  }
-
-  @Override
   public StompServer listen(int port, String host, Handler<AsyncResult<StompServer>> handler) {
     if (port == -1) {
       handler.handle(Future.failedFuture("TCP server disabled. The port is set to '-1'."));
@@ -183,8 +176,6 @@ public class StompServerImpl implements StompServer {
     return handler;
   }
 
-
-  @Override
   public void close(Handler<AsyncResult<Void>> done) {
     if (!listening) {
       if (done != null) {

@@ -18,7 +18,6 @@ package io.vertx.ext.stomp;
 
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
@@ -182,16 +181,7 @@ public interface StompServerHandler extends Handler<ServerFrame> {
    * @param connection server connection that contains session ID
    * @param login      the login
    * @param passcode   the password
-   * @param handler    handler receiving the authentication result
-   * @return the current {@link StompServerHandler}
-   */
-  @Fluent
-  @Deprecated
-  StompServerHandler onAuthenticationRequest(StompServerConnection connection, String login, String passcode,
-                                             Handler<AsyncResult<Boolean>> handler);
-
-  /**
-   * Like {@link StompServerHandler#onAuthenticationRequest(StompServerConnection, String, String, Handler)} but with a future of the result
+   * @return a future notified with the authentication result
    */
   Future<Boolean> onAuthenticationRequest(StompServerConnection connection, String login, String passcode);
 

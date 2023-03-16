@@ -18,7 +18,6 @@ package io.vertx.ext.stomp;
 
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
@@ -48,7 +47,6 @@ public interface StompClientConnection {
    * Closes the connection without sending the {@code DISCONNECT} frame.
    *
    * @see #disconnect()
-   * @see #disconnect(Handler)
    */
   void close();
 
@@ -67,19 +65,6 @@ public interface StompClientConnection {
   Future<Frame> send(Map<String, String> headers, Buffer body);
 
   /**
-   * Sends a {@code SEND} frame to the server.
-   *
-   * @param headers        the headers, must not be {@code null}
-   * @param body           the body, may be {@code null}
-   * @param receiptHandler the handler invoked when the {@code RECEIPT} frame associated with the
-   *                       sent frame has been received. The handler receives the sent frame.
-   * @return the current {@link StompClientConnection}
-   */
-  @Fluent
-  @Deprecated
-  StompClientConnection send(Map<String, String> headers, Buffer body, Handler<AsyncResult<Frame>> receiptHandler);
-
-  /**
    * Sends a {@code SEND} frame to the server to the given destination. The message does not have any other header.
    *
    * @param destination the destination, must not be {@code null}
@@ -89,37 +74,12 @@ public interface StompClientConnection {
   Future<Frame>  send(String destination, Buffer body);
 
   /**
-   * Sends a {@code SEND} frame to the server to the given destination. The message does not have any other header.
-   *
-   * @param destination    the destination, must not be {@code null}
-   * @param body           the body, may be {@code null}
-   * @param receiptHandler the handler invoked when the {@code RECEIPT} frame associated with the
-   *                       sent frame has been received. The handler receives the sent frame.
-   * @return the current {@link StompClientConnection}
-   */
-  @Fluent
-  @Deprecated
-  StompClientConnection send(String destination, Buffer body, Handler<AsyncResult<Frame>> receiptHandler);
-
-  /**
    * Sends the given frame to the server.
    *
    * @param frame the frame
    * @return a future resolved with the sent frame when the {@code RECEIPT} frame associated with the sent frame has been received
    */
   Future<Frame>  send(Frame frame);
-
-  /**
-   * Sends the given frame to the server.
-   *
-   * @param frame          the frame
-   * @param receiptHandler the handler invoked when the {@code RECEIPT} frame associated with the
-   *                       sent frame has been received. The handler receives the sent frame.
-   * @return the current {@link StompClientConnection}
-   */
-  @Fluent
-  @Deprecated
-  StompClientConnection send(Frame frame, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
    * Sends a {@code SEND} frame to the server to the given destination.
@@ -133,21 +93,6 @@ public interface StompClientConnection {
   Future<Frame>  send(String destination, Map<String, String> headers, Buffer body);
 
   /**
-   * Sends a {@code SEND} frame to the server to the given destination.
-   *
-   * @param destination    the destination, must not be {@code null}
-   * @param body           the body, may be {@code null}
-   * @param headers        the header. The {@code destination} header is replaced by the value given to the {@code
-   *                       destination} parameter
-   * @param receiptHandler the handler invoked when the {@code RECEIPT} frame associated with the
-   *                       sent frame has been received. The handler receives the sent frame.
-   * @return the current {@link StompClientConnection}
-   */
-  @Fluent
-  @Deprecated
-  StompClientConnection send(String destination, Map<String, String> headers, Buffer body, Handler<AsyncResult<Frame>> receiptHandler);
-
-  /**
    * Subscribes to the given destination. This destination is used as subscription id.
    *
    * @param destination the destination, must not be {@code null}
@@ -155,19 +100,6 @@ public interface StompClientConnection {
    * @return a future resolved with the subscription id when the {@code RECEIPT} frame associated with the sent frame has been received
    */
   Future<String> subscribe(String destination, Handler<Frame> handler);
-
-  /**
-   * Subscribes to the given destination. This destination is used as subscription id.
-   *
-   * @param destination    the destination, must not be {@code null}
-   * @param handler        the handler invoked when a message is received on the given destination. Must not be {@code null}.
-   * @param receiptHandler the handler invoked when the {@code RECEIPT} frame associated with the
-   *                       subscription has been received. The handler receives the subscription id.
-   * @return the current {@link StompClientConnection}
-   */
-  @Fluent
-  @Deprecated
-  StompClientConnection subscribe(String destination, Handler<Frame> handler, Handler<AsyncResult<String>> receiptHandler);
 
   /**
    * Subscribes to the given destination.
@@ -182,22 +114,6 @@ public interface StompClientConnection {
   Future<String> subscribe(String destination, Map<String, String> headers, Handler<Frame> handler);
 
   /**
-   * Subscribes to the given destination.
-   *
-   * @param destination    the destination, must not be {@code null}
-   * @param headers        the headers to configure the subscription. It may contain the {@code ack}
-   *                       header to configure the acknowledgment policy. If the given set of headers contains the
-   *                       {@code id} header, this value is used as subscription id.
-   * @param handler        the handler invoked when a message is received on the given destination. Must not be {@code null}.
-   * @param receiptHandler the handler invoked when the {@code RECEIPT} frame associated with the
-   *                       subscription has been received. The handler receives the subscription id.
-   * @return the current {@link StompClientConnection}
-   */
-  @Fluent
-  @Deprecated
-  StompClientConnection subscribe(String destination, Map<String, String> headers, Handler<Frame> handler, Handler<AsyncResult<String>> receiptHandler);
-
-  /**
    * Un-subscribes from the given destination. This method only works if the subscription did not specifies a
    * subscription id (using the {@code id} header).
    *
@@ -205,19 +121,6 @@ public interface StompClientConnection {
    * @return a future resolved with the sent frame when the {@code RECEIPT} frame associated with the sent frame has been received
    */
   Future<Frame> unsubscribe(String destination);
-
-  /**
-   * Un-subscribes from the given destination. This method only works if the subscription did not specifies a
-   * subscription id (using the {@code id} header).
-   *
-   * @param destination    the destination
-   * @param receiptHandler the handler invoked when the {@code RECEIPT} frame associated with the
-   *                       un-subscription has been received. The handler receives the sent frame ({@code UNSUBSCRIBE}).
-   * @return the current {@link StompClientConnection}
-   */
-  @Fluent
-  @Deprecated
-  StompClientConnection unsubscribe(String destination, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
    * Un-subscribes from the given destination. This method computes the subscription id as follows. If the given
@@ -228,20 +131,6 @@ public interface StompClientConnection {
    * @return a future resolved with the sent frame when the {@code RECEIPT} frame associated with the sent frame has been received
    */
   Future<Frame> unsubscribe(String destination, Map<String, String> headers);
-
-  /**
-   * Un-subscribes from the given destination. This method computes the subscription id as follows. If the given
-   * headers contains the {@code id} header, the header value is used. Otherwise the destination is used.
-   *
-   * @param destination    the destination
-   * @param headers        the headers
-   * @param receiptHandler the handler invoked when the {@code RECEIPT} frame associated with the
-   *                       un-subscription has been received. The handler receives the sent frame ({@code UNSUBSCRIBE}).
-   * @return the current {@link StompClientConnection}
-   */
-  @Fluent
-  @Deprecated
-  StompClientConnection unsubscribe(String destination, Map<String, String> headers, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
    * Sets a handler notified when an {@code ERROR} frame is received by the client. The handler receives the {@code
@@ -286,19 +175,6 @@ public interface StompClientConnection {
   /**
    * Begins a transaction.
    *
-   * @param id             the transaction id, must not be {@code null}
-   * @param receiptHandler the handler invoked when the {@code RECEIPT} frame associated with the
-   *                       transaction begin has been processed by the server. The handler receives the sent frame
-   *                       ({@code BEGIN}).
-   * @return the current {@link StompClientConnection}
-   */
-  @Fluent
-  @Deprecated
-  StompClientConnection beginTX(String id, Handler<AsyncResult<Frame>> receiptHandler);
-
-  /**
-   * Begins a transaction.
-   *
    * @param id the transaction id, must not be {@code null}
    * @return a future resolved with the sent frame when the {@code RECEIPT} frame associated with the sent frame has been received
    */
@@ -315,40 +191,12 @@ public interface StompClientConnection {
   Future<Frame> beginTX(String id, Map<String, String> headers);
 
   /**
-   * Begins a transaction.
-   *
-   * @param id             the transaction id, must not be {@code null}
-   * @param headers        additional headers to send to the server. The {@code transaction} header is replaced by the
-   *                       value passed in the @{code id} parameter
-   * @param receiptHandler the handler invoked when the {@code RECEIPT} frame associated with the
-   *                       transaction begin has been processed by the server. The handler receives the sent frame
-   *                       ({@code BEGIN}).
-   * @return the current {@link StompClientConnection}
-   */
-  @Fluent
-  @Deprecated
-  StompClientConnection beginTX(String id, Map<String, String> headers, Handler<AsyncResult<Frame>> receiptHandler);
-
-  /**
    * Commits a transaction.
    *
    * @param id the transaction id, must not be {@code null}
    * @return a future resolved with the sent frame when the {@code RECEIPT} frame associated with the sent frame has been received
    */
   Future<Frame> commit(String id);
-
-  /**
-   * Commits a transaction.
-   *
-   * @param id             the transaction id, must not be {@code null}
-   * @param receiptHandler the handler invoked when the {@code RECEIPT} frame associated with the
-   *                       transaction commit has been processed by the server. The handler receives the sent frame
-   *                       ({@code COMMIT}).
-   * @return the current {@link StompClientConnection}
-   */
-  @Fluent
-  @Deprecated
-  StompClientConnection commit(String id, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
    * Commits a transaction.
@@ -361,40 +209,12 @@ public interface StompClientConnection {
   Future<Frame> commit(String id, Map<String, String> headers);
 
   /**
-   * Commits a transaction.
-   *
-   * @param id             the transaction id, must not be {@code null}
-   * @param headers        additional headers to send to the server. The {@code transaction} header is replaced by the
-   *                       value passed in the @{code id} parameter
-   * @param receiptHandler the handler invoked when the {@code RECEIPT} frame associated with the
-   *                       transaction commit has been processed by the server. The handler receives the sent frame
-   *                       ({@code COMMIT}).
-   * @return the current {@link StompClientConnection}
-   */
-  @Fluent
-  @Deprecated
-  StompClientConnection commit(String id, Map<String, String> headers, Handler<AsyncResult<Frame>> receiptHandler);
-
-  /**
    * Aborts a transaction.
    *
    * @param id the transaction id, must not be {@code null}
    * @return a future resolved with the sent frame when the {@code RECEIPT} frame associated with the sent frame has been received
    */
   Future<Frame> abort(String id);
-
-  /**
-   * Aborts a transaction.
-   *
-   * @param id             the transaction id, must not be {@code null}
-   * @param receiptHandler the handler invoked when the {@code RECEIPT} frame associated with the
-   *                       transaction cancellation has been processed by the server. The handler receives the sent
-   *                       frame ({@code ABORT}).
-   * @return the current {@link StompClientConnection}
-   */
-  @Fluent
-  @Deprecated
-  StompClientConnection abort(String id, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
    * Aborts a transaction.
@@ -407,40 +227,12 @@ public interface StompClientConnection {
   Future<Frame> abort(String id, Map<String, String> headers);
 
   /**
-   * Aborts a transaction.
-   *
-   * @param id             the transaction id, must not be {@code null}
-   * @param headers        additional headers to send to the server. The {@code transaction} header is replaced by the
-   *                       value passed in the @{code id} parameter
-   * @param receiptHandler the handler invoked when the {@code RECEIPT} frame associated with the
-   *                       transaction cancellation has been processed by the server. The handler receives the sent
-   *                       frame ({@code ABORT}).
-   * @return the current {@link StompClientConnection}
-   */
-  @Fluent
-  @Deprecated
-  StompClientConnection abort(String id, Map<String, String> headers, Handler<AsyncResult<Frame>> receiptHandler);
-
-  /**
    * Disconnects the client. Unlike the {@link #close()} method, this method send the {@code DISCONNECT} frame to the
    * server.
    *
    * @return a future resolved with the sent frame when the {@code RECEIPT} frame associated with the sent frame has been received
    */
   Future<Frame> disconnect();
-
-  /**
-   * Disconnects the client. Unlike the {@link #close()} method, this method send the {@code DISCONNECT} frame to the
-   * server.
-   *
-   * @param receiptHandler the handler invoked when the {@code RECEIPT} frame associated with the
-   *                       disconnection has been processed by the server. The handler receives the sent
-   *                       frame ({@code DISCONNECT}).
-   * @return the current {@link StompClientConnection}
-   */
-  @Fluent
-  @Deprecated
-  StompClientConnection disconnect(Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
    * Disconnects the client. Unlike the {@link #close()} method, this method send the {@code DISCONNECT} frame to the
@@ -452,20 +244,6 @@ public interface StompClientConnection {
   Future<Frame> disconnect(Frame frame);
 
   /**
-   * Disconnects the client. Unlike the {@link #close()} method, this method send the {@code DISCONNECT} frame to the
-   * server. This method lets you customize the {@code DISCONNECT} frame.
-   *
-   * @param frame          the {@code DISCONNECT} frame.
-   * @param receiptHandler the handler invoked when the {@code RECEIPT} frame associated with the
-   *                       disconnection has been processed by the server. The handler receives the sent
-   *                       frame ({@code DISCONNECT}).
-   * @return a future resolved with the sent frame when the {@code RECEIPT} frame associated with the sent frame has been received
-   */
-  @Fluent
-  @Deprecated
-  StompClientConnection disconnect(Frame frame, Handler<AsyncResult<Frame>> receiptHandler);
-
-  /**
    * Sends an acknowledgement for a specific message. It means that the message has been handled and processed by the
    * client. The {@code id} parameter is the message id received in the frame.
    *
@@ -475,20 +253,6 @@ public interface StompClientConnection {
   Future<Frame> ack(String id);
 
   /**
-   * Sends an acknowledgement for a specific message. It means that the message has been handled and processed by the
-   * client. The {@code id} parameter is the message id received in the frame.
-   *
-   * @param id             the message id of the message to acknowledge
-   * @param receiptHandler the handler invoked when the {@code RECEIPT} frame associated with the
-   *                       acknowledgment has been processed by the server. The handler receives the sent
-   *                       frame ({@code ACK}).
-   * @return the current {@link StompClientConnection}
-   */
-  @Fluent
-  @Deprecated
-  StompClientConnection ack(String id, Handler<AsyncResult<Frame>> receiptHandler);
-
-  /**
    * Sends a non-acknowledgement for the given message. It means that the message has not been handled by the client.
    * The {@code id} parameter is the message id received in the frame.
    *
@@ -496,20 +260,6 @@ public interface StompClientConnection {
    * @return a future resolved with the sent frame when the {@code RECEIPT} frame associated with the sent frame has been received
    */
   Future<Frame> nack(String id);
-
-  /**
-   * Sends a non-acknowledgement for the given message. It means that the message has not been handled by the client.
-   * The {@code id} parameter is the message id received in the frame.
-   *
-   * @param id             the message id of the message to acknowledge
-   * @param receiptHandler the handler invoked when the {@code RECEIPT} frame associated with the
-   *                       non-acknowledgment has been processed by the server. The handler receives the sent
-   *                       frame ({@code NACK}).
-   * @return the current {@link StompClientConnection}
-   */
-  @Fluent
-  @Deprecated
-  StompClientConnection nack(String id, Handler<AsyncResult<Frame>> receiptHandler);
 
   /**
    * Sends an acknowledgement for the given frame. It means that the frame has been handled and processed by the
@@ -522,21 +272,6 @@ public interface StompClientConnection {
   Future<Frame> ack(String id, String txId);
 
   /**
-   * Sends an acknowledgement for the given frame. It means that the frame has been handled and processed by the
-   * client. The sent acknowledgement is part of the transaction identified by the given id.
-   *
-   * @param id             the message id of the message to acknowledge
-   * @param txId           the transaction id
-   * @param receiptHandler the handler invoked when the {@code RECEIPT} frame associated with the
-   *                       acknowledgment has been processed by the server. The handler receives the sent
-   *                       frame ({@code ACK}).
-   * @return the current {@link StompClientConnection}
-   */
-  @Fluent
-  @Deprecated
-  StompClientConnection ack(String id, String txId, Handler<AsyncResult<Frame>> receiptHandler);
-
-  /**
    * Sends a non-acknowledgement for the given frame. It means that the frame has not been handled by the client.
    * The sent non-acknowledgement is part of the transaction identified by the given id.
    *
@@ -545,22 +280,6 @@ public interface StompClientConnection {
    * @return a future resolved with the sent frame when the {@code RECEIPT} frame associated with the sent frame has been received
    */
   Future<Frame> nack(String id, String txId);
-
-  /**
-   * Sends a non-acknowledgement for the given frame. It means that the frame has not been handled by the client.
-   * The sent non-acknowledgement is part of the transaction identified by the given id.
-   *
-   * @param id             the message id of the message to acknowledge
-   * @param txId           the transaction id
-   * @param receiptHandler the handler invoked when the {@code RECEIPT} frame associated with the
-   *                       non-acknowledgment has been processed by the server. The handler receives the sent
-   *                       frame ({@code NACK}).
-   * @return the current {@link StompClientConnection}
-   */
-  @Fluent
-  @Deprecated
-  StompClientConnection nack(String id, String txId, Handler<AsyncResult<Frame>> receiptHandler);
-
 
   /**
    * Configures a received handler that get notified when a STOMP frame is received by the client.

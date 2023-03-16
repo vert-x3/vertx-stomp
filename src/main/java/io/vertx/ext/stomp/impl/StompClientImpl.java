@@ -50,12 +50,10 @@ public class StompClientImpl implements StompClient {
     this.options = options;
   }
 
-  @Override
   public StompClient connect(int port, String host, Handler<AsyncResult<StompClientConnection>> resultHandler) {
     return connect(port, host, vertx.createNetClient(options), resultHandler);
   }
 
-  @Override
   public StompClient connect(Handler<AsyncResult<StompClientConnection>> resultHandler) {
     return connect(options.getPort(), options.getHost(), vertx.createNetClient(options), resultHandler);
   }
@@ -122,7 +120,6 @@ public class StompClientImpl implements StompClient {
     return this;
   }
 
-  @Override
   public StompClient connect(NetClient netClient, Handler<AsyncResult<StompClientConnection>> resultHandler) {
     return connect(options.getPort(), options.getHost(), netClient, resultHandler);
   }
@@ -165,7 +162,6 @@ public class StompClientImpl implements StompClient {
     return client == null;
   }
 
-  @Override
   public synchronized StompClient connect(int port, String host, NetClient net, Handler<AsyncResult<StompClientConnection>> resultHandler) {
     if (client != null) {
       client.close();
@@ -223,7 +219,6 @@ public class StompClientImpl implements StompClient {
     return this;
   }
 
-  @Override
   public Future<StompClientConnection> connect(int port, String host, NetClient net) {
     Promise<StompClientConnection> promise = Promise.promise();
     connect(port, host, net, promise);

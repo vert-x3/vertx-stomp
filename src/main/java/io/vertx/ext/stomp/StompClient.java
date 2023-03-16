@@ -18,7 +18,6 @@ package io.vertx.ext.stomp;
 
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
@@ -59,15 +58,7 @@ public interface StompClient {
    *
    * @param port          the server port
    * @param host          the server host
-   * @param resultHandler handler called with the connection result
-   * @return the current {@link StompClient}
-   */
-  @Fluent
-  @Deprecated
-  StompClient connect(int port, String host, Handler<AsyncResult<StompClientConnection>> resultHandler);
-
-  /**
-   * Like {@link #connect(int, String, Handler)} but returns a {@code Future} of the asynchronous result
+   * @return a future notified with the connection result
    */
   Future<StompClientConnection> connect(int port, String host);
 
@@ -75,15 +66,7 @@ public interface StompClient {
    * Connects to the server.
    *
    * @param net           the NET client to use
-   * @param resultHandler handler called with the connection result
-   * @return the current {@link StompClient}
-   */
-  @Fluent
-  @Deprecated
-  StompClient connect(NetClient net, Handler<AsyncResult<StompClientConnection>> resultHandler);
-
-  /**
-   * Like {@link #connect(NetClient, Handler)} but returns a {@code Future} of the asynchronous result
+   * @return a future notified with the connection result
    */
   Future<StompClientConnection> connect(NetClient net);
 
@@ -93,33 +76,14 @@ public interface StompClient {
    * @param port          the server port
    * @param host          the server host
    * @param net           the NET client to use
-   * @param resultHandler handler called with the connection result
-   * @return the current {@link StompClient}
+   * @return a future notified with the connection result
    */
-  @Fluent
-  @Deprecated
-  StompClient connect(int port, String host, NetClient net,
-                      Handler<AsyncResult<StompClientConnection>> resultHandler);
-
-  /**
-   * Like {@link #connect(int, String, NetClient, Handler)} but returns a {@code Future} of the asynchronous result
-   */
-  Future<StompClientConnection>  connect(int port, String host, NetClient net);
 
   /**
    * Connects to the server using the host and port configured in the client's options.
    *
-   * @param resultHandler handler called with the connection result. A failure will be sent to the handler if a TCP
-   *                      level issue happen before the `CONNECTED` frame is received. Afterwards, the
-   *                      {@link #exceptionHandler(Handler)} is called.
-   * @return the current {@link StompClient}
-   */
-  @Fluent
-  @Deprecated
-  StompClient connect(Handler<AsyncResult<StompClientConnection>> resultHandler);
-
-  /**
-   * Like {@link #connect(Handler)} but returns a {@code Future} of the asynchronous result
+   * @return a future notified with the connection result. A failure will be sent to the handler if a TCP
+   *                      level issue happen before the `CONNECTED` frame is received.
    */
   Future<StompClientConnection> connect();
 

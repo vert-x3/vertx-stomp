@@ -18,7 +18,6 @@ package io.vertx.ext.stomp;
 
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
@@ -89,7 +88,8 @@ public interface StompServer {
   StompServer handler(StompServerHandler handler);
 
   /**
-   * Connects the STOMP server to the given port.
+   * Connects the STOMP server to the given port. This method use the default host ({@code 0.0.0.0}). Once the socket
+   * it bounds calls the given handler with the result. The result may be a failure if the socket is already used.
    *
    * @param port the port
    * @return a future resolved with the listen result
@@ -97,7 +97,8 @@ public interface StompServer {
   Future<StompServer> listen(int port);
 
   /**
-   * Connects the STOMP server to the given port / interface.
+   * Connects the STOMP server to the given port / interface. Once the socket it bounds calls the given handler with
+   * the result. The result may be a failure if the socket is already used.
    *
    * @param port the port
    * @param host the interface
@@ -106,56 +107,12 @@ public interface StompServer {
   Future<StompServer> listen(int port, String host);
 
   /**
-   * Connects the STOMP server to the port / host configured in the server options.
+   * Connects the STOMP server default port (61613) and network interface ({@code 0.0.0.0}). Once the socket
+   * it bounds calls the given handler with the result. The result may be a failure if the socket is already used.
    *
    * @return a future resolved with the listen result
    */
   Future<StompServer> listen();
-
-
-  /**
-   * Connects the STOMP server default port (61613) and network interface ({@code 0.0.0.0}). Once the socket
-   * it bounds calls the given handler with the result. The result may be a failure if the socket is already used.
-   *
-   * @param handler the handler to call with the result
-   * @return the current {@link StompServer}
-   */
-  @Fluent
-  @Deprecated
-  StompServer listen(Handler<AsyncResult<StompServer>> handler);
-
-  /**
-   * Connects the STOMP server to the given port. This method use the default host ({@code 0.0.0.0}). Once the socket
-   * it bounds calls the given handler with the result. The result may be a failure if the socket is already used.
-   *
-   * @param port    the port
-   * @param handler the handler to call with the result
-   * @return the current {@link StompServer}
-   */
-  @Fluent
-  @Deprecated
-  StompServer listen(int port, Handler<AsyncResult<StompServer>> handler);
-
-  /**
-   * Connects the STOMP server to the given port / interface. Once the socket it bounds calls the given handler with
-   * the result. The result may be a failure if the socket is already used.
-   *
-   * @param port    the port
-   * @param host    the host / interface
-   * @param handler the handler to call with the result
-   * @return the current {@link StompServer}
-   */
-  @Fluent
-  @Deprecated
-  StompServer listen(int port, String host, Handler<AsyncResult<StompServer>> handler);
-
-  /**
-   * Closes the server.
-   *
-   * @param completionHandler handler called once the server has been stopped
-   */
-  @Deprecated
-  void close(Handler<AsyncResult<Void>> completionHandler);
 
   /**
    * Closes the server.

@@ -417,7 +417,6 @@ public class DefaultStompHandler implements StompServerHandler {
     return promise.future();
   }
 
-  @Override
   public StompServerHandler onAuthenticationRequest(StompServerConnection connection,
                                                     String login, String passcode,
                                                     Handler<AsyncResult<Boolean>> handler) {
