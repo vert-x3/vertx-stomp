@@ -43,6 +43,7 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
 
   public static final String DEFAULT_WEBSOCKET_PATH = "/stomp";
 
+  public static final PayloadMode DEFAULT_PAYLOAD_MODE = PayloadMode.BINARY;
 
   private int maxHeaderLength = DEFAULT_MAX_HEADER_LENGTH;
   private int maxHeaders = DEFAULT_MAX_HEADERS;
@@ -68,6 +69,7 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
   private boolean disableTCPServer;
   private boolean trailingLine = DEFAULT_TRAILING_LINE;
 
+  private PayloadMode payloadMode = DEFAULT_PAYLOAD_MODE;
   /**
    * Default constructor.
    */
@@ -102,6 +104,8 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
 
     this.disableTCPServer = other.disableTCPServer;
     this.trailingLine = other.trailingLine;
+
+    this.payloadMode = other.payloadMode;
   }
 
   /**
@@ -469,6 +473,26 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
    */
   public StompServerOptions setTrailingLine(boolean trailingLine) {
     this.trailingLine = trailingLine;
+    return this;
+  }
+
+  /**
+   * Specify the default payload type to be used by the underlying socket. Useful for websocket transports.
+   *
+   * @return the default payload mode
+   */
+  public PayloadMode getPayloadMode() {
+    return payloadMode;
+  }
+
+  /**
+   * Specify the default payload type to be used by the underlying socket. Useful for websocket transports.
+   *
+   * @param payloadMode the default payload mode to use
+   * @return the current {@link StompServerOptions}
+   */
+  public StompServerOptions setPayloadMode(PayloadMode payloadMode) {
+    this.payloadMode = payloadMode;
     return this;
   }
 }

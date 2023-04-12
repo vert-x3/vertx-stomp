@@ -66,6 +66,25 @@ public interface Destination extends Shareable {
   Destination dispatch(StompServerConnection connection, Frame frame);
 
   /**
+   * Dispatches the given frame as a text frame
+   *
+   * @param connection the connection
+   * @param frame      the frame
+   * @return the current instance of {@link Destination}
+   */
+  @Fluent
+  Destination dispatchText(StompServerConnection connection, Frame frame);
+
+  /**
+   * Dispatches the given frame as a binary frame
+   *
+   * @param connection the connection
+   * @param frame      the frame
+   * @return the current instance of {@link Destination}
+   */
+  Destination dispatchBinary(StompServerConnection connection, Frame frame);
+
+  /**
    * Handles a subscription request to the current {@link Destination}.
    *
    * @param connection the connection
