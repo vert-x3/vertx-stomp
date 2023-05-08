@@ -18,11 +18,7 @@ package io.vertx.ext.stomp.impl;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.HttpServer;
-import io.vertx.core.http.HttpServerOptions;
-import io.vertx.core.http.WebSocket;
-import io.vertx.core.http.WebSocketConnectOptions;
-import io.vertx.core.http.WebSocketFrame;
+import io.vertx.core.http.*;
 import io.vertx.ext.bridge.PermittedOptions;
 import io.vertx.ext.stomp.*;
 import io.vertx.ext.stomp.utils.Headers;
@@ -329,19 +325,22 @@ public class WebSocketBridgeTest {
 
     await().atMost(10, TimeUnit.SECONDS).until(() -> client.get() != null);
 
-    vertx.createHttpClient().webSocket(options).onComplete(ar -> {
-      if (ar.succeeded()) {
-        WebSocket ws = ar.result();
-        socket.set(ws);
-        ws.exceptionHandler(error::set)
-          .handler(buffer -> {
-            vertx.setTimer(1000, id -> {
-              flag.set(true);
-            });
-          })
-          .write(new Frame(Command.CONNECT, Headers.create("accept-version", "1.2,1.1,1.0",
-            "heart-beat", "100,0"), null).toBuffer());
-      }
+    HttpClient wsClient = vertx.createHttpClient();
+    vertx.runOnContext(v -> {
+      wsClient.webSocket(options).onComplete(ar -> {
+        if (ar.succeeded()) {
+          WebSocket ws = ar.result();
+          socket.set(ws);
+          ws.exceptionHandler(error::set)
+            .handler(buffer -> {
+              vertx.setTimer(1000, id -> {
+                flag.set(true);
+              });
+            })
+            .write(new Frame(Command.CONNECT, Headers.create("accept-version", "1.2,1.1,1.0",
+              "heart-beat", "100,0"), null).toBuffer());
+        }
+      });
     });
 
     await().atMost(10, TimeUnit.SECONDS).until(() -> error.get() == null && flag.get() != null);
