@@ -69,7 +69,7 @@ public class DefaultStompHandler implements StompServerHandler {
   private final Vertx vertx;
   private final Context context;
 
-  private Handler<ServerFrame> connectHandler = new DefaultConnectHandler();
+  private Handler<ServerFrame> connectHandler;
 
   private Handler<ServerFrame> stompHandler;
 
@@ -124,6 +124,7 @@ public class DefaultStompHandler implements StompServerHandler {
     this.context = Vertx.currentContext();
     this.destinations = vertx.sharedData().getLocalMap("stomp.destinations");
     this.users = new ConcurrentHashMap<>();
+    this.connectHandler = new DefaultConnectHandler();
   }
 
   @Override

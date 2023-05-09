@@ -16,9 +16,15 @@
 
 package io.vertx.ext.stomp.impl;
 
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.HttpClient;
+import io.vertx.core.http.HttpServer;
+import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.json.JsonObject;
+import io.vertx.core.net.NetClient;
 import io.vertx.core.net.NetSocket;
 import io.vertx.ext.auth.AuthProvider;
 import io.vertx.ext.auth.User;
@@ -41,6 +47,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Arrays;
+
 /**
  * Tests STOMP server with security.
  *
@@ -48,8 +56,12 @@ import org.junit.runner.RunWith;
  */
 @RunWith(VertxUnitRunner.class)
 public class SecuredServerConnectionTest {
+
   private Vertx vertx;
   private StompServer server;
+  private HttpServer wsServer;
+  private HttpClient wsClient;
+  private StompClient client;
 
   @Rule
   public RunTestOnContext rule = new RunTestOnContext();
@@ -57,11 +69,20 @@ public class SecuredServerConnectionTest {
   @Before
   public void setUp(TestContext context) {
     vertx = rule.vertx();
+
     JsonObject config = new JsonObject().put("properties_path", "classpath:test-auth.properties");
     AuthProvider provider = ShiroAuth.create(vertx, new ShiroAuthOptions().setType(ShiroAuthRealmType.PROPERTIES).setConfig(config));
-    server = StompServer.create(vertx, new StompServerOptions().setSecured(true))
-        .handler(StompServerHandler.create(vertx).authProvider(provider))
-        .listen(context.asyncAssertSuccess());
+    server = StompServer.create(vertx, new StompServerOptions()
+        .setSecured(true)
+        .setWebsocketBridge(true)
+        .setWebsocketPath("/stomp"))
+      .handler(StompServerHandler.create(vertx).authProvider(provider));
+    server.listen(StompServerOptions.DEFAULT_STOMP_PORT, context.asyncAssertSuccess());
+    wsServer = vertx.createHttpServer(new HttpServerOptions().setWebSocketSubProtocols(Arrays.asList("v10.stomp", "v11.stomp")))
+      .webSocketHandler(server.webSocketHandler());
+    wsServer.listen(8080, context.asyncAssertSuccess());
+    wsClient = vertx.createHttpClient();
+    client = StompClient.create(vertx, new StompClientOptions().setLogin("admin").setPasscode("admin"));
   }
 
   @After
@@ -162,11 +183,64 @@ public class SecuredServerConnectionTest {
   }
 
   void validate(TestContext context, Buffer buffer) {
-    context.assertTrue(buffer.toString().contains("CONNECTED"));
+    context.assertTrue(buffer.toString().contains("CONNECTED"), "Was expected <" + buffer.toString() + "> to contain 'CONNECTED'");
     context.assertTrue(buffer.toString().contains("version:1.2"));
 
     User user = server.stompHandler().getUserBySession(extractSession(buffer.toString()));
     context.assertNotNull(user);
   }
 
+  @Test
+  public void testTCPClientMustBeConnected(TestContext context) {
+    Async async = context.async();
+    NetClient client = vertx.createNetClient();
+    testClientMustBeConnected(context, v -> {
+      client.connect(server.actualPort(), "0.0.0.0", context.asyncAssertSuccess(so -> {
+        Buffer received = Buffer.buffer();
+        so.handler(received::appendBuffer);
+        so.write(
+          "SEND\n" +
+            "destination:/test\n" +
+            "\n" +
+            "hello" +
+            FrameParser.NULL);
+        so.endHandler(v2 -> {
+          context.assertTrue(received.toString().startsWith("ERROR\n"));
+          async.complete();
+        });
+      }));
+    });
+  }
+
+  @Test
+  public void testWebSocketClientMustBeConnected(TestContext context) {
+    Async async = context.async();
+    testClientMustBeConnected(context, v -> {
+      wsClient.webSocket(8080, "localhost", "/stomp", context.asyncAssertSuccess(ws -> {
+        Buffer received = Buffer.buffer();
+        ws.binaryMessageHandler(received::appendBuffer);
+        ws.writeBinaryMessage(
+          Buffer.buffer("SEND\n" +
+            "destination:/test\n" +
+            "\n" +
+            "hello" +
+            FrameParser.NULL));
+        ws.endHandler(v2 -> {
+          context.assertTrue(received.toString().startsWith("ERROR\n"));
+          async.complete();
+        });
+      }));
+    });
+  }
+
+  private void testClientMustBeConnected(TestContext context, Handler<Void> cont) {
+    client
+      .connect(server.actualPort(), "localhost", context.asyncAssertSuccess(conn -> {
+        conn.subscribe("/test", frame -> {
+          context.fail("Should not receive a messsage");
+        }, receipt -> {
+          cont.handle(null);
+        });
+      }));
+  }
 }
