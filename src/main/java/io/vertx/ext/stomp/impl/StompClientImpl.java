@@ -21,11 +21,16 @@ import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
+import io.vertx.core.impl.ContextInternal;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
 import io.vertx.core.net.NetClient;
+import io.vertx.core.net.NetSocket;
+import io.vertx.core.net.impl.NetClientInternal;
 import io.vertx.ext.stomp.*;
 import io.vertx.ext.stomp.utils.Headers;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Default implementation of {@link StompClient}.
@@ -38,7 +43,7 @@ public class StompClientImpl implements StompClient {
 
   private final Vertx vertx;
   private final StompClientOptions options;
-  private NetClient client;
+  private final NetClientInternal client;
   private Handler<Frame> receivedFrameHandler;
   private Handler<Frame> writingFrameHandler;
   private Handler<Frame> errorFrameHandler;
@@ -48,14 +53,11 @@ public class StompClientImpl implements StompClient {
   public StompClientImpl(Vertx vertx, StompClientOptions options) {
     this.vertx = vertx;
     this.options = options;
-  }
-
-  public StompClient connect(int port, String host, Handler<AsyncResult<StompClientConnection>> resultHandler) {
-    return connect(port, host, vertx.createNetClient(options), resultHandler);
+    this.client = (NetClientInternal) vertx.createNetClient(options);
   }
 
   public StompClient connect(Handler<AsyncResult<StompClientConnection>> resultHandler) {
-    return connect(options.getPort(), options.getHost(), vertx.createNetClient(options), resultHandler);
+    return connect(options.getPort(), options.getHost(), resultHandler);
   }
 
   @Override
@@ -120,32 +122,11 @@ public class StompClientImpl implements StompClient {
     return this;
   }
 
-  public StompClient connect(NetClient netClient, Handler<AsyncResult<StompClientConnection>> resultHandler) {
-    return connect(options.getPort(), options.getHost(), netClient, resultHandler);
-  }
-
-  @Override
-  public Future<StompClientConnection> connect(NetClient net) {
-    Promise<StompClientConnection> promise = Promise.promise();
-    connect(net, promise);
-    return promise.future();
-  }
-
-  @Override
-  public Future<StompClientConnection> connect(int port, String host) {
-    Promise<StompClientConnection> promise = Promise.promise();
-    connect(port, host, promise);
-    return promise.future();
-  }
-
   @Override
   public synchronized void close() {
-    if (client != null) {
-      client.close();
-      client = null;
-    }
+    // Graceful shutdown
+    client.close(10, TimeUnit.SECONDS);
   }
-
 
   @Override
   public StompClientOptions options() {
@@ -162,28 +143,12 @@ public class StompClientImpl implements StompClient {
     return client == null;
   }
 
-  public synchronized StompClient connect(int port, String host, NetClient net, Handler<AsyncResult<StompClientConnection>> resultHandler) {
-    if (client != null) {
-      client.close();
-      client = null;
-    }
+  public synchronized StompClient connect(int port, String host, Handler<AsyncResult<StompClientConnection>> resultHandler) {
 
     Handler<Frame> r = receivedFrameHandler;
     Handler<Frame> w = writingFrameHandler;
     Handler<Throwable> err = exceptionHandler;
-    net.connect(port, host).onComplete(ar -> {
-      synchronized (StompClientImpl.this) {
-        client = ar.failed() ? null : net;
-        if (client != null) {
-          ar.result().exceptionHandler(t -> {
-            if (resultHandler != null) {
-              resultHandler.handle(Future.failedFuture(t));
-            } else {
-              log.error("Unable to connect to the server", t);
-            }
-          });
-        }
-      }
+    client.connect(port, host).onComplete(ar -> {
 
       if (ar.failed()) {
         if (resultHandler != null) {
@@ -193,7 +158,9 @@ public class StompClientImpl implements StompClient {
         }
       } else {
         // Create the connection, the connection attach a handler on the socket.
-        StompClientConnection stompClientConnection = new StompClientConnectionImpl(vertx, ar.result(), this, resultHandler)
+        ContextInternal ctx = (ContextInternal) vertx.getOrCreateContext();
+        NetSocket so = ar.result();
+        StompClientConnection stompClientConnection = new StompClientConnectionImpl(ctx, so, options)
           .receivedFrameHandler(r)
           .writingFrameHandler(w)
           .exceptionHandler(err)
@@ -202,9 +169,8 @@ public class StompClientImpl implements StompClient {
         Frame frame = getConnectFrame(host);
 
         // If we don't get the CONNECTED timeout in time, fail the connection.
-        vertx.setTimer(options.getConnectTimeout(), l -> {
+        ctx.setTimer(options.getConnectTimeout(), l -> {
           if (!stompClientConnection.isConnected()) {
-            resultHandler.handle(Future.failedFuture("CONNECTED frame not receive in time"));
             stompClientConnection.close();
           }
         });
@@ -213,15 +179,17 @@ public class StompClientImpl implements StompClient {
           w.handle(frame);
         }
 
-        ar.result().write(frame.toBuffer(options.isTrailingLine()));
+        so.write(frame.toBuffer(options.isTrailingLine()));
+
+        ((StompClientConnectionImpl)stompClientConnection).connectFuture().map(stompClientConnection).onComplete(resultHandler);
       }
     });
     return this;
   }
 
-  public Future<StompClientConnection> connect(int port, String host, NetClient net) {
+  public Future<StompClientConnection> connect(int port, String host) {
     Promise<StompClientConnection> promise = Promise.promise();
-    connect(port, host, net, promise);
+    connect(port, host, promise);
     return promise.future();
   }
 

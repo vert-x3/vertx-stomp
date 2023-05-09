@@ -323,4 +323,5 @@ public interface StompClientConnection {
    * @return {@code true} if the connection is established, {@code false} otherwise
    */
   boolean isConnected();
+
 }

@@ -65,14 +65,6 @@ public interface StompClient {
   /**
    * Connects to the server.
    *
-   * @param net           the NET client to use
-   * @return a future notified with the connection result
-   */
-  Future<StompClientConnection> connect(NetClient net);
-
-  /**
-   * Connects to the server.
-   *
    * @param port          the server port
    * @param host          the server host
    * @param net           the NET client to use

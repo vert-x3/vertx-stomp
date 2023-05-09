@@ -281,14 +281,7 @@ for instance tries to reconnect to the server:
 You can configure various aspect by passing a
 {@link io.vertx.ext.stomp.StompClientOptions} when creating the {@link io.vertx.ext.stomp.StompClient}. As the
 STOMP client relies on a {@link io.vertx.core.net.NetClient}, you can configure the underlying Net Client from
-the {@link io.vertx.ext.stomp.StompClientOptions}. Alternatively, you can pass the {@link io.vertx.core.net.NetClient}
-you want to use in the
-{@link io.vertx.ext.stomp.StompClient#connect(io.vertx.core.net.NetClient)} method:
-
-[source,$lang]
-----
-{@link examples.StompClientExamples#example7(io.vertx.core.Vertx, io.vertx.core.net.NetClient)}
-----
+the {@link io.vertx.ext.stomp.StompClientOptions}.
 
 The {@link io.vertx.ext.stomp.StompClientOptions} let you configure:
 

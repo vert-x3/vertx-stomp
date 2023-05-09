@@ -152,9 +152,13 @@ public class SecuredServerConnectionTest {
         .errorFrameHandler(frame -> {
           async.complete();
         });
-    client.connect().onComplete(connection -> {
-      context.fail("Authentication issue expected");
-    });
+    client.connect().onComplete(context.asyncAssertFailure());
+  }
+
+  @Test
+  public void testClientConnectRejection(TestContext context) {
+    StompClient.create(vertx).connect(server.actualPort(), "localhost").onComplete(context.asyncAssertFailure(err -> {
+    }));
   }
 
   void validate(TestContext context, Buffer buffer) {

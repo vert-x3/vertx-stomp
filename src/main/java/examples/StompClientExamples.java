@@ -122,20 +122,6 @@ public class StompClientExamples {
           "Failed to connect to the STOMP server: " + err.toString()));
   }
 
-  public void example7(Vertx vertx, NetClient netClient) {
-    StompClient.create(vertx)
-      .connect(netClient)
-      .onSuccess(connection -> {
-        // use the connection
-        connection
-          .errorHandler(frame ->
-            System.out.println("ERROR frame received : " + frame));
-      })
-      .onFailure(err ->
-        System.out.println(
-          "Failed to connect to the STOMP server: " + err.toString()));
-  }
-
   public void example8(Vertx vertx) {
     StompClient.create(vertx)
       .connect()

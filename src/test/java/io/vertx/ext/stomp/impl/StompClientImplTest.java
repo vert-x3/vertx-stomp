@@ -571,25 +571,17 @@ public class StompClientImplTest {
 
     AtomicBoolean dropped = new AtomicBoolean();
     AtomicBoolean connected = new AtomicBoolean();
+    AtomicBoolean closed = new AtomicBoolean();
     client.connect().onComplete(connection -> {
-       connection.result().connectionDroppedHandler(conn -> {
-         dropped.set(true);
-       });
+      StompClientConnection conn = connection.result();
+      conn.closeHandler(v -> closed.set(true));
+      conn.connectionDroppedHandler(v -> dropped.set(true));
       connected.set(connection.succeeded());
     });
-
     await().atMost(10, TimeUnit.SECONDS).until(connected::get);
-
     client.close();
-    AtomicBoolean done = new AtomicBoolean();
-    vertx.setTimer(1000, l -> {
-      done.set(true);
-    });
-
-    await().atMost(10, TimeUnit.SECONDS).until(done::get);
-
+    await().atMost(10, TimeUnit.SECONDS).until(closed::get);
     assertThat(dropped.get()).isFalse();
-
   }
 
 }

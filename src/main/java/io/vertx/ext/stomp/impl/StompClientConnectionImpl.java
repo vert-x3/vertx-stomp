@@ -18,9 +18,12 @@ package io.vertx.ext.stomp.impl;
 
 import io.vertx.core.*;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.impl.ContextInternal;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
 import io.vertx.core.net.NetSocket;
+import io.vertx.core.net.impl.NetSocketInternal;
+import io.vertx.core.net.impl.ShutdownEvent;
 import io.vertx.ext.stomp.*;
 import io.vertx.ext.stomp.utils.Headers;
 
@@ -37,10 +40,9 @@ import java.util.concurrent.TimeUnit;
 public class StompClientConnectionImpl implements StompClientConnection, Handler<Frame> {
   private static final Logger LOGGER = LoggerFactory.getLogger(StompClientConnectionImpl.class);
 
-  private final StompClient client;
+  private final StompClientOptions options;
   private final NetSocket socket;
-  private final Handler<AsyncResult<StompClientConnection>> resultHandler;
-  private final Context context;
+  private final ContextInternal context;
 
   private volatile long lastServerActivity;
 
@@ -65,9 +67,9 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   private Handler<Frame> writingHandler;
 
   private Handler<Frame> errorHandler;
-  private volatile boolean closed;
+  private Status status;
   private Handler<Throwable> exceptionHandler;
-  private volatile boolean connected;
+  private Promise<Void> connectFuture;
 
   private static class Subscription {
     final String destination;
@@ -85,37 +87,44 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   /**
    * Creates a {@link StompClientConnectionImpl} instance
    *
-   * @param vertx         the vert.x instance
+   * @param context         the vert.x context
    * @param socket        the underlying TCP socket
-   * @param client        the stomp client managing this connection
-   * @param resultHandler the result handler to invoke then the connection has been established
+   * @param options        the client options
    */
-  public StompClientConnectionImpl(Vertx vertx, NetSocket socket, StompClient client,
-                                   Handler<AsyncResult<StompClientConnection>> resultHandler) {
+  public StompClientConnectionImpl(ContextInternal context, NetSocket socket, StompClientOptions options) {
     this.socket = socket;
-    this.client = client;
-    this.resultHandler = resultHandler;
-    this.context = vertx.getOrCreateContext();
+    this.options = options;
+    this.context = context;
+    this.connectFuture = context.promise();
+    this.status = Status.CONNECTING;
 
     FrameParser parser = new FrameParser();
     parser.handler(this);
-    socket.handler(buffer -> {
+    ((NetSocketInternal)socket)
+      .eventHandler(this::handleEvent)
+      .handler(buffer -> {
       lastServerActivity = System.nanoTime();
       parser.handle(buffer);
     })
+      .exceptionHandler(this::handleException)
       .closeHandler(v -> {
-        if (!closed && !client.isClosed()) {
-          close();
-          if (droppedHandler != null) {
-            droppedHandler.handle(this);
-          }
+        boolean dropped = status == Status.CONNECTED;
+        status = Status.CLOSED;
+        handleClose();
+        Handler<StompClientConnection> handler = droppedHandler;
+        if (dropped && handler != null) {
+          context.emit(this, handler);
         }
       });
   }
 
+  public Future<Void> connectFuture() {
+    return connectFuture.future();
+  }
+
   @Override
   public boolean isConnected() {
-    return connected;
+    return status == Status.CONNECTED;
   }
 
   @Override
@@ -129,24 +138,50 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   @Override
-  public synchronized void close() {
-    closed = true;
-    connected = false;
-
-    if (closeHandler != null) {
-      context.runOnContext(v -> closeHandler.handle(this));
+  public void close() {
+    synchronized (this) {
+      if (status == Status.CLOSING || status == Status.CLOSED) {
+        return;
+      }
+      status = Status.CLOSING;
     }
+    socket.close();
+  }
 
+  private void handleEvent(Object evt) {
+    if (evt instanceof ShutdownEvent) {
+      ShutdownEvent shutdown = (ShutdownEvent) evt;
+      synchronized (this) {
+        if (status == Status.CONNECTED) {
+          disconnect();
+        }
+      }
+    }
+  }
+
+  private void handleException(Throwable ex) {
+    Handler<Throwable> handler;
+    synchronized (this) {
+      if (status != Status.CONNECTED) {
+        return;
+      }
+      handler = exceptionHandler;
+    }
+    if (handler != null) {
+      handler.handle(ex);
+    }
+  }
+
+  private void handleClose() {
     if (pinger != -1) {
-      client.vertx().cancelTimer(pinger);
+      context.owner().cancelTimer(pinger);
       pinger = -1;
     }
 
     if (ponger != -1) {
-      client.vertx().cancelTimer(ponger);
+      context.owner().cancelTimer(ponger);
       ponger = -1;
     }
-
 
     Collection<Promise<Void>> values = new ArrayList<>(pendingReceipts.values());
     pendingReceipts.clear();
@@ -154,13 +189,18 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
       promise.fail("Client closed");
     }
 
-    socket.close();
-    client.close();
     subscriptions.clear();
     server = null;
     sessionId = null;
     version = null;
+
+    connectFuture.tryFail("Connection closed");
+
+    if (closeHandler != null) {
+      context.emit(this, closeHandler);
+    }
   }
+
 
   @Override
   public synchronized String server() {
@@ -195,7 +235,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     if (writingHandler != null) {
       writingHandler.handle(frame);
     }
-    Future<Void> written = socket.write(frame.toBuffer(client.options().isTrailingLine()));
+    Future<Void> written = socket.write(frame.toBuffer(options.isTrailingLine()));
     if (receiptHandler != null && frame.getCommand() == Command.PING) {
       written
         .map(frame)
@@ -226,7 +266,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     }
 
     if (body != null
-      && client.options().isAutoComputeContentLength()
+      && options.isAutoComputeContentLength()
       && !headers.containsKey(Frame.CONTENT_LENGTH)) {
       headers.put(Frame.CONTENT_LENGTH, Integer.toString(body.length()));
     }
@@ -429,15 +469,20 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
 
   public StompClientConnection disconnect(Frame frame, Handler<AsyncResult<Frame>> receiptHandler) {
     Objects.requireNonNull(frame);
-    send(frame, f -> {
-      if (receiptHandler != null) {
-        receiptHandler.handle(f);
+    synchronized (this) {
+      if (status == Status.CONNECTED) {
+        status = Status.CLOSING;
+        send(frame, f -> {
+          if (receiptHandler != null) {
+            receiptHandler.handle(f);
+          }
+          // Close once the receipt have been received.
+          socket.close();
+        });
+      } else {
+        receiptHandler.handle(Future.failedFuture("Not connected"));
       }
-      // Close once the receipt have been received.
-      if (!closed) {
-        close();
-      }
-    });
+    }
     return this;
   }
 
@@ -513,9 +558,6 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   @Override
   public synchronized StompClientConnection exceptionHandler(Handler<Throwable> exceptionHandler) {
     this.exceptionHandler = exceptionHandler;
-    if (connected) {
-      socket.exceptionHandler(exceptionHandler);
-    }
     return this;
   }
 
@@ -574,22 +616,22 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     // Compute the heartbeat.
     // Stomp client acts as a client to call the computePingPeriod & computePongPeriod method
     long ping = Frame.Heartbeat.computePingPeriod(
-      Frame.Heartbeat.create(client.options().getHeartbeat()),
+      Frame.Heartbeat.create(options.getHeartbeat()),
       Frame.Heartbeat.parse(frame.getHeader(Frame.HEARTBEAT)));
     long pong = Frame.Heartbeat.computePongPeriod(
-      Frame.Heartbeat.create(client.options().getHeartbeat()),
+      Frame.Heartbeat.create(options.getHeartbeat()),
       Frame.Heartbeat.parse(frame.getHeader(Frame.HEARTBEAT)));
 
     if (ping > 0) {
-      pinger = client.vertx().setPeriodic(ping, l -> pingHandler.handle(this));
+      pinger = context.setPeriodic(ping, l -> pingHandler.handle(this));
     }
     if (pong > 0) {
-      ponger = client.vertx().setPeriodic(pong, l -> {
+      ponger = context.setPeriodic(pong, l -> {
         long delta = System.nanoTime() - lastServerActivity;
         final long deltaInMs = TimeUnit.MILLISECONDS.convert(delta, TimeUnit.NANOSECONDS);
         if (deltaInMs > pong * 2) {
-          LOGGER.error("Disconnecting client " + client + " - no server activity detected in the last " + deltaInMs + " ms.");
-          client.vertx().cancelTimer(ponger);
+          LOGGER.error("Disconnecting client - no server activity detected in the last " + deltaInMs + " ms.");
+          context.owner().cancelTimer(ponger);
 
           // Do not send disconnect here, just close the connection.
           // The server will detect the disconnection using its own heartbeat.
@@ -609,8 +651,8 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     }
     // Switch the exception handler.
     socket.exceptionHandler(this.exceptionHandler);
-    connected = true;
-    resultHandler.handle(Future.succeededFuture(this));
+    status = Status.CONNECTED;
+    connectFuture.tryComplete();
   }
 
   /**
@@ -621,4 +663,12 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   public NetSocket socket() {
     return socket;
   }
+
+  private enum Status {
+    CONNECTING,
+    CONNECTED,
+    CLOSING,
+    CLOSED
+  }
+
 }
