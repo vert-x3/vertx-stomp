@@ -27,7 +27,9 @@ import io.vertx.core.impl.logging.LoggerFactory;
 import io.vertx.core.net.NetServer;
 import io.vertx.ext.stomp.*;
 
+import java.util.Collections;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Default implementation of the {@link StompServer}.
@@ -109,7 +111,17 @@ public class StompServerImpl implements StompServer {
         "server.");
     server
         .connectHandler(socket -> {
-          StompServerConnection connection = new StompServerTCPConnectionImpl(socket, this, writingFrameHandler);
+          AtomicBoolean connected = new AtomicBoolean();
+          AtomicBoolean firstFrame = new AtomicBoolean();
+          StompServerConnection connection = new StompServerTCPConnectionImpl(socket, this, frame -> {
+            if (frame.frame().getCommand() == Command.CONNECTED) {
+              connected.set(true);
+            }
+            Handler<ServerFrame> h = writingFrameHandler;
+            if (h != null) {
+              h.handle(frame);
+            }
+          });
           FrameParser parser = new FrameParser(options);
           socket.exceptionHandler((exception) -> {
             LOGGER.error("The STOMP server caught a TCP socket error - closing connection", exception);
@@ -123,7 +135,21 @@ public class StompServerImpl implements StompServer {
                     connection.close();
                   }
               )
-              .handler(frame -> stomp.handle(new ServerFrameImpl(frame, connection)));
+              .handler(frame -> {
+                if (frame.getCommand() == Command.CONNECT || frame.getCommand() == Command.STOMP) {
+                  if (firstFrame.compareAndSet(false, true)) {
+                    stomp.handle(new ServerFrameImpl(frame, connection));
+                  } else {
+                    connection.write(Frames.createErrorFrame("Already connected", Collections.emptyMap(), ""));
+                    connection.close();
+                  }
+                } else if (connected.get()) {
+                  stomp.handle(new ServerFrameImpl(frame, connection));
+                } else {
+                  connection.write(Frames.createErrorFrame("Not connected", Collections.emptyMap(), ""));
+                  connection.close();
+                }
+              });
           socket.handler(parser);
         })
         .listen(port, host).onComplete(ar -> {
@@ -218,7 +244,17 @@ public class StompServerImpl implements StompServer {
         socket.reject();
         return;
       }
-      StompServerConnection connection = new StompServerWebSocketConnectionImpl(socket, this, writingFrameHandler);
+      AtomicBoolean connected = new AtomicBoolean();
+      AtomicBoolean firstFrame = new AtomicBoolean();
+      StompServerConnection connection = new StompServerWebSocketConnectionImpl(socket, this, frame -> {
+        if (frame.frame().getCommand() == Command.CONNECTED  || frame.frame().getCommand() == Command.STOMP) {
+          connected.set(true);
+        }
+        Handler<ServerFrame> h = writingFrameHandler;
+        if (h != null) {
+          h.handle(frame);
+        }
+      });
       FrameParser parser = new FrameParser(options);
       socket.exceptionHandler((exception) -> {
         LOGGER.error("The STOMP server caught a WebSocket error - closing connection", exception);
@@ -232,7 +268,21 @@ public class StompServerImpl implements StompServer {
                 connection.close();
               }
           )
-          .handler(frame -> stomp.handle(new ServerFrameImpl(frame, connection)));
+          .handler(frame -> {
+            if (frame.getCommand() == Command.CONNECT) {
+              if (firstFrame.compareAndSet(false, true)) {
+                stomp.handle(new ServerFrameImpl(frame, connection));
+              } else {
+                connection.write(Frames.createErrorFrame("Already connected", Collections.emptyMap(), ""));
+                connection.close();
+              }
+            } else if (connected.get()) {
+              stomp.handle(new ServerFrameImpl(frame, connection));
+            } else {
+              connection.write(Frames.createErrorFrame("Not connected", Collections.emptyMap(), ""));
+              connection.close();
+            }
+          });
       socket.handler(parser);
     };
   }

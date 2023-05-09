@@ -39,6 +39,7 @@ import java.util.List;
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
 public class DefaultConnectHandler implements Handler<ServerFrame> {
+
   @Override
   public void handle(ServerFrame sf) {
     // Server negotiation
