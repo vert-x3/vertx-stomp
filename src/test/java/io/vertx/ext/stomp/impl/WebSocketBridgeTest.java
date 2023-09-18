@@ -114,7 +114,7 @@ public class WebSocketBridgeTest {
     AtomicReference<Buffer> frame = new AtomicReference<>();
     AtomicReference<WebSocket> socket = new AtomicReference<>();
 
-    vertx.createHttpClient().webSocket(options).onComplete(ar -> {
+    vertx.createWebSocketClient().connect(options).onComplete(ar -> {
       if (ar.succeeded()) {
         WebSocket ws = ar.result();
         socket.set(ws);
@@ -149,7 +149,7 @@ public class WebSocketBridgeTest {
 
     await().atMost(10, TimeUnit.SECONDS).until(() -> client.get() != null);
 
-    vertx.createHttpClient().webSocket(options).onComplete(ar -> {
+    vertx.createWebSocketClient().connect(options).onComplete(ar -> {
       if (ar.succeeded()) {
         WebSocket ws = ar.result();
         socket.set(ws);
@@ -201,7 +201,7 @@ public class WebSocketBridgeTest {
     await().atMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestination("foo") != null);
 
 
-    vertx.createHttpClient().webSocket(options).onComplete(ar -> {
+    vertx.createWebSocketClient().connect(options).onComplete(ar -> {
       if (ar.succeeded()) {
         WebSocket ws = ar.result();
         socket.set(ws);
@@ -256,7 +256,7 @@ public class WebSocketBridgeTest {
     });
     clients.add(c);
 
-    vertx.createHttpClient().webSocket(options).onComplete(ar -> {
+    vertx.createWebSocketClient().connect(options).onComplete(ar -> {
       if (ar.succeeded()) {
         WebSocket ws = ar.result();
         AtomicBoolean inMsg = new AtomicBoolean();
@@ -327,7 +327,7 @@ public class WebSocketBridgeTest {
 
     HttpClient wsClient = vertx.createHttpClient();
     vertx.runOnContext(v -> {
-      wsClient.webSocket(options).onComplete(ar -> {
+      vertx.createWebSocketClient().connect(options).onComplete(ar -> {
         if (ar.succeeded()) {
           WebSocket ws = ar.result();
           socket.set(ws);
@@ -364,7 +364,7 @@ public class WebSocketBridgeTest {
     AtomicReference<WebSocket> receiver = new AtomicReference<>();
     AtomicReference<Buffer> frame = new AtomicReference<>();
 
-    vertx.createHttpClient().webSocket(new WebSocketConnectOptions(options).setURI("/something")).onComplete(ar -> {
+    vertx.createWebSocketClient().connect(new WebSocketConnectOptions(options).setURI("/something")).onComplete(ar -> {
       if (ar.succeeded()) {
         WebSocket ws = ar.result();
         receiver.set(ws);
@@ -387,7 +387,7 @@ public class WebSocketBridgeTest {
 
     await().atMost(10, TimeUnit.SECONDS).until(() -> server.stompHandler().getDestination("foo") != null);
 
-    vertx.createHttpClient().webSocket(new WebSocketConnectOptions(options).setURI("/something")).onComplete(ar -> {
+    vertx.createWebSocketClient().connect(new WebSocketConnectOptions(options).setURI("/something")).onComplete(ar -> {
       if (ar.succeeded()) {
         WebSocket ws = ar.result();
         sender.set(ws);

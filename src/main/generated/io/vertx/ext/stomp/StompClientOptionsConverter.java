@@ -20,31 +20,6 @@ public class StompClientOptionsConverter {
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, StompClientOptions obj) {
     for (java.util.Map.Entry<String, Object> member : json) {
       switch (member.getKey()) {
-        case "acceptedVersions":
-          if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<java.lang.String> list =  new java.util.ArrayList<>();
-            ((Iterable<Object>)member.getValue()).forEach( item -> {
-              if (item instanceof String)
-                list.add((String)item);
-            });
-            obj.setAcceptedVersions(list);
-          }
-          break;
-        case "autoComputeContentLength":
-          if (member.getValue() instanceof Boolean) {
-            obj.setAutoComputeContentLength((Boolean)member.getValue());
-          }
-          break;
-        case "bypassHostHeader":
-          if (member.getValue() instanceof Boolean) {
-            obj.setBypassHostHeader((Boolean)member.getValue());
-          }
-          break;
-        case "heartbeat":
-          if (member.getValue() instanceof JsonObject) {
-            obj.setHeartbeat(((JsonObject)member.getValue()).copy());
-          }
-          break;
         case "host":
           if (member.getValue() instanceof String) {
             obj.setHost((String)member.getValue());
@@ -65,9 +40,19 @@ public class StompClientOptionsConverter {
             obj.setPort(((Number)member.getValue()).intValue());
           }
           break;
-        case "trailingLine":
+        case "acceptedVersions":
+          if (member.getValue() instanceof JsonArray) {
+            java.util.ArrayList<java.lang.String> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
+              if (item instanceof String)
+                list.add((String)item);
+            });
+            obj.setAcceptedVersions(list);
+          }
+          break;
+        case "autoComputeContentLength":
           if (member.getValue() instanceof Boolean) {
-            obj.setTrailingLine((Boolean)member.getValue());
+            obj.setAutoComputeContentLength((Boolean)member.getValue());
           }
           break;
         case "useStompFrame":
@@ -75,9 +60,24 @@ public class StompClientOptionsConverter {
             obj.setUseStompFrame((Boolean)member.getValue());
           }
           break;
+        case "bypassHostHeader":
+          if (member.getValue() instanceof Boolean) {
+            obj.setBypassHostHeader((Boolean)member.getValue());
+          }
+          break;
+        case "heartbeat":
+          if (member.getValue() instanceof JsonObject) {
+            obj.setHeartbeat(((JsonObject)member.getValue()).copy());
+          }
+          break;
         case "virtualHost":
           if (member.getValue() instanceof String) {
             obj.setVirtualHost((String)member.getValue());
+          }
+          break;
+        case "trailingLine":
+          if (member.getValue() instanceof Boolean) {
+            obj.setTrailingLine((Boolean)member.getValue());
           }
           break;
       }
@@ -89,16 +89,6 @@ public class StompClientOptionsConverter {
   }
 
   public static void toJson(StompClientOptions obj, java.util.Map<String, Object> json) {
-    if (obj.getAcceptedVersions() != null) {
-      JsonArray array = new JsonArray();
-      obj.getAcceptedVersions().forEach(item -> array.add(item));
-      json.put("acceptedVersions", array);
-    }
-    json.put("autoComputeContentLength", obj.isAutoComputeContentLength());
-    json.put("bypassHostHeader", obj.isBypassHostHeader());
-    if (obj.getHeartbeat() != null) {
-      json.put("heartbeat", obj.getHeartbeat());
-    }
     if (obj.getHost() != null) {
       json.put("host", obj.getHost());
     }
@@ -109,10 +99,20 @@ public class StompClientOptionsConverter {
       json.put("passcode", obj.getPasscode());
     }
     json.put("port", obj.getPort());
-    json.put("trailingLine", obj.isTrailingLine());
+    if (obj.getAcceptedVersions() != null) {
+      JsonArray array = new JsonArray();
+      obj.getAcceptedVersions().forEach(item -> array.add(item));
+      json.put("acceptedVersions", array);
+    }
+    json.put("autoComputeContentLength", obj.isAutoComputeContentLength());
     json.put("useStompFrame", obj.isUseStompFrame());
+    json.put("bypassHostHeader", obj.isBypassHostHeader());
+    if (obj.getHeartbeat() != null) {
+      json.put("heartbeat", obj.getHeartbeat());
+    }
     if (obj.getVirtualHost() != null) {
       json.put("virtualHost", obj.getVirtualHost());
     }
+    json.put("trailingLine", obj.isTrailingLine());
   }
 }

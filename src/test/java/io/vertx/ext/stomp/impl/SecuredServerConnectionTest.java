@@ -23,6 +23,7 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.http.WebSocketClient;
 import io.vertx.core.net.NetClient;
 import io.vertx.core.net.NetSocket;
 import io.vertx.ext.auth.User;
@@ -57,7 +58,7 @@ public class SecuredServerConnectionTest {
   private Vertx vertx;
   private StompServer server;
   private HttpServer wsServer;
-  private HttpClient wsClient;
+  private WebSocketClient wsClient;
   private StompClient client;
 
   @Rule
@@ -76,7 +77,7 @@ public class SecuredServerConnectionTest {
     wsServer = vertx.createHttpServer(new HttpServerOptions().setWebSocketSubProtocols(Arrays.asList("v10.stomp", "v11.stomp")))
       .webSocketHandler(server.webSocketHandler());
     wsServer.listen(8080).onComplete(context.asyncAssertSuccess());
-    wsClient = vertx.createHttpClient();
+    wsClient = vertx.createWebSocketClient();
     client = StompClient.create(vertx, new StompClientOptions().setLogin("admin").setPasscode("admin"));
   }
 
@@ -215,7 +216,7 @@ public class SecuredServerConnectionTest {
   public void testWebSocketClientMustBeConnected(TestContext context) {
     Async async = context.async();
     testClientMustBeConnected(context, v -> {
-      wsClient.webSocket(8080, "localhost", "/stomp").onComplete(context.asyncAssertSuccess(ws -> {
+      wsClient.connect(8080, "localhost", "/stomp").onComplete(context.asyncAssertSuccess(ws -> {
         Buffer received = Buffer.buffer();
         ws.binaryMessageHandler(received::appendBuffer);
         ws.writeBinaryMessage(

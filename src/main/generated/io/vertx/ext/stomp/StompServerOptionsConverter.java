@@ -20,19 +20,9 @@ public class StompServerOptionsConverter {
   public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, StompServerOptions obj) {
     for (java.util.Map.Entry<String, Object> member : json) {
       switch (member.getKey()) {
-        case "heartbeat":
-          if (member.getValue() instanceof JsonObject) {
-            obj.setHeartbeat(((JsonObject)member.getValue()).copy());
-          }
-          break;
         case "maxBodyLength":
           if (member.getValue() instanceof Number) {
             obj.setMaxBodyLength(((Number)member.getValue()).intValue());
-          }
-          break;
-        case "maxFrameInTransaction":
-          if (member.getValue() instanceof Number) {
-            obj.setMaxFrameInTransaction(((Number)member.getValue()).intValue());
           }
           break;
         case "maxHeaderLength":
@@ -45,9 +35,14 @@ public class StompServerOptionsConverter {
             obj.setMaxHeaders(((Number)member.getValue()).intValue());
           }
           break;
-        case "maxSubscriptionsByClient":
-          if (member.getValue() instanceof Number) {
-            obj.setMaxSubscriptionsByClient(((Number)member.getValue()).intValue());
+        case "supportedVersions":
+          if (member.getValue() instanceof JsonArray) {
+            java.util.ArrayList<java.lang.String> list =  new java.util.ArrayList<>();
+            ((Iterable<Object>)member.getValue()).forEach( item -> {
+              if (item instanceof String)
+                list.add((String)item);
+            });
+            obj.setSupportedVersions(list);
           }
           break;
         case "secured":
@@ -60,29 +55,29 @@ public class StompServerOptionsConverter {
             obj.setSendErrorOnNoSubscriptions((Boolean)member.getValue());
           }
           break;
-        case "supportedVersions":
-          if (member.getValue() instanceof JsonArray) {
-            java.util.ArrayList<java.lang.String> list =  new java.util.ArrayList<>();
-            ((Iterable<Object>)member.getValue()).forEach( item -> {
-              if (item instanceof String)
-                list.add((String)item);
-            });
-            obj.setSupportedVersions(list);
-          }
-          break;
         case "timeFactor":
           if (member.getValue() instanceof Number) {
             obj.setTimeFactor(((Number)member.getValue()).intValue());
           }
           break;
-        case "trailingLine":
-          if (member.getValue() instanceof Boolean) {
-            obj.setTrailingLine((Boolean)member.getValue());
+        case "heartbeat":
+          if (member.getValue() instanceof JsonObject) {
+            obj.setHeartbeat(((JsonObject)member.getValue()).copy());
+          }
+          break;
+        case "maxFrameInTransaction":
+          if (member.getValue() instanceof Number) {
+            obj.setMaxFrameInTransaction(((Number)member.getValue()).intValue());
           }
           break;
         case "transactionChunkSize":
           if (member.getValue() instanceof Number) {
             obj.setTransactionChunkSize(((Number)member.getValue()).intValue());
+          }
+          break;
+        case "maxSubscriptionsByClient":
+          if (member.getValue() instanceof Number) {
+            obj.setMaxSubscriptionsByClient(((Number)member.getValue()).intValue());
           }
           break;
         case "websocketBridge":
@@ -95,6 +90,11 @@ public class StompServerOptionsConverter {
             obj.setWebsocketPath((String)member.getValue());
           }
           break;
+        case "trailingLine":
+          if (member.getValue() instanceof Boolean) {
+            obj.setTrailingLine((Boolean)member.getValue());
+          }
+          break;
       }
     }
   }
@@ -104,27 +104,27 @@ public class StompServerOptionsConverter {
   }
 
   public static void toJson(StompServerOptions obj, java.util.Map<String, Object> json) {
-    if (obj.getHeartbeat() != null) {
-      json.put("heartbeat", obj.getHeartbeat());
-    }
     json.put("maxBodyLength", obj.getMaxBodyLength());
-    json.put("maxFrameInTransaction", obj.getMaxFrameInTransaction());
     json.put("maxHeaderLength", obj.getMaxHeaderLength());
     json.put("maxHeaders", obj.getMaxHeaders());
-    json.put("maxSubscriptionsByClient", obj.getMaxSubscriptionsByClient());
-    json.put("secured", obj.isSecured());
-    json.put("sendErrorOnNoSubscriptions", obj.isSendErrorOnNoSubscriptions());
     if (obj.getSupportedVersions() != null) {
       JsonArray array = new JsonArray();
       obj.getSupportedVersions().forEach(item -> array.add(item));
       json.put("supportedVersions", array);
     }
+    json.put("secured", obj.isSecured());
+    json.put("sendErrorOnNoSubscriptions", obj.isSendErrorOnNoSubscriptions());
     json.put("timeFactor", obj.getTimeFactor());
-    json.put("trailingLine", obj.isTrailingLine());
+    if (obj.getHeartbeat() != null) {
+      json.put("heartbeat", obj.getHeartbeat());
+    }
+    json.put("maxFrameInTransaction", obj.getMaxFrameInTransaction());
     json.put("transactionChunkSize", obj.getTransactionChunkSize());
+    json.put("maxSubscriptionsByClient", obj.getMaxSubscriptionsByClient());
     json.put("websocketBridge", obj.isWebsocketBridge());
     if (obj.getWebsocketPath() != null) {
       json.put("websocketPath", obj.getWebsocketPath());
     }
+    json.put("trailingLine", obj.isTrailingLine());
   }
 }
