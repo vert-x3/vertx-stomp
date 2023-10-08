@@ -18,11 +18,13 @@ package io.vertx.ext.stomp;
 
 import javax.net.ssl.SSLSession;
 
+import io.vertx.codegen.annotations.CacheReturn;
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.net.SocketAddress;
 
 /**
  * Class representing a connection between a STOMP client a the server. It keeps a references on the client socket,
@@ -96,5 +98,29 @@ public interface StompServerConnection {
    * @param pingHandler the ping handler
    */
   void configureHeartbeat(long ping, long pong, Handler<StompServerConnection> pingHandler);
+
+  /**
+   * @return the remote address for this connection, possibly {@code null} (e.g a server bound on a domain socket).
+   * If {@code useProxyProtocol} is set to {@code true}, the address returned will be of the actual connecting client.
+   */
+  @CacheReturn
+  SocketAddress remoteAddress();
+
+  /**
+   * Like {@link #remoteAddress()} but returns the proxy remote address when {@code real} is {@code true}
+   */
+  SocketAddress remoteAddress(boolean real);
+
+  /**
+   * @return the local address for this connection, possibly {@code null} (e.g a server bound on a domain socket)
+   * If {@code useProxyProtocol} is set to {@code true}, the address returned will be of the proxy.
+   */
+  @CacheReturn
+  SocketAddress localAddress();
+
+  /**
+   * Like {@link #localAddress()} ()} but returns the server local address when {@code real} is {@code true}
+   */
+  SocketAddress localAddress(boolean real);
 
 }
