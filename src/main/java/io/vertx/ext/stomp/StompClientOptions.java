@@ -17,6 +17,7 @@
 package io.vertx.ext.stomp;
 
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.codegen.annotations.JsonGen;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.NetClientOptions;
 
@@ -30,7 +31,8 @@ import java.util.List;
  *
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
-@DataObject(generateConverter = true)
+@DataObject
+@JsonGen(publicConverter = false)
 public class StompClientOptions extends NetClientOptions implements StompOptions {
 
   // The default value of reuse address for stomp client

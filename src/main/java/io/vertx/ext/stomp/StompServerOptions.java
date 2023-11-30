@@ -17,6 +17,7 @@
 package io.vertx.ext.stomp;
 
 import io.vertx.codegen.annotations.DataObject;
+import io.vertx.codegen.annotations.JsonGen;
 import io.vertx.core.Handler;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.NetServerOptions;
@@ -29,7 +30,8 @@ import java.util.List;
  *
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
-@DataObject(generateConverter = true)
+@DataObject
+@JsonGen(publicConverter = false)
 public class StompServerOptions extends NetServerOptions implements StompOptions {
 
   public static final int DEFAULT_MAX_HEADER_LENGTH = 1024 * 10;

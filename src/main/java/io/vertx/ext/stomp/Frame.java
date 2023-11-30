@@ -18,6 +18,7 @@ package io.vertx.ext.stomp;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.codegen.annotations.GenIgnore;
+import io.vertx.codegen.annotations.JsonGen;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.stomp.impl.FrameException;
@@ -41,7 +42,8 @@ import java.util.regex.Pattern;
  *
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
-@DataObject(generateConverter = true)
+@DataObject
+@JsonGen(publicConverter = false)
 public class Frame {
 
   // General headers
