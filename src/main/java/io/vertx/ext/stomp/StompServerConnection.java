@@ -106,4 +106,5 @@ public interface StompServerConnection {
    * @param pingHandler the ping handler
    */
   void configureHeartbeat(long ping, long pong, Handler<StompServerConnection> pingHandler);
+
 }

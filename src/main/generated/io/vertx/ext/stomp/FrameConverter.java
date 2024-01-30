@@ -17,7 +17,7 @@ public class FrameConverter {
   private static final Base64.Decoder BASE64_DECODER = JsonUtil.BASE64_DECODER;
   private static final Base64.Encoder BASE64_ENCODER = JsonUtil.BASE64_ENCODER;
 
-  public static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, Frame obj) {
+   static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, Frame obj) {
     for (java.util.Map.Entry<String, Object> member : json) {
       switch (member.getKey()) {
         case "ack":
@@ -63,11 +63,11 @@ public class FrameConverter {
     }
   }
 
-  public static void toJson(Frame obj, JsonObject json) {
+   static void toJson(Frame obj, JsonObject json) {
     toJson(obj, json.getMap());
   }
 
-  public static void toJson(Frame obj, java.util.Map<String, Object> json) {
+   static void toJson(Frame obj, java.util.Map<String, Object> json) {
     if (obj.getAck() != null) {
       json.put("ack", obj.getAck());
     }
