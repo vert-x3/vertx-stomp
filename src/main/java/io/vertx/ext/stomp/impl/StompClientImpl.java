@@ -125,7 +125,7 @@ public class StompClientImpl implements StompClient {
   @Override
   public synchronized void close() {
     // Graceful shutdown
-    client.close(10, TimeUnit.SECONDS);
+    client.shutdown(10, TimeUnit.SECONDS);
   }
 
   @Override
