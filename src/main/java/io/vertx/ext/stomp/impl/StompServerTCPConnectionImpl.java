@@ -20,8 +20,8 @@ import javax.net.ssl.SSLSession;
 
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.impl.logging.Logger;
-import io.vertx.core.impl.logging.LoggerFactory;
+import io.vertx.core.internal.logging.Logger;
+import io.vertx.core.internal.logging.LoggerFactory;
 import io.vertx.core.net.NetSocket;
 import io.vertx.ext.stomp.*;
 
