@@ -21,11 +21,11 @@ import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
+import io.vertx.core.net.NetSocket;
 import io.vertx.core.internal.ContextInternal;
 import io.vertx.core.internal.logging.Logger;
 import io.vertx.core.internal.logging.LoggerFactory;
-import io.vertx.core.net.NetSocket;
-import io.vertx.core.net.impl.NetClientInternal;
+import io.vertx.core.internal.net.NetClientInternal;
 import io.vertx.ext.stomp.*;
 import io.vertx.ext.stomp.utils.Headers;
 
