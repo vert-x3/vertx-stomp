@@ -224,12 +224,18 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     return promise.future();
   }
 
-  public synchronized StompClientConnection send(Frame frame, Handler<AsyncResult<Frame>> receiptHandler) {
+  public synchronized StompClientConnection send(Frame frame, Completable<Frame> receiptHandler) {
     if (receiptHandler != null && frame.getCommand() != Command.PING) {
       String receiptId = UUID.randomUUID().toString();
       frame.addHeader(Frame.RECEIPT, receiptId);
       Promise<Void> promise = Promise.promise();
-      promise.future().onComplete(f -> receiptHandler.handle(f.map(frame)));
+      promise.future().onComplete(f -> {
+        if (f.succeeded()) {
+          receiptHandler.succeed(frame);
+        } else {
+          receiptHandler.fail(f.cause());
+        }
+      });
       pendingReceipts.put(receiptId, promise);
     }
     if (writingHandler != null) {
@@ -252,7 +258,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
   }
 
   public StompClientConnection send(String destination, Map<String, String> headers, Buffer body,
-                                    Handler<AsyncResult<Frame>> receiptHandler) {
+                                    Completable<Frame> receiptHandler) {
     // No need for synchronization, no field access, except client (final)
     if (headers == null) {
       headers = new Headers();
@@ -282,7 +288,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     return promise.future();
   }
 
-  public StompClientConnection subscribe(String destination, Handler<Frame> handler, Handler<AsyncResult<String>> receiptHandler) {
+  public StompClientConnection subscribe(String destination, Handler<Frame> handler, Completable<String> receiptHandler) {
     return subscribe(destination, null, handler, receiptHandler);
   }
 
@@ -293,7 +299,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     return promise.future();
   }
 
-  public synchronized StompClientConnection subscribe(String destination, Map<String, String> headers, Handler<Frame> handler, Handler<AsyncResult<String>> receiptHandler) {
+  public synchronized StompClientConnection subscribe(String destination, Map<String, String> headers, Handler<Frame> handler, Completable<String> receiptHandler) {
     Objects.requireNonNull(destination);
     Objects.requireNonNull(handler);
 
@@ -319,9 +325,13 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     }
 
     Frame frame = new Frame(Command.SUBSCRIBE, headers, null);
-    send(frame, ar -> {
+    send(frame, (res, err) -> {
       if (receiptHandler != null) {
-        receiptHandler.handle(ar.map(id));
+        if (err != null) {
+          receiptHandler.fail(err);
+        } else {
+          receiptHandler.succeed(id);
+        }
       }
     });
 
@@ -342,7 +352,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     return promise.future();
   }
 
-  public synchronized StompClientConnection unsubscribe(String destination, Map<String, String> headers, Handler<AsyncResult<Frame>>
+  public synchronized StompClientConnection unsubscribe(String destination, Map<String, String> headers, Completable<Frame>
     receiptHandler) {
     Objects.requireNonNull(destination);
     if (headers == null) {
@@ -382,7 +392,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     return this;
   }
 
-  public StompClientConnection beginTX(String id, Handler<AsyncResult<Frame>> receiptHandler) {
+  public StompClientConnection beginTX(String id, Completable<Frame> receiptHandler) {
     return beginTX(id, new Headers(), receiptHandler);
   }
 
@@ -398,7 +408,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     return promise.future();
   }
 
-  public StompClientConnection beginTX(String id, Map<String, String> headers, Handler<AsyncResult<Frame>> receiptHandler) {
+  public StompClientConnection beginTX(String id, Map<String, String> headers, Completable<Frame> receiptHandler) {
     Objects.requireNonNull(id);
     Objects.requireNonNull(headers);
 
@@ -410,7 +420,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     return commit(id, new Headers());
   }
 
-  public StompClientConnection commit(String id, Handler<AsyncResult<Frame>> receiptHandler) {
+  public StompClientConnection commit(String id, Completable<Frame> receiptHandler) {
     return commit(id, new Headers(), receiptHandler);
   }
 
@@ -421,7 +431,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     return promise.future();
   }
 
-  public StompClientConnection commit(String id, Map<String, String> headers, Handler<AsyncResult<Frame>> receiptHandler) {
+  public StompClientConnection commit(String id, Map<String, String> headers, Completable<Frame> receiptHandler) {
     Objects.requireNonNull(id);
     Objects.requireNonNull(headers);
     return send(new Frame().setCommand(Command.COMMIT).setTransaction(id), receiptHandler);
@@ -432,7 +442,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     return abort(id, new Headers());
   }
 
-  public StompClientConnection abort(String id, Handler<AsyncResult<Frame>> receiptHandler) {
+  public StompClientConnection abort(String id, Completable<Frame> receiptHandler) {
     return abort(id, new Headers(), receiptHandler);
   }
 
@@ -443,7 +453,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     return promise.future();
   }
 
-  public StompClientConnection abort(String id, Map<String, String> headers, Handler<AsyncResult<Frame>> receiptHandler) {
+  public StompClientConnection abort(String id, Map<String, String> headers, Completable<Frame> receiptHandler) {
     Objects.requireNonNull(id);
     Objects.requireNonNull(headers);
     return send(new Frame().setCommand(Command.ABORT).setTransaction(id), receiptHandler);
@@ -463,24 +473,24 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     return promise.future();
   }
 
-  public StompClientConnection disconnect(Handler<AsyncResult<Frame>> receiptHandler) {
+  public StompClientConnection disconnect(Completable<Frame> receiptHandler) {
     return disconnect(new Frame().setCommand(Command.DISCONNECT), receiptHandler);
   }
 
-  public StompClientConnection disconnect(Frame frame, Handler<AsyncResult<Frame>> receiptHandler) {
+  public StompClientConnection disconnect(Frame frame, Completable<Frame> receiptHandler) {
     Objects.requireNonNull(frame);
     synchronized (this) {
       if (status == Status.CONNECTED) {
         status = Status.CLOSING;
-        send(frame, f -> {
+        send(frame, (res, err) -> {
           if (receiptHandler != null) {
-            receiptHandler.handle(f);
+            receiptHandler.complete(res, err);
           }
           // Close once the receipt have been received.
           socket.close();
         });
       } else {
-        receiptHandler.handle(Future.failedFuture("Not connected"));
+        receiptHandler.fail("Not connected");
       }
     }
     return this;
@@ -493,7 +503,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     return promise.future();
   }
 
-  public StompClientConnection ack(String id, Handler<AsyncResult<Frame>> receiptHandler) {
+  public StompClientConnection ack(String id, Completable<Frame> receiptHandler) {
     Objects.requireNonNull(id);
     send(new Frame(Command.ACK, Headers.create(Frame.ID, id), null), receiptHandler);
     return this;
@@ -505,7 +515,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     return promise.future();
   }
 
-  public StompClientConnection nack(String id, Handler<AsyncResult<Frame>> receiptHandler) {
+  public StompClientConnection nack(String id, Completable<Frame> receiptHandler) {
     Objects.requireNonNull(id);
     send(new Frame(Command.NACK, Headers.create(Frame.ID, id), null), receiptHandler);
     return this;
@@ -518,7 +528,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     return promise.future();
   }
 
-  public StompClientConnection ack(String id, String txId, Handler<AsyncResult<Frame>> receiptHandler) {
+  public StompClientConnection ack(String id, String txId, Completable<Frame> receiptHandler) {
     Objects.requireNonNull(id, "A ACK frame must contain the ACK id");
     Objects.requireNonNull(txId);
 
@@ -534,7 +544,7 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     return promise.future();
   }
 
-  public StompClientConnection nack(String id, String txId, Handler<AsyncResult<Frame>> receiptHandler) {
+  public StompClientConnection nack(String id, String txId, Completable<Frame> receiptHandler) {
     Objects.requireNonNull(id, "A NACK frame must contain the ACK id");
     Objects.requireNonNull(txId);
 

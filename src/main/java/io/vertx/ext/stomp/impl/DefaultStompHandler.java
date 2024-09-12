@@ -16,11 +16,7 @@
 
 package io.vertx.ext.stomp.impl;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Context;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
+import io.vertx.core.*;
 import io.vertx.core.internal.ContextInternal;
 import io.vertx.core.internal.PromiseInternal;
 import io.vertx.core.internal.logging.Logger;
@@ -420,7 +416,7 @@ public class DefaultStompHandler implements StompServerHandler {
 
   public StompServerHandler onAuthenticationRequest(StompServerConnection connection,
                                                     String login, String passcode,
-                                                    Handler<AsyncResult<Boolean>> handler) {
+                                                    Completable<Boolean> handler) {
     final AuthenticationProvider auth;
     synchronized (this) {
       // Stack contention.
@@ -432,23 +428,23 @@ public class DefaultStompHandler implements StompServerHandler {
       if (auth != null) {
         LOGGER.warn("Authentication handler set while the server is not secured");
       }
-      context.runOnContext(v -> handler.handle(Future.succeededFuture(true)));
+      context.runOnContext(v -> handler.succeed(true));
       return this;
     }
 
     if (server.options().isSecured() && auth == null) {
       LOGGER.error("Cannot authenticate connection - no authentication provider");
-      context.runOnContext(v -> handler.handle(Future.succeededFuture(false)));
+      context.runOnContext(v -> handler.succeed(false));
       return this;
     }
 
     context.runOnContext(v ->
         auth.authenticate(new UsernamePasswordCredentials(login, passcode))
-          .onFailure(err -> context.runOnContext(v2 -> handler.handle(Future.succeededFuture(false))))
+          .onFailure(err -> context.runOnContext(v2 -> handler.succeed(false)))
           .onSuccess(user -> {
             // make the user available
             users.put(connection.session(), user);
-            context.runOnContext(v2 -> handler.handle(Future.succeededFuture(true)));
+            context.runOnContext(v2 -> handler.succeed(true));
         }));
     return this;
   }

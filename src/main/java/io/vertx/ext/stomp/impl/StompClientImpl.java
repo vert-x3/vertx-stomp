@@ -16,11 +16,7 @@
 
 package io.vertx.ext.stomp.impl;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
-import io.vertx.core.Promise;
-import io.vertx.core.Vertx;
+import io.vertx.core.*;
 import io.vertx.core.net.NetSocket;
 import io.vertx.core.internal.ContextInternal;
 import io.vertx.core.internal.logging.Logger;
@@ -55,7 +51,7 @@ public class StompClientImpl implements StompClient {
     this.client = (NetClientInternal) vertx.createNetClient(options);
   }
 
-  public StompClient connect(Handler<AsyncResult<StompClientConnection>> resultHandler) {
+  public StompClient connect(Completable<StompClientConnection> resultHandler) {
     return connect(options.getPort(), options.getHost(), resultHandler);
   }
 
@@ -142,7 +138,7 @@ public class StompClientImpl implements StompClient {
     return client == null;
   }
 
-  public synchronized StompClient connect(int port, String host, Handler<AsyncResult<StompClientConnection>> resultHandler) {
+  public synchronized StompClient connect(int port, String host, Completable<StompClientConnection> resultHandler) {
 
     Handler<Frame> r = receivedFrameHandler;
     Handler<Frame> w = writingFrameHandler;
@@ -151,7 +147,7 @@ public class StompClientImpl implements StompClient {
 
       if (ar.failed()) {
         if (resultHandler != null) {
-          resultHandler.handle(Future.failedFuture(ar.cause()));
+          resultHandler.fail(ar.cause());
         } else {
           log.error("Unable to connect to the server", ar.cause());
         }

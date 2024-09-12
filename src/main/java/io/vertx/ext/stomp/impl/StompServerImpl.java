@@ -16,11 +16,7 @@
 
 package io.vertx.ext.stomp.impl;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
-import io.vertx.core.Promise;
-import io.vertx.core.Vertx;
+import io.vertx.core.*;
 import io.vertx.core.http.ServerWebSocket;
 import io.vertx.core.internal.logging.Logger;
 import io.vertx.core.internal.logging.LoggerFactory;
@@ -81,7 +77,7 @@ public class StompServerImpl implements StompServer {
     return promise.future();
   }
 
-  public StompServer listen(Handler<AsyncResult<StompServer>> handler) {
+  public StompServer listen(Completable<StompServer> handler) {
     return listen(options.getPort(), options.getHost(), handler);
   }
 
@@ -97,9 +93,9 @@ public class StompServerImpl implements StompServer {
     return promise.future();
   }
 
-  public StompServer listen(int port, String host, Handler<AsyncResult<StompServer>> handler) {
+  public StompServer listen(int port, String host, Completable<StompServer> handler) {
     if (port == -1) {
-      handler.handle(Future.failedFuture("TCP server disabled. The port is set to '-1'."));
+      handler.fail("TCP server disabled. The port is set to '-1'.");
       return this;
     }
     StompServerHandler stomp;
@@ -155,7 +151,7 @@ public class StompServerImpl implements StompServer {
         .listen(port, host).onComplete(ar -> {
           if (ar.failed()) {
             if (handler != null) {
-              vertx.runOnContext(v -> handler.handle(Future.failedFuture(ar.cause())));
+              vertx.runOnContext(v -> handler.fail(ar.cause()));
             } else {
               LOGGER.error(ar.cause());
             }
@@ -163,7 +159,7 @@ public class StompServerImpl implements StompServer {
             listening = true;
             LOGGER.info("STOMP server listening on " + ar.result().actualPort());
             if (handler != null) {
-              vertx.runOnContext(v -> handler.handle(Future.succeededFuture(this)));
+              vertx.runOnContext(v -> handler.succeed(this));
             }
           }
         });
@@ -202,24 +198,24 @@ public class StompServerImpl implements StompServer {
     return handler;
   }
 
-  public void close(Handler<AsyncResult<Void>> done) {
+  public void close(Completable<Void> done) {
     if (!listening) {
       if (done != null) {
-        vertx.runOnContext((v) -> done.handle(Future.succeededFuture()));
+        vertx.runOnContext((v) -> done.succeed());
       }
       return;
     }
 
-    Handler<AsyncResult<Void>> listener = (v) -> {
-      if (v.succeeded()) {
+    Completable<Void> listener = (res, err) -> {
+      if (err == null) {
         LOGGER.info("STOMP Server stopped");
       } else {
-        LOGGER.info("STOMP Server failed to stop", v.cause());
+        LOGGER.info("STOMP Server failed to stop", err);
       }
 
       listening = false;
       if (done != null) {
-        done.handle(v);
+        done.complete(res, err);
       }
     };
 
