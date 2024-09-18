@@ -158,22 +158,6 @@
 
     <plugins>
       <plugin>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-            <configuration>
-              <systemProperties>
-                <vertx.disableDnsResolver>true</vertx.disableDnsResolver>
-              </systemProperties>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <executions>
           <execution>
