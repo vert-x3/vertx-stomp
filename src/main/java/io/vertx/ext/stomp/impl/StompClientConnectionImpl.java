@@ -23,7 +23,6 @@ import io.vertx.core.internal.logging.Logger;
 import io.vertx.core.internal.logging.LoggerFactory;
 import io.vertx.core.net.NetSocket;
 import io.vertx.core.internal.net.NetSocketInternal;
-import io.vertx.core.net.impl.ShutdownEvent;
 import io.vertx.ext.stomp.*;
 import io.vertx.ext.stomp.utils.Headers;
 
@@ -100,8 +99,8 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
 
     FrameParser parser = new FrameParser();
     parser.handler(this);
-    ((NetSocketInternal)socket)
-      .eventHandler(this::handleEvent)
+    socket
+      .shutdownHandler(this::handleShutdown)
       .handler(buffer -> {
       lastServerActivity = System.nanoTime();
       parser.handle(buffer);
@@ -148,13 +147,10 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     socket.close();
   }
 
-  private void handleEvent(Object evt) {
-    if (evt instanceof ShutdownEvent) {
-      ShutdownEvent shutdown = (ShutdownEvent) evt;
-      synchronized (this) {
-        if (status == Status.CONNECTED) {
-          disconnect();
-        }
+  private void handleShutdown(Void evt) {
+    synchronized (this) {
+      if (status == Status.CONNECTED) {
+        disconnect();
       }
     }
   }
