@@ -35,7 +35,7 @@ public class FrameConverter {
           break;
         case "body":
           if (member.getValue() instanceof String) {
-            obj.setBody(io.vertx.core.buffer.Buffer.buffer(BASE64_DECODER.decode((String)member.getValue())));
+            obj.setBody(io.vertx.core.buffer.Buffer.fromJson((String)member.getValue()));
           }
           break;
         case "bodyAsString":
@@ -78,7 +78,7 @@ public class FrameConverter {
       json.put("command", obj.getCommand().name());
     }
     if (obj.getBody() != null) {
-      json.put("body", BASE64_ENCODER.encodeToString(obj.getBody().getBytes()));
+      json.put("body", obj.getBody().toJson());
     }
     if (obj.getBodyAsString() != null) {
       json.put("bodyAsString", obj.getBodyAsString());
