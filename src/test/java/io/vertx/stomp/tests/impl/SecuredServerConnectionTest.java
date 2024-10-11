@@ -75,6 +75,7 @@ public class SecuredServerConnectionTest {
       .handler(StompServerHandler.create(vertx).authProvider(provider));
     server.listen(StompServerOptions.DEFAULT_STOMP_PORT).onComplete(context.asyncAssertSuccess());
     wsServer = vertx.createHttpServer(new HttpServerOptions().setWebSocketSubProtocols(Arrays.asList("v10.stomp", "v11.stomp")))
+      .webSocketHandshakeHandler(server.webSocketHandshakeHandler())
       .webSocketHandler(server.webSocketHandler());
     wsServer.listen(8080).onComplete(context.asyncAssertSuccess());
     wsClient = vertx.createWebSocketClient();

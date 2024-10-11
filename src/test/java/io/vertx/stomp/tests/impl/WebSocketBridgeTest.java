@@ -74,7 +74,9 @@ public class WebSocketBridgeTest {
       .setMaxWebSocketMessageSize(2048)
       .setPort(8080);
 
-    http = vertx.createHttpServer(httpOptions).webSocketHandler(server.webSocketHandler());
+    http = vertx.createHttpServer(httpOptions)
+      .webSocketHandshakeHandler(server.webSocketHandshakeHandler())
+      .webSocketHandler(server.webSocketHandler());
   }
 
   private void startServers() {
@@ -360,6 +362,7 @@ public class WebSocketBridgeTest {
 
     http = vertx
       .createHttpServer(new HttpServerOptions().setPort(8080))
+      .webSocketHandshakeHandler(server.webSocketHandshakeHandler())
       .webSocketHandler(server.webSocketHandler());
 
     startServers();

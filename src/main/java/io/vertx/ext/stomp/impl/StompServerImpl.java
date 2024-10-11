@@ -18,6 +18,7 @@ package io.vertx.ext.stomp.impl;
 
 import io.vertx.core.*;
 import io.vertx.core.http.ServerWebSocket;
+import io.vertx.core.http.ServerWebSocketHandshake;
 import io.vertx.core.internal.logging.Logger;
 import io.vertx.core.internal.logging.LoggerFactory;
 import io.vertx.core.net.NetServer;
@@ -223,6 +224,23 @@ public class StompServerImpl implements StompServer {
   }
 
   @Override
+  public Handler<ServerWebSocketHandshake> webSocketHandshakeHandler() {
+    if (!options.isWebsocketBridge()) {
+      return null;
+    }
+
+    return handshake -> {
+      if (!handshake.path().equals(options.getWebsocketPath())) {
+        LOGGER.error("Receiving a web socket connection on an invalid path (" + handshake.path() + "), the path is " +
+          "configured to " + options.getWebsocketPath() + ". Rejecting connection");
+        handshake.reject();
+      } else {
+        handshake.accept();
+      }
+    };
+  }
+
+  @Override
   public Handler<ServerWebSocket> webSocketHandler() {
     if (!options.isWebsocketBridge()) {
       return null;
@@ -234,12 +252,6 @@ public class StompServerImpl implements StompServer {
     }
 
     return socket -> {
-      if (!socket.path().equals(options.getWebsocketPath())) {
-        LOGGER.error("Receiving a web socket connection on an invalid path (" + socket.path() + "), the path is " +
-            "configured to " + options.getWebsocketPath() + ". Rejecting connection");
-        socket.reject();
-        return;
-      }
       AtomicBoolean connected = new AtomicBoolean();
       AtomicBoolean firstFrame = new AtomicBoolean();
       StompServerConnection connection = new StompServerWebSocketConnectionImpl(socket, this, frame -> {

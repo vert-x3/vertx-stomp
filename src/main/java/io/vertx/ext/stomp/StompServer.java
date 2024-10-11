@@ -22,6 +22,7 @@ import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.ServerWebSocket;
+import io.vertx.core.http.ServerWebSocketHandshake;
 import io.vertx.core.net.NetServer;
 import io.vertx.ext.stomp.impl.StompServerImpl;
 
@@ -150,6 +151,14 @@ public interface StompServer {
    * @return the {@link StompServerHandler} used by this server.
    */
   StompServerHandler stompHandler();
+
+  /**
+   * Gets the {@link Handler} able to manage web socket connection handshakes. If the web socket bridge is disabled, it returns
+   * {@code null}.
+   *
+   * @return the handler that can be passed to {@link io.vertx.core.http.HttpServer#webSocketHandshakeHandler(Handler)}.
+   */
+  Handler<ServerWebSocketHandshake> webSocketHandshakeHandler();
 
   /**
    * Gets the {@link Handler} able to manage web socket connections. If the web socket bridge is disabled, it returns
