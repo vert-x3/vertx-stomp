@@ -48,6 +48,7 @@ public class TestSendFailure {
     vertx = Vertx.vertx();
     server = StompServer.create(vertx)
         .handler(StompServerHandler.create(vertx)
+            .sendHandler(ignore -> {})
             .receivedFrameHandler(frame -> {
               if ("/queue".equalsIgnoreCase(frame.frame().getDestination())) {
                 server.close();
