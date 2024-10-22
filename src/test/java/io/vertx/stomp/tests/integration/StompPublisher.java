@@ -16,7 +16,8 @@
 
 package io.vertx.stomp.tests.integration;
 
-import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Future;
+import io.vertx.core.VerticleBase;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.stomp.StompClient;
 import io.vertx.ext.stomp.StompClientOptions;
@@ -26,30 +27,25 @@ import io.vertx.ext.stomp.StompClientOptions;
  *
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
-public class StompPublisher extends AbstractVerticle {
+public class StompPublisher extends VerticleBase {
 
   private StompClient client;
 
   @Override
-  public void start() throws Exception {
+  public Future<?> start() throws Exception {
     System.out.println("Starting publisher");
     client = StompClient.create(vertx, new StompClientOptions(config()));
-    client.connect().onComplete(ar -> {
-      if (ar.failed()) {
-        System.err.println("Cannot connect to STOMP server");
-        ar.cause().printStackTrace();
-        return;
-      }
-
-      vertx.setPeriodic(5000, l -> ar.result().send("/queue/event", Buffer.buffer("Hello")).onComplete(frame -> {
-        System.out.println("Receipt received");
-      }));
-    });
+    return client
+      .connect()
+      .onSuccess(res -> {
+        vertx.setPeriodic(5000, l -> res.send("/queue/event", Buffer.buffer("Hello")).onComplete(frame -> {
+          System.out.println("Receipt received");
+        }));
+      });
   }
 
   @Override
-  public void stop() throws Exception {
-    super.stop();
-    client.close();
+  public Future<?> stop() throws Exception {
+    return client.close();
   }
 }

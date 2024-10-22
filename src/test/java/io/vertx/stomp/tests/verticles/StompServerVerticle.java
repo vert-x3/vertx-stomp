@@ -16,8 +16,8 @@
 
 package io.vertx.stomp.tests.verticles;
 
-import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Promise;
+import io.vertx.core.Future;
+import io.vertx.core.VerticleBase;
 import io.vertx.ext.stomp.Destination;
 import io.vertx.ext.stomp.StompServer;
 import io.vertx.ext.stomp.StompServerHandler;
@@ -27,13 +27,13 @@ import io.vertx.ext.stomp.StompServerHandler;
  *
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
-public class StompServerVerticle extends AbstractVerticle {
+public class StompServerVerticle extends VerticleBase {
 
 
   private StompServer server;
 
   @Override
-  public void start(Promise<Void> future) throws Exception {
+  public Future<?> start() throws Exception {
     server = StompServer.create(vertx).handler(StompServerHandler.create(vertx)
         .destinationFactory((vertx, name) -> {
           if (config().getBoolean("useQueue", false)) {
@@ -42,17 +42,11 @@ public class StompServerVerticle extends AbstractVerticle {
             return Destination.topic(vertx, name);
           }
         }));
-    server.listen().onComplete(ar -> {
-          if (ar.failed()) {
-            future.fail(ar.cause());
-          } else {
-            future.complete(null);
-          }
-        });
+    return server.listen();
   }
 
   @Override
-  public void stop() throws Exception {
-    server.close();
+  public Future<?> stop() throws Exception {
+    return server.close();
   }
 }

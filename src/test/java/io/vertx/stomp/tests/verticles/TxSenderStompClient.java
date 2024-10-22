@@ -16,11 +16,11 @@
 
 package io.vertx.stomp.tests.verticles;
 
-import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Future;
+import io.vertx.core.VerticleBase;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.stomp.Frame;
 import io.vertx.ext.stomp.StompClient;
-import io.vertx.ext.stomp.StompClientConnection;
 import io.vertx.ext.stomp.utils.Headers;
 
 /**
@@ -28,22 +28,23 @@ import io.vertx.ext.stomp.utils.Headers;
  *
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
-public class TxSenderStompClient extends AbstractVerticle {
+public class TxSenderStompClient extends VerticleBase {
 
 
   @Override
-  public void start() throws Exception {
-    StompClient.create(vertx).connect().onComplete(ar -> {
-      final StompClientConnection connection = ar.result();
-      connection.errorHandler(frame -> System.err.println("Tx Sender has received an ERROR frame : \n" + frame));
-      connection.beginTX("my-transaction");
-      connection.send("/queue", Headers.create(Frame.TRANSACTION, "my-transaction"), Buffer.buffer("Hello"));
-      connection.send("/queue", Headers.create(Frame.TRANSACTION, "my-transaction"), Buffer.buffer("My"));
-      connection.send("/queue", Headers.create(Frame.TRANSACTION, "my-transaction"), Buffer.buffer("Name"));
-      connection.send("/queue", Headers.create(Frame.TRANSACTION, "my-transaction"), Buffer.buffer("Is"));
-      connection.send("/queue", Headers.create(Frame.TRANSACTION, "my-transaction"), Buffer.buffer("Vert.x"));
-      connection.commit("my-transaction");
-      connection.disconnect();
-    });
+  public Future<?> start() throws Exception {
+    return StompClient.create(vertx)
+      .connect()
+      .onSuccess(connection -> {
+        connection.errorHandler(frame -> System.err.println("Tx Sender has received an ERROR frame : \n" + frame));
+        connection.beginTX("my-transaction");
+        connection.send("/queue", Headers.create(Frame.TRANSACTION, "my-transaction"), Buffer.buffer("Hello"));
+        connection.send("/queue", Headers.create(Frame.TRANSACTION, "my-transaction"), Buffer.buffer("My"));
+        connection.send("/queue", Headers.create(Frame.TRANSACTION, "my-transaction"), Buffer.buffer("Name"));
+        connection.send("/queue", Headers.create(Frame.TRANSACTION, "my-transaction"), Buffer.buffer("Is"));
+        connection.send("/queue", Headers.create(Frame.TRANSACTION, "my-transaction"), Buffer.buffer("Vert.x"));
+        connection.commit("my-transaction");
+        connection.disconnect();
+      });
   }
 }

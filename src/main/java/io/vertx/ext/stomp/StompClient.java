@@ -128,7 +128,7 @@ public interface StompClient {
   /**
    * Closes the client.
    */
-  void close();
+  Future<Void> close();
 
   /**
    * @return the client's options.

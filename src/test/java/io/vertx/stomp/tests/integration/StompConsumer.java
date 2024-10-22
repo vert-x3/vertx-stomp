@@ -16,7 +16,8 @@
 
 package io.vertx.stomp.tests.integration;
 
-import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Future;
+import io.vertx.core.VerticleBase;
 import io.vertx.ext.stomp.StompClient;
 import io.vertx.ext.stomp.StompClientOptions;
 
@@ -25,27 +26,22 @@ import io.vertx.ext.stomp.StompClientOptions;
  *
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
-public class StompConsumer extends AbstractVerticle {
+public class StompConsumer extends VerticleBase {
 
   private StompClient client;
 
   @Override
-  public void start() throws Exception {
+  public Future<?> start() throws Exception {
     System.out.println("Starting client");
     client = StompClient.create(vertx, new StompClientOptions(config()));
-    client.connect().onComplete(ar -> {
-      if (ar.failed()) {
-        System.err.println("Cannot connect to STOMP server");
-        ar.cause().printStackTrace();
-        return;
-      }
-      ar.result().subscribe("/queue/event", frame -> System.out.println("Frame received : " + frame.getBodyAsString()));
-    });
+    return client
+      .connect()
+      .compose(conn -> conn
+        .subscribe("/queue/event", frame -> System.out.println("Frame received : " + frame.getBodyAsString())));
   }
 
   @Override
-  public void stop() throws Exception {
-    super.stop();
-    client.close();
+  public Future<?> stop() throws Exception {
+    return client.close();
   }
 }
