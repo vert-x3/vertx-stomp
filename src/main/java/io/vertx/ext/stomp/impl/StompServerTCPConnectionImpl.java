@@ -47,6 +47,8 @@ public class StompServerTCPConnectionImpl implements StompServerConnection {
   private long pinger = -1;
   private long ponger = -1;
 
+  private boolean closed;
+
   public StompServerTCPConnectionImpl(NetSocket socket, StompServer server, Handler<ServerFrame> writingFrameHandler) {
     Objects.requireNonNull(socket);
     Objects.requireNonNull(server);
@@ -101,7 +103,12 @@ public class StompServerTCPConnectionImpl implements StompServerConnection {
   @Override
   public void close() {
     cancelHeartbeat();
-    handler().onClose(this);
+    synchronized (this) {
+      if (!closed) {
+        handler().onClose(this);
+        closed = true;
+      }
+    }
     socket.close();
   }
 

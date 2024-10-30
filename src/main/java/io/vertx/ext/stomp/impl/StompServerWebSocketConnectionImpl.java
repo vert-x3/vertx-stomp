@@ -34,6 +34,8 @@ public class StompServerWebSocketConnectionImpl extends  StompServerTCPConnectio
 
   private final ServerWebSocket socket;
 
+  private boolean closed;
+
   public StompServerWebSocketConnectionImpl(ServerWebSocket socket, StompServer server, Handler<ServerFrame> writtenFrameHandler) {
     super(server, writtenFrameHandler);
     Objects.requireNonNull(socket);
@@ -62,7 +64,12 @@ public class StompServerWebSocketConnectionImpl extends  StompServerTCPConnectio
   @Override
   public void close() {
     cancelHeartbeat();
-    handler().onClose(this);
+    synchronized (this) {
+      if (!closed) {
+        handler().onClose(this);
+        closed = true;
+      }
+    }
     try {
       socket.close();
     } catch (IllegalStateException e) {
