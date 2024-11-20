@@ -205,7 +205,7 @@ public class StompServerImplTest {
           context.assertTrue(frame.getHeader("login").equals("system"));
           sf.connection().close();
           vertx.setTimer(1000, id -> {
-            server.close(ar2 -> {
+            server.close().onComplete(ar2 -> {
               context.assertEquals(1, closeTimes.get());
               ensureClosed(context, ar2, server);
               async.complete();
