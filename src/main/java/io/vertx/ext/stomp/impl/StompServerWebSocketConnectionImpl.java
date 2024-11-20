@@ -64,8 +64,7 @@ public class StompServerWebSocketConnectionImpl extends StompServerTCPConnection
 
   @Override
   public void close() {
-    if (!closed.get()
-      && closed.compareAndSet(false, true)) {
+    if (closed.compareAndSet(false, true)) {
       cancelHeartbeat();
       handler().onClose(this);
       try {
