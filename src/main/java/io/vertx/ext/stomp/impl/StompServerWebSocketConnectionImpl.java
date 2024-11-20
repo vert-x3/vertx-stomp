@@ -67,11 +67,7 @@ public class StompServerWebSocketConnectionImpl extends StompServerTCPConnection
     if (closed.compareAndSet(false, true)) {
       cancelHeartbeat();
       handler().onClose(this);
-      try {
-        socket.close();
-      } catch (IllegalStateException e) {
-        // Ignore it, the web socket has already been closed.
-      }
+      socket.close();
     }
   }
 }
