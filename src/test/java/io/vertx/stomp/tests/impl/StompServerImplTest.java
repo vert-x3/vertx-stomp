@@ -212,9 +212,9 @@ public class StompServerImplTest {
             });
           });
         }
-      ).closeHandler(conn ->{ 
+      ).closeHandler(conn ->{
         closeTimes.incrementAndGet();
-      })).listen(ar -> {
+      })).listen().onComplete(ar -> {
       ensureListening(context, ar);
       writeMessage(vertx);
     });
