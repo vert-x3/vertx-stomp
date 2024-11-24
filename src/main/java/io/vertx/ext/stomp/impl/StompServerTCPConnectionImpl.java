@@ -28,6 +28,7 @@ import io.vertx.ext.stomp.*;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Default implementation of the {@link StompServerConnection}.
@@ -46,6 +47,8 @@ public class StompServerTCPConnectionImpl implements StompServerConnection {
   public volatile long lastClientActivity;
   private long pinger = -1;
   private long ponger = -1;
+
+  private final AtomicBoolean closed = new AtomicBoolean(false);
 
   public StompServerTCPConnectionImpl(NetSocket socket, StompServer server, Handler<ServerFrame> writingFrameHandler) {
     Objects.requireNonNull(socket);
@@ -100,9 +103,11 @@ public class StompServerTCPConnectionImpl implements StompServerConnection {
 
   @Override
   public void close() {
-    cancelHeartbeat();
-    handler().onClose(this);
-    socket.close();
+    if (closed.compareAndSet(false, true)) {
+      cancelHeartbeat();
+      handler().onClose(this);
+      socket.close();
+    }
   }
 
   /**
