@@ -14,7 +14,7 @@
  *  You may elect to redistribute this code under either of these licenses.
  */
 
-@ModuleGen(name = "vertx-stomp", groupPackage = "io.vertx", useFutures = true)
+@ModuleGen(name = "vertx-stomp", groupPackage = "io.vertx")
 package io.vertx.ext.stomp;
 
 import io.vertx.codegen.annotations.ModuleGen;
