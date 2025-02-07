@@ -29,6 +29,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * test the {@link StompServerImpl}.
  *
@@ -188,6 +190,34 @@ public class StompServerImplTest {
             });
           }
         });
+  }
+
+  @Test
+  public void testConnectionCloseTwice(TestContext context) {
+    final Async async = context.async();
+    StompServer server = StompServer.create(vertx);
+    AtomicInteger closeTimes = new AtomicInteger(0);
+    server.handler(
+      StompServerHandler.create(vertx).connectHandler(
+        sf -> {
+          Frame frame = sf.frame();
+          context.assertTrue(frame.getCommand() == Command.CONNECT);
+          context.assertTrue(frame.getHeader("login").equals("system"));
+          sf.connection().close();
+          vertx.setTimer(1000, id -> {
+            server.close().onComplete(ar2 -> {
+              context.assertEquals(1, closeTimes.get());
+              ensureClosed(context, ar2, server);
+              async.complete();
+            });
+          });
+        }
+      ).closeHandler(conn ->{
+        closeTimes.incrementAndGet();
+      })).listen().onComplete(ar -> {
+      ensureListening(context, ar);
+      writeMessage(vertx);
+    });
   }
 
   private void writeMessage(Vertx vertx) {
