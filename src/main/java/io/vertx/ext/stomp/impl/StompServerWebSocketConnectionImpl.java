@@ -24,15 +24,18 @@ import io.vertx.core.http.ServerWebSocket;
 import io.vertx.ext.stomp.*;
 
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Default implementation of the {@link StompServerConnection}.
  *
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
-public class StompServerWebSocketConnectionImpl extends  StompServerTCPConnectionImpl implements StompServerConnection {
+public class StompServerWebSocketConnectionImpl extends StompServerTCPConnectionImpl implements StompServerConnection {
 
   private final ServerWebSocket socket;
+
+  private final AtomicBoolean closed = new AtomicBoolean(false);
 
   public StompServerWebSocketConnectionImpl(ServerWebSocket socket, StompServer server, Handler<ServerFrame> writtenFrameHandler) {
     super(server, writtenFrameHandler);
@@ -61,12 +64,10 @@ public class StompServerWebSocketConnectionImpl extends  StompServerTCPConnectio
 
   @Override
   public void close() {
-    cancelHeartbeat();
-    handler().onClose(this);
-    try {
+    if (closed.compareAndSet(false, true)) {
+      cancelHeartbeat();
+      handler().onClose(this);
       socket.close();
-    } catch (IllegalStateException e) {
-      // Ignore it, the web socket has already been closed.
     }
   }
 }
