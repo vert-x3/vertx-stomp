@@ -9,7 +9,7 @@
   </parent>
 
   <artifactId>vertx-stomp</artifactId>
-  <version>5.0.0</version>
+  <version>5.0.1-SNAPSHOT</version>
 
   <name>Vert.x Stomp</name>
   <description>Stomp support for Vert.x 3</description>
