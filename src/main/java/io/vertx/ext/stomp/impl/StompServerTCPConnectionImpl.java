@@ -23,6 +23,7 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.internal.logging.Logger;
 import io.vertx.core.internal.logging.LoggerFactory;
 import io.vertx.core.net.NetSocket;
+import io.vertx.core.net.SocketAddress;
 import io.vertx.ext.stomp.*;
 
 import java.util.Objects;
@@ -153,6 +154,26 @@ public class StompServerTCPConnectionImpl implements StompServerConnection {
         }
       });
     }
+  }
+
+  @Override
+  public SocketAddress remoteAddress() {
+    return socket.remoteAddress();
+  }
+
+  @Override
+  public SocketAddress remoteAddress(boolean real) {
+    return socket.remoteAddress(real);
+  }
+
+  @Override
+  public SocketAddress localAddress() {
+    return socket.localAddress();
+  }
+
+  @Override
+  public SocketAddress localAddress(boolean real) {
+    return socket.localAddress(real);
   }
 
 }
