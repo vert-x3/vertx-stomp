@@ -12,7 +12,7 @@
   <version>5.0.1-SNAPSHOT</version>
 
   <name>Vert.x Stomp</name>
-  <description>Stomp support for Vert.x 3</description>
+  <description>Vert.x Stomp</description>
 
   <scm>
     <connection>scm:git:git@github.com:vert-x3/vertx-stomp.git</connection>
