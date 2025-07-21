@@ -33,6 +33,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
@@ -403,7 +404,7 @@ public class StompClientImplTest {
   public void testAsymmetricHeartbeatTime() throws InterruptedException {
     AtomicReference<StompClientConnection> reference = new AtomicReference<>();
 
-    List<Long> serverReceivedPingTimestamps = new ArrayList<>();
+    List<Long> serverReceivedPingTimestamps = Collections.synchronizedList(new ArrayList<>());
     server = StompServer.create(vertx,
       new StompServerOptions().setHeartbeat(new JsonObject().put("x", 300).put("y", 200)))
       .handler(StompServerHandler.create(vertx).receivedFrameHandler(frame -> {
@@ -413,7 +414,7 @@ public class StompClientImplTest {
       }));
     startServer();
 
-    List<Long> clientReceivedPingTimestamps = new ArrayList<>();
+    List<Long> clientReceivedPingTimestamps = Collections.synchronizedList(new ArrayList<>());
     StompClient client = StompClient.create(vertx, new StompClientOptions().setHeartbeat(new JsonObject()
       .put("x", 100).put("y", 400)))
       .receivedFrameHandler(frame -> {
@@ -426,12 +427,22 @@ public class StompClientImplTest {
     Thread.sleep(2000);
 
     // The actual heartbeat of client is 200, assert it greater than 150 considering network delay
-    serverReceivedPingTimestamps.stream().reduce(0L, (x,y) -> {
-        assertTrue((y-x) > 150); return y;});
+    synchronized (serverReceivedPingTimestamps) {
+      long previous = 0;
+      for (Long serverReceivedPingTimestamp : serverReceivedPingTimestamps) {
+        assertTrue((serverReceivedPingTimestamp - previous) > 150);
+        previous = serverReceivedPingTimestamp;
+      }
+    }
 
     // The actual heartbeat of server is 400, assert  it greater than 350 considering network delay
-    clientReceivedPingTimestamps.stream().reduce(0L,(x,y) -> {
-        assertTrue((y-x) > 350); return y;});
+    synchronized (clientReceivedPingTimestamps) {
+      long previous = 0;
+      for (Long clientReceivedPingTimestamp : clientReceivedPingTimestamps) {
+        assertTrue((clientReceivedPingTimestamp - previous) > 350);
+        previous = clientReceivedPingTimestamp;
+      }
+    }
 
     assertThat(reference.get().server()).isNotNull();
   }
