@@ -16,16 +16,19 @@
 
 package io.vertx.ext.stomp.impl;
 
-import io.vertx.core.*;
+import io.vertx.core.Completable;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
+import io.vertx.core.Promise;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.internal.ContextInternal;
 import io.vertx.core.internal.logging.Logger;
 import io.vertx.core.internal.logging.LoggerFactory;
 import io.vertx.core.net.NetSocket;
-import io.vertx.core.internal.net.NetSocketInternal;
 import io.vertx.ext.stomp.*;
 import io.vertx.ext.stomp.utils.Headers;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
@@ -147,11 +150,12 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     socket.close();
   }
 
-  private void handleShutdown(Void evt) {
+  private void handleShutdown(Duration ignore) {
     synchronized (this) {
       if (status == Status.CONNECTED) {
         disconnect();
       }
+      socket.close();
     }
   }
 
