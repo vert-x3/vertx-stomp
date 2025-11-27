@@ -16,10 +16,7 @@
 
 package io.vertx.ext.stomp.impl;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
-import io.vertx.core.MultiMap;
-import io.vertx.core.Vertx;
+import io.vertx.core.*;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.Message;
@@ -243,13 +240,15 @@ public class EventBusBridge extends Topic {
   }
 
   private void send(String address, Frame frame, Handler<AsyncResult<Message<Object>>> replyHandler) {
+    DeliveryOptions deliveryOptions = new DeliveryOptions().setHeaders(toMultimap(frame.getHeaders()));
     if (options.isPointToPoint()) {
-      vertx.eventBus().request(address, frame.getBody(),
-          new DeliveryOptions().setHeaders(toMultimap(frame.getHeaders()))).onComplete(replyHandler);
+      Future<Message<Object>> messageFuture = vertx.eventBus().request(address, frame.getBody(), deliveryOptions);
+      if (replyHandler != null) {
+        messageFuture.onComplete(replyHandler);
+      }
     } else {
       // the reply handler is ignored in non point to point interaction.
-      vertx.eventBus().publish(address, frame.getBody(),
-          new DeliveryOptions().setHeaders(toMultimap(frame.getHeaders())));
+      vertx.eventBus().publish(address, frame.getBody(), deliveryOptions);
     }
   }
 
