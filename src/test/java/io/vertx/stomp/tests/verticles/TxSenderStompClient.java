@@ -30,10 +30,12 @@ import io.vertx.ext.stomp.utils.Headers;
  */
 public class TxSenderStompClient extends VerticleBase {
 
+  private StompClient stompClient;
 
   @Override
   public Future<?> start() throws Exception {
-    return StompClient.create(vertx)
+    stompClient = StompClient.create(vertx);
+    return stompClient
       .connect()
       .onSuccess(connection -> {
         connection.errorHandler(frame -> System.err.println("Tx Sender has received an ERROR frame : \n" + frame));
