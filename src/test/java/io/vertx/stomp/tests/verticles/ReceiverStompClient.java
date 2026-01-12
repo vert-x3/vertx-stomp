@@ -33,10 +33,12 @@ public class ReceiverStompClient extends VerticleBase {
 
   public static final List<Frame> FRAMES = new CopyOnWriteArrayList<>();
 
+  private StompClient stompClient;
+
   @Override
   public Future<?> start() throws Exception {
-    return StompClient
-      .create(vertx)
+    stompClient = StompClient.create(vertx);
+    return stompClient
       .connect()
       .compose(connection -> connection
         .receivedFrameHandler(frame -> System.out.println("Client receiving:\n" + frame))

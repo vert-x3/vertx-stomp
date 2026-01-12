@@ -29,7 +29,6 @@ import io.vertx.ext.stomp.StompServerHandler;
  */
 public class StompServerVerticle extends VerticleBase {
 
-
   private StompServer server;
 
   @Override
