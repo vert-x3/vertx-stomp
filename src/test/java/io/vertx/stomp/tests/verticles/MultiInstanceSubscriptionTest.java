@@ -28,6 +28,9 @@ import org.junit.runner.RunWith;
 
 import java.util.concurrent.TimeUnit;
 
+import static com.jayway.awaitility.Awaitility.await;
+import static java.util.concurrent.TimeUnit.*;
+
 /**
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
  */
@@ -53,7 +56,7 @@ public class MultiInstanceSubscriptionTest {
     // Deploy the clients.
     vertx.deployVerticle(ReceiverStompClient::new, new DeploymentOptions().setInstances(3)).await();
     vertx.deployVerticle(TxSenderStompClient::new, new DeploymentOptions().setInstances(2)).await();
-    Awaitility.await().atMost(10, TimeUnit.SECONDS).until(() -> ReceiverStompClient.FRAMES.size() == 5 * 3 * 2);
+    await().atMost(10, SECONDS).until(() -> ReceiverStompClient.FRAMES.size() == 5 * 3 * 2);
   }
 
   @Test
@@ -65,6 +68,6 @@ public class MultiInstanceSubscriptionTest {
     vertx.deployVerticle(ReceiverStompClient::new, new DeploymentOptions().setInstances(3)).await();
     vertx.deployVerticle(TxSenderStompClient::new, new DeploymentOptions().setInstances(2)).await();
 
-    Awaitility.await().atMost(10, TimeUnit.SECONDS).until(() -> ReceiverStompClient.FRAMES.size() == 5 * 2);
+    await().atMost(10, SECONDS).until(() -> ReceiverStompClient.FRAMES.size() == 5 * 2);
   }
 }
