@@ -39,7 +39,7 @@ public class StompServerTCPConnectionImpl implements StompServerConnection {
 
   private static final Logger log = LoggerFactory.getLogger(StompServerTCPConnectionImpl.class);
 
-  private final StompServer server;
+  protected final StompServer server;
   private final NetSocket socket;
   private final String sessionId;
   protected final Handler<ServerFrame> handler;
@@ -73,6 +73,11 @@ public class StompServerTCPConnectionImpl implements StompServerConnection {
       handler.handle(new ServerFrameImpl(frame, this));
     }
     return write(frame.toBuffer(server.options().isTrailingLine()));
+  }
+
+  @Override
+  public StompServerConnection write(Frame frame, PayloadMode payloadMode) {
+    return write(frame);
   }
 
   @Override
