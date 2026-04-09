@@ -87,6 +87,11 @@ public class StompServerOptionsConverter {
             obj.setTrailingLine((Boolean)member.getValue());
           }
           break;
+        case "webSocketFrameType":
+          if (member.getValue() instanceof String) {
+            obj.setWebSocketFrameType(io.vertx.ext.stomp.WebSocketFrameType.valueOf((String)member.getValue()));
+          }
+          break;
       }
     }
   }
@@ -118,5 +123,8 @@ public class StompServerOptionsConverter {
       json.put("websocketPath", obj.getWebsocketPath());
     }
     json.put("trailingLine", obj.isTrailingLine());
+    if (obj.getWebSocketFrameType() != null) {
+      json.put("webSocketFrameType", obj.getWebSocketFrameType().name());
+    }
   }
 }

@@ -1,17 +1,17 @@
 /*
- *  Copyright (c) 2011-2015 The original author or authors
- *  ------------------------------------------------------
- *  All rights reserved. This program and the accompanying materials
- *  are made available under the terms of the Eclipse Public License v1.0
- *  and Apache License v2.0 which accompanies this distribution.
+ * Copyright (c) 2011-2026 The original author or authors
  *
- *       The Eclipse Public License is available at
- *       http://www.eclipse.org/legal/epl-v10.html
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * and Apache License v2.0 which accompanies this distribution.
  *
- *       The Apache License v2.0 is available at
- *       http://www.opensource.org/licenses/apache2.0.php
+ *      The Eclipse Public License is available at
+ *      http://www.eclipse.org/legal/epl-v10.html
  *
- *  You may elect to redistribute this code under either of these licenses.
+ *      The Apache License v2.0 is available at
+ *      http://www.opensource.org/licenses/apache2.0.php
+ *
+ * You may elect to redistribute this code under either of these licenses.
  */
 
 package examples;
@@ -205,6 +205,22 @@ public class StompServerExamples {
         .webSocketHandshakeHandler(server.webSocketHandshakeHandler())
         .webSocketHandler(server.webSocketHandler())
         .listen(8080);
+  }
+
+  public void exampleWebSocketTextFrames(Vertx vertx) {
+    StompServer server = StompServer.create(vertx, new StompServerOptions()
+        .setPort(-1) // Disable the TCP port, optional
+        .setWebsocketBridge(true) // Enable the web socket support
+        .setWebsocketPath("/stomp") // Configure the web socket path, /stomp by default
+        .setWebSocketFrameType(WebSocketFrameType.TEXT)) // Use TEXT frames for JavaScript clients
+      .handler(StompServerHandler.create(vertx));
+
+    Future<HttpServer> http = vertx.createHttpServer(
+        new HttpServerOptions().setWebSocketSubProtocols(Arrays.asList("v10.stomp", "v11.stomp", "v12.stomp"))
+      )
+      .webSocketHandshakeHandler(server.webSocketHandshakeHandler())
+      .webSocketHandler(server.webSocketHandler())
+      .listen(8080);
   }
 
   public void example17(Vertx vertx) {

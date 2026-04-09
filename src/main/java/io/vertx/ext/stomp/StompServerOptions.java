@@ -1,17 +1,17 @@
 /*
- *  Copyright (c) 2011-2015 The original author or authors
- *  ------------------------------------------------------
- *  All rights reserved. This program and the accompanying materials
- *  are made available under the terms of the Eclipse Public License v1.0
- *  and Apache License v2.0 which accompanies this distribution.
+ * Copyright (c) 2011-2026 The original author or authors
  *
- *       The Eclipse Public License is available at
- *       http://www.eclipse.org/legal/epl-v10.html
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * and Apache License v2.0 which accompanies this distribution.
  *
- *       The Apache License v2.0 is available at
- *       http://www.opensource.org/licenses/apache2.0.php
+ *      The Eclipse Public License is available at
+ *      http://www.eclipse.org/legal/epl-v10.html
  *
- *  You may elect to redistribute this code under either of these licenses.
+ *      The Apache License v2.0 is available at
+ *      http://www.opensource.org/licenses/apache2.0.php
+ *
+ * You may elect to redistribute this code under either of these licenses.
  */
 
 package io.vertx.ext.stomp;
@@ -70,6 +70,8 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
   private boolean disableTCPServer;
   private boolean trailingLine = DEFAULT_TRAILING_LINE;
 
+  private WebSocketFrameType webSocketFrameType = WebSocketFrameType.BINARY;
+
   /**
    * Default constructor.
    */
@@ -104,6 +106,7 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
 
     this.disableTCPServer = other.disableTCPServer;
     this.trailingLine = other.trailingLine;
+    this.webSocketFrameType = other.webSocketFrameType;
   }
 
   /**
@@ -471,6 +474,41 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
    */
   public StompServerOptions setTrailingLine(boolean trailingLine) {
     this.trailingLine = trailingLine;
+    return this;
+  }
+
+  /**
+   * Gets the WebSocket frame type to use when sending STOMP messages over WebSocket.
+   * <p>
+   * This determines whether STOMP frames are sent as text or binary WebSocket frames.
+   * The default is {@link WebSocketFrameType#BINARY} for backward compatibility.
+   * <p>
+   * Use {@link WebSocketFrameType#TEXT} for compatibility with JavaScript STOMP clients
+   * (e.g. StompJS) as STOMP is a text-based protocol.
+   *
+   * @return the WebSocket frame type, {@link WebSocketFrameType#BINARY} by default
+   */
+  public WebSocketFrameType getWebSocketFrameType() {
+    return webSocketFrameType;
+  }
+
+  /**
+   * Sets the WebSocket frame type to use when sending STOMP messages over WebSocket.
+   * <p>
+   * This determines whether STOMP frames are sent as text or binary WebSocket frames.
+   * <ul>
+   *   <li>{@link WebSocketFrameType#TEXT} - Recommended for JavaScript clients and aligns with
+   *       STOMP being a text-based protocol. Note that STOMP message bodies containing binary
+   *       data must be UTF-8 safe or Base64 encoded at the application level.</li>
+   *   <li>{@link WebSocketFrameType#BINARY} - Legacy behavior, handles any content but may not
+   *       be compatible with some JavaScript STOMP clients.</li>
+   * </ul>
+   *
+   * @param webSocketFrameType the frame type to use
+   * @return the current {@link StompServerOptions}
+   */
+  public StompServerOptions setWebSocketFrameType(WebSocketFrameType webSocketFrameType) {
+    this.webSocketFrameType = webSocketFrameType;
     return this;
   }
 }
