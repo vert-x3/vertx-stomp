@@ -89,10 +89,7 @@ public class Transactions {
    * @param connection the connection
    */
   public synchronized void unregisterTransactionsFromConnection(StompServerConnection connection) {
-    transactions.stream()
-        .filter(transaction -> transaction.connection().equals(connection))
-        .sorted() // Avoid using baking up collection.
-        .forEach(transactions::remove);
+    transactions.removeIf(transaction -> transaction.connection().equals(connection));
   }
 
   /**
