@@ -108,18 +108,15 @@ public class Topic implements Destination {
    */
   @Override
   public synchronized boolean unsubscribe(StompServerConnection connection, Frame frame) {
-    boolean r = false;
-    for (Subscription subscription : subscriptions) {
-      if (subscription.connection.equals(connection) && subscription.id.equals(frame.getId())) {
-        r = subscriptions.remove(subscription);
-        // Subscription id are unique for a connection.
-        break;
-      }
-    }
+    boolean removed = subscriptions.removeIf(
+      // Subscription id are unique for a connection.
+      subscription -> subscription.connection.equals(connection) && subscription.id.equals(frame.getId())
+    );
+
     if (subscriptions.isEmpty()) {
       vertx.sharedData().getLocalMap("stomp.destinations").remove(this);
     }
-    return r;
+    return removed;
   }
 
   /**
@@ -130,10 +127,7 @@ public class Topic implements Destination {
    */
   @Override
   public synchronized Destination unsubscribeConnection(StompServerConnection connection) {
-    new ArrayList<>(subscriptions)
-        .stream()
-        .filter(subscription -> subscription.connection.equals(connection))
-        .forEach(subscriptions::remove);
+    subscriptions.removeIf(subscription -> subscription.connection.equals(connection));
 
     if (subscriptions.isEmpty()) {
       vertx.sharedData().getLocalMap("stomp.destinations").remove(this);

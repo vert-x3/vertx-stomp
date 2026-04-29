@@ -127,7 +127,7 @@ public class DefaultStompHandler implements StompServerHandler {
   @Override
   public synchronized void onClose(StompServerConnection connection) {
     // Default behavior.
-    getDestinations().stream().forEach((d) -> d.unsubscribeConnection(connection));
+    getDestinations().forEach((d) -> d.unsubscribeConnection(connection));
     Transactions.instance().unregisterTransactionsFromConnection(connection);
 
     // Remove user, if exists
