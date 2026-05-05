@@ -105,29 +105,25 @@ public class EventBusBridge extends Topic {
    */
   @Override
   public synchronized boolean unsubscribe(StompServerConnection connection, Frame frame) {
-    Optional<Subscription> target = subscriptions.stream()
-      .filter(s -> s.connection.equals(connection) && s.id.equals(frame.getId()))
-      .findFirst();
+    Iterator<Subscription> iter = subscriptions.iterator();
 
-    if (target.isEmpty()) {
-      return false;
-    }
+    while (iter.hasNext()) {
+      Subscription subscription = iter.next();
+      if (subscription.connection.equals(connection) && subscription.id.equals(frame.getId())) {
+        iter.remove();
 
-    Subscription subscription = target.get();
-    subscriptions.remove(subscription);
+        if (subscriptions.stream().noneMatch(s -> s.destination.equals(subscription.destination))) {
+          MessageConsumer<?> consumer = registry.remove(subscription.destination);
+          if (consumer != null) {
+            consumer.unregister();
+          }
+        }
 
-    boolean hasSameDestination = subscriptions.stream()
-      .anyMatch(s -> s.destination.equals(subscription.destination));
-
-    // Unregister the consumer when there are no subscriptions left for this destination.
-    if (!hasSameDestination) {
-      MessageConsumer<?> consumer = registry.remove(subscription.destination);
-      if (consumer != null) {
-        consumer.unregister();
+        return true;
       }
     }
 
-    return true;
+    return false;
   }
 
   /**
