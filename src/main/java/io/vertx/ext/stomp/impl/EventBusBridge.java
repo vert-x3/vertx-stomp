@@ -29,6 +29,7 @@ import io.vertx.ext.stomp.utils.Headers;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author <a href="http://escoffier.me">Clement Escoffier</a>
@@ -104,22 +105,24 @@ public class EventBusBridge extends Topic {
    */
   @Override
   public synchronized boolean unsubscribe(StompServerConnection connection, Frame frame) {
-    for (Subscription subscription : new ArrayList<>(subscriptions)) {
-      if (subscription.connection.equals(connection)
-          && subscription.id.equals(frame.getId())) {
+    Iterator<Subscription> iter = subscriptions.iterator();
 
-        boolean r = subscriptions.remove(subscription);
-        Optional<Subscription> any = subscriptions.stream().filter(s -> s.destination.equals(subscription.destination)).findAny();
-        // We unregister the event bus consumer if there are no subscription on this address anymore.
-        if (!any.isPresent()) {
+    while (iter.hasNext()) {
+      Subscription subscription = iter.next();
+      if (subscription.connection.equals(connection) && subscription.id.equals(frame.getId())) {
+        iter.remove();
+
+        if (subscriptions.stream().noneMatch(s -> s.destination.equals(subscription.destination))) {
           MessageConsumer<?> consumer = registry.remove(subscription.destination);
           if (consumer != null) {
             consumer.unregister();
           }
         }
-        return r;
+
+        return true;
       }
     }
+
     return false;
   }
 
@@ -131,21 +134,22 @@ public class EventBusBridge extends Topic {
    */
   @Override
   public synchronized Destination unsubscribeConnection(StompServerConnection connection) {
-    new ArrayList<>(subscriptions)
-        .stream()
-        .filter(subscription -> subscription.connection.equals(connection))
-        .forEach(s -> {
-          subscriptions.remove(s);
-          Optional<Subscription> any = subscriptions.stream().filter(s2 -> s2.destination.equals(s.destination))
-              .findAny();
-          // We unregister the event bus consumer if there are no subscription on this address anymore.
-          if (!any.isPresent()) {
-            MessageConsumer<?> consumer = registry.remove(s.destination);
-            if (consumer != null) {
-              consumer.unregister();
-            }
-          }
-        });
+    Set<String> removedDestinations = subscriptions.stream()
+      .filter(s -> s.connection.equals(connection))
+      .map(s -> s.destination)
+      .collect(Collectors.toSet());
+
+    subscriptions.removeIf(s -> s.connection.equals(connection));
+
+    removedDestinations.stream()
+      .filter(destination -> subscriptions.stream().noneMatch(s -> s.destination.equals(destination)))
+      .forEach(destination -> {
+        MessageConsumer<?> consumer = registry.remove(destination);
+        if (consumer != null) {
+          consumer.unregister();
+        }
+      });
+
     return this;
   }
 
