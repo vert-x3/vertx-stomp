@@ -21,7 +21,6 @@ import io.vertx.codegen.annotations.VertxGen;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
-import io.vertx.core.net.NetClient;
 import io.vertx.ext.stomp.impl.StompClientImpl;
 
 /**

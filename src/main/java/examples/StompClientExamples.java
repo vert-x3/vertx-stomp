@@ -18,7 +18,6 @@ package examples;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.net.NetClient;
 import io.vertx.ext.stomp.StompClient;
 import io.vertx.ext.stomp.StompClientOptions;
 
