@@ -44,13 +44,36 @@ public class StompServerWebSocketConnectionImpl extends StompServerTCPConnection
   }
 
   @Override
-  public SSLSession sslSession() {
-    return this.socket.sslSession();
+  public SSLSession sslSession() { return this.socket.sslSession(); }
+
+  @Override
+  public StompServerConnection write(Frame frame) {
+    return write(frame, server.options().getPayloadMode());
+  }
+
+  @Override
+  public StompServerConnection write(Frame frame, PayloadMode payloadMode) {
+    if (handler != null) {
+      handler.handle(new ServerFrameImpl(frame, this));
+    }
+    Buffer stompPayload = frame.toBuffer(server.options().isTrailingLine());
+    if (payloadMode == PayloadMode.BINARY) {
+      return write(stompPayload);
+    } else if (payloadMode == PayloadMode.TEXT) {
+      return writeText(stompPayload.toString());
+    } else {
+      return write(stompPayload); // Default
+    }
   }
 
   @Override
   public StompServerConnection write(Buffer buffer) {
     socket.writeBinaryMessage(buffer);
+    return this;
+  }
+
+  public StompServerConnection writeText(String message) {
+    socket.writeTextMessage(message);
     return this;
   }
 

@@ -34,13 +34,23 @@ import io.vertx.core.buffer.Buffer;
 public interface StompServerConnection {
 
   /**
-   * Writes the given frame to the socket.
+   * Writes the given frame to the socket using default payload type
    *
-   * @param frame the frame, must not be {@code null}.
+   * @param frame  the frame, must not be {@code null}.
    * @return the current {@link StompServerConnection}
    */
   @Fluent
   StompServerConnection write(Frame frame);
+
+  /**
+   * Writes the given frame to the socket.
+   *
+   * @param frame  the frame, must not be {@code null}.
+   * @param payloadMode explicitely specify the payload type for the underlying socket to use (e.g. websockets)
+   * @return the current {@link StompServerConnection}
+   */
+  @Fluent
+  StompServerConnection write(Frame frame, PayloadMode payloadMode);
 
   /**
    * Writes the given buffer to the socket. This is a low level API that should be used carefully.
