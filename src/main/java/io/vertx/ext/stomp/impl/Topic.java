@@ -17,10 +17,7 @@
 package io.vertx.ext.stomp.impl;
 
 import io.vertx.core.Vertx;
-import io.vertx.ext.stomp.Command;
-import io.vertx.ext.stomp.Destination;
-import io.vertx.ext.stomp.Frame;
-import io.vertx.ext.stomp.StompServerConnection;
+import io.vertx.ext.stomp.*;
 import io.vertx.ext.stomp.utils.Headers;
 
 import java.util.ArrayList;
@@ -56,18 +53,37 @@ public class Topic implements Destination {
   /**
    * Dispatches the given frame.
    *
-   * @param connection the connection
-   * @param frame      the frame ({@code SEND} frame).
+   * @param connection   the connection
+   * @param frame        the frame
+   * @param payloadMode  only for websocket bridge, explicitely specify payload type or null
    * @return the current instance of {@link Destination}
    */
-  @Override
-  public synchronized Destination dispatch(StompServerConnection connection, Frame frame) {
+  private synchronized Destination dispatch(StompServerConnection connection, Frame frame, PayloadMode payloadMode) {
     for (Subscription subscription : subscriptions) {
       String messageId = UUID.randomUUID().toString();
       Frame message = transform(frame, subscription, messageId);
-      subscription.connection.write(message);
+      if(payloadMode != null) {
+        subscription.connection.write(message, payloadMode);
+      } else {
+        subscription.connection.write(message);
+      }
     }
     return this;
+  }
+
+  @Override
+  public Destination dispatch(StompServerConnection connection, Frame frame) {
+    return dispatch(connection, frame, null);
+  }
+
+  @Override
+  public Destination dispatchText(StompServerConnection connection, Frame frame) {
+    return dispatch(connection, frame, PayloadMode.TEXT);
+  }
+
+  @Override
+  public Destination dispatchBinary(StompServerConnection connection, Frame frame) {
+    return dispatch(connection, frame, PayloadMode.BINARY);
   }
 
   public static Frame transform(Frame frame, Subscription subscription, String messageId) {

@@ -110,7 +110,11 @@ public class FrameParser implements Handler<Buffer> {
           String length = headers.get(Frame.CONTENT_LENGTH);
           if (length != null) {
             int contentLength = Integer.parseInt(length);
-            frameParser.fixedSizeMode(contentLength);
+            if (contentLength != 0) {
+              frameParser.fixedSizeMode(contentLength);
+            } else {
+              frameParser.delimitedMode(NULL);
+            }
           } else {
             frameParser.delimitedMode(NULL);
           }
