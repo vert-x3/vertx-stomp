@@ -50,6 +50,11 @@ public class StompServerOptionsConverter {
             obj.setMaxSubscriptionsByClient(((Number)member.getValue()).intValue());
           }
           break;
+        case "payloadMode":
+          if (member.getValue() instanceof String) {
+            obj.setPayloadMode(io.vertx.ext.stomp.PayloadMode.valueOf((String)member.getValue()));
+          }
+          break;
         case "secured":
           if (member.getValue() instanceof Boolean) {
             obj.setSecured((Boolean)member.getValue());
@@ -112,6 +117,9 @@ public class StompServerOptionsConverter {
     json.put("maxHeaderLength", obj.getMaxHeaderLength());
     json.put("maxHeaders", obj.getMaxHeaders());
     json.put("maxSubscriptionsByClient", obj.getMaxSubscriptionsByClient());
+    if (obj.getPayloadMode() != null) {
+      json.put("payloadMode", obj.getPayloadMode().name());
+    }
     json.put("secured", obj.isSecured());
     json.put("sendErrorOnNoSubscriptions", obj.isSendErrorOnNoSubscriptions());
     if (obj.getSupportedVersions() != null) {
