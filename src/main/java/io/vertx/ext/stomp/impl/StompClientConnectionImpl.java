@@ -100,8 +100,9 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     this.connectFuture = context.promise();
     this.status = Status.CONNECTING;
 
-    FrameParser parser = new FrameParser();
+    FrameParser parser = new FrameParser(options);
     parser.handler(this);
+    parser.errorHandler(err -> socket.close());
     socket
       .shutdownHandler(this::handleShutdown)
       .handler(buffer -> {

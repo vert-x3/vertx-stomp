@@ -20,6 +20,7 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.stomp.Command;
 import io.vertx.ext.stomp.Frame;
 import io.vertx.ext.stomp.StompOptions;
+import io.vertx.ext.stomp.StompClientOptions;
 import io.vertx.ext.stomp.StompServerOptions;
 import io.vertx.ext.stomp.impl.FrameException;
 import io.vertx.ext.stomp.impl.FrameParser;
@@ -29,6 +30,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
@@ -575,6 +577,27 @@ public class FrameParserTest {
 
     for (int size : stored) {
       assertThat(size).isEqualTo(0);
+    }
+  }
+
+  @Test(expected = FrameException.class)
+  public void testCommandLineSizeExceeded() {
+    streamBytesWithoutNewline(() -> new FrameParser(new StompServerOptions().setMaxHeaderLineLength(10_000)));
+  }
+
+  @Test(expected = FrameException.class)
+  public void testCommandLineSizeExceededClientParser() {
+    streamBytesWithoutNewline(() -> new FrameParser(new StompClientOptions().setMaxHeaderLineLength(10_000)));
+  }
+
+  private void streamBytesWithoutNewline(Supplier<FrameParser> factory) {
+    int limit = 10_000;
+    FrameParser parser = factory.get();
+    parser.handler(f -> {});
+    byte[] chunk = new byte[1024];
+    java.util.Arrays.fill(chunk, (byte) 'A'); // no newline — parser stays in State.COMMAND
+    for (int sent = 0; sent < limit * 3; sent += chunk.length) {
+      parser.handle(Buffer.buffer(chunk));
     }
   }
 
