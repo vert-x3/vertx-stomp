@@ -97,8 +97,9 @@ public class StompClientConnectionImpl implements StompClientConnection, Handler
     this.resultHandler = resultHandler;
     this.context = vertx.getOrCreateContext();
 
-    FrameParser parser = new FrameParser();
+    FrameParser parser = new FrameParser(client.options());
     parser.handler(this);
+    parser.errorHandler(err -> socket.close());
     socket.handler(buffer -> {
       lastServerActivity = System.nanoTime();
       parser.handle(buffer);
