@@ -12,6 +12,11 @@ public class StompServerOptionsConverter {
    static void fromJson(Iterable<java.util.Map.Entry<String, Object>> json, StompServerOptions obj) {
     for (java.util.Map.Entry<String, Object> member : json) {
       switch (member.getKey()) {
+        case "maxHeaderLineLength":
+          if (member.getValue() instanceof Number) {
+            obj.setMaxHeaderLineLength(((Number)member.getValue()).intValue());
+          }
+          break;
         case "maxBodyLength":
           if (member.getValue() instanceof Number) {
             obj.setMaxBodyLength(((Number)member.getValue()).intValue());
@@ -101,6 +106,7 @@ public class StompServerOptionsConverter {
   }
 
    static void toJson(StompServerOptions obj, java.util.Map<String, Object> json) {
+    json.put("maxHeaderLineLength", obj.getMaxHeaderLineLength());
     json.put("maxBodyLength", obj.getMaxBodyLength());
     json.put("maxHeaderLength", obj.getMaxHeaderLength());
     json.put("maxHeaders", obj.getMaxHeaders());
