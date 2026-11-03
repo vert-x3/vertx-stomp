@@ -39,6 +39,13 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
 
   public static final int DEFAULT_MAX_BODY_LENGTH = 1024 * 1024 * 100;
 
+  /**
+   * Maximum byte length of a single line (command or header) before the body.
+   * Derived from {@link #DEFAULT_MAX_HEADER_LENGTH}: a valid header line is at most
+   * {@code name + ":" + value + "\r"}, so {@code 2 * DEFAULT_MAX_HEADER_LENGTH + 2}.
+   */
+  public static final int DEFAULT_MAX_HEADER_LINE_LENGTH = 2 * DEFAULT_MAX_HEADER_LENGTH + 2;
+
   public static final int DEFAULT_MAX_FRAME_IN_TRANSACTION = 1000;
   public static final int DEFAULT_TRANSACTION_CHUNK_SIZE = 1000;
   public static final int DEFAULT_MAX_SUBSCRIPTIONS_BY_CLIENT = 1000;
@@ -49,6 +56,7 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
   private int maxHeaderLength = DEFAULT_MAX_HEADER_LENGTH;
   private int maxHeaders = DEFAULT_MAX_HEADERS;
   private int maxBodyLength = DEFAULT_MAX_BODY_LENGTH;
+  private int maxHeaderLineLength = DEFAULT_MAX_HEADER_LINE_LENGTH;
 
   private int maxFrameInTransaction = DEFAULT_MAX_FRAME_IN_TRANSACTION;
 
@@ -107,6 +115,7 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
     this.disableTCPServer = other.disableTCPServer;
     this.trailingLine = other.trailingLine;
     this.webSocketFrameType = other.webSocketFrameType;
+    this.maxHeaderLineLength = other.maxHeaderLineLength;
   }
 
   /**
@@ -126,6 +135,29 @@ public class StompServerOptions extends NetServerOptions implements StompOptions
     JsonObject json = new JsonObject();
     StompServerOptionsConverter.toJson(this, json);
     return json;
+  }
+
+  /**
+   * Gets the maximum byte length of a single line (command or header line) accepted before the body section.
+   * If a line exceeds this length without a newline delimiter, the connection is rejected with an error.
+   * Defaults to {@link #DEFAULT_MAX_HEADER_LINE_LENGTH}.
+   *
+   * @return the max header line length in bytes
+   */
+  public int getMaxHeaderLineLength() {
+    return maxHeaderLineLength;
+  }
+
+  /**
+   * Sets the maximum byte length of a single line (command or header line) accepted before the body section.
+   * This bounds pre-authentication byte accumulation in the frame parser.
+   *
+   * @param maxHeaderLineLength the max line length in bytes, must be positive
+   * @return the current {@link StompServerOptions}
+   */
+  public StompServerOptions setMaxHeaderLineLength(int maxHeaderLineLength) {
+    this.maxHeaderLineLength = maxHeaderLineLength;
+    return this;
   }
 
   /**

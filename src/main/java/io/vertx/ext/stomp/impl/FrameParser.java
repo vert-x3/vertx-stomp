@@ -1,6 +1,6 @@
 /*
- *  Copyright (c) 2011-2015 The original author or authors
- *  ------------------------------------------------------
+ *  Copyright (c) 2011-2025 The original author or authors
+ *
  *  All rights reserved. This program and the accompanying materials
  *  are made available under the terms of the Eclipse Public License v1.0
  *  and Apache License v2.0 which accompanies this distribution.
@@ -41,7 +41,10 @@ public class FrameParser implements Handler<Buffer> {
 
   public static final String COMMA = ",";
 
-  private final StompServerOptions options;
+  private final int maxHeaderLineLength;
+  private final int maxBodyLength;
+  private final int maxHeaderLength;
+  private final int maxHeaders;
 
   private Command command;
   private HashMap<String, String> headers = new HashMap<>();
@@ -61,11 +64,33 @@ public class FrameParser implements Handler<Buffer> {
   private State current = State.COMMAND;
 
   public FrameParser(StompServerOptions options) {
-    this.options = options;
+    this.maxHeaderLineLength = options.getMaxHeaderLineLength();
+    this.maxBodyLength = options.getMaxBodyLength();
+    this.maxHeaderLength = options.getMaxHeaderLength();
+    this.maxHeaders = options.getMaxHeaders();
+    applyLineLengthLimit();
+  }
+
+  public FrameParser(StompClientOptions clientOptions) {
+    this.maxHeaderLineLength = clientOptions.getMaxHeaderLineLength();
+    this.maxBodyLength = clientOptions.getMaxBodyLength();
+    this.maxHeaderLength = clientOptions.getMaxHeaderLength();
+    this.maxHeaders = clientOptions.getMaxHeaders();
+    applyLineLengthLimit();
   }
 
   public FrameParser() {
     this(new StompServerOptions());
+  }
+
+  /**
+   * Wires {@link RecordParser#maxRecordSize} and its exception handler so that a line
+   * (command or header) longer than {@code maxHeaderLineLength} bytes is rejected fast,
+   * before the buffer can grow unboundedly.
+   */
+  private void applyLineLengthLimit() {
+    frameParser.maxRecordSize(maxHeaderLineLength);
+    frameParser.exceptionHandler(e -> reportOrThrow(e.getMessage()));
   }
 
   public synchronized FrameParser handler(Handler<Frame> handler) {
@@ -114,6 +139,8 @@ public class FrameParser implements Handler<Buffer> {
           } else {
             frameParser.delimitedMode(NULL);
           }
+          // Switch RecordParser cap from per-line limit to body limit (0 = no limit).
+          frameParser.maxRecordSize(maxBodyLength > 0 ? maxBodyLength : 0);
           break;
         } else {
           // Commands and Header are encoded in UTF-8 (spec)
@@ -147,14 +174,14 @@ public class FrameParser implements Handler<Buffer> {
         }
       case BODY:
         if (bodyLength == 0) {
-          // Must accumulate and check before creating the frame
+          // Entire frame arrived in a single buffer: handle() saw COMMAND/HEADERS state
+          // and did not increment bodyLength, so check the body size here.
           bodyLength = buffer.length();
           if (hasExceededBodySize()) {
             reportOrThrow("Body size exceeded");
             return;
           }
         }
-
         try {
           Frame frame = new Frame(command, headers, buffer);
           reset();
@@ -171,15 +198,15 @@ public class FrameParser implements Handler<Buffer> {
     headers = new HashMap<>();
     current = State.COMMAND;
     frameParser.delimitedMode(EOL);
+    frameParser.maxRecordSize(maxHeaderLineLength);
   }
 
   private boolean hasExceededHeaderLength(String header, String value) {
-    return value.length() > options.getMaxHeaderLength()
-        || header.length() > options.getMaxHeaderLength();
+    return value.length() > maxHeaderLength || header.length() > maxHeaderLength;
   }
 
   private boolean hasExceededNumberOfHeaders() {
-    return headers.size() + 1 > options.getMaxHeaders();
+    return headers.size() + 1 > maxHeaders;
   }
 
   private String decode(String value) {
@@ -219,7 +246,7 @@ public class FrameParser implements Handler<Buffer> {
   }
 
   private boolean hasExceededBodySize() {
-    return bodyLength >= options.getMaxBodyLength();
+    return bodyLength >= maxBodyLength;
   }
 
   /**
