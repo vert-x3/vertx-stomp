@@ -55,6 +55,26 @@ public class StompClientOptionsConverter {
             obj.setLogin((String)member.getValue());
           }
           break;
+        case "maxBodyLength":
+          if (member.getValue() instanceof Number) {
+            obj.setMaxBodyLength(((Number)member.getValue()).intValue());
+          }
+          break;
+        case "maxHeaderLength":
+          if (member.getValue() instanceof Number) {
+            obj.setMaxHeaderLength(((Number)member.getValue()).intValue());
+          }
+          break;
+        case "maxHeaderLineLength":
+          if (member.getValue() instanceof Number) {
+            obj.setMaxHeaderLineLength(((Number)member.getValue()).intValue());
+          }
+          break;
+        case "maxHeaders":
+          if (member.getValue() instanceof Number) {
+            obj.setMaxHeaders(((Number)member.getValue()).intValue());
+          }
+          break;
         case "passcode":
           if (member.getValue() instanceof String) {
             obj.setPasscode((String)member.getValue());
@@ -105,6 +125,10 @@ public class StompClientOptionsConverter {
     if (obj.getLogin() != null) {
       json.put("login", obj.getLogin());
     }
+    json.put("maxBodyLength", obj.getMaxBodyLength());
+    json.put("maxHeaderLength", obj.getMaxHeaderLength());
+    json.put("maxHeaderLineLength", obj.getMaxHeaderLineLength());
+    json.put("maxHeaders", obj.getMaxHeaders());
     if (obj.getPasscode() != null) {
       json.put("passcode", obj.getPasscode());
     }

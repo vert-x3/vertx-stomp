@@ -38,6 +38,11 @@ public class StompClientOptions extends NetClientOptions implements StompOptions
   // The default value of reuse address for stomp client
   private static final boolean DEFAULT_CLIENT_REUSE_ADDRESS = false;
 
+  public static final int DEFAULT_MAX_HEADER_LINE_LENGTH = StompServerOptions.DEFAULT_MAX_HEADER_LINE_LENGTH;
+  public static final int DEFAULT_MAX_HEADER_LENGTH = StompServerOptions.DEFAULT_MAX_HEADER_LENGTH;
+  public static final int DEFAULT_MAX_HEADERS = StompServerOptions.DEFAULT_MAX_HEADERS;
+  public static final int DEFAULT_MAX_BODY_LENGTH = StompServerOptions.DEFAULT_MAX_BODY_LENGTH;
+
   private List<String> acceptedVersions;
   private int port = DEFAULT_STOMP_PORT;
   private String host = DEFAULT_STOMP_HOST;
@@ -49,6 +54,10 @@ public class StompClientOptions extends NetClientOptions implements StompOptions
   private JsonObject heartbeat = DEFAULT_STOMP_HEARTBEAT;
   private String virtualHost;
   private boolean trailingLine = DEFAULT_TRAILING_LINE;
+  private int maxHeaderLineLength = DEFAULT_MAX_HEADER_LINE_LENGTH;
+  private int maxHeaderLength = DEFAULT_MAX_HEADER_LENGTH;
+  private int maxHeaders = DEFAULT_MAX_HEADERS;
+  private int maxBodyLength = DEFAULT_MAX_BODY_LENGTH;
 
   /**
    * Default constructor.
@@ -77,6 +86,10 @@ public class StompClientOptions extends NetClientOptions implements StompOptions
     this.heartbeat = other.heartbeat;
     this.virtualHost = other.virtualHost;
     this.trailingLine = other.trailingLine;
+    this.maxHeaderLineLength = other.maxHeaderLineLength;
+    this.maxHeaderLength = other.maxHeaderLength;
+    this.maxHeaders = other.maxHeaders;
+    this.maxBodyLength = other.maxBodyLength;
   }
 
   /**
@@ -107,6 +120,95 @@ public class StompClientOptions extends NetClientOptions implements StompOptions
     JsonObject json = new JsonObject();
     StompClientOptionsConverter.toJson(this, json);
     return json;
+  }
+
+  /**
+   * Gets the maximum byte length of a single line (command or header line) accepted before the body section.
+   * Defaults to {@link #DEFAULT_MAX_HEADER_LINE_LENGTH}.
+   *
+   * @return the max header line length in bytes
+   */
+  public int getMaxHeaderLineLength() {
+    return maxHeaderLineLength;
+  }
+
+  /**
+   * Sets the maximum byte length of a single line (command or header line) accepted before the body section.
+   * This bounds byte accumulation in the frame parser when receiving frames from a server.
+   * Set to 0 or a negative value to disable the limit.
+   *
+   * @param maxHeaderLineLength the max line length in bytes
+   * @return the current {@link StompClientOptions}
+   */
+  public StompClientOptions setMaxHeaderLineLength(int maxHeaderLineLength) {
+    this.maxHeaderLineLength = maxHeaderLineLength;
+    return this;
+  }
+
+  /**
+   * Gets the maximum length of a header name or value accepted by the client.
+   * If either exceeds this length, the frame is rejected and the connection is closed.
+   * Defaults to {@link #DEFAULT_MAX_HEADER_LENGTH}.
+   *
+   * @return the max header name/value length in bytes
+   */
+  public int getMaxHeaderLength() {
+    return maxHeaderLength;
+  }
+
+  /**
+   * Sets the maximum length of a header name or value accepted by the client.
+   *
+   * @param maxHeaderLength the max header name/value length in bytes
+   * @return the current {@link StompClientOptions}
+   */
+  public StompClientOptions setMaxHeaderLength(int maxHeaderLength) {
+    this.maxHeaderLength = maxHeaderLength;
+    return this;
+  }
+
+  /**
+   * Gets the maximum number of headers accepted per frame.
+   * If a frame exceeds this count, it is rejected and the connection is closed.
+   * Defaults to {@link #DEFAULT_MAX_HEADERS}.
+   *
+   * @return the max number of headers per frame
+   */
+  public int getMaxHeaders() {
+    return maxHeaders;
+  }
+
+  /**
+   * Sets the maximum number of headers accepted per frame.
+   *
+   * @param maxHeaders the max number of headers per frame
+   * @return the current {@link StompClientOptions}
+   */
+  public StompClientOptions setMaxHeaders(int maxHeaders) {
+    this.maxHeaders = maxHeaders;
+    return this;
+  }
+
+  /**
+   * Gets the maximum body length accepted by the client.
+   * If a frame body exceeds this size, the frame is rejected and the connection is closed.
+   * Defaults to {@link #DEFAULT_MAX_BODY_LENGTH}.
+   *
+   * @return the max body length in bytes
+   */
+  public int getMaxBodyLength() {
+    return maxBodyLength;
+  }
+
+  /**
+   * Sets the maximum body length accepted by the client.
+   *
+   * @param maxBodyLength the max body length in bytes
+   * @return the current {@link StompClientOptions}
+   */
+  public StompClientOptions setMaxBodyLength(int maxBodyLength) {
+    this.maxBodyLength = maxBodyLength;
+    return this;
   }
 
   /**

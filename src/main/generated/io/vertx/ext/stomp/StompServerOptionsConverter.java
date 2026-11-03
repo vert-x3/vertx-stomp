@@ -40,6 +40,11 @@ public class StompServerOptionsConverter {
             obj.setMaxHeaderLength(((Number)member.getValue()).intValue());
           }
           break;
+        case "maxHeaderLineLength":
+          if (member.getValue() instanceof Number) {
+            obj.setMaxHeaderLineLength(((Number)member.getValue()).intValue());
+          }
+          break;
         case "maxHeaders":
           if (member.getValue() instanceof Number) {
             obj.setMaxHeaders(((Number)member.getValue()).intValue());
@@ -110,6 +115,7 @@ public class StompServerOptionsConverter {
     json.put("maxBodyLength", obj.getMaxBodyLength());
     json.put("maxFrameInTransaction", obj.getMaxFrameInTransaction());
     json.put("maxHeaderLength", obj.getMaxHeaderLength());
+    json.put("maxHeaderLineLength", obj.getMaxHeaderLineLength());
     json.put("maxHeaders", obj.getMaxHeaders());
     json.put("maxSubscriptionsByClient", obj.getMaxSubscriptionsByClient());
     json.put("secured", obj.isSecured());
